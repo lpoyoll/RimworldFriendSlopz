@@ -2,7 +2,7 @@
 
 namespace GameServer
 {
-    public class QuickEdit
+    public class QuickEditor
     {
         const uint ENABLE_QUICK_EDIT = 0x0040;
 

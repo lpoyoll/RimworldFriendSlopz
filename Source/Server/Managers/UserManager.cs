@@ -99,9 +99,7 @@ namespace GameServer
 
         public static bool CheckIfUserIsConnected(string username)
         {
-            List<ServerClient> connectedClients = Network.connectedClients.ToList();
-
-            ServerClient toGet = connectedClients.Find(x => x.userFile.Username == username);
+            ServerClient toGet = NetworkHelper.GetConnectedClientFromUsername(username);
             if (toGet != null) return true;
             else return false;
         }

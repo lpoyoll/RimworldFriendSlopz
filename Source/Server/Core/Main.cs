@@ -33,7 +33,7 @@ namespace GameServer
         {
             try
             {
-                QuickEdit quickEdit = new QuickEdit();
+                QuickEditor quickEdit = new QuickEditor();
                 quickEdit.DisableQuickEdit();
             }
             catch { Logger.Warning("Quick edit could not be disabled, ignore this if you are running on Linux"); }
@@ -316,7 +316,7 @@ namespace GameServer
         public static void ChangeTitle()
         {
             Console.Title = $"RimWorld Together {CommonValues.executableVersion} - " +
-                $"Players [{Network.connectedClients.Count}/{Master.serverConfig.MaxPlayers}]";
+                $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.serverConfig.MaxPlayers}]";
         }
     }
 }

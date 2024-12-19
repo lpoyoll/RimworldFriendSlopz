@@ -2,19 +2,35 @@
 
 namespace GameServer
 {
-    public static class CommandManager
+    public static class ConsoleManager
     {
         public static string[] commandParameters;
 
-        public static void ParseServerCommands(string parsedString)
+        public static void ListenForServerCommands()
         {
-            string parsedPrefix = parsedString.Split(' ')[0].ToLower();
-            int parsedParameters = parsedString.Split(' ').Count() - 1;
-            commandParameters = parsedString.Replace(parsedPrefix + " ", "").Split(" ");
+            bool interactiveConsole = false;
+
+            try { interactiveConsole = Console.In.Peek() != -1 ? true : false; }
+            catch { Logger.Warning($"Couldn't find interactive console, disabling commands"); }
+
+            if (interactiveConsole)
+            {
+                while (true)
+                {
+                    ParseServerCommands(Console.ReadLine());
+                }
+            }
+        }
+
+        public static void ParseServerCommands(string command)
+        {
+            string parsedPrefix = command.Split(' ')[0].ToLower();
+            int parsedParameters = command.Split(' ').Count() - 1;
+            commandParameters = command.Replace(parsedPrefix + " ", "").Split(" ");
 
             try
             {
-                ServerCommand commandToFetch = CommandStorage.serverCommands.ToList().Find(x => x.prefix == parsedPrefix);
+                BaseServerCommand commandToFetch = ConsoleCommands.commands.ToList().Find(x => x.prefix == parsedPrefix);
                 if (commandToFetch == null) Logger.Warning($"Command '{parsedPrefix}' was not found");
                 else
                 {
@@ -33,22 +49,6 @@ namespace GameServer
                 }
             }
             catch (Exception e) { Logger.Error($"Couldn't parse command '{parsedPrefix}'. Reason: {e}"); }
-        }
-
-        public static void ListenForServerCommands()
-        {
-            bool interactiveConsole = false;
-
-            try { interactiveConsole = Console.In.Peek() != -1 ? true : false; }
-            catch { Logger.Warning($"Couldn't find interactive console, disabling commands"); }
-
-            if (interactiveConsole)
-            {
-                while (true)
-                {
-                    ParseServerCommands(Console.ReadLine());
-                }
-            }
         }
     }
 }
