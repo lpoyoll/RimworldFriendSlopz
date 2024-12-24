@@ -5,8 +5,6 @@ namespace GameServer
 {
     public static class OfflineActivityManager
     {
-        private static readonly double baseActivityTimer = 3600000;
-
         public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionValues.EnableOfflineActivities)
@@ -53,7 +51,7 @@ namespace GameServer
                 {
                     UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
 
-                    if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
+                    if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, Master.serverConfig.TemporalActivityProtectionTime * 1000))
                     {
                         data._stepMode = OfflineActivityStepMode.Deny;
                         Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);

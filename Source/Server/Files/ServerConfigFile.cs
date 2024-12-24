@@ -23,8 +23,14 @@
 
         public bool TemporalActivityProtection = true;
 
+        public int TemporalActivityProtectionTime = 3600;
+
         public bool TemporalEventProtection = true;
 
+        public int TemporalEventProtectionTime = 3600;
+
         public bool TemporalAidProtection = false;
+        
+        public int TemporalAidProtectionTime = 3600;
     }
 }

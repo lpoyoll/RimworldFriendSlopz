@@ -56,7 +56,7 @@ namespace GameServer
                 {
                     ServerClient target = NetworkHelper.GetConnectedClientFromUsername(settlement.Owner);
 
-                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
+                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, Master.serverConfig.TemporalEventProtectionTime * 1000))
                     {
                         eventData._stepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
@@ -87,8 +87,6 @@ namespace GameServer
     public static class EventManagerHelper
     {
         //Variables
-
-        public static readonly double baseMaxTimer = 3600000;
 
         public static readonly string fileExtension = ".mpevent";
 
