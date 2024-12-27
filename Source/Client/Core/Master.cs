@@ -21,17 +21,17 @@ namespace GameClient.Core
 
         // Paths
 
-        public static string appdataPath;
-
         public static string appdataFolderPath;
 
-        public static string tempFolderPath;
+        public static string appdataRTFolderPath;
+
+        public static string appdataTempFolderPath;
 
         public static string modMainFolderPath;
 
         public static string modAssemblyFolderPath;
 
-        public static string addonsFolderPath;
+        public static string modAddonsFolderPath;
 
         public static string connectionDataPath;
 

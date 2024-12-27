@@ -49,23 +49,24 @@ namespace GameClient.Core
 
         private static void PreparePaths()
         {
-            Master.appdataPath = GenFilePaths.SaveDataFolderPath;
-            Master.appdataFolderPath = Path.Combine(Master.appdataPath, "RimWorld Together");
-            Master.tempFolderPath = Path.Combine(Master.appdataFolderPath, "Temp");
-            Master.modMainFolderPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent.Parent.ToString();
-            Master.addonsFolderPath = Path.Combine(Master.modMainFolderPath, "Addons");
-            Master.modAssemblyFolderPath = Path.Combine(Master.modMainFolderPath, "Current", "Assemblies");
-
-            Master.connectionDataPath = Path.Combine(Master.appdataFolderPath, "ConnectionData.json");
-            Master.clientPreferencesPath = Path.Combine(Master.appdataFolderPath, "Preferences.json");
-            Master.recentServersPath = Path.Combine(Master.appdataFolderPath, "RecentServers.json");
-            Master.loginDataPath = Path.Combine(Master.appdataFolderPath, "LoginData.json");
             Master.savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
-            if (!Directory.Exists(Master.appdataFolderPath)) Directory.CreateDirectory(Master.appdataFolderPath);
-            if (!Directory.Exists(Master.addonsFolderPath)) Directory.CreateDirectory(Master.addonsFolderPath);
-            if (!Directory.Exists(Master.tempFolderPath)) Directory.CreateDirectory(Master.tempFolderPath);
-        }
+            Master.appdataFolderPath = GenFilePaths.SaveDataFolderPath;
+            Master.appdataRTFolderPath = Path.Combine(Master.appdataFolderPath, "RimWorld Together");
+            Master.appdataTempFolderPath = Path.Combine(Master.appdataRTFolderPath, "Temp");
+
+            Master.modMainFolderPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent.Parent.ToString();
+            Master.modAddonsFolderPath = Path.Combine(Master.modMainFolderPath, "Addons");
+            Master.modAssemblyFolderPath = Path.Combine(Master.modMainFolderPath, "Current", "Assemblies");
+
+            Master.connectionDataPath = Path.Combine(Master.appdataRTFolderPath, "ConnectionData.json");
+            Master.clientPreferencesPath = Path.Combine(Master.appdataRTFolderPath, "Preferences.json");
+            Master.recentServersPath = Path.Combine(Master.appdataRTFolderPath, "RecentServers.json");
+            Master.loginDataPath = Path.Combine(Master.appdataRTFolderPath, "LoginData.json");
+
+            if (!Directory.Exists(Master.appdataRTFolderPath)) Directory.CreateDirectory(Master.appdataRTFolderPath);
+            if (!Directory.Exists(Master.appdataTempFolderPath)) Directory.CreateDirectory(Master.appdataTempFolderPath);
+            if (!Directory.Exists(Master.modAddonsFolderPath)) Directory.CreateDirectory(Master.modAddonsFolderPath);        }
 
         private static void CreateUnityDispatcher()
         {

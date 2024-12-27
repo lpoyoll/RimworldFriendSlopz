@@ -32,7 +32,6 @@ namespace GameClient.Core.Configs
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
 
-            listingStandard.Label("Running version: " + CommonValues.executableVersion);
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
@@ -41,13 +40,13 @@ namespace GameClient.Core.Configs
             if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s")) ShowAutosaveFloatMenu();
 
             listingStandard.GapLine();
-            listingStandard.Label("Compatibility");
+            listingStandard.Label("Debugging");
+            if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ClientValues.currentVerboseMode}")) ShowVerboseFloatMenu();
+            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.appdataFolderPath);
             if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertSaveFloatMenu(); }
-            if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
-            if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ClientValues.currentVerboseMode}")) ShowVerboseFloatMenu();
             if (listingStandard.ButtonTextLabeled("Change mod version [Windows only]", "Change")) { VersionManager.PromptChangeVersion(); }
 
             GUI.color = Color.red;
@@ -60,7 +59,7 @@ namespace GameClient.Core.Configs
             if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
             if (listingStandard.ButtonTextLabeled("Check out the mod's incompatibility list!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/blob/development/IncompatibilityList.md");
             if (listingStandard.ButtonTextLabeled("Check out the mod's donation page!", "Open")) StartProcess("https://ko-fi.com/rimworldtogether");
-            if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/yUF2ec8Vt8");
+            if (listingStandard.ButtonTextLabeled("Check out mod's Discord community!", "Open")) StartProcess("https://discord.gg/yUF2ec8Vt8");
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
