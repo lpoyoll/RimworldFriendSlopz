@@ -3,7 +3,6 @@ using HarmonyLib;
 using RimWorld.Planet;
 using static Shared.CommonEnumerators;
 using GameClient.TCP;
-using RimWorld;
 
 namespace GameClient.Patches
 {

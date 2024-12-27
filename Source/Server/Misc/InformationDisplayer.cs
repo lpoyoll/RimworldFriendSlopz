@@ -1,9 +1,7 @@
-﻿using GameServer.Core;
-using GameServer.Misc;
-using GameServer.TCP;
+﻿using GameServer.TCP;
 using static Shared.CommonEnumerators;
 
-namespace GameServer.Managers
+namespace GameServer.Misc
 {
     public static class InformationDisplayer
     {

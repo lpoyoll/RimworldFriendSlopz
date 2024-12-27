@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Threading;
 using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Misc;
