@@ -27,9 +27,11 @@ namespace GameClient.Core
 
         public static string tempFolderPath;
 
+        public static string modMainFolderPath;
+
         public static string modAssemblyFolderPath;
 
-        public static string modAssemblyPath;
+        public static string addonsFolderPath;
 
         public static string connectionDataPath;
 

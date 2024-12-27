@@ -52,8 +52,9 @@ namespace GameClient.Core
             Master.appdataPath = GenFilePaths.SaveDataFolderPath;
             Master.appdataFolderPath = Path.Combine(Master.appdataPath, "RimWorld Together");
             Master.tempFolderPath = Path.Combine(Master.appdataFolderPath, "Temp");
-            Master.modAssemblyPath = Assembly.GetExecutingAssembly().Location;
-            Master.modAssemblyFolderPath = Directory.GetParent(Master.modAssemblyPath).ToString();
+            Master.modMainFolderPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent.Parent.ToString();
+            Master.addonsFolderPath = Path.Combine(Master.modMainFolderPath, "Addons");
+            Master.modAssemblyFolderPath = Path.Combine(Master.modMainFolderPath, "Current", "Assemblies");
 
             Master.connectionDataPath = Path.Combine(Master.appdataFolderPath, "ConnectionData.json");
             Master.clientPreferencesPath = Path.Combine(Master.appdataFolderPath, "Preferences.json");
@@ -62,6 +63,7 @@ namespace GameClient.Core
             Master.savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
             if (!Directory.Exists(Master.appdataFolderPath)) Directory.CreateDirectory(Master.appdataFolderPath);
+            if (!Directory.Exists(Master.addonsFolderPath)) Directory.CreateDirectory(Master.addonsFolderPath);
             if (!Directory.Exists(Master.tempFolderPath)) Directory.CreateDirectory(Master.tempFolderPath);
         }
 

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading;
 using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Misc;
@@ -14,13 +15,12 @@ namespace GameClient.Managers
         public static void PromptChangeVersion()
         {
             RT_Dialog_OK dialog2 = new RT_Dialog_OK("The game will restart to apply the new version", GenCommandLine.Restart);
-            DialogManager.PushNewDialog(new RT_Dialog_1Input("Version selection", "Please type the version number you want to switch to",
+            DialogManager.PushNewDialog(new RT_Dialog_2Input("Version selection", "Release number", "Password (optional)",
                 delegate
                 {
-                    string downloadPath = Path.Combine(Master.tempFolderPath, "Download.zip");
-                    string extractPath = Path.Combine(Master.tempFolderPath, "Output");
-                    string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{DialogManager.dialog1ResultOne}/3005289691.zip";
-                    Printer.Warning(uri);
+                    string downloadPath = Path.Combine(Master.tempFolderPath, "3005289691.zip");
+                    string extractPath = Path.Combine(Master.tempFolderPath, "3005289691");
+                    string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{DialogManager.dialog2ResultOne}/3005289691.zip";
 
                     if (!DownloadVersion(uri, downloadPath))
                     {
@@ -28,13 +28,26 @@ namespace GameClient.Managers
                         return;
                     }
 
-                    else if (!InstallVersion(downloadPath, extractPath))
+                    else if (!UnzipVersion(downloadPath, extractPath))
+                    {
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Version failed to decompress, check logs for more information"));
+                        return;
+                    }
+
+                    else if (!InstallVersion(extractPath))
                     {
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Version failed to install, check logs for more information"));
+                        return;
+                    }
+
+                    else if (!Cleanup(downloadPath))
+                    {
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Installer failed the cleanup, check logs for more information"));
+                        return;
                     }
 
                     DialogManager.PushNewDialog(dialog2);
-                }
+                }, null, false, true
             ));
         }
 
@@ -52,23 +65,39 @@ namespace GameClient.Managers
             catch { return false; }
         }
 
-        private static bool InstallVersion(string downloadPath, string extractPath)
+        private static bool UnzipVersion(string downloadPath, string extractPath)
         {
             try
             {
                 if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
 
-                string installDirectory = Directory.GetParent(Master.modAssemblyFolderPath).Parent.Parent.ToString() + 
-                    Path.DirectorySeparatorChar + "3005289691";
-
-                StartCMDWindow($"powershell -command Expand-Archive -Force '{downloadPath}' '{extractPath}'");
-                StartCMDWindow($"del \"{downloadPath}\"");
-
-                StartCMDWindow($"rmdir \"{installDirectory}\" /s /q");
-                StartCMDWindow($"move \"{extractPath}\" \"{installDirectory}\"");
+                string appPath = Path.Combine(Master.addonsFolderPath, "7z", "7z.exe");
+                StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{DialogManager.dialog2ResultTwo}\" -o\"{extractPath}\"");
 
                 return true;
             }
+            catch { return false; }
+        }
+
+        private static bool InstallVersion(string extractPath)
+        {
+            try
+            {
+                string modsDirectory = Directory.GetParent(Master.modMainFolderPath).ToString();
+                string installDirectory = Path.Combine(modsDirectory, "3005289691");
+
+                StartCMDWindow($"rmdir \"{installDirectory}\" /s /q");
+
+                StartCMDWindow($"move \"{extractPath}\" \"{modsDirectory}\"");
+
+                return true;
+            }
+            catch { return false; }
+        }
+
+        private static bool Cleanup(string toClean)
+        {
+            try { StartCMDWindow($"del \"{toClean}\""); return true; }
             catch { return false; }
         }
 

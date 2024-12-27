@@ -40,7 +40,7 @@ namespace GameClient.Dialogs
 
         private string inputTwoCensoredResult;
 
-        public RT_Dialog_2Input(string title, string inputOneLabel, string inputTwoLabel, Action actionConfirm, Action actionCancel,
+        public RT_Dialog_2Input(string title, string inputOneLabel, string inputTwoLabel, Action actionConfirm, Action actionCancel = null,
             bool inputOneCensored = false, bool inputTwoCensored = false)
         {
             DialogManager.dialog2Input = this;
@@ -76,6 +76,7 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Medium;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
             Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
+            Text.Font = GameFont.Small;
 
             DrawInputOne(centeredX, inputOneLabelDif, inputOneDif);
 
@@ -99,10 +100,9 @@ namespace GameClient.Dialogs
 
         private void DrawInputOne(float centeredX, float labelDif, float normalDif)
         {
-            Text.Font = GameFont.Medium;
+            Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputOneLabel).x / 2, labelDif, Text.CalcSize(inputOneLabel).x, Text.CalcSize(inputOneLabel).y), inputOneLabel);
 
-            Text.Font = GameFont.Small;
             string inputOne = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputOneResult);
             if (AcceptsInput && inputOne.Length <= 32) inputOneResult = inputOne;
 
@@ -120,10 +120,9 @@ namespace GameClient.Dialogs
 
         private void DrawInputTwo(float centeredX, float labelDif, float normalDif)
         {
-            Text.Font = GameFont.Medium;
+            Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(inputTwoLabel).x / 2, labelDif, Text.CalcSize(inputTwoLabel).x, Text.CalcSize(inputTwoLabel).y), inputTwoLabel);
 
-            Text.Font = GameFont.Small;
             string inputTwo = Widgets.TextField(new Rect(centeredX - 200f / 2, normalDif, 200f, 30f), inputTwoResult);
             if (AcceptsInput && inputTwo.Length <= 32) inputTwoResult = inputTwo;
 
