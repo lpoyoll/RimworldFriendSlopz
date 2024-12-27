@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GameServer
+﻿namespace GameServer.Files
 {
-    public class BackupConfigFile 
+    public class BackupConfigFile
     {
         public bool AutomaticBackups = true;
 

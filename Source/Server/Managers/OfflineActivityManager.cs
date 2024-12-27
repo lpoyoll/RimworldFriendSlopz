@@ -1,7 +1,10 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.Files;
+using GameServer.TCP;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
     public static class OfflineActivityManager
     {
@@ -9,7 +12,7 @@ namespace GameServer
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            if (!Master.actionValues.EnableOfflineActivities)
+            if (!Master.actionConfigs.EnableOfflineActivities)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -42,7 +45,7 @@ namespace GameServer
             {
                 SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._targetTile);
 
-                if (UserManagerHelper.CheckIfUserIsConnected(settlementFile.Owner))
+                if (UserManagerH.CheckIfUserIsConnected(settlementFile.Owner))
                 {
                     data._stepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
@@ -51,7 +54,7 @@ namespace GameServer
 
                 else
                 {
-                    UserFile userFile = UserManagerHelper.GetUserFileFromName(settlementFile.Owner);
+                    UserFile userFile = UserManagerH.GetUserFileFromName(settlementFile.Owner);
 
                     if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
                     {
@@ -64,7 +67,7 @@ namespace GameServer
                     {
                         userFile.UpdateActivityTime();
 
-                        data._mapFile = MapManager.GetUserMapFromTile(userFile.Username, data._targetTile);
+                        data._mapFile = MapManager.GetUserMapFromTile(userFile.Uid, data._targetTile);
                         Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
                         client.listener.EnqueuePacket(packet);
                     }

@@ -11,6 +11,8 @@ namespace Shared
 
         public string Owner;
 
+        public string Label;
+
         public double TimeSinceRefresh;
     }
 }

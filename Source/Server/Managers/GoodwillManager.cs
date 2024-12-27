@@ -1,8 +1,9 @@
-﻿using Shared;
-using System.Linq;
+﻿using GameServer.Files;
+using GameServer.TCP;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
     public static class GoodwillManager
     {
@@ -73,7 +74,7 @@ namespace GameServer
             }
             data._siteGoodwills = tempSiteList.ToArray();
 
-            UserManagerHelper.SaveUserFile(client.userFile);
+            UserManagerH.SaveUserFile(client.userFile);
 
             Packet rPacket = Packet.CreatePacketFromObject(nameof(GoodwillManager), data);
             client.listener.EnqueuePacket(rPacket);
@@ -90,7 +91,7 @@ namespace GameServer
 
             if (client.userFile.FactionFile != null && FactionManagerHelper.GetFactionFromFactionName(client.userFile.FactionFile.Name).CurrentMembers.Contains(usernameToCheck))
             {
-                if (usernameToCheck == client.userFile.Username) return Goodwill.Personal;
+                if (usernameToCheck == client.userFile.Uid) return Goodwill.Personal;
                 else return Goodwill.Faction;
             }
 
@@ -103,19 +104,19 @@ namespace GameServer
         {
             if (client.userFile.FactionFile != null && FactionManagerHelper.GetFactionFromFactionName(client.userFile.FactionFile.Name).CurrentMembers.Contains(settlement.Owner))
             {
-                if (settlement.Owner == client.userFile.Username) return Goodwill.Personal;
+                if (settlement.Owner == client.userFile.Uid) return Goodwill.Personal;
                 else return Goodwill.Faction;
             }
 
             else if (client.userFile.Relationships.EnemyPlayers.Contains(settlement.Owner)) return Goodwill.Enemy;
             else if (client.userFile.Relationships.AllyPlayers.Contains(settlement.Owner)) return Goodwill.Ally;
-            else if (settlement.Owner == client.userFile.Username) return Goodwill.Personal;
+            else if (settlement.Owner == client.userFile.Uid) return Goodwill.Personal;
             else return Goodwill.Neutral;
         }
 
         public static Goodwill GetSiteGoodwill(ServerClient client, SiteIdendityFile site)
         {
-            if (client.userFile.Username == site.Owner) return Goodwill.Personal; //We check if the players is the owner
+            if (client.userFile.Uid == site.Owner) return Goodwill.Personal; //We check if the players is the owner
 
             if (site.FactionFile != null)
             {
@@ -155,7 +156,7 @@ namespace GameServer
 
             foreach (ServerClient client in clients)
             {
-                if (factionFile.CurrentMembers.Contains(client.userFile.Username)) clientsToGet.Add(client);
+                if (factionFile.CurrentMembers.Contains(client.userFile.Uid)) clientsToGet.Add(client);
             }
 
             foreach (ServerClient client in clientsToGet)
@@ -174,12 +175,12 @@ namespace GameServer
                 }
             }
 
-            UserFile[] userFiles = UserManagerHelper.GetAllUserFiles();
+            UserFile[] userFiles = UserManagerH.GetAllUserFiles();
             List<UserFile> usersToGet = new List<UserFile>();
 
             foreach (UserFile file in userFiles)
             {
-                if (factionFile.CurrentMembers.Contains(file.Username)) usersToGet.Add(file);
+                if (factionFile.CurrentMembers.Contains(file.Uid)) usersToGet.Add(file);
             }
 
             foreach (UserFile file in usersToGet)
@@ -197,7 +198,7 @@ namespace GameServer
                     }
                 }
 
-                UserManagerHelper.SaveUserFile(file);
+                UserManagerH.SaveUserFile(file);
             }
         }
 
@@ -211,7 +212,7 @@ namespace GameServer
             List<Goodwill> tempList = new List<Goodwill>();
             foreach (SettlementFile settlement in settlements)
             {
-                if (settlement.Owner == client.userFile.Username) continue;
+                if (settlement.Owner == client.userFile.Uid) continue;
 
                 factionGoodwillData._settlementTiles.Add(settlement.Tile);
                 tempList.Add(GetSettlementGoodwill(client, settlement));

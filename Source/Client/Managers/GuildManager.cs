@@ -1,11 +1,14 @@
-﻿using Shared;
+﻿using GameClient.Dialogs;
+using GameClient.TCP;
+using GameClient.Values;
+using Shared;
 using System;
 using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
-    public static class FactionManager
+    public static class GuildManager
     {
         public static void ParsePacket(Packet packet)
         {
@@ -56,7 +59,7 @@ namespace GameClient
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData._stepMode = FactionStepMode.MemberList;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -66,7 +69,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.RemoveMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -77,7 +80,7 @@ namespace GameClient
                 PlayerFactionData playerFactionData = new PlayerFactionData();
                 playerFactionData._stepMode = FactionStepMode.Delete;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -112,7 +115,7 @@ namespace GameClient
                     playerFactionData._stepMode = FactionStepMode.Create;
                     playerFactionData._factionFile.Name = DialogManager.dialog1ResultOne;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
+                    Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                     Network.listener.EnqueuePacket(packet);
                 }
             };
@@ -132,7 +135,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.Promote;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -142,7 +145,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.Demote;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -152,19 +155,19 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.RemoveMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d5 = new RT_Dialog_YesNo("Are you sure you want to demote this player?", 
+            RT_Dialog_YesNo d5 = new RT_Dialog_YesNo("Are you sure you want to demote this player?",
                 r2,
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
-            RT_Dialog_YesNo d4 = new RT_Dialog_YesNo("Are you sure you want to promote this player?", 
+            RT_Dialog_YesNo d4 = new RT_Dialog_YesNo("Are you sure you want to promote this player?",
                 r1,
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
-            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to kick this player?", 
+            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to kick this player?",
                 r3,
                 delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
 
@@ -174,10 +177,10 @@ namespace GameClient
                 delegate { DialogManager.PushNewDialog(d5); },
                 null);
 
-            RT_Dialog_2Button d1 = new RT_Dialog_2Button("Management Menu", "Choose what you want to manage", 
-                "Powers", "Kick", 
-                delegate { DialogManager.PushNewDialog(d2); }, 
-                delegate { DialogManager.PushNewDialog(d3); }, 
+            RT_Dialog_2Button d1 = new RT_Dialog_2Button("Management Menu", "Choose what you want to manage",
+                "Powers", "Kick",
+                delegate { DialogManager.PushNewDialog(d2); },
+                delegate { DialogManager.PushNewDialog(d3); },
                 null);
 
             DialogManager.PushNewDialog(d1);
@@ -191,7 +194,7 @@ namespace GameClient
                 playerFactionData._stepMode = FactionStepMode.AddMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), playerFactionData);
+                Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -242,7 +245,7 @@ namespace GameClient
 
                 factionManifest._stepMode = FactionStepMode.AcceptInvite;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), factionManifest);
+                Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), factionManifest);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -273,7 +276,7 @@ namespace GameClient
                     $"- {(FactionRanks)factionManifest._factionFile.CurrentRanks[i]}");
             }
 
-            RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members", 
+            RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members",
                 "All faction members are depicted here", toDisplay.ToArray());
 
             DialogManager.PushNewDialog(d1);

@@ -1,6 +1,8 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.TCP;
+using Shared;
 
-namespace GameServer
+namespace GameServer.Managers
 {
     public static class GlobalDataManager
     {
@@ -40,10 +42,11 @@ namespace GameServer
 
         public static ServerGlobalData GetServerValues(ServerGlobalData globalData)
         {
+            globalData._serverValues = new ServerValuesFile(Master.serverConfig.Name);
             globalData._eventValues = EventManagerHelper.loadedEvents;
             globalData._siteValues = Master.siteValues;
             globalData._difficultyValues = Master.difficultyValues;
-            globalData._actionValues = Master.actionValues;
+            globalData._actionValues = Master.actionConfigs;
             globalData._roadValues = Master.roadValues;
             return globalData;
         }
@@ -56,11 +59,12 @@ namespace GameServer
             {
                 SettlementFile file = new SettlementFile();
 
-                if (settlement.Owner == client.userFile.Username) continue;
+                if (settlement.Owner == client.userFile.Uid) continue;
                 else
                 {
                     file.Tile = settlement.Tile;
                     file.Owner = settlement.Owner;
+                    file.Label = settlement.Label;
                     file.Goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
 
                     tempList.Add(file);

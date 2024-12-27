@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using GameClient.Dialogs;
+using GameClient.TCP;
+using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -7,7 +10,7 @@ using Verse;
 using static Shared.CommonEnumerators;
 
 
-namespace GameClient
+namespace GameClient.Managers
 {
     //Class that handles settlement and site player goodwills
 

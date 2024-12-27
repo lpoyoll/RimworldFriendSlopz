@@ -9,6 +9,8 @@ namespace Shared
         public int Tile;
 
         public string Owner;
+
+        public string Label;
         
         public Goodwill Goodwill;
     }

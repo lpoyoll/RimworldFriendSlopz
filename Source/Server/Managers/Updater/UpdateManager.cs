@@ -1,9 +1,7 @@
-﻿using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GameServer.Core;
+using GameServer.Managers;
+using GameServer.Misc;
+using Shared;
 
 namespace GameServer.Updater
 {
@@ -17,7 +15,7 @@ namespace GameServer.Updater
 
         private static void UpdateSites() 
         {
-            string pathToDelete = Path.Combine(Master.corePath, "SiteValues.json");
+            string pathToDelete = Path.Combine(Master.configsPath, "SiteConfig.json");
             if (File.Exists(pathToDelete)) File.Delete(pathToDelete);
 
             foreach (string file in Directory.GetFiles(Master.sitesPath))
@@ -27,7 +25,7 @@ namespace GameServer.Updater
                     SiteFile site = Serializer.SerializeFromFile<SiteFile>(file);
                     SiteIdendityFile newSite = new SiteIdendityFile();
                     newSite.Goodwill = site.Goodwill;
-                    newSite.FactionFile = UserManagerHelper.GetUserFileFromName(site.Owner).FactionFile;
+                    newSite.FactionFile = UserManagerH.GetUserFileFromName(site.Owner).FactionFile;
                     newSite.Owner = site.Owner;
                     newSite.Tile = site.Tile;
 
@@ -74,7 +72,7 @@ namespace GameServer.Updater
                 }
             }
 
-            Logger.Title("Please restart the server to finalize the update.");
+            Printer.Title("Please restart the server to finalize the update.");
         }
     }
 }

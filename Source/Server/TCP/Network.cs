@@ -1,9 +1,12 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.Managers;
+using GameServer.Misc;
+using Shared;
 using System.Net;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.TCP
 {
     //Main class that is used to handle the connection with the clients
 
@@ -30,9 +33,9 @@ namespace GameServer
             connection = new TcpListener(localAddress, port);
             connection.Start();
 
-            Logger.Warning("Server launched");
-            Logger.Warning($"Listening for users at {localAddress}:{port}");            
-            Logger.Warning("Type 'help' to get a list of available commands");
+            Printer.Warning("Server launched");
+            Printer.Warning($"Listening for users at {localAddress}:{port}");
+            Printer.Warning("Type 'help' to get a list of available commands");
 
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
             Threader.GenerateServerThread(Threader.ServerMode.Caravans);
@@ -43,7 +46,7 @@ namespace GameServer
         }
 
         //Listens for any user that might connect and executes all required tasks  with it
-        
+
         private static void ListenForIncomingUsers()
         {
             TcpClient newTCP = connection.AcceptTcpClient();
@@ -57,13 +60,13 @@ namespace GameServer
             Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
 
             if (Master.isClosing) newServerClient.listener.disconnectFlag = true;
-            else if (Master.worldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0) LoginManager.SendLoginResponse(newServerClient, LoginResponse.NoWorld);
+            else if (Master.worldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0) LoginManagerH.SendLoginResponse(newServerClient, LoginResponse.NoWorld);
             else
             {
                 if (NetworkHelper.GetConnectedClientsSafe().Length >= int.Parse(Master.serverConfig.MaxPlayers))
                 {
-                    LoginManager.SendLoginResponse(newServerClient, LoginResponse.ServerFull);
-                    Logger.Warning($"Server Full");
+                    LoginManagerH.SendLoginResponse(newServerClient, LoginResponse.ServerFull);
+                    Printer.Error($"Server Full");
                 }
 
                 else
@@ -72,7 +75,7 @@ namespace GameServer
 
                     Main_.ChangeTitle();
 
-                    Logger.Message($"[Connect] > {newServerClient.userFile.Username} | {newServerClient.userFile.SavedIP}");
+                    InformationDisplayer.DisplayConnect(newServerClient);
                 }
             }
         }
@@ -88,10 +91,10 @@ namespace GameServer
 
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
-                Logger.Message($"[Disconnect] > {client.userFile.Username} | {client.userFile.SavedIP}");
-                if (Master.chatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Username} has left the server!");
+                InformationDisplayer.DisplayDisconnect(client);
+                if (Master.chatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Uid} has left the server!");
             }
-            catch { Logger.Warning($"Error disconnecting user {client.userFile.Username}, this will cause memory overhead"); }
+            catch { Printer.Warning($"Error disconnecting user {client.userFile.Uid}, this will cause memory overhead"); }
         }
     }
 
@@ -99,13 +102,13 @@ namespace GameServer
     {
         public static ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)
         {
-            if (toExclude != null) return Network.connectedClients.Where(fetch => fetch.userFile.Username != toExclude.userFile.Username).ToArray();
+            if (toExclude != null) return Network.connectedClients.Where(fetch => fetch.userFile.Uid != toExclude.userFile.Uid).ToArray();
             else return Network.connectedClients.ToArray();
         }
 
-        public static ServerClient GetConnectedClientFromUsername(string username)
+        public static ServerClient GetConnectedClientFromUid(string uid)
         {
-            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Username == username);
+            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Uid == uid);
         }
 
         public static void SendPacketToAllClients(Packet packet, ServerClient toExclude = null)

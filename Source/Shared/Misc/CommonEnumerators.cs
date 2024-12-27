@@ -72,11 +72,9 @@ namespace Shared
 
         public enum MessageColor { Normal, Admin, Console, Private, Discord, Server }
 
-        public enum LoginMode { Login, Register }
-
         public enum ModType { Required, Optional, Forbidden };
 
-        public enum LoginResponse { InvalidLogin, BannedLogin, RegisterInUse, RegisterError, ExtraLogin, WrongMods, WrongVersion, ServerFull, Whitelist, NoWorld }
+        public enum LoginResponse { InvalidLogin, BannedLogin, RegisterError, ExtraLogin, WrongMods, WrongVersion, ServerFull, Whitelist, NoWorld }
     }
 }
 

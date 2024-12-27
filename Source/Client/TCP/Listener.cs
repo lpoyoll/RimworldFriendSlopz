@@ -1,11 +1,17 @@
-﻿using Microsoft.VisualBasic;
+﻿using GameClient.Core;
+using GameClient.Managers;
+using GameClient.Misc;
 using Shared;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Sockets;
-using System.Reflection;
+using System.Threading;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 
-namespace GameServer
+namespace GameClient.TCP
 {
     //Class that handles all incoming and outgoing packet instructions
 
@@ -37,16 +43,8 @@ namespace GameServer
 
         public bool disconnectFlag;
 
-        public bool KAFlag;
-
-        //Reference to the ServerClient instance of this listener
-
-        private ServerClient targetClient;
-
-        public Listener(ServerClient clientToUse, TcpClient connection) 
-        { 
-            targetClient = clientToUse;
-
+        public Listener(TcpClient connection)
+        {
             this.connection = connection;
             networkStream = connection.GetStream();
             streamWriter = new StreamWriter(networkStream);
@@ -81,12 +79,14 @@ namespace GameServer
             }
 
             catch (Exception e)
-            { 
-                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
+            {
+                Printer.Warning(e.ToString(), LogImportanceMode.Verbose);
 
-                disconnectFlag = true; 
+                disconnectFlag = true;
             }
         }
+
+        //Runs in a separate thread and listens for any kind of information being sent through the connection
 
         public void Listen()
         {
@@ -104,7 +104,7 @@ namespace GameServer
 
             catch (Exception e)
             {
-                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
+                Printer.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }
@@ -114,34 +114,43 @@ namespace GameServer
 
         public void HandlePacket(Packet packet)
         {
-            if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
-            else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
+            if (!ignoredLogPackets.Contains(packet.header)) Printer.Message($"[Packet] > {packet.header}", LogImportanceMode.Verbose);
+            else Printer.Message($"[Packet] > {packet.header}", LogImportanceMode.Extreme);
 
+            Action toDo;
             if (packet.isModded)
             {
-                if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, packet.targetPatchName, [targetClient, packet]))
+                toDo = delegate
                 {
-                    OnHandleError();
-                }
+                    if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, packet.targetPatchName, new object[] { packet }))
+                    {
+                        OnHandleError();
+                    }
+                };
             }
-            
+
             else
-            {  
-                if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, [targetClient, packet]))
+            {
+                toDo = delegate
                 {
-                    OnHandleError();
-                }
+                    if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
+                    {
+                        OnHandleError();
+                    }
+                };
             }
 
             // If method manager failed to execute the packet we assume corrupted data
 
             void OnHandleError()
             {
-                Logger.Error($"Error while trying to execute method from type '{packet.header}'");      
-                Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                Logger.Error(MethodManager.latestException);
+                Printer.Error($"Error while trying to execute method from type '{packet.header}'");
+                Printer.Error("Forcefully disconnecting due to MethodManager exception");
+                Printer.Error(MethodManager.latestException);
                 disconnectFlag = true;
             }
+
+            Master.threadDispatcher.Enqueue(toDo);
         }
 
         //Runs in a separate thread and checks if the connection should still be up
@@ -151,45 +160,48 @@ namespace GameServer
             try { while (!disconnectFlag) Thread.Sleep(1); }
             catch (Exception e)
             {
-                Logger.Warning(e.ToString(), LogImportanceMode.Verbose);
+                Printer.Warning(e.ToString(), LogImportanceMode.Verbose);
 
                 disconnectFlag = true;
             }
 
             Thread.Sleep(1000);
 
-            Network.KickClient(targetClient);
+            Master.threadDispatcher.Enqueue(delegate { Network.DisconnectFromServer(); });
         }
 
-        //Runs in a separate thread and checks if the connection is still alive
+        //Runs in a separate thread and sends alive pings towards the server
 
-        public void CheckKAFlag()
+        public void SendKAFlag()
         {
-            KAFlag = false;
-
             try
             {
                 while (!disconnectFlag)
                 {
-                    Thread.Sleep(int.Parse(Master.serverConfig.MaxTimeoutInMS));
+                    Thread.Sleep(1000);
 
-                    if (KAFlag) KAFlag = false;
-                    else break;
+                    KeepAliveData keepAliveData = new KeepAliveData();
+                    Packet packet = Packet.CreatePacketFromObject(nameof(KeepAliveManager), keepAliveData);
+                    EnqueuePacket(packet);
                 }
             }
-            catch (Exception e) { Logger.Warning(e.ToString(), LogImportanceMode.Verbose); }
 
-            disconnectFlag = true;
+            catch (Exception e)
+            {
+                Printer.Warning(e.ToString(), LogImportanceMode.Verbose);
+
+                disconnectFlag = true;
+            }
         }
 
-        //Forcefully ends the connection with the client and any important process associated with it
+        //Forcefully ends the connection with the server and any important process associated with it
 
         public void DestroyConnection()
         {
+            disconnectFlag = true;
             connection.Close();
             uploadManager?.fileStream.Close();
             downloadManager?.fileStream.Close();
-            if (targetClient.activityPartner != null) OnlineActivityManager.StopActivity(targetClient);
         }
     }
 }

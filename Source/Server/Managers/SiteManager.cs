@@ -1,7 +1,11 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.Files;
+using GameServer.Misc;
+using GameServer.TCP;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
     public static class SiteManager
     {
@@ -11,7 +15,7 @@ namespace GameServer
 
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            if (!Master.actionValues.EnableSites)
+            if (!Master.actionConfigs.EnableSites)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -31,7 +35,7 @@ namespace GameServer
                 case SiteStepMode.Info:
                     SiteManagerHelper.GetSiteInfo(client, siteData);
                     break;
-                    
+
                 case SiteStepMode.Config:
                     ChangeUserSiteConfig(client, siteData);
                     break;
@@ -59,7 +63,7 @@ namespace GameServer
             Packet rPacket = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(rPacket);
 
-            Logger.Warning($"[Created site] > {client.userFile.Username}");
+            InformationDisplayer.DisplayAddSite(siteFile.Tile.ToString());
         }
 
         private static void AddNewSite(ServerClient client, SiteData siteData)
@@ -71,7 +75,7 @@ namespace GameServer
                 SiteIdendityFile siteFile = new SiteIdendityFile();
 
                 siteFile.Tile = siteData._siteFile.Tile;
-                siteFile.Owner = client.userFile.Username;
+                siteFile.Owner = client.userFile.Uid;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._siteFile.Type.DefName);
                 if (client.userFile.FactionFile != null) siteFile.FactionFile = client.userFile.FactionFile;
                 ConfirmNewSite(client, siteFile);
@@ -82,11 +86,11 @@ namespace GameServer
         {
             SiteIdendityFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
-            if (siteFile.Owner == client.userFile.Username) DestroySiteFromFile(siteFile);
+            if (siteFile.Owner == client.userFile.Uid) DestroySiteFromFile(siteFile);
             else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, 
-                    $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Username}, but {siteFile.Owner} owns it");
+                ResponseShortcutManager.SendIllegalPacket(client,
+                    $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Uid}, but {siteFile.Owner} owns it");
             }
         }
 
@@ -100,7 +104,8 @@ namespace GameServer
             NetworkHelper.SendPacketToAllClients(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.Tile + SiteManagerHelper.fileExtension));
-            Logger.Warning($"[Remove site] > {siteFile.Tile}");
+
+            InformationDisplayer.DisplayRemoveSite(siteFile.Tile.ToString());
         }
 
         public static async Task StartSiteTicker()
@@ -108,7 +113,7 @@ namespace GameServer
             while (true)
             {
                 try { SiteRewardTick(); }
-                catch (Exception e) { Logger.Error($"Site tick failed, this should never happen. Exception > {e}"); }
+                catch (Exception e) { Printer.Error($"Site tick failed, this should never happen. Exception > {e}"); }
 
                 await Task.Delay(TimeSpan.FromMinutes(Master.siteValues.TimeIntervalMinutes));
             }
@@ -124,7 +129,7 @@ namespace GameServer
 
                 //Get player specific sites
                 List<SiteIdendityFile> sitesToAdd = new List<SiteIdendityFile>();
-                if (client.userFile.FactionFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Username);
+                if (client.userFile.FactionFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Uid);
                 else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
                 foreach (SiteIdendityFile site in sitesToAdd)
                 {
@@ -147,7 +152,7 @@ namespace GameServer
                 client.listener.EnqueuePacket(packet);
             }
 
-            Logger.Warning($"[Site tick]");
+            InformationDisplayer.DisplaySiteTick();
         }
 
         public static void UpdateAllSiteInfo()
@@ -164,15 +169,15 @@ namespace GameServer
                 }
             }
 
-            foreach (UserFile file in UserManagerHelper.GetAllUserFiles())
+            foreach (UserFile file in UserManagerH.GetAllUserFiles())
             {
                 foreach (SiteConfigFile config in file.SiteConfigs)
                 {
                     if (!Master.siteValues.SiteInfoFiles.Any(site => site.Rewards.Any(reward => reward.RewardDef == config.RewardDefName)))
                     {
-                        Logger.Warning($"{file.Username}'s config was outdated for site {config.DefName}. Updating to new default config.", LogImportanceMode.Verbose);
+                        Printer.Warning($"{file.Uid}'s config was outdated for site {config.DefName}. Updating to new default config.", LogImportanceMode.Verbose);
                         config.RewardDefName = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == config.DefName).First().Rewards.First().RewardDef;
-                        UserManagerHelper.SaveUserFile(file);
+                        UserManagerH.SaveUserFile(file);
                     }
                 }
             }
@@ -184,7 +189,7 @@ namespace GameServer
             SiteConfigFile toModify = client.userFile.SiteConfigs.First(fetch => fetch.DefName == config._siteDef);
             toModify.RewardDefName = config._rewardDef;
 
-            UserManagerHelper.SaveUserFile(client.userFile);
+            UserManagerH.SaveUserFile(client.userFile);
         }
 
         public static void SetSiteInfoForClient(ServerClient client)
@@ -204,7 +209,7 @@ namespace GameServer
 
                 client.userFile.SiteConfigs = configFiles.ToArray();
 
-                UserManagerHelper.SaveUserFile(client.userFile);
+                UserManagerH.SaveUserFile(client.userFile);
             }
         }
     }
@@ -218,8 +223,8 @@ namespace GameServer
             siteFile.SavingSemaphore.WaitOne();
 
             try { Serializer.SerializeToFile(Path.Combine(Master.sitesPath, siteFile.Tile + fileExtension), siteFile); }
-            catch (Exception e) { Logger.Error(e.ToString()); }
-            
+            catch (Exception e) { Printer.Error(e.ToString()); }
+
             siteFile.SavingSemaphore.Release();
         }
 
@@ -279,7 +284,8 @@ namespace GameServer
                     if (!site.EndsWith(fileExtension)) continue;
                     sitesList.Add(Serializer.SerializeFromFile<SiteIdendityFile>(site));
                 }
-            } catch(Exception ex) { Logger.Error($"Sites could not be loaded, either your formatting is wrong in the file 'SiteValues.json' or you have not updated your sites to the newest version ('Update' command).\n\n{ex.ToString()}"); }
+            }
+            catch (Exception ex) { Printer.Error($"Sites could not be loaded, either your formatting is wrong in the file 'SiteConfig.json' or you have not updated your sites to the newest version ('Update' command).\n\n{ex.ToString()}"); }
             return sitesList.ToArray();
         }
 
@@ -297,10 +303,10 @@ namespace GameServer
             return false;
         }
 
-        public static SiteInfoFile GetTypeFromDef(string defName) 
+        public static SiteInfoFile GetTypeFromDef(string defName)
         {
             SiteInfoFile site = Master.siteValues.SiteInfoFiles.Where(S => S.DefName == defName).FirstOrDefault();
-            if(site != null) return site;
+            if (site != null) return site;
             return null;
         }
 
