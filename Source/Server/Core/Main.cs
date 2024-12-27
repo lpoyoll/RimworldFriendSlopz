@@ -143,7 +143,7 @@ namespace GameServer.Core
                     break;
 
                 case ServerFileMode.Actions:
-                    pathToSave = Path.Combine(Master.configsPath, "ActionConfigs.json");
+                    pathToSave = Path.Combine(Master.configsPath, "ActionConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.actionConfigs);
                     break;
 
@@ -168,7 +168,7 @@ namespace GameServer.Core
                     break;
 
                 case ServerFileMode.Difficulty:
-                    pathToSave = Path.Combine(Master.configsPath, "DifficultyValues.json");
+                    pathToSave = Path.Combine(Master.configsPath, "DifficultyConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.difficultyValues);
                     break;
 
@@ -213,7 +213,7 @@ namespace GameServer.Core
                     break;
 
                 case ServerFileMode.Actions:
-                    pathToLoad = Path.Combine(Master.configsPath, "ActionConfigs.json");
+                    pathToLoad = Path.Combine(Master.configsPath, "ActionConfig.json");
                     if (File.Exists(pathToLoad)) Master.actionConfigs = Serializer.SerializeFromFile<ActionValuesFile>(pathToLoad);
                     else
                     {
@@ -260,7 +260,7 @@ namespace GameServer.Core
                     break;
 
                 case ServerFileMode.Difficulty:
-                    pathToLoad = Path.Combine(Master.configsPath, "DifficultyValues.json");
+                    pathToLoad = Path.Combine(Master.configsPath, "DifficultyConfig.json");
                     if (File.Exists(pathToLoad)) Master.difficultyValues = Serializer.SerializeFromFile<DifficultyValuesFile>(pathToLoad);
                     else
                     {

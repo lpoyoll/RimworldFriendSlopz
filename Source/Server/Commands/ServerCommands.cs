@@ -155,10 +155,6 @@ namespace GameServer.Commands
             "Allows a player to change mod configuration for the server",
             ShowModManagerCommandAction);
 
-        public static readonly BaseServerCommand updateCommand = new BaseServerCommand("update", 0,
-            "Updates your server to the newest version. Do not use if you aren't told directly to do so, as it can very well BREAK things",
-            UpdateCommandAction);
-
         public static List<BaseServerCommand> commands = new List<BaseServerCommand>
         {
             backupCommand,
@@ -191,8 +187,7 @@ namespace GameServer.Commands
             whitelistAddCommand,
             whitelistCommand,
             whitelistRemoveCommand,
-            showModManagerCommand,
-            updateCommand
+            showModManagerCommand
         };
     }
 
@@ -648,23 +643,6 @@ namespace GameServer.Commands
 
                     Printer.Warning("Command sent sucessfully");
                 }
-            }
-        }
-
-        public static void UpdateCommandAction()
-        {
-            Printer.Warning("Are you sure you want to run the update command? You should only do so if you are told to, as this may break things.");
-            Printer.Warning("Please type 'YES' or 'NO'");
-
-        UpdateCommandQuestion:
-            string response = Console.ReadLine();
-
-            if (response == "NO") return;
-            else if (response == "YES") Updater.UpdateManager.UpdateServer();
-            else
-            {
-                Printer.Error($"{response} is not a valid option; The options must be capitalized");
-                goto UpdateCommandQuestion;
             }
         }
     }
