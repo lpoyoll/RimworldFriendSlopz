@@ -249,6 +249,7 @@ namespace GameServer.Managers
                             if (factionFile.CurrentUids[i] == toUpdateOffline.Uid)
                             {
                                 factionFile.CurrentUids.RemoveAt(i);
+                                factionFile.CurrentLabels.RemoveAt(i);
                                 factionFile.CurrentRanks.RemoveAt(i);
                                 GuildManagerH.SaveFactionFile(factionFile);
                                 break;
