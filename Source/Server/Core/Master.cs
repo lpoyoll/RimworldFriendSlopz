@@ -1,4 +1,4 @@
-﻿using GameServer.Files;
+﻿using GameServer.Core.Configs;
 using Shared;
 using System.Reflection;
 
@@ -50,7 +50,7 @@ namespace GameServer.Core
 
         //References
 
-        public static WhitelistFile whitelist;
+        public static WhitelistConfigFile whitelist;
 
         public static SiteValuesFile siteValues;
 

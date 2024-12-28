@@ -1,6 +1,6 @@
-﻿namespace GameServer.Files
+﻿namespace GameServer.Core.Configs
 {
-    public class WhitelistFile
+    public class WhitelistConfigFile
     {
         public bool UseWhitelist = false;
 

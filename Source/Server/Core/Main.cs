@@ -1,5 +1,5 @@
 using System.Globalization;
-using GameServer.Files;
+using GameServer.Core.Configs;
 using GameServer.Managers;
 using GameServer.Managers.External;
 using GameServer.Misc;
@@ -251,10 +251,10 @@ namespace GameServer.Core
 
                 case ServerFileMode.Whitelist:
                     pathToLoad = Path.Combine(Master.configsPath, "WhitelistConfig.json");
-                    if (File.Exists(pathToLoad)) Master.whitelist = Serializer.SerializeFromFile<WhitelistFile>(pathToLoad);
+                    if (File.Exists(pathToLoad)) Master.whitelist = Serializer.SerializeFromFile<WhitelistConfigFile>(pathToLoad);
                     else
                     {
-                        Master.whitelist = new WhitelistFile();
+                        Master.whitelist = new WhitelistConfigFile();
                         Serializer.SerializeToFile(pathToLoad, Master.whitelist);
                     }
                     break;

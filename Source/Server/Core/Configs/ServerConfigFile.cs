@@ -1,4 +1,4 @@
-﻿namespace GameServer.Files
+﻿namespace GameServer.Core.Configs
 {
     [Serializable]
     public class ServerConfigFile
@@ -32,7 +32,7 @@
         public int TemporalEventProtectionTime = 3600;
 
         public bool TemporalAidProtection = false;
-        
+
         public int TemporalAidProtectionTime = 3600;
     }
 }

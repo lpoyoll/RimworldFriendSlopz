@@ -1,4 +1,4 @@
-namespace GameServer.Files
+namespace GameServer.Core.Configs
 {
     [Serializable]
     public class DiscordConfigFile

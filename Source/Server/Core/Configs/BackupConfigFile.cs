@@ -1,4 +1,4 @@
-﻿namespace GameServer.Files
+﻿namespace GameServer.Core.Configs
 {
     public class BackupConfigFile
     {
