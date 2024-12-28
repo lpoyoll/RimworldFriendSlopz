@@ -1,8 +1,9 @@
 using System;
 using System.Linq;
-
+using Shared;
 namespace GameClient
 {
+    [RTManager]
     public static class ConnectionManager
     {
         public static void ShowConnectDialogs()

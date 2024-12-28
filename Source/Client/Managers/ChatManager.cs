@@ -15,6 +15,7 @@ using static Shared.CommonEnumerators;
 namespace GameClient
 {
     [StaticConstructorOnStartup]
+    [RTManager]
     public static class ChatManager
     {
         public static Vector2 chatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);

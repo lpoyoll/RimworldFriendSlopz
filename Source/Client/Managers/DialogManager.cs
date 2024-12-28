@@ -1,9 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using Verse;
-
+using Shared;
 namespace GameClient
 {
+    [RTManager]
     public static class DialogManager
     {
         public static RT_Dialog_Wait dialogWait;

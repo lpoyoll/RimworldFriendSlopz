@@ -43,6 +43,8 @@ namespace GameServer
 
         public static string compatibilityPatchesPath;
 
+        public static Dictionary<string, MethodInfo> managers = new Dictionary<string, MethodInfo>();
+
         //References
 
         public static WhitelistFile whitelist;

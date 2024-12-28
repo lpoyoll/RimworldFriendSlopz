@@ -115,36 +115,22 @@ namespace GameClient
             if (!ignoredLogPackets.Contains(packet.header)) Logger.Message($"[N] > {packet.header}", LogImportanceMode.Verbose);
             else Logger.Message($"[N] > {packet.header}", LogImportanceMode.Extreme);
 
-            Action toDo;
-            if (packet.isModded)
+            Action toDo = delegate
             {
-                toDo = delegate 
-                { 
-                    if (!MethodManager.TryExecuteModdedMethod(defaultParserMethodName, packet.header, packet.targetPatchName, new object[] { packet }))
-                    {
-                        OnHandleError();
-                    }
-                };
-            }
-            
-            else
-            {
-                toDo = delegate 
-                { 
-                    if (!MethodManager.TryExecuteMethod(defaultParserMethodName, packet.header, new object[] { packet }))
-                    {
-                        OnHandleError();
-                    }
-                };
-            }
+                try
+                {
+                    Master.managers[packet.header].Invoke(null, new object[] { packet });
+                }
+                catch (Exception ex) { OnHandleError(ex); }
+            };
 
             // If method manager failed to execute the packet we assume corrupted data
 
-            void OnHandleError()
+            void OnHandleError(Exception ex)
             {
                 Logger.Error($"Error while trying to execute method from type '{packet.header}'");
                 Logger.Error("Forcefully disconnecting due to MethodManager exception");
-                Logger.Error(MethodManager.latestException);
+                Logger.Error(ex.ToString());
                 disconnectFlag = true;
             }
 

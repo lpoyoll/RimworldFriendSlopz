@@ -1,5 +1,7 @@
 namespace GameClient
 {
+    using Shared;
+    [RTManager]
     public static class AdminMenuManager
     {
         private static readonly string dialogTitle = "Admin menu";

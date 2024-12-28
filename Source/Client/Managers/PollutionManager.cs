@@ -5,6 +5,7 @@ using Verse;
 using static Shared.CommonEnumerators;
 namespace GameClient
 {
+    [RTManager]
     public static class PollutionManager
     {
         public static void ParsePacket(Packet packet) 

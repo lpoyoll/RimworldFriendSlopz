@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace GameClient
@@ -33,5 +34,7 @@ namespace GameClient
         public static string clientPreferencesPath;
 
         public static string savesFolderPath;
+
+        public static Dictionary<string, MethodInfo> managers = new Dictionary<string, MethodInfo>();
     }
 }

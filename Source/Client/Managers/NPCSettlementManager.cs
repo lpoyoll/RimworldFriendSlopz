@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace GameClient
 {
+    [RTManager]
     public static class NPCSettlementManager
     {
         public static void ParsePacket(Packet packet)

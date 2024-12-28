@@ -2,6 +2,7 @@ using Shared;
 
 namespace GameClient
 {
+    [RTManager]
     public static class GlobalDataManager
     {
         public static void ParsePacket(Packet packet)

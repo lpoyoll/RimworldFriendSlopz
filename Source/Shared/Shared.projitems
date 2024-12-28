@@ -17,7 +17,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Values\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Managers\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\*.cs" />

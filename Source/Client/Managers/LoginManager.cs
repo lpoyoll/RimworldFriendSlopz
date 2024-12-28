@@ -6,7 +6,7 @@ using static Shared.CommonEnumerators;
 namespace GameClient
 {
     //Class that handles loging responses from the server
-
+    [RTManager]
     public static class LoginManager
     {
         //Parses the received packet into an order

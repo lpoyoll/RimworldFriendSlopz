@@ -3,6 +3,7 @@ using Shared;
 
 namespace GameClient
 {
+    [RTManager]
     public static class PlayerRecountManager
     {
         //Variables

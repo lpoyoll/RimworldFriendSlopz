@@ -11,6 +11,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    [RTManager]
     public static class SiteManager
     {
         public static SitePartDef[] siteDefs;

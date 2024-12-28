@@ -5,7 +5,7 @@ using UnityEngine;
 namespace GameClient
 {
     //Class that handles saving and loading client preferences into the game
-
+    [RTManager]
     public static class PreferenceManager
     {
         //Saves the connection data

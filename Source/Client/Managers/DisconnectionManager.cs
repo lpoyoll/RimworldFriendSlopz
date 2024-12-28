@@ -1,9 +1,9 @@
 ﻿using Verse;
-
+using Shared;
 namespace GameClient
 {
     //Class that contains all the disconnection functions that the mod uses
-
+    [RTManager]
     public static class DisconnectionManager
     {
         //Useful disconnection variables

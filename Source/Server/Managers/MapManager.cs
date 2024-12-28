@@ -2,6 +2,7 @@
 
 namespace GameServer
 {
+    [RTManager]
     public static class MapManager
     {
         //Variables

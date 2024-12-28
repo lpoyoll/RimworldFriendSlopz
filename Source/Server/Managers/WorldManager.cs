@@ -3,6 +3,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
+    [RTManager]
     public static class WorldManager
     {
         private static string worldFileName = "WorldValues.json";

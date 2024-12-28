@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
+using Shared;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -10,6 +11,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    [RTManager]
     public static class RimworldManager
     {
         public static bool CheckIfPlayerHasMap()

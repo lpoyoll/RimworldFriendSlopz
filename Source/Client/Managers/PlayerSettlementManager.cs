@@ -9,6 +9,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    [RTManager]
     public static class PlayerSettlementManager
     {
         public static List<Settlement> playerSettlements = new List<Settlement>();

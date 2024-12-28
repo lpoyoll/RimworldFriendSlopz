@@ -10,6 +10,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    [RTManager]
     public static class SiteRewardManager
     {
         public static void ParsePacket(Packet packet)

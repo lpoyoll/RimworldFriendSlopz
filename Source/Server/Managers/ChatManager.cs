@@ -4,6 +4,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
+    [RTManager]
     public static class ChatManager
     {
         private static readonly Semaphore logSemaphore = new Semaphore(1, 1);

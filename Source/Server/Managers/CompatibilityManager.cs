@@ -27,14 +27,27 @@ namespace GameServer
             try
             {
                 Assembly assembly = Assembly.LoadFrom(assemblyPath);
+                Type[] types = assembly.GetTypes().Where(type => 
+                    type.Namespace != null 
+                    && !type.Namespace.StartsWith("System") 
+                    && !type.Namespace.StartsWith("Microsoft")
+                ).ToArray();
 
-                foreach (Type type in assembly.GetTypes())
+                foreach (Type type in types)
                 {
-                    if (type.Namespace == null) continue;
-                    else if (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")) continue;
-                    else if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Length != 0)
+                    if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
                     {
-                        if (type.IsAbstract && type.IsSealed)
+                        MethodInfo method = type.GetMethod("ParsePacket"); //This will automatically add managers from the loaded assembly using the attribute RTManager
+                        if (method != null)
+                        {
+                            Master.managers[method.Name] = method;
+                            Logger.Message($"Found modded manager {type.Name}", CommonEnumerators.LogImportanceMode.Verbose);
+                            continue;
+                        }
+                    }
+                    else if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Length != 0) //Checks for the attribute RTStartup and run the constructor
+                    {
+                        if (type.IsAbstract && type.IsSealed) //It needs to be static
                         {
                             ConstructorInfo constructor = type.TypeInitializer;
                             if (constructor != null)
@@ -42,13 +55,13 @@ namespace GameServer
                                 System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(type.TypeHandle);
                                 return assembly;
                             }
-                            else Logger.Error($"Mod {MethodManager.GetAssemblyName(assembly)} has class {type.Name} with attribute 'RTStartup' but no constructor.");
+                            else Logger.Error($"Mod {assembly.FullName} has class {type.Name} with attribute 'RTStartup' but no constructor.");
                         }
-                        else Logger.Error($"Mod {MethodManager.GetAssemblyName(assembly)} has class {type.Name} with attribute 'RTStartup' but isn't static.");
+                        else Logger.Error($"Mod {assembly.FullName} has class {type.Name} with attribute 'RTStartup' but isn't static.");
                     } 
                 }
             }
-            catch (Exception e) { Logger.Error($"Failed to load patch '{assemblyPath}'. {e}"); }
+            catch (Exception e) { Logger.Error($"Failed to load patch '{assemblyPath}'\n{e}"); }
 
             return null;
         }

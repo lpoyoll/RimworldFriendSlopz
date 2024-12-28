@@ -8,6 +8,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    [RTManager]
     public static class EventManager
     {
         public static void ParsePacket(Packet packet)

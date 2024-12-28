@@ -2,6 +2,7 @@ using Shared;
 
 namespace GameClient
 {
+    [RTManager]
     public static class ResponseShortcutManager
     {
         public static void ParsePacket(Packet packet)

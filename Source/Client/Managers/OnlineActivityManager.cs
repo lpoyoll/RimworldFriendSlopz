@@ -11,6 +11,7 @@ using Verse.AI;
 
 namespace GameClient
 {
+    [RTManager]
     public static class OnlineActivityManager
     {
         public static Map activityMap = new Map();

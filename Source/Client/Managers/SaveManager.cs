@@ -12,6 +12,7 @@ using System;
 
 namespace GameClient
 {
+    [RTManager]
     public static class SaveManager
     {
         public static string customSaveName => $"Server - {Network.ip} - {ClientValues.username}";

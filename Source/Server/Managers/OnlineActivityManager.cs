@@ -3,6 +3,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
+    [RTManager]
     public static class OnlineActivityManager
     {
         public static void ParsePacket(ServerClient client, Packet packet)

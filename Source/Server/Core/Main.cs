@@ -16,6 +16,8 @@ namespace GameServer
             LoadResources();
             ChangeTitle();
             TryDisableQuickEdit();
+            LoadAllManagers();
+            CompatibilityManager.LoadAllPatchedAssemblies();
 
             Logger.Title($"----------------------------------------");
 
@@ -130,7 +132,6 @@ namespace GameServer
 
             EventManager.LoadEvents();
 
-            CompatibilityManager.LoadAllPatchedAssemblies();
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)
@@ -317,6 +318,23 @@ namespace GameServer
         {
             Console.Title = $"RimWorld Together {CommonValues.executableVersion} - " +
                 $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.serverConfig.MaxPlayers}]";
+        }
+
+        public static void LoadAllManagers()
+        {
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
+            {
+                if (type.Namespace == null) continue;
+                else if (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")) continue;
+                else if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
+                {
+                    try
+                    {
+                        Master.managers[type.Name] = type.GetMethod("ParsePacket");
+                    }
+                    catch (Exception exception) { Logger.Error($"{type.Name} failed to load\n{exception}"); }
+                }
+            }
         }
     }
 }

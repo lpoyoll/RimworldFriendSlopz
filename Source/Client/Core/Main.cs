@@ -18,18 +18,19 @@ namespace GameClient
         [StaticConstructorOnStartup]
         public static class RimworldTogether
         {
-            static RimworldTogether() 
+            static RimworldTogether()
             {
                 ApplyHarmonyPathches();
                 PrepareCulture();
                 PreparePaths();
                 CreateUnityDispatcher();
+                LoadAllManagers();
 
                 CaravanManagerHelper.SetCaravanDefs();
                 SiteManager.SetSiteDefs();
-                
+
                 PreferenceManager.LoadClientPreferences();
-                CompatibilityManager.LoadAllPatchedAssemblies();
+                
             }
         }
 
@@ -70,6 +71,21 @@ namespace GameClient
                 UnityEngine.Object.Instantiate(go);
 
                 Logger.Message($"Created dispatcher for version {CommonValues.executableVersion}");
+            }
+        }
+
+        public static void LoadAllManagers() 
+        {
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes()) {
+                if (type.Namespace == null) continue;
+                else if (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")) continue;
+                else if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
+                {
+                    try
+                    {
+                        Master.managers[type.Name] = type.GetMethod("ParsePacket");
+                    } catch(Exception exception) { Logger.Error($"{type.Name} failed to load\n{exception}"); }
+                }
             }
         }
     }

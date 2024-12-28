@@ -3,6 +3,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
+    [RTManager]
     public static class AidManager
     {
         private static readonly double baseAidTimer = 3600000;

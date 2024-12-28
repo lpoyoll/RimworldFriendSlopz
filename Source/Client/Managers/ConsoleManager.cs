@@ -5,7 +5,7 @@ using static Shared.CommonEnumerators;
 namespace GameClient
 {
     //Class that handles how the client will answer to incoming server commands
-
+    [RTManager]
     public static class ConsoleManager
     {
         //Parses the received packet into a command to execute

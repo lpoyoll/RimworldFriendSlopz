@@ -4,7 +4,7 @@ using Verse;
 namespace GameClient
 {
     //Class that handles map functions for the mod to use
-
+    [RTManager]
     public static class MapManager
     {
         //Sends all the player maps to the server

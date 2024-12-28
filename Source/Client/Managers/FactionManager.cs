@@ -5,6 +5,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
+    [RTManager]
     public static class FactionManager
     {
         public static void ParsePacket(Packet packet)

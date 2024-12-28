@@ -4,6 +4,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
+    [RTManager]
     public static class GoodwillManager
     {
         public static void ParsePacket(ServerClient client, Packet packet)

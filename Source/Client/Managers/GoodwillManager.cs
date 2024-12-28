@@ -10,7 +10,7 @@ using static Shared.CommonEnumerators;
 namespace GameClient
 {
     //Class that handles settlement and site player goodwills
-
+    [RTManager]
     public static class GoodwillManager
     {
         public static void ParsePacket(Packet packet)

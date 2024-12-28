@@ -3,6 +3,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer
 {
+    [RTManager]
     public static class OfflineActivityManager
     {
         private static readonly double baseActivityTimer = 3600000;
