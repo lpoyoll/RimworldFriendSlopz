@@ -7,8 +7,6 @@ namespace GameServer.Managers
 {
     public static class AidManager
     {
-        private static readonly double baseAidTimer = 3600000;
-
         public static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionConfigs.EnableAids)
@@ -49,7 +47,7 @@ namespace GameServer.Managers
                 {
                     ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
 
-                    if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, baseAidTimer))
+                    if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, Master.serverConfig.TemporalAidProtectionTime * 1000))
                     {
                         data._stepMode = AidStepMode.Reject;
                         Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
