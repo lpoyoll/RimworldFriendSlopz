@@ -2,7 +2,7 @@ namespace Shared
 {
     public static class CommonValues
     {
-        public readonly static string executableVersion = "Experimental";
+        public readonly static string executableVersion = "dev";
 
         public static readonly string defaultParserMethodName = "ParsePacket";
 

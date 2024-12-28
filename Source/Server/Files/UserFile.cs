@@ -26,7 +26,7 @@ namespace GameServer.Files
 
         public UserRelationshipsFile Relationships = new UserRelationshipsFile();
 
-        public FactionFile FactionFile;
+        public GuildFile GuildFile;
 
         public SiteConfigFile[] SiteConfigs = Array.Empty<SiteConfigFile>();
 
@@ -40,9 +40,9 @@ namespace GameServer.Files
             Label = data._username;
         }
 
-        public void UpdateFaction(FactionFile toUpdateWith)
+        public void UpdateFaction(GuildFile toUpdateWith)
         {
-            FactionFile = toUpdateWith;
+            GuildFile = toUpdateWith;
 
             UserManagerH.SaveUserFile(this);
         }

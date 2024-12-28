@@ -41,9 +41,9 @@ namespace GameServer.Managers
             client.listener.EnqueuePacket(packet);
         }
 
-        public static void SendNoPowerPacket(ServerClient client, PlayerFactionData data)
+        public static void SendNoPowerPacket(ServerClient client, PlayerGuildData data)
         {
-            data._stepMode = FactionStepMode.NoPower;
+            data._stepMode = GuildStepMode.NoPower;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), data);
             client.listener.EnqueuePacket(packet);

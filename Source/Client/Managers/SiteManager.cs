@@ -162,7 +162,7 @@ namespace GameClient.Managers
             siteData._stepMode = SiteStepMode.Build;
             siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
             siteData._siteFile.Type.DefName = configFile.DefName;
-            if (ServerValues.hasFaction) siteData._siteFile.FactionFile = new FactionFile();
+            if (ServerValues.hasFaction) siteData._siteFile.File = new GuildFile();
 
             Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);

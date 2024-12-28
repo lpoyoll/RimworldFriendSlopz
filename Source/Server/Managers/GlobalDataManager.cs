@@ -35,7 +35,7 @@ namespace GameServer.Managers
         {
             globalData._isClientAdmin = client.userFile.IsAdmin;
 
-            globalData._isClientFactionMember = client.userFile.FactionFile != null;
+            globalData._isClientFactionMember = client.userFile.GuildFile != null;
 
             return globalData;
         }
@@ -89,7 +89,7 @@ namespace GameServer.Managers
                 file.UID = site.UID;
                 file.Goodwill = GoodwillManager.GetSiteGoodwill(client, site);
                 file.Type = site.Type;
-                file.FactionFile = site.FactionFile;
+                file.File = site.File;
 
                 tempList.Add(file);
             }

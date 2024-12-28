@@ -17,7 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Pawn\TransformComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Components\Thing\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\EventFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\FactionFile.cs" />
+    <Compile Include="..\Shared\Files\GuildFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\HumanFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\MapFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\ModConfigFile.cs" />

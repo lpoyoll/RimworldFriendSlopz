@@ -77,7 +77,7 @@ namespace GameServer.Managers
                 siteFile.Tile = siteData._siteFile.Tile;
                 siteFile.UID = client.userFile.Uid;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._siteFile.Type.DefName);
-                if (client.userFile.FactionFile != null) siteFile.FactionFile = client.userFile.FactionFile;
+                if (client.userFile.GuildFile != null) siteFile.File = client.userFile.GuildFile;
                 ConfirmNewSite(client, siteFile);
             }
         }
@@ -129,8 +129,8 @@ namespace GameServer.Managers
 
                 //Get player specific sites
                 List<SiteIdendityFile> sitesToAdd = new List<SiteIdendityFile>();
-                if (client.userFile.FactionFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.UID == client.userFile.Uid);
-                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
+                if (client.userFile.GuildFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.UID == client.userFile.Uid);
+                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.File != null && fetch.File.Name == client.userFile.GuildFile.Name));
                 foreach (SiteIdendityFile site in sitesToAdd)
                 {
                     SiteRewardFile rewardFile = new SiteRewardFile();
@@ -232,9 +232,9 @@ namespace GameServer.Managers
             siteFile.SavingSemaphore.Release();
         }
 
-        public static void UpdateFaction(SiteIdendityFile siteFile, FactionFile toUpdateWith)
+        public static void UpdateFaction(SiteIdendityFile siteFile, GuildFile toUpdateWith)
         {
-            siteFile.FactionFile = toUpdateWith;
+            siteFile.File = toUpdateWith;
             SaveSite(siteFile);
         }
 

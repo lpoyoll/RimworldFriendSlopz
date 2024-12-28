@@ -12,39 +12,39 @@ namespace GameClient.Managers
     {
         public static void ParsePacket(Packet packet)
         {
-            PlayerFactionData data = Serializer.ConvertBytesToObject<PlayerFactionData>(packet.contents);
+            PlayerGuildData data = Serializer.ConvertBytesToObject<PlayerGuildData>(packet.contents);
 
             switch (data._stepMode)
             {
-                case FactionStepMode.Create:
+                case GuildStepMode.Create:
                     OnCreateFaction();
                     break;
 
-                case FactionStepMode.Delete:
+                case GuildStepMode.Delete:
                     OnDeleteFaction();
                     break;
 
-                case FactionStepMode.NameInUse:
+                case GuildStepMode.NameInUse:
                     OnFactionNameInUse();
                     break;
 
-                case FactionStepMode.NoPower:
+                case GuildStepMode.NoPower:
                     OnFactionNoPower();
                     break;
 
-                case FactionStepMode.AddMember:
+                case GuildStepMode.AddMember:
                     OnFactionGetInvited(data);
                     break;
 
-                case FactionStepMode.RemoveMember:
+                case GuildStepMode.RemoveMember:
                     OnFactionGetKicked();
                     break;
 
-                case FactionStepMode.AdminProtection:
+                case GuildStepMode.AdminProtection:
                     OnFactionAdminProtection();
                     break;
 
-                case FactionStepMode.MemberList:
+                case GuildStepMode.MemberList:
                     OnFactionMemberList(data);
                     break;
             }
@@ -56,8 +56,8 @@ namespace GameClient.Managers
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for member list"));
 
-                PlayerFactionData playerFactionData = new PlayerFactionData();
-                playerFactionData._stepMode = FactionStepMode.MemberList;
+                PlayerGuildData playerFactionData = new PlayerGuildData();
+                playerFactionData._stepMode = GuildStepMode.MemberList;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -65,8 +65,8 @@ namespace GameClient.Managers
 
             Action r2 = delegate
             {
-                PlayerFactionData playerFactionData = new PlayerFactionData();
-                playerFactionData._stepMode = FactionStepMode.RemoveMember;
+                PlayerGuildData playerFactionData = new PlayerGuildData();
+                playerFactionData._stepMode = GuildStepMode.RemoveMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
@@ -77,8 +77,8 @@ namespace GameClient.Managers
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for faction deletion"));
 
-                PlayerFactionData playerFactionData = new PlayerFactionData();
-                playerFactionData._stepMode = FactionStepMode.Delete;
+                PlayerGuildData playerFactionData = new PlayerGuildData();
+                playerFactionData._stepMode = GuildStepMode.Delete;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                 Network.listener.EnqueuePacket(packet);
@@ -111,9 +111,9 @@ namespace GameClient.Managers
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for faction creation"));
 
-                    PlayerFactionData playerFactionData = new PlayerFactionData();
-                    playerFactionData._stepMode = FactionStepMode.Create;
-                    playerFactionData._factionFile.Name = DialogManager.dialog1ResultOne;
+                    PlayerGuildData playerFactionData = new PlayerGuildData();
+                    playerFactionData._stepMode = GuildStepMode.Create;
+                    playerFactionData._file.Name = DialogManager.dialog1ResultOne;
 
                     Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
                     Network.listener.EnqueuePacket(packet);
@@ -131,8 +131,8 @@ namespace GameClient.Managers
         {
             Action r1 = delegate
             {
-                PlayerFactionData playerFactionData = new PlayerFactionData();
-                playerFactionData._stepMode = FactionStepMode.Promote;
+                PlayerGuildData playerFactionData = new PlayerGuildData();
+                playerFactionData._stepMode = GuildStepMode.Promote;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
@@ -141,8 +141,8 @@ namespace GameClient.Managers
 
             Action r2 = delegate
             {
-                PlayerFactionData playerFactionData = new PlayerFactionData();
-                playerFactionData._stepMode = FactionStepMode.Demote;
+                PlayerGuildData playerFactionData = new PlayerGuildData();
+                playerFactionData._stepMode = GuildStepMode.Demote;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
@@ -151,8 +151,8 @@ namespace GameClient.Managers
 
             Action r3 = delegate
             {
-                PlayerFactionData playerFactionData = new PlayerFactionData();
-                playerFactionData._stepMode = FactionStepMode.RemoveMember;
+                PlayerGuildData playerFactionData = new PlayerGuildData();
+                playerFactionData._stepMode = GuildStepMode.RemoveMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
@@ -190,8 +190,8 @@ namespace GameClient.Managers
         {
             Action r1 = delegate
             {
-                PlayerFactionData playerFactionData = new PlayerFactionData();
-                playerFactionData._stepMode = FactionStepMode.AddMember;
+                PlayerGuildData playerFactionData = new PlayerGuildData();
+                playerFactionData._stepMode = GuildStepMode.AddMember;
                 playerFactionData._dataInt = SessionValues.chosenSettlement.Tile;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), playerFactionData);
@@ -237,19 +237,19 @@ namespace GameClient.Managers
             DialogManager.PushNewDialog(new RT_Dialog_Error("You don't have enough power for this action!"));
         }
 
-        private static void OnFactionGetInvited(PlayerFactionData factionManifest)
+        private static void OnFactionGetInvited(PlayerGuildData factionManifest)
         {
             Action r1 = delegate
             {
                 ServerValues.hasFaction = true;
 
-                factionManifest._stepMode = FactionStepMode.AcceptInvite;
+                factionManifest._stepMode = GuildStepMode.AcceptInvite;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), factionManifest);
                 Network.listener.EnqueuePacket(packet);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest._factionFile.Name}, accept?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest._file.Name}, accept?", r1, null);
             DialogManager.PushNewDialog(d1);
         }
 
@@ -265,15 +265,15 @@ namespace GameClient.Managers
             DialogManager.PushNewDialog(new RT_Dialog_Error("You can't do this action as a faction admin!"));
         }
 
-        private static void OnFactionMemberList(PlayerFactionData factionManifest)
+        private static void OnFactionMemberList(PlayerGuildData factionManifest)
         {
             DialogManager.PopWaitDialog();
 
             List<string> toDisplay = new List<string>();
-            for (int i = 0; i < factionManifest._factionFile.CurrentMembers.Count; i++)
+            for (int i = 0; i < factionManifest._file.CurrentUids.Count; i++)
             {
-                toDisplay.Add($"{factionManifest._factionFile.CurrentMembers[i]} " +
-                    $"- {(FactionRanks)factionManifest._factionFile.CurrentRanks[i]}");
+                toDisplay.Add($"{factionManifest._file.CurrentLabels[i]} " +
+                    $"- {(FactionRanks)factionManifest._file.CurrentRanks[i]}");
             }
 
             RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members",

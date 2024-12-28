@@ -4,11 +4,11 @@ using static Shared.CommonEnumerators;
 namespace Shared
 {
     [Serializable]
-    public class PlayerFactionData
+    public class PlayerGuildData
     {
-        public FactionStepMode _stepMode;
+        public GuildStepMode _stepMode;
 
-        public FactionFile _factionFile = new FactionFile();
+        public GuildFile _file = new GuildFile();
 
         public int _dataInt;
     }
