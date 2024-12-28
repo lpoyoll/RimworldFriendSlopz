@@ -1,4 +1,8 @@
-﻿using GameClient;
+﻿using GameClient.Managers;
+using GameClient.Misc;
+using GameClient.TCP;
+using GameClient.Values;
+using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -7,7 +11,7 @@ using System.Linq;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
     [RTManager]
     public static class CaravanManager
@@ -54,9 +58,9 @@ namespace GameClient
         {
             activeCaravans.Add(details);
 
-            if (details.Owner == ClientValues.username)
+            if (details.UID == ClientValues.uid)
             {
-                Caravan toAdd = Find.WorldObjects.Caravans.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer && 
+                Caravan toAdd = Find.WorldObjects.Caravans.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer &&
                     !activePlayerCaravans.ContainsKey(fetch));
 
                 if (toAdd == null) return;
@@ -80,7 +84,7 @@ namespace GameClient
             {
                 activeCaravans.Remove(toRemove);
 
-                if (details.Owner == ClientValues.username)
+                if (details.UID == ClientValues.uid)
                 {
                     foreach (KeyValuePair<Caravan, int> pair in activePlayerCaravans.ToArray())
                     {
@@ -94,7 +98,7 @@ namespace GameClient
 
                 else
                 {
-                    WorldObject worldObject = Find.World.worldObjects.AllWorldObjects.First(fetch => fetch.Tile == details.Tile 
+                    WorldObject worldObject = Find.World.worldObjects.AllWorldObjects.First(fetch => fetch.Tile == details.Tile
                         && fetch.def == onlineCaravanDef);
 
                     Find.World.worldObjects.Remove(worldObject);
@@ -108,7 +112,7 @@ namespace GameClient
             if (toMove == null) return;
             else
             {
-                if (details.Owner == ClientValues.username) return;
+                if (details.UID == ClientValues.uid) return;
                 else
                 {
                     RemoveCaravan(toMove);
@@ -123,7 +127,7 @@ namespace GameClient
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.Owner = ClientValues.username;
+            data._caravanFile.UID = ClientValues.username;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
             Network.listener.EnqueuePacket(packet);
@@ -164,7 +168,7 @@ namespace GameClient
         }
 
         public static void ClearAllCaravans()
-        {            
+        {
             activeCaravans.Clear();
             activePlayerCaravans.Clear();
 

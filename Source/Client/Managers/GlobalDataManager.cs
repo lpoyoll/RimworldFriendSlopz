@@ -1,6 +1,9 @@
+using GameClient.Core.Preferences;
+using GameClient.TCP;
+using GameClient.Values;
 using Shared;
 
-namespace GameClient
+namespace GameClient.Managers
 {
     [RTManager]
     public static class GlobalDataManager
@@ -8,7 +11,7 @@ namespace GameClient
         public static void ParsePacket(Packet packet)
         {
             ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);
-            
+
             ServerValues.SetValues(serverGlobalData);
             SessionValues.SetValues(serverGlobalData);
             EventManagerHelper.SetValues(serverGlobalData);
@@ -19,6 +22,7 @@ namespace GameClient
             CaravanManagerHelper.SetValues(serverGlobalData);
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
+            RecentServersManager.AddServerToList(serverGlobalData._serverValues.ServerName, $"{Network.ip}:{Network.port}");
         }
     }
 }

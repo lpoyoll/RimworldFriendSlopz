@@ -1,7 +1,9 @@
-﻿using Shared;
+using Shared;
+﻿using GameServer.Core;
+using GameServer.Misc;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
     [RTManager]
     public static class WhitelistManager
@@ -12,7 +14,7 @@ namespace GameServer
 
             Main_.SaveValueFile(ServerFileMode.Whitelist);
 
-            Logger.Warning($"User '{ConsoleManager.commandParameters[0]}' has been whitelisted");
+            Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' has been whitelisted");
         }
 
         public static void RemoveUserFromWhitelist(string username)
@@ -21,7 +23,7 @@ namespace GameServer
 
             Main_.SaveValueFile(ServerFileMode.Whitelist);
 
-            Logger.Warning($"User '{ConsoleManager.commandParameters[0]}' is no longer whitelisted");
+            Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' is no longer whitelisted");
         }
     }
 }

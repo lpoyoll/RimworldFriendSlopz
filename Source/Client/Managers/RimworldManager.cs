@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using GameClient.Misc;
+using GameClient.Scribers;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -9,7 +10,7 @@ using Verse;
 using Verse.AI;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Managers
 {
     [RTManager]
     public static class RimworldManager
@@ -52,22 +53,22 @@ namespace GameClient
             else return false;
         }
 
-        public static bool CheckIfHasEnoughItemInCaravan(Caravan caravan, string defName, int quantity) 
+        public static bool CheckIfHasEnoughItemInCaravan(Caravan caravan, string defName, int quantity)
         {
-            if(quantity == 0) return true;
+            if (quantity == 0) return true;
 
             List<Thing> caravanItems = CaravanInventoryUtility.AllInventoryItems(caravan).FindAll(x => x.def.defName == defName);
             int totalItem = 0;
 
             foreach (Thing itemStack in caravanItems) totalItem += itemStack.stackCount;
-            if(totalItem >= quantity) return true;
+            if (totalItem >= quantity) return true;
 
             return false;
         }
 
         public static Thing[] GetAllThingsInMap(Map map)
         {
-            return map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item 
+            return map.listerThings.AllThings.Where(fetch => fetch.def.category == ThingCategory.Item
                 && fetch.IsInAnyStorage() && fetch.def.category == ThingCategory.Item && !fetch.Position.Fogged(map)).ToArray();
         }
 
@@ -132,13 +133,13 @@ namespace GameClient
         {
             if (!DropCellFinder.TryFindDropSpotNear(center, map, out IntVec3 vectorForUse, false, true))
             {
-                Logger.Warning("Couldn't find any good drop spot near " + center + "Will use random valid location instead.", LogImportanceMode.Verbose);
-                vectorForUse = CellFinderLoose.RandomCellWith((Predicate<IntVec3>)(c => c.Standable(map) && !c.Fogged(map)), map);
+                Printer.Warning("Couldn't find any good drop spot near " + center + "Will use random valid location instead.", LogImportanceMode.Verbose);
+                vectorForUse = CellFinderLoose.RandomCellWith(c => c.Standable(map) && !c.Fogged(map), map);
             }
-            
+
             return vectorForUse;
         }
-        
+
         public static void PlaceThingIntoCaravan(Thing thing, Caravan caravan)
         {
             if (thing is Pawn)
@@ -211,7 +212,7 @@ namespace GameClient
             Settlement[] settlements = Find.World.worldObjects.Settlements.Where(fetch => fetch.Faction == faction).ToArray();
 
             List<Pawn> allPawns = new List<Pawn>();
-            foreach(Settlement settlement in settlements)
+            foreach (Settlement settlement in settlements)
             {
                 allPawns.AddRange(GetPawnsFromMap(settlement.Map, faction, includeAnimals));
             }

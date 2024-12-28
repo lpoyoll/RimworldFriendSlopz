@@ -1,6 +1,6 @@
 using System;
 
-namespace Shared 
+namespace Shared
 {
     // Used for instantiating managers
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]

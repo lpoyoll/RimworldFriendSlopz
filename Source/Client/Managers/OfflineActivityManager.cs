@@ -6,8 +6,12 @@ using System.Linq;
 using Verse.AI.Group;
 using Verse;
 using static Shared.CommonEnumerators;
+using GameClient.Dialogs;
+using GameClient.Scribers;
+using GameClient.Values;
+using GameClient.TCP;
 
-namespace GameClient
+namespace GameClient.Managers
 {
     [RTManager]
     public static class OfflineActivityManager
@@ -118,10 +122,10 @@ namespace GameClient
         {
             DialogManager.PopWaitDialog();
 
-            Action r1 = delegate 
+            Action r1 = delegate
             {
                 if (SessionValues.latestOfflineActivity == OfflineActivityType.Spy) SaveManager.ForceSave();
-                PrepareMapForOfflineActivity(offlineVisitData._mapFile); 
+                PrepareMapForOfflineActivity(offlineVisitData._mapFile);
             };
 
             r1.Invoke();

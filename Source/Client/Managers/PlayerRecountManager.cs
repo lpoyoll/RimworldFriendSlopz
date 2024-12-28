@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Shared;
 
-namespace GameClient
+namespace GameClient.Managers
 {
     [RTManager]
     public static class PlayerRecountManager
