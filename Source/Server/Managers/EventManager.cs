@@ -1,13 +1,16 @@
-﻿using Shared;
+﻿using GameServer.Core;
+using GameServer.Misc;
+using GameServer.TCP;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Managers
 {
     public static class EventManager
     {
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            if (!Master.actionValues.EnableEvents)
+            if (!Master.actionConfigs.EnableEvents)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -36,16 +39,16 @@ namespace GameServer
             EventManagerHelper.CheckForEventFiles();
             EventManagerHelper.LoadAllEvents();
 
-            Logger.Warning($"Loaded > {EventManagerHelper.loadedEvents.Length} events from '{Master.eventsPath}'");
+            InformationDisplayer.DisplayLoadEvents(Master.eventsPath);
         }
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!PlayerSettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Username} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
+            if (!PlayerSettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Uid} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
             else
             {
                 SettlementFile settlement = PlayerSettlementManager.GetSettlementFileFromTile(eventData._toTile);
-                if (!UserManagerHelper.CheckIfUserIsConnected(settlement.Owner))
+                if (!UserManagerH.CheckIfUserIsConnected(settlement.UID))
                 {
                     eventData._stepMode = EventStepMode.Recover;
                     Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
@@ -54,7 +57,7 @@ namespace GameServer
 
                 else
                 {
-                    ServerClient target = NetworkHelper.GetConnectedClientFromUsername(settlement.Owner);
+                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlement.UID);
 
                     if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, EventManagerHelper.baseMaxTimer))
                     {
@@ -221,12 +224,12 @@ namespace GameServer
         {
             List<string> foundEvents = new List<string>();
 
-            foreach(string str in Directory.GetFiles(Master.eventsPath))
+            foreach (string str in Directory.GetFiles(Master.eventsPath))
             {
                 foundEvents.Add(Path.GetFileNameWithoutExtension(str));
             }
 
-            foreach(KeyValuePair<string, string> pair in baseEvents)
+            foreach (KeyValuePair<string, string> pair in baseEvents)
             {
                 if (!foundEvents.Contains(pair.Key))
                 {
@@ -238,7 +241,7 @@ namespace GameServer
         public static void LoadAllEvents()
         {
             List<EventFile> toLoad = new List<EventFile>();
-            foreach(string str in Directory.GetFiles(Master.eventsPath))
+            foreach (string str in Directory.GetFiles(Master.eventsPath))
             {
                 EventFile eventFile = Serializer.SerializeFromFile<EventFile>(str);
                 if (eventFile.IsEnabled) toLoad.Add(eventFile);

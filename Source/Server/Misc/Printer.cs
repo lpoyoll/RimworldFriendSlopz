@@ -1,9 +1,11 @@
 ﻿using System.Text;
+using GameServer.Core;
+using GameServer.Managers.External;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Misc
 {
-    public static class Logger
+    public static class Printer
     {
         //Variables
 
@@ -20,21 +22,21 @@ namespace GameServer
 
         //Functions to write logs in different colors
 
-        public static void Message(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Message, importance); }
+        public static void Message(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Message, importance); }
 
-        public static void Warning(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Warning, importance); }
+        public static void Warning(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Warning, importance); }
 
-        public static void Error(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Error, importance); }
+        public static void Error(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Error, importance); }
 
-        public static void Title(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Title, importance); }
+        public static void Title(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Title, importance); }
 
-        public static void Outsider(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Outsider, importance); }
+        public static void Outsider(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Outsider, importance); }
 
         //Actual function that writes the logs
 
         private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
         {
-            semaphore.WaitOne();           
+            semaphore.WaitOne();
 
             try
             {
@@ -63,7 +65,7 @@ namespace GameServer
             stringBuilder.Append(Environment.NewLine);
 
             DateTime dateTime = DateTime.Now.Date;
-            string nowFileName = ($"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}");
+            string nowFileName = $"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}";
             string nowFullPath = Master.systemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());

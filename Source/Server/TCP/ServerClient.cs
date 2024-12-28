@@ -1,7 +1,9 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using GameServer.Files;
+using GameServer.Managers;
 
-namespace GameServer
+namespace GameServer.TCP
 {
     //Class object for the client connecting into the server. Contains all important data about it
 
@@ -24,6 +26,6 @@ namespace GameServer
             else userFile.SavedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
         }
 
-        public void LoadUserFromFile() { userFile = UserManagerHelper.GetUserFile(this); }
+        public void LoadUserFromFile() { userFile = UserManagerH.GetUserFile(this); }
     }
 }

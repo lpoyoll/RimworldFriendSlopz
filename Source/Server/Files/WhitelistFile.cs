@@ -1,4 +1,4 @@
-﻿namespace GameServer
+﻿namespace GameServer.Files
 {
     public class WhitelistFile
     {

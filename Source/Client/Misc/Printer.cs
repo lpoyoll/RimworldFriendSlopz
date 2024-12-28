@@ -1,29 +1,31 @@
 ﻿using System;
-using System.Threading;
+using GameClient.Values;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Misc
 {
-    public static class Logger
+    public static class Printer
     {
         //Functions to write logs in different colors
 
-        public static void Message(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Message, importance); }
+        public static void Message(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Message, importance); }
 
-        public static void Warning(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Warning, importance); }
+        public static void Warning(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Warning, importance); }
 
-        public static void Error(string message, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(message, LogMode.Error, importance); }
+        public static void Error(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Error, importance); }
 
         //Actual function that writes the logs
 
         private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance)
         {
+            if (string.IsNullOrWhiteSpace(text)) return;
+
             if (CheckIfShouldPrint(importance))
             {
                 string toWrite = $"[RT] > {text}";
 
-                switch(mode)
+                switch (mode)
                 {
                     case LogMode.Message:
                         Log.Message(toWrite);

@@ -1,15 +1,10 @@
 ﻿using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GameClient
+namespace GameClient.WorldObjects
 {
     // Add the EXACT defname of the thing you want to add to the "DefOfs". Make sure to put it in the proper category.
     [DefOf]
-    public static class RTSitePartDefOf 
+    public static class RTSitePartDefOf
     {
         public static SitePartDef RTFarmland;
         public static SitePartDef RTHunterCamp;
@@ -33,7 +28,7 @@ namespace GameClient
         static RTFactionDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(FactionDefOf));
     }
     [DefOf]
-    public static class RTWorldObjectDefOf 
+    public static class RTWorldObjectDefOf
     {
         public static WorldObjectDef RTCaravan;
 

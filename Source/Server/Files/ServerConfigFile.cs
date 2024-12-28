@@ -1,8 +1,10 @@
-﻿namespace GameServer
+﻿namespace GameServer.Files
 {
     [Serializable]
     public class ServerConfigFile
     {
+        public string Name = "RimWorld Together Server";
+
         public string IP = "0.0.0.0";
 
         public string Port = "25555";
@@ -21,9 +23,9 @@
 
         public bool SyncLocalSave = true;
 
-        public bool TemporalActivityProtection = true;
+        public bool TemporalActivityProtection = false;
 
-        public bool TemporalEventProtection = true;
+        public bool TemporalEventProtection = false;
 
         public bool TemporalAidProtection = false;
     }

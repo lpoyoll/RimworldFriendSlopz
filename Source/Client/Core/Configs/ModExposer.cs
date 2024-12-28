@@ -1,8 +1,9 @@
-﻿using Verse;
+﻿using GameClient.Values;
+using Verse;
 
-namespace GameClient
+namespace GameClient.Core.Configs
 {
-    public class ModConfigs : ModSettings
+    public class ModExposer : Verse.ModSettings
     {
         public bool muteChatSoundBool;
 
@@ -15,7 +16,7 @@ namespace GameClient
             Scribe_Values.Look(ref muteChatSoundBool, "muteChatSoundBool");
             Scribe_Values.Look(ref rejectTransfersBool, "rejectTransfersBool");
             Scribe_Values.Look(ref rejectSiteRewardsBool, "rejectSiteRewardsBool");
-            
+
             base.ExposeData();
 
             ClientValues.muteSoundBool = muteChatSoundBool;

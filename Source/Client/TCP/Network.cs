@@ -1,6 +1,11 @@
-﻿using static Shared.CommonEnumerators;
+﻿using GameClient.Core.Preferences;
+using GameClient.Dialogs;
+using GameClient.Managers;
+using GameClient.Misc;
+using GameClient.Values;
+using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.TCP
 {
     //Main class that is used to handle the connection with the server
 
@@ -33,10 +38,11 @@ namespace GameClient
                 Threader.GenerateThread(Threader.Mode.Health);
                 Threader.GenerateThread(Threader.Mode.KASender);
 
-                if (!ClientValues.isQuickConnecting) LoginManager.ShowLoginOrRegisterDialogs();
-
-                Logger.Message($"Connected to server");
                 state = ClientNetworkState.Connected;
+
+                UserLoginManager.UseLoginData();
+
+                Printer.Message($"Connected to server");
             }
 
             else
@@ -54,18 +60,18 @@ namespace GameClient
         {
             if (state != ClientNetworkState.Disconnected) return false;
 
-            try 
+            try
             {
                 state = ClientNetworkState.Connecting;
                 listener = new Listener(new(ip, int.Parse(port)));
-            } 
+            }
             catch { return false; }
 
             return true;
         }
 
         //Disconnects client from the server
-        
+
         public static void DisconnectFromServer()
         {
             CleanNetworkVariables();

@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
+using GameClient.Managers;
+using GameClient.TCP;
 
-namespace GameClient
+namespace GameClient.Misc
 {
     public static class Threader
     {

@@ -1,22 +1,28 @@
-﻿using Shared;
+﻿using GameClient.Core.Preferences;
+using GameClient.Dialogs;
+using GameClient.Managers;
+using GameClient.Misc;
+using GameClient.Values;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using System.Diagnostics;
 
-namespace GameClient
+namespace GameClient.Core.Configs
 {
-    public class ModStuff : Mod
+    public class ModTweaker : Mod
     {
         //Variables
 
-        private readonly ModConfigs modConfigs;
+        private readonly ModExposer modConfigs;
 
-        public ModStuff(ModContentPack content) : base(content)
+        public ModTweaker(ModContentPack content) : base(content)
         {
-            modConfigs = GetSettings<ModConfigs>();
+            modConfigs = GetSettings<ModExposer>();
         }
 
         public override string SettingsCategory() { return "RimWorld Together"; }
@@ -26,7 +32,6 @@ namespace GameClient
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
 
-            listingStandard.Label("Running version: " + CommonValues.executableVersion);
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
             listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
@@ -35,13 +40,18 @@ namespace GameClient
             if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s")) ShowAutosaveFloatMenu();
 
             listingStandard.GapLine();
-            listingStandard.Label("Compatibility");
-            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertFloatMenu(); }
-            if (listingStandard.ButtonTextLabeled("Open saves folder", "Open")) StartProcess(Master.savesFolderPath);
+            listingStandard.Label("Debugging");
+            if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ClientValues.currentVerboseMode}")) ShowVerboseFloatMenu();
+            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.appdataFolderPath);
+            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertSaveFloatMenu(); }
 
             listingStandard.GapLine();
-            listingStandard.Label("Experimental");
-            if (listingStandard.ButtonTextLabeled("Verbose mode", $"{ClientValues.currentVerboseMode}")) ShowVerbosesaveFloatMenu();
+            listingStandard.Label("Tweaks");
+            if (listingStandard.ButtonTextLabeled("Change mod version [Windows only]", "Change")) { VersionManager.PromptChangeVersion(); }
+
+            GUI.color = Color.red;
+            if (listingStandard.ButtonTextLabeled("Reset account [DANGEROUS]", "Reset")) { ShowResetAccountQuestion(); }
+            GUI.color = Color.white;
 
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
@@ -49,7 +59,7 @@ namespace GameClient
             if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
             if (listingStandard.ButtonTextLabeled("Check out the mod's incompatibility list!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/blob/development/IncompatibilityList.md");
             if (listingStandard.ButtonTextLabeled("Check out the mod's donation page!", "Open")) StartProcess("https://ko-fi.com/rimworldtogether");
-            if (listingStandard.ButtonTextLabeled("Join the mod's Discord community!", "Open")) StartProcess("https://discord.gg/yUF2ec8Vt8");
+            if (listingStandard.ButtonTextLabeled("Check out mod's Discord community!", "Open")) StartProcess("https://discord.gg/yUF2ec8Vt8");
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
@@ -78,7 +88,7 @@ namespace GameClient
                     ClientValues.autosaveDays = tuple.Item2;
                     ClientValues.autosaveInternalTicks = Mathf.RoundToInt(tuple.Item2 * 60000f);
 
-                    PreferenceManager.SaveClientPreferences();
+                    PlayerPreferenceManager.SavePlayerPreferences();
                 });
 
                 list.Add(item);
@@ -87,22 +97,22 @@ namespace GameClient
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private void ShowVerbosesaveFloatMenu()
+        private void ShowVerboseFloatMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            List<Tuple<string, ClientValues.VerboseMode>> autosaveDays = new List<Tuple<string, ClientValues.VerboseMode>>()
+            List<Tuple<string, ClientValues.VerboseMode>> verboseModes = new List<Tuple<string, ClientValues.VerboseMode>>()
             {
                 Tuple.Create("None", ClientValues.VerboseMode.None),
                 Tuple.Create("Verbose", ClientValues.VerboseMode.Verbose),
                 Tuple.Create("Extreme", ClientValues.VerboseMode.Extreme)
             };
 
-            foreach (Tuple<string, ClientValues.VerboseMode> tuple in autosaveDays)
+            foreach (Tuple<string, ClientValues.VerboseMode> tuple in verboseModes)
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
                     ClientValues.currentVerboseMode = tuple.Item2;
-                    PreferenceManager.SaveClientPreferences();
+                    PlayerPreferenceManager.SavePlayerPreferences();
                 });
 
                 list.Add(item);
@@ -111,11 +121,11 @@ namespace GameClient
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private void ShowConvertFloatMenu()
+        private void ShowConvertSaveFloatMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
-            foreach(string str in Directory.GetFiles(Master.savesFolderPath).Where(fetch => fetch.EndsWith(".rws")))
+            foreach (string str in Directory.GetFiles(Master.savesFolderPath).Where(fetch => fetch.EndsWith(".rws")))
             {
                 FloatMenuOption item = new FloatMenuOption(Path.GetFileNameWithoutExtension(str), delegate
                 {
@@ -135,10 +145,22 @@ namespace GameClient
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
+        private void ShowResetAccountQuestion()
+        {
+            RT_Dialog_YesNo dialog = new RT_Dialog_YesNo("Are you sure you want to RESET your ACCOUNT?",
+                delegate
+                {
+                    UserLoginManager.DeleteLoginData();
+                    DialogManager.PushNewDialog(new RT_Dialog_OK("Account has been reset"));
+                });
+
+            DialogManager.PushNewDialog(dialog);
+        }
+
         private void StartProcess(string processPath)
         {
-            try { System.Diagnostics.Process.Start(processPath); } 
-            catch { Logger.Warning($"Failed to start process {processPath}"); }
+            try { Process.Start(processPath); }
+            catch { Printer.Warning($"Failed to start process {processPath}"); }
         }
     }
 }
