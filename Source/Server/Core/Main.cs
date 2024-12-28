@@ -21,7 +21,7 @@ namespace GameServer.Core
             LoadResources();
             ChangeTitle();
             LoadAllManagers();
-            CompatibilityManager.LoadAllPatchedAssemblies();
+            CompatibilityManager.LoadAllPatches();
 
             Printer.Title($"----------------------------------------");
 
@@ -325,14 +325,9 @@ namespace GameServer.Core
         {
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
             {
-                if (type.Namespace == null) continue;
-                else if (type.Namespace.StartsWith("System") || type.Namespace.StartsWith("Microsoft")) continue;
-                else if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
+                if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
                 {
-                    try
-                    {
-                        Master.managers[type.Name] = type.GetMethod("ParsePacket");
-                    }
+                    try { Master.managerDictionary[type.Name] = type.GetMethod("ParsePacket"); }
                     catch (Exception exception) { Printer.Error($"{type.Name} failed to load\n{exception}"); }
                 }
             }

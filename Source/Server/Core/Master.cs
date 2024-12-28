@@ -48,8 +48,6 @@ namespace GameServer.Core
 
         public static string compatibilityPatchesPath;
 
-        public static Dictionary<string, MethodInfo> managers = new Dictionary<string, MethodInfo>();
-
         //References
 
         public static WhitelistConfigFile whitelist;
@@ -74,10 +72,7 @@ namespace GameServer.Core
 
         public static ChatConfigFile chatConfig;
 
-        // DO NOT RENAME 'loadedCompatibilityPatches'
-        // IT HAS A HARDCODED REFERENCE WITH THE METHOD MANAGER
-
-        public static Assembly[] loadedCompatibilityPatches;
+        public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
 
         //Booleans
 

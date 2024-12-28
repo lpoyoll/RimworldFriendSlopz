@@ -119,10 +119,7 @@ namespace GameClient.TCP
 
             Action toDo = delegate
             {
-                try
-                {
-                    Master.managers[packet.header].Invoke(null, new object[] { packet });
-                }
+                try { Master.managerDictionary[packet.header].Invoke(null, new object[] { packet }); }
                 catch (Exception ex) { OnHandleError(ex); }
             };
 

@@ -118,11 +118,8 @@ namespace GameServer.TCP
             if (!ignoredLogPackets.Contains(packet.header)) InformationDisplayer.DisplayReceivePacket(packet.header, LogImportanceMode.Verbose);
             else InformationDisplayer.DisplayReceivePacket(packet.header, LogImportanceMode.Extreme);
 
-            try
-            {
-                Master.managers[packet.header].Invoke(null, new object[] {targetClient, packet});
-            }
-            catch(Exception ex) { OnHandleError(ex); }
+            try { Master.managerDictionary[packet.header].Invoke(null, new object[] { targetClient, packet }); }
+            catch (Exception ex) { OnHandleError(ex); }
 
             // If method manager failed to execute the packet we assume corrupted data
 

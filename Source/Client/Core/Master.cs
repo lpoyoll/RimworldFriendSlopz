@@ -18,10 +18,7 @@ namespace GameClient.Core
 
         public static ModExposer modConfigs = new ModExposer();
 
-        // DO NOT RENAME 'loadedCompatibilityPatches'
-        // IT HAS A HARDCODED REFERENCE WITH THE METHOD MANAGER
-
-        public static Assembly[] loadedCompatibilityPatches;
+        public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
 
         // Paths
 
@@ -47,7 +44,6 @@ namespace GameClient.Core
 
         public static string savesFolderPath;
 
-        public static Dictionary<string, MethodInfo> managers = new Dictionary<string, MethodInfo>();
         // Values
 
         public static readonly string modID = "RimWorld Together";
