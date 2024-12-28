@@ -80,13 +80,13 @@ namespace GameServer.Managers
                 string userSavePath = Path.Combine(Master.savesPath, uid + SaveManager.fileExtension);
                 if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
 
-                SiteIdendityFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(uid);
+                SiteIdendityFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
                 foreach (SiteIdendityFile site in playerSites) toArchive.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
 
                 SettlementFile[] playerSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(uid);
                 foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + PlayerSettlementManager.fileExtension));
 
-                CaravanFile[] playerCaravans = CaravanManagerHelper.GetCaravansFromOwner(uid);
+                CaravanFile[] playerCaravans = CaravanManagerHelper.GetCaravansFromUID(uid);
                 foreach (CaravanFile caravanFile in playerCaravans) toArchive.Add(Path.Combine(Master.caravansPath, caravanFile.ID + CaravanManager.fileExtension));
 
                 CreateArchive(toArchive, playerArchivedSavePath);

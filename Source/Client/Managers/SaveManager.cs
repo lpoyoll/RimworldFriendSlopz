@@ -18,7 +18,7 @@ namespace GameClient.Managers
 {
     public static class SaveManager
     {
-        public static string customSaveName => $"Server - {Network.ip} - {ClientValues.username}";
+        public static string customSaveName => $"Server - {Network.ip} - {Network.port} - {ClientValues.username}";
 
         private static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
 
@@ -31,7 +31,7 @@ namespace GameClient.Managers
             SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.contents);
             if (data._stepMode == SaveStepMode.Receive) ReceiveSavePartFromServer(data);
             else if (data._stepMode == SaveStepMode.Send) SendSavePartToServer();
-            else throw new Exception();
+            else throw new NotImplementedException();
         }
 
         public static void ForceSave()

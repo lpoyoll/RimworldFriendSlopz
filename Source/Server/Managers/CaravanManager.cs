@@ -38,8 +38,7 @@ namespace GameServer.Managers
 
         private static void AddCaravan(ServerClient client, CaravanData data)
         {
-            data._caravanFile.Owner = client.userFile.Uid;
-            data._caravanFile.Label = client.userFile.Label;
+            data._caravanFile.UID = client.userFile.Uid;
             data._caravanFile.ID = CaravanManagerHelper.GetNewCaravanID();
             RefreshCaravanTimer(data._caravanFile);
 
@@ -158,12 +157,12 @@ namespace GameServer.Managers
         public static CaravanFile GetCaravanFromID(string uid, int caravanID)
         {
             return GetActiveCaravans().FirstOrDefault(fetch => fetch.ID == caravanID &&
-                fetch.Owner == uid);
+                fetch.UID == uid);
         }
 
-        public static CaravanFile[] GetCaravansFromOwner(string userName)
+        public static CaravanFile[] GetCaravansFromUID(string uid)
         {
-            CaravanFile[] toGet = GetActiveCaravans().Where(fetch => fetch.Owner == userName).ToArray();
+            CaravanFile[] toGet = GetActiveCaravans().Where(fetch => fetch.UID == uid).ToArray();
 
             if (toGet == null) return null;
             else return toGet;

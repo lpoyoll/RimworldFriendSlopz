@@ -19,6 +19,8 @@ namespace GameClient.Values
 
         public static string username;
 
+        public static string uid;
+
         //ModStuff values go below. Do not change manually
 
         public enum VerboseMode { None, Verbose, Extreme }

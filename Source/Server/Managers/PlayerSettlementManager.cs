@@ -35,7 +35,7 @@ namespace GameServer.Managers
             {
                 SettlementFile settlementFile = new SettlementFile();
                 settlementFile.Tile = settlementData._settlementFile.Tile;
-                settlementFile.Owner = client.userFile.Uid;
+                settlementFile.UID = client.userFile.Uid;
                 settlementFile.Label = client.userFile.Label;
                 settlementData._settlementFile = settlementFile;
 
@@ -66,10 +66,10 @@ namespace GameServer.Managers
 
             if (client != null)
             {
-                if (settlementFile.Owner != client.userFile.Uid)
+                if (settlementFile.UID != client.userFile.Uid)
                 {
                     ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementFile.Tile} attempted to be removed by " +
-                        $"{client.userFile.Uid}, but {settlementFile.Owner} owns the settlement");
+                        $"{client.userFile.Uid}, but {settlementFile.UID} owns the settlement");
                 }
 
                 else
@@ -137,7 +137,7 @@ namespace GameServer.Managers
                 if (!settlement.EndsWith(fileExtension)) continue;
 
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
-                if (settlementFile.Owner == usernameToGet) return settlementFile;
+                if (settlementFile.UID == usernameToGet) return settlementFile;
             }
 
             return null;
@@ -167,7 +167,7 @@ namespace GameServer.Managers
                 if (!settlement.EndsWith(fileExtension)) continue;
 
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
-                if (settlementFile.Owner == usernameToCheck) settlementList.Add(settlementFile);
+                if (settlementFile.UID == usernameToCheck) settlementList.Add(settlementFile);
             }
 
             return settlementList.ToArray();

@@ -7,6 +7,7 @@ using static Shared.CommonEnumerators;
 using GameClient.Core.Preferences;
 using GameClient.Managers;
 using GameClient.TCP;
+using GameClient.Misc;
 
 namespace GameClient.Patches.Pages
 {

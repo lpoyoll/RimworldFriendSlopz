@@ -1,4 +1,5 @@
 ﻿using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using GameClient.WorldObjects;
@@ -56,7 +57,7 @@ namespace GameClient.Managers
         {
             activeCaravans.Add(details);
 
-            if (details.Label == ClientValues.username)
+            if (details.UID == ClientValues.uid)
             {
                 Caravan toAdd = Find.WorldObjects.Caravans.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer &&
                     !activePlayerCaravans.ContainsKey(fetch));
@@ -82,7 +83,7 @@ namespace GameClient.Managers
             {
                 activeCaravans.Remove(toRemove);
 
-                if (details.Label == ClientValues.username)
+                if (details.UID == ClientValues.uid)
                 {
                     foreach (KeyValuePair<Caravan, int> pair in activePlayerCaravans.ToArray())
                     {
@@ -110,7 +111,7 @@ namespace GameClient.Managers
             if (toMove == null) return;
             else
             {
-                if (details.Label == ClientValues.username) return;
+                if (details.UID == ClientValues.uid) return;
                 else
                 {
                     RemoveCaravan(toMove);
@@ -125,7 +126,7 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.Owner = ClientValues.username;
+            data._caravanFile.UID = ClientValues.username;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
             Network.listener.EnqueuePacket(packet);

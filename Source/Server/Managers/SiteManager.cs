@@ -75,7 +75,7 @@ namespace GameServer.Managers
                 SiteIdendityFile siteFile = new SiteIdendityFile();
 
                 siteFile.Tile = siteData._siteFile.Tile;
-                siteFile.Owner = client.userFile.Uid;
+                siteFile.UID = client.userFile.Uid;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._siteFile.Type.DefName);
                 if (client.userFile.FactionFile != null) siteFile.FactionFile = client.userFile.FactionFile;
                 ConfirmNewSite(client, siteFile);
@@ -86,11 +86,11 @@ namespace GameServer.Managers
         {
             SiteIdendityFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
-            if (siteFile.Owner == client.userFile.Uid) DestroySiteFromFile(siteFile);
+            if (siteFile.UID == client.userFile.Uid) DestroySiteFromFile(siteFile);
             else
             {
                 ResponseShortcutManager.SendIllegalPacket(client,
-                    $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Uid}, but {siteFile.Owner} owns it");
+                    $"The site at tile {siteData._siteFile.Tile} was attempted to be destroyed by {client.userFile.Uid}, but {siteFile.UID} owns it");
             }
         }
 
@@ -129,7 +129,7 @@ namespace GameServer.Managers
 
                 //Get player specific sites
                 List<SiteIdendityFile> sitesToAdd = new List<SiteIdendityFile>();
-                if (client.userFile.FactionFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.Owner == client.userFile.Uid);
+                if (client.userFile.FactionFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.UID == client.userFile.Uid);
                 else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.FactionFile != null && fetch.FactionFile.Name == client.userFile.FactionFile.Name));
                 foreach (SiteIdendityFile site in sitesToAdd)
                 {
@@ -148,8 +148,12 @@ namespace GameServer.Managers
                     data.Add(rewardFile);
                 }
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(SiteRewardManager), new RewardData() { _rewardData = data.ToArray() });
-                client.listener.EnqueuePacket(packet);
+                if (data.Count == 0) return;
+                else
+                {
+                    Packet packet = Packet.CreatePacketFromObject(nameof(SiteRewardManager), new RewardData() { _rewardData = data.ToArray() });
+                    client.listener.EnqueuePacket(packet);
+                }
             }
 
             InformationDisplayer.DisplaySiteTick();
@@ -234,17 +238,15 @@ namespace GameServer.Managers
             SaveSite(siteFile);
         }
 
-        public static SiteIdendityFile[] GetAllSitesFromUsername(string username)
+        public static SiteIdendityFile[] GetAllSitesFromUID(string uid)
         {
             List<SiteIdendityFile> sitesList = new List<SiteIdendityFile>();
 
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
-                if (!site.EndsWith(fileExtension)) continue;
-
                 SiteIdendityFile siteFile = Serializer.SerializeFromFile<SiteIdendityFile>(site);
-                if (siteFile.Owner == username) sitesList.Add(siteFile);
+                if (siteFile.UID == uid) sitesList.Add(siteFile);
             }
 
             return sitesList.ToArray();

@@ -45,7 +45,7 @@ namespace GameServer.Managers
         {
             data._stepMode = FactionStepMode.NoPower;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(FactionManager), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(GuildManager), data);
             client.listener.EnqueuePacket(packet);
         }
     }

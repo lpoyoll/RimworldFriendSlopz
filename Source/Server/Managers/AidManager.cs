@@ -45,9 +45,9 @@ namespace GameServer.Managers
             else
             {
                 SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._toTile);
-                if (UserManagerH.CheckIfUserIsConnected(settlementFile.Owner))
+                if (UserManagerH.CheckIfUserIsConnected(settlementFile.UID))
                 {
-                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.Owner);
+                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
 
                     if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, baseAidTimer))
                     {
@@ -79,11 +79,11 @@ namespace GameServer.Managers
             else
             {
                 SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._fromTile);
-                if (UserManagerH.CheckIfUserIsConnected(settlementFile.Owner))
+                if (UserManagerH.CheckIfUserIsConnected(settlementFile.UID))
                 {
                     client.userFile.UpdateAidTime();
 
-                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.Owner);
+                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
                     Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                     target.listener.EnqueuePacket(packet);
                 }
@@ -105,9 +105,9 @@ namespace GameServer.Managers
             else
             {
                 SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._fromTile);
-                if (UserManagerH.CheckIfUserIsConnected(settlementFile.Owner))
+                if (UserManagerH.CheckIfUserIsConnected(settlementFile.UID))
                 {
-                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.Owner);
+                    ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
                     Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
                     target.listener.EnqueuePacket(packet);
                 }

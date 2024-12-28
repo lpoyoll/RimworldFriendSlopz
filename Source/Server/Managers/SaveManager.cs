@@ -148,11 +148,11 @@ namespace GameServer.Managers
             foreach (MapFile map in userMaps) MapManager.DeleteMap(map);
 
             // Delete caravan files
-            CaravanFile[] userCaravans = CaravanManagerHelper.GetCaravansFromOwner(uid);
+            CaravanFile[] userCaravans = CaravanManagerHelper.GetCaravansFromUID(uid);
             foreach (CaravanFile caravan in userCaravans) CaravanManager.RemoveCaravan(uid, caravan);
 
             // Delete site files
-            SiteIdendityFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(uid);
+            SiteIdendityFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
             foreach (SiteIdendityFile site in playerSites) SiteManager.DestroySiteFromFile(site);
 
             // Delete settlement files
@@ -161,7 +161,7 @@ namespace GameServer.Managers
             {
                 PlayerSettlementData settlementData = new PlayerSettlementData();
                 settlementData._settlementFile.Tile = settlement.Tile;
-                settlementData._settlementFile.Owner = settlement.Owner;
+                settlementData._settlementFile.UID = settlement.UID;
 
                 PlayerSettlementManager.RemoveSettlement(client, settlementData);
             }

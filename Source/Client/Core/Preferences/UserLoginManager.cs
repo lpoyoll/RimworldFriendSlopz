@@ -4,9 +4,11 @@ using System.IO;
 using GameClient.Dialogs;
 using GameClient.Files;
 using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using Shared;
+using UnityEngine;
 using Verse;
 
 namespace GameClient.Core.Preferences
@@ -17,6 +19,16 @@ namespace GameClient.Core.Preferences
 
         public static LoginDataFile LoadLoginData()
         {
+            // For testing purposes
+
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                LoginDataFile file = new LoginDataFile();
+                file.UID = "UID";
+                file.Username = "Username";
+                return file;
+            }
+
             if (File.Exists(Master.loginDataPath)) return Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
             else return new LoginDataFile();
         }
@@ -29,6 +41,8 @@ namespace GameClient.Core.Preferences
             else
             {
                 LoginDataFile file = LoadLoginData();
+                ClientValues.username = file.Username;
+                ClientValues.uid = file.UID;
 
                 LoginData data = new LoginData();
                 data._uid = file.UID;
@@ -98,9 +112,6 @@ namespace GameClient.Core.Preferences
             ConnectionDataFile connectionData = ConnectionDataManager.LoadConnectionData();
             Network.ip = connectionData.IP;
             Network.port = connectionData.Port;
-
-            LoginDataFile loginData = UserLoginManager.LoadLoginData();
-            ClientValues.username = loginData.Username;
         }
 
         public static void ShowQuickConnectFloatMenu()

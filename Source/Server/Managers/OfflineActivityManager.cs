@@ -45,7 +45,7 @@ namespace GameServer.Managers
             {
                 SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._targetTile);
 
-                if (UserManagerH.CheckIfUserIsConnected(settlementFile.Owner))
+                if (UserManagerH.CheckIfUserIsConnected(settlementFile.UID))
                 {
                     data._stepMode = OfflineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
@@ -54,7 +54,7 @@ namespace GameServer.Managers
 
                 else
                 {
-                    UserFile userFile = UserManagerH.GetUserFileFromName(settlementFile.Owner);
+                    UserFile userFile = UserManagerH.GetUserFileFromName(settlementFile.UID);
 
                     if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, baseActivityTimer))
                     {
@@ -67,7 +67,7 @@ namespace GameServer.Managers
                     {
                         userFile.UpdateActivityTime();
 
-                        data._mapFile = MapManager.GetUserMapFromTile(userFile.Uid, data._targetTile);
+                        data._mapFile = MapManager.GetUserMapFromTile(data._targetTile);
                         Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
                         client.listener.EnqueuePacket(packet);
                     }

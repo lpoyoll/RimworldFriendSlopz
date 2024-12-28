@@ -19,27 +19,21 @@ namespace GameServer.Managers
 
         public static void SaveUserMap(ServerClient client, MapFile file)
         {
-            string savingDirectory = Path.Combine(Master.mapsPath, client.userFile.Uid);
-            if (!Directory.Exists(savingDirectory)) Directory.CreateDirectory(savingDirectory);
-
-            file.Owner = client.userFile.Uid;
-            Serializer.ObjectBytesToFile(Path.Combine(savingDirectory, file.Tile + fileExtension), file);
+            file.UID = client.userFile.Uid;
+            Serializer.ObjectBytesToFile(Path.Combine(Master.mapsPath, file.Tile + fileExtension), file);
 
             InformationDisplayer.DisplaySaveMap(client);
         }
 
         public static void DeleteMap(MapFile mapFile)
         {
-            string filePath = Path.Combine(Master.mapsPath, mapFile.Owner, mapFile.Tile + fileExtension);
-
-            File.Delete(filePath);
-
+            File.Delete(Path.Combine(Master.mapsPath, mapFile.Tile + fileExtension));
             InformationDisplayer.DisplayRemoveMap(mapFile.Tile.ToString());
         }
 
         public static string[] GetAllMaps()
         {
-            return Directory.GetFiles(Master.mapsPath, "*.mpmap", SearchOption.AllDirectories);
+            return Directory.GetFiles(Master.mapsPath);
         }
 
         public static bool CheckIfMapExists(int mapTileToCheck)
@@ -51,20 +45,16 @@ namespace GameServer.Managers
 
         public static MapFile[] GetAllMapsFromUsername(string username)
         {
-            if (!Directory.Exists(Path.Combine(Master.mapsPath, username))) return new MapFile[0];
-            else
-            {
-                List<MapFile> allUserMaps = new List<MapFile>();
-                string[] allMapPaths = Directory.GetFiles(Path.Combine(Master.mapsPath, username));
-                foreach (string str in allMapPaths) allUserMaps.Add(Serializer.FileBytesToObject<MapFile>(str));
+            List<MapFile> allUserMaps = new List<MapFile>();
+            string[] allMapPaths = Directory.GetFiles(Master.mapsPath);
+            foreach (string str in allMapPaths) allUserMaps.Add(Serializer.FileBytesToObject<MapFile>(str));
 
-                return allUserMaps.ToArray();
-            }
+            return allUserMaps.ToArray();
         }
 
-        public static MapFile GetUserMapFromTile(string username, int mapTileToGet)
+        public static MapFile GetUserMapFromTile(int mapTileToGet)
         {
-            string path = Path.Combine(Master.mapsPath, username, mapTileToGet + fileExtension);
+            string path = Path.Combine(Master.mapsPath, mapTileToGet + fileExtension);
             return Serializer.FileBytesToObject<MapFile>(path);
         }
     }
