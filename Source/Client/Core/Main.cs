@@ -3,6 +3,7 @@ using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
 using Shared;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -25,7 +26,6 @@ namespace GameClient.Core
                 PreparePaths();
                 CreateUnityDispatcher();
                 LoadAllManagers();
-                CompatibilityManager.LoadAllPatchedAssemblies();
 
                 CaravanManagerHelper.SetCaravanDefs();
                 SiteManager.SetSiteDefs();
@@ -91,7 +91,7 @@ namespace GameClient.Core
                     try
                     {
                         Master.managers[type.Name] = type.GetMethod("ParsePacket");
-                    } catch(Exception exception) { Logger.Error($"{type.Name} failed to load\n{exception}"); }
+                    } catch(Exception exception) { Printer.Error($"{type.Name} failed to load\n{exception}"); }
                 }
             }
         }

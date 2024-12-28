@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using GameServer.Core.Configs;
 using GameServer.Managers;
 using GameServer.Managers.External;
@@ -332,7 +333,7 @@ namespace GameServer.Core
                     {
                         Master.managers[type.Name] = type.GetMethod("ParsePacket");
                     }
-                    catch (Exception exception) { Logger.Error($"{type.Name} failed to load\n{exception}"); }
+                    catch (Exception exception) { Printer.Error($"{type.Name} failed to load\n{exception}"); }
                 }
             }
         }

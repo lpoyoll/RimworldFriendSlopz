@@ -43,7 +43,7 @@ namespace GameServer.Managers
                         if (method != null)
                         {
                             Master.managers[method.Name] = method;
-                            Logger.Message($"Found modded manager {type.Name}", CommonEnumerators.LogImportanceMode.Verbose);
+                            Printer.Message($"Found modded manager {type.Name}", CommonEnumerators.LogImportanceMode.Verbose);
                             continue;
                         }
                     }
