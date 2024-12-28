@@ -86,9 +86,9 @@ namespace GameClient.Managers
             DialogManager.PushNewDialog(d1);
         }
 
-        public static void AddSites(SiteIdendityFile[] sites)
+        public static void AddSites(SiteFile[] sites)
         {
-            foreach (SiteIdendityFile toAdd in sites)
+            foreach (SiteFile toAdd in sites)
             {
                 SpawnSingleSite(toAdd);
             }
@@ -101,13 +101,13 @@ namespace GameClient.Managers
 
             foreach (Site toRemove in sites)
             {
-                SiteIdendityFile siteFile = new SiteIdendityFile();
+                SiteFile siteFile = new SiteFile();
                 siteFile.Tile = toRemove.Tile;
                 RemoveSingleSite(siteFile);
             }
         }
 
-        public static void SpawnSingleSite(SiteIdendityFile toAdd)
+        public static void SpawnSingleSite(SiteFile toAdd)
         {
             if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
             else
@@ -127,7 +127,7 @@ namespace GameClient.Managers
             }
         }
 
-        public static void RemoveSingleSite(SiteIdendityFile toRemove)
+        public static void RemoveSingleSite(SiteFile toRemove)
         {
             try
             {
@@ -163,7 +163,6 @@ namespace GameClient.Managers
             siteData._stepMode = SiteStepMode.Build;
             siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
             siteData._siteFile.Type.DefName = configFile.DefName;
-            if (ServerValues.hasFaction) siteData._siteFile.File = new GuildFile();
 
             Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
@@ -189,7 +188,7 @@ namespace GameClient.Managers
 
 public static class SiteManagerHelper
 {
-    public static SiteIdendityFile[] tempSites;
+    public static SiteFile[] tempSites;
 
     public static void SetValues(ServerGlobalData serverGlobalData)
     {

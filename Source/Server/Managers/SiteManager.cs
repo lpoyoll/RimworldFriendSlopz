@@ -44,7 +44,7 @@ namespace GameServer.Managers
             }
         }
 
-        public static void ConfirmNewSite(ServerClient client, SiteIdendityFile siteFile)
+        public static void ConfirmNewSite(ServerClient client, SiteFile siteFile)
         {
             SiteManagerHelper.SaveSite(siteFile);
 
@@ -73,19 +73,19 @@ namespace GameServer.Managers
             else if (SiteManagerHelper.CheckIfTileIsInUse(siteData._siteFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._siteFile.Tile}, but that tile already has a site");
             else
             {
-                SiteIdendityFile siteFile = new SiteIdendityFile();
+                SiteFile siteFile = new SiteFile();
 
                 siteFile.Tile = siteData._siteFile.Tile;
                 siteFile.UID = client.userFile.Uid;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._siteFile.Type.DefName);
-                if (client.userFile.GuildFile != null) siteFile.File = client.userFile.GuildFile;
+                if (!string.IsNullOrEmpty(client.userFile.GuildName)) siteFile.GuildName = client.userFile.GuildName;
                 ConfirmNewSite(client, siteFile);
             }
         }
 
         private static void DestroySite(ServerClient client, SiteData siteData)
         {
-            SiteIdendityFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
+            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._siteFile.Tile);
 
             if (siteFile.UID == client.userFile.Uid) DestroySiteFromFile(siteFile);
             else
@@ -95,7 +95,7 @@ namespace GameServer.Managers
             }
         }
 
-        public static void DestroySiteFromFile(SiteIdendityFile siteFile)
+        public static void DestroySiteFromFile(SiteFile siteFile)
         {
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.Destroy;
@@ -122,17 +122,17 @@ namespace GameServer.Managers
 
         public static void SiteRewardTick()
         {
-            SiteIdendityFile[] sites = SiteManagerHelper.GetAllSites();
+            SiteFile[] sites = SiteManagerHelper.GetAllSites();
 
             foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
                 List<SiteRewardFile> data = new List<SiteRewardFile>();
 
                 //Get player specific sites
-                List<SiteIdendityFile> sitesToAdd = new List<SiteIdendityFile>();
-                if (client.userFile.GuildFile == null) sitesToAdd = sites.ToList().FindAll(fetch => fetch.UID == client.userFile.Uid);
-                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.File != null && fetch.File.Name == client.userFile.GuildFile.Name));
-                foreach (SiteIdendityFile site in sitesToAdd)
+                List<SiteFile> sitesToAdd = new List<SiteFile>();
+                if (string.IsNullOrEmpty(client.userFile.GuildName)) sitesToAdd = sites.ToList().FindAll(fetch => fetch.UID == client.userFile.Uid);
+                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.GuildName == client.userFile.GuildName));
+                foreach (SiteFile site in sitesToAdd)
                 {
                     SiteRewardFile rewardFile = new SiteRewardFile();
                     foreach (SiteRewardFile reward in site.Type.Rewards)
@@ -162,7 +162,7 @@ namespace GameServer.Managers
 
         public static void UpdateAllSiteInfo()
         {
-            foreach (SiteIdendityFile site in SiteManagerHelper.GetAllSites())
+            foreach (SiteFile site in SiteManagerHelper.GetAllSites())
             {
                 foreach (SiteInfoFile config in Master.siteValues.SiteInfoFiles)
                 {
@@ -223,7 +223,7 @@ namespace GameServer.Managers
     {
         public readonly static string fileExtension = ".mpsite";
 
-        public static void SaveSite(SiteIdendityFile siteFile)
+        public static void SaveSite(SiteFile siteFile)
         {
             siteFile.SavingSemaphore.WaitOne();
 
@@ -233,34 +233,35 @@ namespace GameServer.Managers
             siteFile.SavingSemaphore.Release();
         }
 
-        public static void UpdateFaction(SiteIdendityFile siteFile, GuildFile toUpdateWith)
+        public static void UpdateFaction(SiteFile siteFile, GuildFile toUpdateWith)
         {
-            siteFile.File = toUpdateWith;
+            if (toUpdateWith == null) siteFile.GuildName = null;
+            else siteFile.GuildName = toUpdateWith.Name;
             SaveSite(siteFile);
         }
 
-        public static SiteIdendityFile[] GetAllSitesFromUID(string uid)
+        public static SiteFile[] GetAllSitesFromUID(string uid)
         {
-            List<SiteIdendityFile> sitesList = new List<SiteIdendityFile>();
+            List<SiteFile> sitesList = new List<SiteFile>();
 
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
-                SiteIdendityFile siteFile = Serializer.SerializeFromFile<SiteIdendityFile>(site);
+                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.UID == uid) sitesList.Add(siteFile);
             }
 
             return sitesList.ToArray();
         }
 
-        public static SiteIdendityFile GetSiteFileFromTile(int tileToGet)
+        public static SiteFile GetSiteFileFromTile(int tileToGet)
         {
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
                 if (!site.EndsWith(fileExtension)) continue;
 
-                SiteIdendityFile siteFile = Serializer.SerializeFromFile<SiteIdendityFile>(site);
+                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.Tile == tileToGet) return siteFile;
             }
 
@@ -269,23 +270,23 @@ namespace GameServer.Managers
 
         public static void GetSiteInfo(ServerClient client, SiteData siteData)
         {
-            SiteIdendityFile siteFile = GetSiteFileFromTile(siteData._siteFile.Tile);
+            SiteFile siteFile = GetSiteFileFromTile(siteData._siteFile.Tile);
             siteData._siteFile = siteFile;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(packet);
         }
 
-        public static SiteIdendityFile[] GetAllSites()
+        public static SiteFile[] GetAllSites()
         {
-            List<SiteIdendityFile> sitesList = new List<SiteIdendityFile>();
+            List<SiteFile> sitesList = new List<SiteFile>();
             try
             {
                 string[] sites = Directory.GetFiles(Master.sitesPath);
                 foreach (string site in sites)
                 {
                     if (!site.EndsWith(fileExtension)) continue;
-                    sitesList.Add(Serializer.SerializeFromFile<SiteIdendityFile>(site));
+                    sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
                 }
             }
             catch (Exception ex) { Printer.Error($"Sites could not be loaded, either your formatting is wrong in the file 'SiteConfig.json' or you have not updated your sites to the newest version ('Update' command).\n\n{ex.ToString()}"); }
@@ -299,7 +300,7 @@ namespace GameServer.Managers
             {
                 if (!site.EndsWith(fileExtension)) continue;
 
-                SiteIdendityFile siteFile = Serializer.SerializeFromFile<SiteIdendityFile>(site);
+                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.Tile == tileToCheck) return true;
             }
 

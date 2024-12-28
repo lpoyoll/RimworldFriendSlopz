@@ -23,7 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\ModConfigFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SettlementFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\SiteConfigFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\SiteIdendityFile.cs" />
+    <Compile Include="..\Shared\Files\Sites\SiteFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\SiteInfoFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\Sites\SiteRewardFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\ThingFile.cs" />
