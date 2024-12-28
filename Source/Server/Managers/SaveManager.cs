@@ -137,15 +137,11 @@ namespace GameServer.Managers
         {
             BackupManager.BackupUser(uid);
 
-            client.listener.disconnectFlag = true;
+            if (client != null) client.listener.disconnectFlag = true;
 
             // Delete save file
             try { File.Delete(Path.Combine(Master.savesPath, uid + fileExtension)); }
             catch { Printer.Warning($"Failed to find {client.userFile.Label}'s save"); }
-
-            // Delete map files
-            MapFile[] userMaps = MapManager.GetAllMapsFromUsername(uid);
-            foreach (MapFile map in userMaps) MapManager.DeleteMap(map);
 
             // Delete caravan files
             CaravanFile[] userCaravans = CaravanManagerHelper.GetCaravansFromUID(uid);
@@ -166,7 +162,7 @@ namespace GameServer.Managers
                 PlayerSettlementManager.RemoveSettlement(client, settlementData);
             }
 
-            InformationDisplayer.DisplayResetPlayer(client.userFile.Label);
+            InformationDisplayer.DisplayResetPlayer(uid);
         }
     }
 }

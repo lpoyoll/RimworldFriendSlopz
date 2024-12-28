@@ -2,6 +2,7 @@ using System.Linq;
 using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Files;
+using GameClient.Misc;
 using GameClient.TCP;
 
 namespace GameClient.Managers
@@ -37,7 +38,7 @@ namespace GameClient.Managers
                 ConnectionDataManager.SaveConnectionData(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Network.StartConnection();
+                Threader.GenerateThread(Threader.Mode.Start);
             }
         }
     }

@@ -2,6 +2,7 @@
 using GameClient.Core.Preferences;
 using GameClient.Files;
 using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.TCP;
 using RimWorld;
 using UnityEngine;
@@ -99,8 +100,8 @@ namespace GameClient.Dialogs
                 Network.ip = serverAddress.Split(':')[0];
                 Network.port = serverAddress.Split(':')[1];
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Attempting to join server"));
-                Network.StartConnection();
+                DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                Threader.GenerateThread(Threader.Mode.Start);
                 Close();
             }
 

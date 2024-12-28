@@ -43,15 +43,6 @@ namespace GameServer.Managers
             else return false;
         }
 
-        public static MapFile[] GetAllMapsFromUsername(string username)
-        {
-            List<MapFile> allUserMaps = new List<MapFile>();
-            string[] allMapPaths = Directory.GetFiles(Master.mapsPath);
-            foreach (string str in allMapPaths) allUserMaps.Add(Serializer.FileBytesToObject<MapFile>(str));
-
-            return allUserMaps.ToArray();
-        }
-
         public static MapFile GetUserMapFromTile(int mapTileToGet)
         {
             string path = Path.Combine(Master.mapsPath, mapTileToGet + fileExtension);

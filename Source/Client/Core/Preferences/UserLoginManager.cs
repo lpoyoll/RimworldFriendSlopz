@@ -125,7 +125,7 @@ namespace GameClient.Core.Preferences
             FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
             {
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Network.StartConnection();
+                Threader.GenerateThread(Threader.Mode.Start);
             });
 
             FloatMenuOption tuple2 = new FloatMenuOption(quickConnectTuples[1].Item1, 
