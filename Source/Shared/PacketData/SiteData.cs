@@ -8,7 +8,7 @@ namespace Shared
     {
         public SiteStepMode _stepMode;
 
-        public SiteIdendityFile _siteFile = new SiteIdendityFile();
+        public SiteFile _siteFile = new SiteFile();
 
         public SiteRewardConfigData _siteConfigFile;
     }

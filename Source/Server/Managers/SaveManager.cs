@@ -148,8 +148,8 @@ namespace GameServer.Managers
             foreach (CaravanFile caravan in userCaravans) CaravanManager.RemoveCaravan(uid, caravan);
 
             // Delete site files
-            SiteIdendityFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
-            foreach (SiteIdendityFile site in playerSites) SiteManager.DestroySiteFromFile(site);
+            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
+            foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
 
             // Delete settlement files
             SettlementFile[] playerSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(uid);
