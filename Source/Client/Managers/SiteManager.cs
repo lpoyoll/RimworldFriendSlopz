@@ -36,11 +36,15 @@ namespace GameClient.Managers
                     break;
 
                 case SiteStepMode.Build:
-                    SpawnSingleSite(siteData._siteFile);
+                    SpawnSingleSite(siteData._file);
                     break;
 
                 case SiteStepMode.Destroy:
-                    RemoveSingleSite(siteData._siteFile);
+                    RemoveSingleSite(siteData._file);
+                    break;
+
+                case SiteStepMode.Rewards:
+                    ReceiveSiteRewards(siteData._rewardFiles);
                     break;
             }
         }
@@ -75,7 +79,7 @@ namespace GameClient.Managers
             Action r1 = delegate
             {
                 SiteData siteData = new SiteData();
-                siteData._siteFile.Tile = SessionValues.chosenSite.Tile;
+                siteData._file.Tile = SessionValues.chosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
@@ -161,8 +165,8 @@ namespace GameClient.Managers
 
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.Build;
-            siteData._siteFile.Tile = SessionValues.chosenCaravan.Tile;
-            siteData._siteFile.Type.DefName = configFile.DefName;
+            siteData._file.Tile = SessionValues.chosenCaravan.Tile;
+            siteData._file.Type.DefName = configFile.DefName;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
@@ -178,10 +182,36 @@ namespace GameClient.Managers
 
             SiteData packetData = new SiteData();
             packetData._stepMode = SiteStepMode.Config;
-            packetData._siteConfigFile = rewardConfig;
+            packetData._rewardConfig = rewardConfig;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), packetData);
             Network.listener.EnqueuePacket(packet);
+        }
+
+        private static void ReceiveSiteRewards(SiteRewardFile[] files)
+        {
+            List<Thing> rewards = new List<Thing>();
+            foreach (SiteRewardFile reward in files)
+            {
+                try
+                {
+                    ThingDef def = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == reward.RewardDef);
+                    Thing toMake = ThingMaker.MakeThing(def);
+                    toMake.stackCount = reward.RewardAmount;
+                    toMake.HitPoints = def.BaseMaxHitPoints;
+                    rewards.Add(toMake);
+
+                    Printer.Message($"Received {reward.RewardAmount} of {reward.RewardDef}", LogImportanceMode.Verbose);
+                }
+                catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
+            }
+
+            if (rewards.Count > 0)
+            {
+                TransferManager.GetTransferedItemsToSettlement(rewards.ToArray(), true, false, false);
+                RimworldManager.GenerateLetter("Site rewards", $"You've received your site rewards", LetterDefOf.PositiveEvent);
+                Printer.Message("Rewards delivered", LogImportanceMode.Verbose);
+            }
         }
     }
 }
