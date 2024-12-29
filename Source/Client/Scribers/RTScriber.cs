@@ -126,6 +126,9 @@ namespace GameClient.Scribers
         }
     }
 
+    // TODO
+    // Find a way to make it usable
+
     public static class TileScriber
     {
         public static string TileToScribe(Tile toSave)
