@@ -106,12 +106,12 @@ namespace GameClient.Dialogs
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (ScriberHelper.CheckIfThingIsHuman(thing))
+            if (ScriberH.CheckIfThingIsHuman(thing))
             {
                 Widgets.Label(fixedRect, $"[H] {itemName}");
             }
 
-            else if (ScriberHelper.CheckIfThingIsAnimal(thing))
+            else if (ScriberH.CheckIfThingIsAnimal(thing))
             {
                 Widgets.Label(fixedRect, $"[A] {itemName}");
             }

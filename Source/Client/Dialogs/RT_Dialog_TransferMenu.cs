@@ -297,7 +297,7 @@ namespace GameClient.Dialogs
                 {
                     foreach (Pawn pawn in SessionValues.chosenCaravan.pawns)
                     {
-                        if (ScriberHelper.CheckIfThingIsHuman(pawn))
+                        if (ScriberH.CheckIfThingIsHuman(pawn))
                         {
                             if (allowHumans)
                             {
@@ -311,7 +311,7 @@ namespace GameClient.Dialogs
                             }
                         }
 
-                        else if (ScriberHelper.CheckIfThingIsAnimal(pawn))
+                        else if (ScriberH.CheckIfThingIsAnimal(pawn))
                         {
                             if (allowAnimals)
                             {
@@ -350,7 +350,7 @@ namespace GameClient.Dialogs
                 {
                     foreach (Pawn pawn in pawnsInMap)
                     {
-                        if (ScriberHelper.CheckIfThingIsAnimal(pawn))
+                        if (ScriberH.CheckIfThingIsAnimal(pawn))
                         {
                             if (allowAnimals)
                             {

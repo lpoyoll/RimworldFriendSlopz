@@ -312,7 +312,7 @@ namespace GameClient.Managers
 
             if (SessionValues.isActivityHost)
             {
-                foreach (Pawn pawn in OnlineActivityManager.activityMap.mapPawns.AllPawns.Where(fetch => fetch.Faction == Faction.OfPlayer && ScriberHelper.CheckIfThingIsHuman(fetch)))
+                foreach (Pawn pawn in OnlineActivityManager.activityMap.mapPawns.AllPawns.Where(fetch => fetch.Faction == Faction.OfPlayer && ScriberH.CheckIfThingIsHuman(fetch)))
                 {
                     toGet.Add(HumanScriber.HumanToString(pawn));
                 }
@@ -320,7 +320,7 @@ namespace GameClient.Managers
 
             else
             {
-                foreach (Pawn pawn in SessionValues.chosenCaravan.PawnsListForReading.Where(fetch => ScriberHelper.CheckIfThingIsHuman(fetch)))
+                foreach (Pawn pawn in SessionValues.chosenCaravan.PawnsListForReading.Where(fetch => ScriberH.CheckIfThingIsHuman(fetch)))
                 {
                     toGet.Add(HumanScriber.HumanToString(pawn));
                 }
@@ -335,7 +335,7 @@ namespace GameClient.Managers
 
             if (SessionValues.isActivityHost)
             {
-                foreach (Pawn pawn in OnlineActivityManager.activityMap.mapPawns.AllPawns.Where(fetch => fetch.Faction == Faction.OfPlayer && ScriberHelper.CheckIfThingIsAnimal(fetch)))
+                foreach (Pawn pawn in OnlineActivityManager.activityMap.mapPawns.AllPawns.Where(fetch => fetch.Faction == Faction.OfPlayer && ScriberH.CheckIfThingIsAnimal(fetch)))
                 {
                     toGet.Add(AnimalScriber.AnimalToString(pawn));
                 }
@@ -343,7 +343,7 @@ namespace GameClient.Managers
 
             else
             {
-                foreach (Pawn pawn in SessionValues.chosenCaravan.PawnsListForReading.Where(fetch => fetch.Faction == Faction.OfPlayer && ScriberHelper.CheckIfThingIsAnimal(fetch)))
+                foreach (Pawn pawn in SessionValues.chosenCaravan.PawnsListForReading.Where(fetch => fetch.Faction == Faction.OfPlayer && ScriberH.CheckIfThingIsAnimal(fetch)))
                 {
                     toGet.Add(AnimalScriber.AnimalToString(pawn));
                 }
@@ -399,8 +399,8 @@ namespace GameClient.Managers
                     if (target.Thing == null) targetTypeList.Add(ActionTargetType.Cell);
                     else
                     {
-                        if (ScriberHelper.CheckIfThingIsHuman(target.Thing)) targetTypeList.Add(ActionTargetType.Human);
-                        else if (ScriberHelper.CheckIfThingIsAnimal(target.Thing)) targetTypeList.Add(ActionTargetType.Animal);
+                        if (ScriberH.CheckIfThingIsHuman(target.Thing)) targetTypeList.Add(ActionTargetType.Human);
+                        else if (ScriberH.CheckIfThingIsAnimal(target.Thing)) targetTypeList.Add(ActionTargetType.Animal);
                         else targetTypeList.Add(ActionTargetType.Thing);
                     }
                 }
@@ -532,9 +532,9 @@ namespace GameClient.Managers
         {
             CreationOrderData creationOrder = new CreationOrderData();
 
-            if (ScriberHelper.CheckIfThingIsHuman(thing)) creationOrder._creationType = CreationType.Human;
-            else if (ScriberHelper.CheckIfThingIsAnimal(thing)) creationOrder._creationType = CreationType.Animal;
-            else if (ScriberHelper.CheckIfThingIsCorpse(thing)) creationOrder._creationType = CreationType.Corpse;
+            if (ScriberH.CheckIfThingIsHuman(thing)) creationOrder._creationType = CreationType.Human;
+            else if (ScriberH.CheckIfThingIsAnimal(thing)) creationOrder._creationType = CreationType.Animal;
+            else if (ScriberH.CheckIfThingIsCorpse(thing)) creationOrder._creationType = CreationType.Corpse;
             else creationOrder._creationType = CreationType.Thing;
 
             // Modify position based on center cell because RimWorld doesn't store it by default

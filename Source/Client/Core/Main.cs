@@ -1,7 +1,9 @@
 ﻿using GameClient.Core.Preferences;
 using GameClient.Managers;
 using GameClient.Misc;
+using GameClient.Scribers;
 using HarmonyLib;
+using RimWorld;
 using Shared;
 using System;
 using System.Globalization;
