@@ -42,7 +42,7 @@ namespace GameClient.Core.Configs
             listingStandard.GapLine();
             listingStandard.Label("Debugging");
             if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ClientValues.currentVerboseMode}")) ShowVerboseFloatMenu();
-            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.appdataFolderPath);
+            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.appdataPath);
             if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertSaveFloatMenu(); }
 
             listingStandard.GapLine();

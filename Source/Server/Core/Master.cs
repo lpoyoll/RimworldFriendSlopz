@@ -8,8 +8,6 @@ namespace GameServer.Core
 
     public static class Master
     {
-        // Root
-
         public static string mainPath;
 
         public static string assetsPath;
@@ -20,7 +18,7 @@ namespace GameServer.Core
 
         public static string logsPath;
 
-        // Folders
+        public static string tempPath;
 
         public static string mapsPath;
 

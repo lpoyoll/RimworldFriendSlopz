@@ -38,8 +38,8 @@ namespace GameServer.Core
         public static void SetPaths()
         {
             Master.mainPath = Directory.GetCurrentDirectory();
-
             Master.configsPath = Path.Combine(Master.mainPath, "Configs");
+            Master.tempPath = Path.Combine(Master.mainPath, "Temp");
 
             Master.assetsPath = Path.Combine(Master.mainPath, "Assets");
             Master.mapsPath = Path.Combine(Master.assetsPath, "Maps");
@@ -64,6 +64,7 @@ namespace GameServer.Core
             if (!Directory.Exists(Master.configsPath)) Directory.CreateDirectory(Master.configsPath);
             if (!Directory.Exists(Master.logsPath)) Directory.CreateDirectory(Master.logsPath);
             if (!Directory.Exists(Master.backupsPath)) Directory.CreateDirectory(Master.backupsPath);
+            if (!Directory.Exists(Master.tempPath)) Directory.CreateDirectory(Master.tempPath);
 
             if (!Directory.Exists(Master.usersPath)) Directory.CreateDirectory(Master.usersPath);
             if (!Directory.Exists(Master.savesPath)) Directory.CreateDirectory(Master.savesPath);
