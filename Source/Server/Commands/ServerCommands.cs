@@ -131,10 +131,6 @@ namespace GameServer.Commands
             "will use UPnP to portforward the server",
             PortForwardCommandAction);
 
-        public static readonly BaseServerCommand setGameSpeedCommand = new BaseServerCommand("setgamespeed", 1,
-            "Changes the enforced game speed for all players",
-            SetGameSpeedCommandAction);
-
         public static readonly BaseServerCommand resetWorldCommand = new BaseServerCommand("resetworld", 0,
             "Resets all the world related data and stores a backup of it",
             ResetWorldCommandAction);
@@ -151,10 +147,6 @@ namespace GameServer.Commands
             "Clears the console output",
             ClearCommandAction);
 
-        public static readonly BaseServerCommand showModManagerCommand = new BaseServerCommand("showmodmanager", 1,
-            "Allows a player to change mod configuration for the server",
-            ShowModManagerCommandAction);
-
         public static List<BaseServerCommand> commands = new List<BaseServerCommand>
         {
             backupCommand,
@@ -168,7 +160,6 @@ namespace GameServer.Commands
             doSiteRewards,
             eventAllCommand,
             eventCommand,
-            setGameSpeedCommand,
             eventListCommand,
             forceQuitCommand,
             forceSaveCommand,
@@ -186,8 +177,7 @@ namespace GameServer.Commands
             serverMessageCommand,
             whitelistAddCommand,
             whitelistCommand,
-            whitelistRemoveCommand,
-            showModManagerCommand
+            whitelistRemoveCommand
         };
     }
 
@@ -369,19 +359,6 @@ namespace GameServer.Commands
             Printer.Title("----------------------------------------");
             foreach (string str in Master.modConfig.ForbiddenMods) Printer.Warning($"{str}");
             Printer.Title("----------------------------------------");
-        }
-
-        public static void SetGameSpeedCommandAction()
-        {
-            int desiredSpeed = int.Parse(ConsoleManager.commandParameters[0]);
-            if (desiredSpeed < 0 || desiredSpeed > 4) Printer.Error("Tried to set invalid game speed, specify 0-4");
-            else
-            {
-                Master.actionConfigs.EnforcedGameSpeed = int.Parse(ConsoleManager.commandParameters[0]);
-                Main_.SaveValueFile(ServerFileMode.Actions);
-
-                Printer.Warning($"Enforced game speed to '{Master.actionConfigs.EnforcedGameSpeed}'");
-            }
         }
 
         public static void DoSiteRewardsCommandAction()
@@ -623,27 +600,6 @@ namespace GameServer.Commands
             Console.Clear();
 
             Printer.Title("[Cleared console]");
-        }
-
-        public static void ShowModManagerCommandAction()
-        {
-            ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
-            if (toFind == null) Printer.Error($"Player '{ConsoleManager.commandParameters[0]}' was not found");
-            else
-            {
-                if (!toFind.userFile.IsAdmin) Printer.Error($"Player '{ConsoleManager.commandParameters[0]}' needs to be an operator");
-                else
-                {
-                    ModConfigData data = new ModConfigData();
-                    data._stepMode = ModConfigStepMode.Ask;
-                    data._configFile = Master.modConfig;
-
-                    Packet packet = Packet.CreatePacketFromObject(nameof(ModManager), data);
-                    toFind.listener.EnqueuePacket(packet);
-
-                    Printer.Warning("Command sent sucessfully");
-                }
-            }
         }
     }
 }

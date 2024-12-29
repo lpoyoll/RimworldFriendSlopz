@@ -3,7 +3,7 @@ using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using static GameClient.Managers.DialogManagerHelper;
+using static GameClient.Managers.DialogManagerH;
 
 namespace GameClient.Dialogs
 {

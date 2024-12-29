@@ -95,7 +95,7 @@ namespace GameClient.Managers
         public static void PopWaitDialog() { dialogWait?.Close(); }
     }
 
-    public static class DialogManagerHelper
+    public static class DialogManagerH
     {
         public enum RectLocation { TopLeft, TopCenter, TopRight, MiddleLeft, MiddleCenter, MiddleRight, BottomLeft, BottomCenter, BottomRight }
 
