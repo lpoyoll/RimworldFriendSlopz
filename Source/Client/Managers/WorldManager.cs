@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
+using GameClient.Scribers;
 using GameClient.TCP;
 using GameClient.Values;
 using RimWorld;
@@ -232,6 +233,7 @@ namespace GameClient.Managers
             WorldManager.cachedWorldValues.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
             WorldManager.cachedWorldValues.NPCSettlements = GetPlanetNPCSettlements();
             WorldManager.cachedWorldValues.NPCFactions = GetPlanetNPCFactions();
+
             return WorldManager.cachedWorldValues;
         }
 

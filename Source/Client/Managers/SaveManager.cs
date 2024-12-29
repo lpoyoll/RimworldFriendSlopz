@@ -77,7 +77,7 @@ namespace GameClient.Managers
             Network.listener.downloadManager = null;
 
             byte[] fileBytes = File.ReadAllBytes(tempSaveFilePath);
-            fileBytes = GZip.Decompress(fileBytes);
+            fileBytes = GZip.DecompressBytes(fileBytes);
 
             File.WriteAllBytes(serverSaveFilePath, fileBytes);
             File.Delete(tempSaveFilePath);
@@ -138,7 +138,7 @@ namespace GameClient.Managers
                 ClientValues.ToggleSendingSaveToServer(true);
 
                 byte[] saveBytes = File.ReadAllBytes(saveFilePath);
-                saveBytes = GZip.Compress(saveBytes);
+                saveBytes = GZip.CompressBytes(saveBytes);
 
                 File.WriteAllBytes(tempSaveFilePath, saveBytes);
                 Network.listener.uploadManager = new UploadManager(tempSaveFilePath);
