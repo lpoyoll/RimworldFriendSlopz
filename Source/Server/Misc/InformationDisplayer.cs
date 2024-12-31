@@ -70,5 +70,11 @@ namespace GameServer.Misc
         public static void DisplayVersionMismatch(string value) { Printer.Warning($"[Version mismatch] > {value}"); }
 
         public static void DisplayReceivePacket(string value, LogImportanceMode mode) { Printer.Message($"[Packet] > {value}", mode); }
+
+        public static void DisplaySetScenario(string value) { Printer.Message($"[Set scenario] > {value}"); }
+
+        public static void DisplaySetStoryteller(string value) { Printer.Message($"[Set storyteller] > {value}"); }
+
+        public static void DisplaySetDifficulty(string value) { Printer.Message($"[Set difficulty] > {value}"); }
     }
 }

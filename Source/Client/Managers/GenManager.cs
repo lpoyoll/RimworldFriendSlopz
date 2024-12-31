@@ -29,6 +29,81 @@ namespace GameClient.Managers
             difficultyFile = data._difficultyValues;
         }
 
+        public static ScenarioValuesFile GetScenario(Page_SelectScenario __instance)
+        {
+            ScenarioValuesFile file = new ScenarioValuesFile();
+
+            file.ScenarioName = GenManagerH.GetScenarioReference(__instance).name;
+
+            return file;
+        }
+
+        public static void SetScenario(ScenarioValuesFile file)
+        {
+            if (!file.EnforceScenario) return;
+            else
+            {
+                Printer.Warning("scenario");
+                Current.Game.Scenario = ScenarioLister.AllScenarios().First(fetch => fetch.name == file.ScenarioName);
+            }
+        }
+
+        public static void SendScenario(ScenarioValuesFile file, bool mode)
+        {
+            file.EnforceScenario = mode;
+
+            GenData data = new GenData();
+            data._stepMode = GenStepMode.Scenario;
+            data._scenario = file;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(GenManager), data);
+            Network.listener.EnqueuePacket(packet);
+        }
+
+        public static StorytellerValuesFile GetStoryteller(Page_SelectStoryteller __instance)
+        {
+            StorytellerValuesFile file = new StorytellerValuesFile();
+
+            file.StorytellerDefname = GenManagerH.GetStorytellerReference(__instance).def.defName;
+
+            return file;
+        }
+
+        public static void SetStoryteller(StorytellerValuesFile file)
+        {
+            if (!file.EnforceStoryteller) return;
+            else
+            {
+                StorytellerDef storytellerDef = DefDatabase<StorytellerDef>.AllDefs.First(fetch => fetch.defName == file.StorytellerDefname);
+                DifficultyDef difficultyDef = DifficultyDefOf.Rough;
+                Difficulty difficulty = new Difficulty(difficultyDef);
+
+                if (Current.Game.storyteller != null && Current.Game.storyteller.def == storytellerDef) Printer.Warning("skipped");
+                else
+                {
+                    if (Current.Game.storyteller != null)
+                    {
+                        difficultyDef = Current.Game.storyteller.difficultyDef;
+                        difficulty = Current.Game.storyteller.difficulty;
+                    }
+
+                    Current.Game.storyteller = new Storyteller(storytellerDef, difficultyDef, difficulty);
+                }
+            }
+        }
+
+        public static void SendStoryteller(StorytellerValuesFile file, bool mode)
+        {
+            file.EnforceStoryteller = mode;
+
+            GenData data = new GenData();
+            data._stepMode = GenStepMode.Storyteller;
+            data._storyteller = file;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(GenManager), data);
+            Network.listener.EnqueuePacket(packet);
+        }
+
         public static DifficultyValuesFile GetDifficulty()
         {
             DifficultyValuesFile file = new DifficultyValuesFile();
@@ -220,81 +295,6 @@ namespace GameClient.Managers
             GenData data = new GenData();
             data._stepMode = GenStepMode.Difficulty;
             data._difficulty = file;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(GenManager), data);
-            Network.listener.EnqueuePacket(packet);
-        }
-
-        public static ScenarioValuesFile GetScenario(Page_SelectScenario __instance)
-        {
-            ScenarioValuesFile file = new ScenarioValuesFile();
-
-            file.ScenarioName = GenManagerH.GetScenarioReference(__instance).name;
-
-            return file;
-        }
-
-        public static void SetScenario(ScenarioValuesFile file)
-        {
-            if (!file.EnforceScenario) return;
-            else
-            {
-                Printer.Warning("scenario");
-                Current.Game.Scenario = ScenarioLister.AllScenarios().First(fetch => fetch.name == file.ScenarioName);
-            }
-        }
-
-        public static void SendScenario(ScenarioValuesFile file, bool mode)
-        {
-            file.EnforceScenario = mode;
-
-            GenData data = new GenData();
-            data._stepMode = GenStepMode.Scenario;
-            data._scenario = file;
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(GenManager), data);
-            Network.listener.EnqueuePacket(packet);
-        }
-
-        public static StorytellerValuesFile GetStoryteller(Page_SelectStoryteller __instance)
-        {
-            StorytellerValuesFile file = new StorytellerValuesFile();
-
-            file.StorytellerDefname = GenManagerH.GetStorytellerReference(__instance).def.defName;
-
-            return file;
-        }
-
-        public static void SetStoryteller(StorytellerValuesFile file)
-        {
-            if (!file.EnforceStoryteller) return;
-            else
-            {
-                StorytellerDef storytellerDef = DefDatabase<StorytellerDef>.AllDefs.First(fetch => fetch.defName == file.StorytellerDefname);
-                DifficultyDef difficultyDef = DifficultyDefOf.Rough;
-                Difficulty difficulty = new Difficulty(difficultyDef);
-
-                if (Current.Game.storyteller != null && Current.Game.storyteller.def == storytellerDef) Printer.Warning("skipped");
-                else
-                {
-                    if (Current.Game.storyteller != null)
-                    {
-                        difficultyDef = Current.Game.storyteller.difficultyDef;
-                        difficulty = Current.Game.storyteller.difficulty;
-                    }
-
-                    Current.Game.storyteller = new Storyteller(storytellerDef, difficultyDef, difficulty);
-                }
-            }
-        }
-
-        public static void SendStoryteller(StorytellerValuesFile file, bool mode)
-        {
-            file.EnforceStoryteller = mode;
-
-            GenData data = new GenData();
-            data._stepMode = GenStepMode.Storyteller;
-            data._storyteller = file;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(GenManager), data);
             Network.listener.EnqueuePacket(packet);
