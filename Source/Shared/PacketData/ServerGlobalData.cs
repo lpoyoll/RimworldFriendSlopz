@@ -19,6 +19,10 @@ namespace Shared
 
         public RoadValuesFile _roadValues;
 
+        public ScenarioValuesFile _scenarioValues;
+
+        public StorytellerValuesFile _storytellerValues;
+
         public DifficultyValuesFile _difficultyValues;
 
         public PlanetNPCSettlement[] _npcSettlements;

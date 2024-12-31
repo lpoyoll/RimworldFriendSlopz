@@ -14,7 +14,7 @@ namespace Shared
 
         public enum SaveStepMode { Send, Receive, Reset }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Discord, Backup, Mods, Chat }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Scenario, Storyteller, Discord, Backup, Mods, Chat }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 

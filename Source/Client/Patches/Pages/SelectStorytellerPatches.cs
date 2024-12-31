@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
@@ -38,6 +39,87 @@ namespace GameClient.Patches.Pages
     [HarmonyPatch(typeof(Page_SelectStoryteller), "DoWindowContents")]
     public static class PatchSelectStorytellerPage
     {
+        private static bool executed;
+
+        [HarmonyPrefix]
+        public static bool DoPre(Rect rect, Page_SelectStoryteller __instance)
+        {
+            if (Network.state == ClientNetworkState.Disconnected) return true;
+
+            if (ClientValues.isGeneratingFreshWorld)
+            {
+                if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
+                {
+                    Current.Game.storyteller = GenManagerH.GetStorytellerReference(__instance);
+
+                    Action difficultyYes = delegate
+                    {
+                        GenManager.SetDifficulty(GenManager.GetDifficulty());
+                        GenManager.SendDifficulty(GenManager.GetDifficulty(), true);
+
+                        DialogManager.PushNewDialog(__instance.next);
+                        __instance.Close();
+                    };
+
+                    Action difficultyNo = delegate
+                    {
+                        GenManager.SetDifficulty(GenManager.GetDifficulty());
+                        GenManager.SendDifficulty(GenManager.GetDifficulty(), false);
+
+                        DialogManager.PushNewDialog(__instance.next);
+                        __instance.Close();
+                    };
+
+                    RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("Do you want to ENFORCE the selected DIFFICULTY?", difficultyYes, difficultyNo);
+
+                    Action storytellerYes = delegate
+                    {
+                        GenManager.SetStoryteller(GenManager.GetStoryteller(__instance));
+                        GenManager.SendStoryteller(GenManager.GetStoryteller(__instance), true);
+
+                        DialogManager.PushNewDialog(d2);
+                    };
+
+                    Action storytellerNo = delegate
+                    {
+                        GenManager.SetStoryteller(GenManager.GetStoryteller(__instance));
+                        GenManager.SendStoryteller(GenManager.GetStoryteller(__instance), false);
+
+                        DialogManager.PushNewDialog(d2);
+                    };
+
+                    RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to ENFORCE the selected STORYTELLER?", storytellerYes, storytellerNo);
+
+                    DialogManager.PushNewDialog(d1);
+                };
+            }
+
+            else
+            {
+                if (GenManager.storytellerFile.EnforceStoryteller)
+                {
+                    if (executed) return true;
+                    else
+                    {
+                        Action toDo = delegate
+                        {
+                            GenManager.SetStoryteller(GenManager.storytellerFile);
+
+                            DialogManager.PushNewDialog(__instance.next);
+                            __instance.Close();
+
+                            executed = false;
+                        };
+                        DialogManager.PushNewDialog(new RT_Dialog_OK("Storyteller will be forced by the server", toDo));
+
+                        executed = true;
+                    }
+                }
+            }
+
+            return true;
+        }
+
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
@@ -51,53 +133,29 @@ namespace GameClient.Patches.Pages
         }
     }
 
-    [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "DoWindowContents")]
-    public static class PatchSelectStorytellerInGamePage
+    [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "PreClose")]
+    public static class PatchSelectStorytellerInGamePageClose
     {
         [HarmonyPrefix]
-        public static bool DoPre(Rect rect, Page_SelectStorytellerInGame __instance)
+        public static bool DoPre()
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (GenManager.difficultyFile.EnforceDifficulty && !ServerValues.isAdmin)
+            if (GenManager.difficultyFile.EnforceDifficulty || GenManager.storytellerFile.EnforceStoryteller)
             {
-                __instance.Close();
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Difficulty can't be changed in this server!"));
+                Action toDo = delegate
+                {
+                    GenManager.SetStoryteller(GenManager.storytellerFile);
+
+                    GenManager.SetDifficulty(GenManager.difficultyFile);
+                };
+
+                DialogManager.PushNewDialog(new RT_Dialog_OK("Settings might change to reflect server enforcements", toDo));
+
                 return false;
             }
 
-            else
-            {
-                if (ServerValues.isAdmin)
-                {
-                    Text.Font = GameFont.Small;
-                    Vector2 buttonSize = new Vector2(150f, 38f);
-                    Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Enforce difficulty"))
-                    {
-                        __instance.Close();
-                        GenManager.SendDifficulty(GenManager.GetDifficulty());
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Custom difficulty has been changed!"));
-                    }
-                }
-
-                return true;
-            }
-        }
-
-        [HarmonyPostfix]
-        public static void DoPost(Rect rect)
-        {
-            if (Network.state == ClientNetworkState.Disconnected) return;
-            if (GenManager.difficultyFile.EnforceDifficulty && !ServerValues.isAdmin) return;
-
-            if (ServerValues.isAdmin)
-            {
-                Text.Font = GameFont.Small;
-                Vector2 buttonSize = new Vector2(150f, 38f);
-                Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty")) { }
-            }
+            return true;
         }
     }
 
@@ -207,7 +265,7 @@ namespace GameClient.Patches.Pages
 
                             difficulty = allDef;
                         }
-
+                        
                         infoListing.Gap(3f);
                     }
                 }

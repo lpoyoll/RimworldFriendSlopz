@@ -60,6 +60,10 @@ namespace GameServer.Core
 
         public static DifficultyValuesFile difficultyValues;
 
+        public static StorytellerValuesFile storytellerValues;
+
+        public static ScenarioValuesFile scenarioValues;
+
         public static RoadValuesFile roadValues;
 
         public static DiscordConfigFile discordConfig;

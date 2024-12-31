@@ -16,23 +16,57 @@ namespace GameServer.Managers
             switch (data._stepMode)
             {
                 case GenStepMode.Scenario:
+                    SetScenario(client, data._scenario);
                     break;
 
                 case GenStepMode.Storyteller:
+                    SetStoryteller(client, data._storyteller);
                     break;
 
                 case GenStepMode.Difficulty:
-                    SetCustomDifficulty(client, data._difficulty);
+                    SetDifficulty(client, data._difficulty);
                     break;
             }
         }
 
-        public static void SetCustomDifficulty(ServerClient client, DifficultyValuesFile file)
+        private static void SetScenario(ServerClient client, ScenarioValuesFile file)
         {
-            if (!client.userFile.IsAdmin)
+            if (!client.userFile.IsAdmin && Master.worldValues != null)
             {
                 UserManager.BanPlayerFromName(client.userFile.Uid);
-                Printer.Warning($"Player {client.userFile.Uid} attempted to set the custom difficulty while not being an admin");
+                Printer.Warning($"Player {client.userFile.Uid} attempted to set the scenario while not being an admin");
+            }
+
+            else
+            {
+                Master.scenarioValues = file;
+                Main_.SaveValueFile(ServerFileMode.Scenario, true);
+                Printer.Warning($"[Set scenario] > {client.userFile.Uid}");
+            }
+        }
+
+        private static void SetStoryteller(ServerClient client, StorytellerValuesFile file)
+        {
+            if (!client.userFile.IsAdmin && Master.worldValues != null)
+            {
+                UserManager.BanPlayerFromName(client.userFile.Uid);
+                Printer.Warning($"Player {client.userFile.Uid} attempted to set the storyteller while not being an admin");
+            }
+
+            else
+            {
+                Master.storytellerValues = file;
+                Main_.SaveValueFile(ServerFileMode.Storyteller, true);
+                Printer.Warning($"[Set storyteller] > {client.userFile.Uid}");
+            }
+        }
+
+        private static void SetDifficulty(ServerClient client, DifficultyValuesFile file)
+        {
+            if (!client.userFile.IsAdmin && Master.worldValues != null)
+            {
+                UserManager.BanPlayerFromName(client.userFile.Uid);
+                Printer.Warning($"Player {client.userFile.Uid} attempted to set the difficulty while not being an admin");
             }
 
             else

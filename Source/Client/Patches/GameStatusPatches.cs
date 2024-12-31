@@ -23,7 +23,6 @@ namespace GameClient.Patches
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
-                    GenManager.SetDifficulty(GenManager.difficultyFile);
                     SaveManager.ForceSave();
 
                     if (ClientValues.isGeneratingFreshWorld)
@@ -45,7 +44,6 @@ namespace GameClient.Patches
                 {
                     PlanetManager.BuildPlanet();
                     ClientValues.ToggleReadyToPlay(true);
-                    GenManager.SetDifficulty(GenManager.difficultyFile);
                 }
             }
         }
@@ -125,17 +123,6 @@ namespace GameClient.Patches
             public static void DoPost()
             {
                 if (Network.state == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
-                else return;
-            }
-        }
-
-        [HarmonyPatch(typeof(Page_SelectStorytellerInGame), nameof(Page_SelectStorytellerInGame.DoWindowContents))]
-        public static class PatchCustomDifficulty
-        {
-            [HarmonyPostfix]
-            public static void DoPost()
-            {
-                if (Network.state == ClientNetworkState.Connected) GenManager.SetDifficulty(GenManager.difficultyFile);
                 else return;
             }
         }

@@ -47,6 +47,8 @@ namespace GameServer.Managers
             globalData._eventValues = EventManagerHelper.loadedEvents;
             globalData._siteValues = Master.siteValues;
             globalData._difficultyValues = Master.difficultyValues;
+            globalData._scenarioValues = Master.scenarioValues;
+            globalData._storytellerValues = Master.storytellerValues;
             globalData._actionValues = Master.actionConfigs;
             globalData._roadValues = Master.roadValues;
             return globalData;

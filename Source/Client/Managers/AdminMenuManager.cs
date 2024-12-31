@@ -11,7 +11,7 @@ namespace GameClient.Managers
 
         private static readonly string dialogDescription = "Choose which action to execute";
 
-        private static readonly string[] menuButtons = new string[] { "Mod Manager", "Custom Difficulty" };
+        private static readonly string[] menuButtons = new string[] { "Mod Manager" };
 
         public static void ShowAdminMenu()
         {
@@ -27,10 +27,6 @@ namespace GameClient.Managers
             {
                 case 0:
                     ModManager.OpenModManagerMenu(false);
-                    break;
-
-                case 1:
-                    DialogManager.PushNewDialog(new Page_SelectStorytellerInGame());
                     break;
             }
         }

@@ -117,6 +117,12 @@ namespace GameServer.Core
             LoadValueFile(ServerFileMode.Difficulty);
             SaveValueFile(ServerFileMode.Difficulty, false);
 
+            LoadValueFile(ServerFileMode.Scenario);
+            SaveValueFile(ServerFileMode.Scenario, false);
+
+            LoadValueFile(ServerFileMode.Storyteller);
+            SaveValueFile(ServerFileMode.Storyteller, false);
+
             LoadValueFile(ServerFileMode.Discord);
             SaveValueFile(ServerFileMode.Discord, false);
 
@@ -173,6 +179,16 @@ namespace GameServer.Core
                 case ServerFileMode.Difficulty:
                     pathToSave = Path.Combine(Master.configsPath, "DifficultyConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.difficultyValues);
+                    break;
+
+                case ServerFileMode.Scenario:
+                    pathToSave = Path.Combine(Master.configsPath, "ScenarioConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.scenarioValues);
+                    break;
+
+                case ServerFileMode.Storyteller:
+                    pathToSave = Path.Combine(Master.configsPath, "StorytellerConfig.json");
+                    Serializer.SerializeToFile(pathToSave, Master.storytellerValues);
                     break;
 
                 case ServerFileMode.Discord:
@@ -269,6 +285,26 @@ namespace GameServer.Core
                     {
                         Master.difficultyValues = new DifficultyValuesFile();
                         Serializer.SerializeToFile(pathToLoad, Master.difficultyValues);
+                    }
+                    break;
+
+                case ServerFileMode.Scenario:
+                    pathToLoad = Path.Combine(Master.configsPath, "ScenarioConfig.json");
+                    if (File.Exists(pathToLoad)) Master.scenarioValues = Serializer.SerializeFromFile<ScenarioValuesFile>(pathToLoad);
+                    else
+                    {
+                        Master.scenarioValues = new ScenarioValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.scenarioValues);
+                    }
+                    break;
+
+                case ServerFileMode.Storyteller:
+                    pathToLoad = Path.Combine(Master.configsPath, "StorytellerConfig.json");
+                    if (File.Exists(pathToLoad)) Master.storytellerValues = Serializer.SerializeFromFile<StorytellerValuesFile>(pathToLoad);
+                    else
+                    {
+                        Master.storytellerValues = new StorytellerValuesFile();
+                        Serializer.SerializeToFile(pathToLoad, Master.storytellerValues);
                     }
                     break;
 
