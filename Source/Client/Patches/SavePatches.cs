@@ -25,9 +25,9 @@ namespace GameClient.Patches
                 ClientValues.ToggleSavingGame(true);
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
-                GenManager.SetScenario(GenManager.scenarioFile);
-                GenManager.SetStoryteller(GenManager.storytellerFile);
-                GenManager.SetDifficulty(GenManager.difficultyFile);
+                GameParameterManager.SetScenario(GameParameterManager.scenarioFile);
+                GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
+                GameParameterManager.SetDifficulty(GameParameterManager.difficultyFile);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
 

@@ -7,11 +7,11 @@ using static Shared.CommonEnumerators;
 namespace GameServer.Managers
 {
     [RTManager]
-    public static class GenManager
+    public static class GameParameterManager
     {
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            GenData data = Serializer.ConvertBytesToObject<GenData>(packet.contents);
+            GameParameterData data = Serializer.ConvertBytesToObject<GameParameterData>(packet.contents);
 
             switch (data._stepMode)
             {

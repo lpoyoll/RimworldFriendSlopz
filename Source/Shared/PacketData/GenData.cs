@@ -2,7 +2,7 @@ using static Shared.CommonEnumerators;
 
 namespace Shared
 {
-    public class GenData
+    public class GameParameterData
     {
         public GenStepMode _stepMode;
 

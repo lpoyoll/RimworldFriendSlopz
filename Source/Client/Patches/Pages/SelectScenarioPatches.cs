@@ -24,7 +24,7 @@ namespace GameClient.Patches.Pages
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (!ClientValues.isGeneratingFreshWorld && GenManager.scenarioFile.EnforceScenario)
+            if (!ClientValues.isGeneratingFreshWorld && GameParameterManager.scenarioFile.EnforceScenario)
             {
                 if (executed) return true;
                 else
@@ -32,7 +32,7 @@ namespace GameClient.Patches.Pages
                     Action toDo = delegate
                     {
                         Page_SelectScenario.BeginScenarioConfiguration(GenManagerH.GetScenarioReference(__instance), __instance);
-                        GenManager.SetScenario(GenManager.scenarioFile);
+                        GameParameterManager.SetScenario(GameParameterManager.scenarioFile);
 
                         DialogManager.PushNewDialog(__instance.next);
                         __instance.Close();
@@ -62,8 +62,8 @@ namespace GameClient.Patches.Pages
 
                         Action a1 = delegate
                         {
-                            GenManager.SetScenario(GenManager.GetScenario(__instance));
-                            GenManager.SendScenario(GenManager.GetScenario(__instance), true);
+                            GameParameterManager.SetScenario(GameParameterManager.GetScenario(__instance));
+                            GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), true);
 
                             DialogManager.PushNewDialog(__instance.next);
                             __instance.Close();
@@ -71,8 +71,8 @@ namespace GameClient.Patches.Pages
 
                         Action a2 = delegate
                         {
-                            GenManager.SetScenario(GenManager.GetScenario(__instance));
-                            GenManager.SendScenario(GenManager.GetScenario(__instance), false);
+                            GameParameterManager.SetScenario(GameParameterManager.GetScenario(__instance));
+                            GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), false);
 
                             DialogManager.PushNewDialog(__instance.next);
                             __instance.Close();

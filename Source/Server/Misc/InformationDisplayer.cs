@@ -71,10 +71,10 @@ namespace GameServer.Misc
 
         public static void DisplayReceivePacket(string value, LogImportanceMode mode) { Printer.Message($"[Packet] > {value}", mode); }
 
-        public static void DisplaySetScenario(string value) { Printer.Message($"[Set scenario] > {value}"); }
+        public static void DisplaySetScenario(string value) { Printer.Warning($"[Set scenario] > {value}"); }
 
-        public static void DisplaySetStoryteller(string value) { Printer.Message($"[Set storyteller] > {value}"); }
+        public static void DisplaySetStoryteller(string value) { Printer.Warning($"[Set storyteller] > {value}"); }
 
-        public static void DisplaySetDifficulty(string value) { Printer.Message($"[Set difficulty] > {value}"); }
+        public static void DisplaySetDifficulty(string value) { Printer.Warning($"[Set difficulty] > {value}"); }
     }
 }

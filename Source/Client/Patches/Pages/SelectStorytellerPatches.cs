@@ -54,8 +54,8 @@ namespace GameClient.Patches.Pages
 
                     Action difficultyYes = delegate
                     {
-                        GenManager.SetDifficulty(GenManager.GetDifficulty());
-                        GenManager.SendDifficulty(GenManager.GetDifficulty(), true);
+                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty());
+                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(), true);
 
                         DialogManager.PushNewDialog(__instance.next);
                         __instance.Close();
@@ -63,8 +63,8 @@ namespace GameClient.Patches.Pages
 
                     Action difficultyNo = delegate
                     {
-                        GenManager.SetDifficulty(GenManager.GetDifficulty());
-                        GenManager.SendDifficulty(GenManager.GetDifficulty(), false);
+                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty());
+                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(), false);
 
                         DialogManager.PushNewDialog(__instance.next);
                         __instance.Close();
@@ -74,16 +74,16 @@ namespace GameClient.Patches.Pages
 
                     Action storytellerYes = delegate
                     {
-                        GenManager.SetStoryteller(GenManager.GetStoryteller(__instance));
-                        GenManager.SendStoryteller(GenManager.GetStoryteller(__instance), true);
+                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance));
+                        GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), true);
 
                         DialogManager.PushNewDialog(d2);
                     };
 
                     Action storytellerNo = delegate
                     {
-                        GenManager.SetStoryteller(GenManager.GetStoryteller(__instance));
-                        GenManager.SendStoryteller(GenManager.GetStoryteller(__instance), false);
+                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance));
+                        GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), false);
 
                         DialogManager.PushNewDialog(d2);
                     };
@@ -96,14 +96,14 @@ namespace GameClient.Patches.Pages
 
             else
             {
-                if (GenManager.storytellerFile.EnforceStoryteller)
+                if (GameParameterManager.storytellerFile.EnforceStoryteller)
                 {
                     if (executed) return true;
                     else
                     {
                         Action toDo = delegate
                         {
-                            GenManager.SetStoryteller(GenManager.storytellerFile);
+                            GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
 
                             DialogManager.PushNewDialog(__instance.next);
                             __instance.Close();
@@ -141,13 +141,13 @@ namespace GameClient.Patches.Pages
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (GenManager.difficultyFile.EnforceDifficulty || GenManager.storytellerFile.EnforceStoryteller)
+            if (GameParameterManager.difficultyFile.EnforceDifficulty || GameParameterManager.storytellerFile.EnforceStoryteller)
             {
                 Action toDo = delegate
                 {
-                    GenManager.SetStoryteller(GenManager.storytellerFile);
+                    GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
 
-                    GenManager.SetDifficulty(GenManager.difficultyFile);
+                    GameParameterManager.SetDifficulty(GameParameterManager.difficultyFile);
                 };
 
                 DialogManager.PushNewDialog(new RT_Dialog_OK("Settings might change to reflect server enforcements", toDo));

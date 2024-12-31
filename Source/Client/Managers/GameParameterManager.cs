@@ -14,7 +14,7 @@ using static Shared.CommonEnumerators;
 namespace GameClient.Managers
 {
     [RTManager]
-    public static class GenManager
+    public static class GameParameterManager
     {
         public static ScenarioValuesFile scenarioFile;
 
@@ -41,22 +41,18 @@ namespace GameClient.Managers
         public static void SetScenario(ScenarioValuesFile file)
         {
             if (!file.EnforceScenario) return;
-            else
-            {
-                Printer.Warning("scenario");
-                Current.Game.Scenario = ScenarioLister.AllScenarios().First(fetch => fetch.name == file.ScenarioName);
-            }
+            else Current.Game.Scenario = ScenarioLister.AllScenarios().First(fetch => fetch.name == file.ScenarioName);
         }
 
         public static void SendScenario(ScenarioValuesFile file, bool mode)
         {
             file.EnforceScenario = mode;
 
-            GenData data = new GenData();
+            GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Scenario;
             data._scenario = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GenManager), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(GameParameterManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -96,11 +92,11 @@ namespace GameClient.Managers
         {
             file.EnforceStoryteller = mode;
 
-            GenData data = new GenData();
+            GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Storyteller;
             data._storyteller = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GenManager), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(GameParameterManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -200,8 +196,6 @@ namespace GameClient.Managers
             if (!file.EnforceDifficulty) return;
             else
             {
-                Printer.Warning("difficulty");
-
                 Current.Game.storyteller.difficulty.threatScale = file.ThreatScale;
 
                 Current.Game.storyteller.difficulty.allowBigThreats = file.AllowBigThreats;
@@ -292,11 +286,11 @@ namespace GameClient.Managers
         {
             file.EnforceDifficulty = mode;
 
-            GenData data = new GenData();
+            GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Difficulty;
             data._difficulty = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GenManager), data);
+            Packet packet = Packet.CreatePacketFromObject(nameof(GameParameterManager), data);
             Network.listener.EnqueuePacket(packet);
         }
     }
