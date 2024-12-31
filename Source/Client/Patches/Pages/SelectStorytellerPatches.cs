@@ -20,15 +20,18 @@ namespace GameClient.Patches.Pages
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-
-            if (DifficultyManager.difficultyValues.UseCustomDifficulty)
+            else
             {
-                ___difficulty = DifficultyDefOf.Rough;
-                ___difficultyValues = new Difficulty(___difficulty);
-            }
+                Find.GameInitData.permadeathChosen = true;
 
-            Find.GameInitData.permadeathChosen = true;
-            return true;
+                if (!ClientValues.isGeneratingFreshWorld)
+                {
+                    ___difficulty = DifficultyDefOf.Rough;
+                    ___difficultyValues = new Difficulty(___difficulty);
+                }
+
+                return true;
+            }
         }
     }
 
@@ -56,7 +59,7 @@ namespace GameClient.Patches.Pages
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (DifficultyManager.difficultyValues.UseCustomDifficulty)
+            if (GenManager.difficultyFile.EnforceDifficulty && !ServerValues.isAdmin)
             {
                 __instance.Close();
                 DialogManager.PushNewDialog(new RT_Dialog_Error("Difficulty can't be changed in this server!"));
@@ -70,9 +73,10 @@ namespace GameClient.Patches.Pages
                     Text.Font = GameFont.Small;
                     Vector2 buttonSize = new Vector2(150f, 38f);
                     Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Send Difficulty"))
+                    if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Enforce difficulty"))
                     {
-                        DifficultyManager.SendCustomDifficulty();
+                        __instance.Close();
+                        GenManager.SendDifficulty(GenManager.GetDifficulty());
                         DialogManager.PushNewDialog(new RT_Dialog_OK("Custom difficulty has been changed!"));
                     }
                 }
@@ -85,7 +89,7 @@ namespace GameClient.Patches.Pages
         public static void DoPost(Rect rect)
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
-            if (DifficultyManager.difficultyValues.UseCustomDifficulty) return;
+            if (GenManager.difficultyFile.EnforceDifficulty && !ServerValues.isAdmin) return;
 
             if (ServerValues.isAdmin)
             {
@@ -182,7 +186,7 @@ namespace GameClient.Patches.Pages
                 infoListing.Gap(6f);
             }
 
-            if (!DifficultyManager.difficultyValues.UseCustomDifficulty)
+            if (ClientValues.isGeneratingFreshWorld)
             {
                 if (chosenStoryteller != null && chosenStoryteller.listVisible)
                 {
@@ -213,7 +217,7 @@ namespace GameClient.Patches.Pages
             num = rect3.y + infoListing.CurHeight;
             infoListing.End();
 
-            if (!DifficultyManager.difficultyValues.UseCustomDifficulty)
+            if (ClientValues.isGeneratingFreshWorld)
             {
                 if (difficulty != null && difficulty.isCustom)
                 {

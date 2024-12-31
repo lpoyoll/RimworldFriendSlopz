@@ -4,6 +4,8 @@ namespace Shared
     {
         public enum ClientNetworkState { Disconnected, Connecting, Connected }
 
+        public enum GenStepMode { Scenario, Storyteller, Difficulty }
+
         public enum AssemblyType { Client, Server }
 
         public enum JoinType { Login, Register }

@@ -7,14 +7,27 @@ using static Shared.CommonEnumerators;
 namespace GameServer.Managers
 {
     [RTManager]
-    public static class DifficultyManager
+    public static class GenManager
     {
         public static void ParsePacket(ServerClient client, Packet packet)
         {
-            SetCustomDifficulty(client, Serializer.ConvertBytesToObject<DifficultyData>(packet.contents));
+            GenData data = Serializer.ConvertBytesToObject<GenData>(packet.contents);
+
+            switch (data._stepMode)
+            {
+                case GenStepMode.Scenario:
+                    break;
+
+                case GenStepMode.Storyteller:
+                    break;
+
+                case GenStepMode.Difficulty:
+                    SetCustomDifficulty(client, data._difficulty);
+                    break;
+            }
         }
 
-        public static void SetCustomDifficulty(ServerClient client, DifficultyData difficultyData)
+        public static void SetCustomDifficulty(ServerClient client, DifficultyValuesFile file)
         {
             if (!client.userFile.IsAdmin)
             {
@@ -24,7 +37,7 @@ namespace GameServer.Managers
 
             else
             {
-                Master.difficultyValues = difficultyData._values;
+                Master.difficultyValues = file;
                 Main_.SaveValueFile(ServerFileMode.Difficulty, true);
                 Printer.Warning($"[Set difficulty] > {client.userFile.Uid}");
             }

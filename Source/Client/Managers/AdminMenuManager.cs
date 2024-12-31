@@ -2,6 +2,7 @@ using GameClient.Dialogs;
 
 namespace GameClient.Managers
 {
+    using RimWorld;
     using Shared;
     [RTManager]
     public static class AdminMenuManager
@@ -29,7 +30,7 @@ namespace GameClient.Managers
                     break;
 
                 case 1:
-                    DifficultyManager.OpenDifficultyMenu();
+                    DialogManager.PushNewDialog(new Page_SelectStorytellerInGame());
                     break;
             }
         }

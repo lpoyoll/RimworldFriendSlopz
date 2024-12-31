@@ -15,7 +15,7 @@ namespace GameClient.Managers
             ServerValues.SetValues(serverGlobalData);
             SessionValues.SetValues(serverGlobalData);
             EventManagerHelper.SetValues(serverGlobalData);
-            DifficultyManager.SetValues(serverGlobalData);
+            GenManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);
             NPCSettlementManagerHelper.SetValues(serverGlobalData);
             SiteManagerHelper.SetValues(serverGlobalData);

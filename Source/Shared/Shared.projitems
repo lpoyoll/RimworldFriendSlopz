@@ -42,9 +42,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)PacketData\Groups\Settlements\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
+    <Folder Include="$(MSBuildThisFileDirectory)Files\Components\Map\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Files\Components\Map\" />
+    <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
   </ItemGroup>
 </Project>

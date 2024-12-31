@@ -25,7 +25,7 @@ namespace GameClient.Patches
                 ClientValues.ToggleSavingGame(true);
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
-                DifficultyManager.EnforceCustomDifficulty();
+                GenManager.SetDifficulty(GenManager.difficultyFile);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
 

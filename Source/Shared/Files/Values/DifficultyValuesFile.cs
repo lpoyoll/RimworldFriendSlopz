@@ -5,7 +5,7 @@ namespace Shared
     [Serializable]
     public class DifficultyValuesFile
     {
-        public bool UseCustomDifficulty = false;
+        public bool EnforceDifficulty = false;
 
         public float ThreatScale = 1.0f;
 
