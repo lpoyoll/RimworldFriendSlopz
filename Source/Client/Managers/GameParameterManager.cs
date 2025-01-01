@@ -74,7 +74,7 @@ namespace GameClient.Managers
                 DifficultyDef difficultyDef = DifficultyDefOf.Rough;
                 Difficulty difficulty = new Difficulty(difficultyDef);
 
-                if (Current.Game.storyteller != null && Current.Game.storyteller.def == storytellerDef) Printer.Warning("skipped");
+                if (Current.Game.storyteller != null && Current.Game.storyteller.def == storytellerDef) return;
                 else
                 {
                     if (Current.Game.storyteller != null)

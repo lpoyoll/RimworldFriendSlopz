@@ -42,9 +42,7 @@ namespace GameClient.Dialogs
 
             forcePause = true;
             absorbInputAroundWindow = true;
-
             soundAppear = SoundDefOf.CommsWindow_Open;
-
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -56,6 +54,8 @@ namespace GameClient.Dialogs
             Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(title).x / 2, rect.y, rect.width, Text.CalcSize(title).y), title);
 
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - buttonY - 45));
+
+            Text.Font = GameFont.Small;
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept"))
             {
@@ -71,7 +71,6 @@ namespace GameClient.Dialogs
         private void FillMainRect(Rect mainRect)
         {
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
-            Widgets.DrawLineHorizontal(mainRect.x, mainRect.yMax + 1, mainRect.width);
 
             float height = 6f + listedThings.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
