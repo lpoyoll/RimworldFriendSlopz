@@ -15,7 +15,3 @@
   
 ### Mods that somewhat break with Rimworld Together:
 - [SRTS](https://steamcommunity.com/workshop/filedetails/?id=1845423808) > Breaks raiding / spying / visiting due to the mod not using vanilla caravan code, similar mods might produce same results.
-
-### Mods that slightly break with Rimworld Together:
-- [Roads of the Rim](https://steamcommunity.com/sharedfiles/filedetails/?id=1613783924) > No issues other than the roads that are built don't get synced with the server.
-- [Vanilla Outposts Expanded](https://steamcommunity.com/workshop/filedetails/?id=2688941031) > Works completely fine aside from the fact that outposts that generate from this mod aren't synced to everyone else.
