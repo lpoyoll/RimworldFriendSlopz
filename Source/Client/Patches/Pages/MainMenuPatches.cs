@@ -18,7 +18,7 @@ namespace GameClient.Patches.Pages
         {
             private static void Postfix()
             {
-                string toDisplay = $"RimWorld Together v'{CommonValues.executableVersion}'";
+                string toDisplay = $"RimWorld Together v{CommonValues.executableVersion}";
                 Vector2 size = Text.CalcSize(toDisplay);
                 Rect rect = new Rect(10f, 73f, size.x, size.y);
 
