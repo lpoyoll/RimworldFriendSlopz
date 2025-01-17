@@ -8,6 +8,7 @@ using Shared;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Verse;
@@ -52,6 +53,8 @@ namespace GameClient.Core
 
         private static void PreparePaths()
         {
+            ModContentPack mod = LoadedModManager.RunningMods.First(m => m.PackageId == "nova.rimworldtogether");
+
             Master.savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
             Master.appdataPath = GenFilePaths.SaveDataFolderPath;
@@ -59,7 +62,7 @@ namespace GameClient.Core
             Master.appdataTempPath = Path.Combine(Master.appdataRTPath, "Temp");
             Master.appdataTempVersionPath = Path.Combine(Master.appdataTempPath, "Version");
 
-            Master.modMainPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent.Parent.ToString();
+            Master.modMainPath = mod.RootDir;
             Master.modAddonsPath = Path.Combine(Master.modMainPath, "Addons");
             Master.modAssemblyPath = Path.Combine(Master.modMainPath, "Current", "Assemblies");
 
