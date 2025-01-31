@@ -16,17 +16,35 @@ Download the latest server files at [here](https://github.com/Byte-Nova/Rimworld
 > When extracting the server files somewhere, be mindful on where this location might be, avoid installing it at privileged locations (where admin permissions are needed) to prevent your antivirus/system kicking off.
 
 ## Container-based Deployment:
-We provide helper scripts to build and run the official RimWorld-Together Container with [buildah](https://github.com/containers/buildah) and [podman](https://github.com/containers/podman)
+We provide a Dockerfile to build and run the official RimWorld-Together Container with [docker](https://www.docker.com/) , or  [buildah](https://github.com/containers/buildah) and [podman](https://github.com/containers/podman)
 
+`GameServer` exucutable is located in the `/App/Server` directory.  
+the *Data* volume contains all server files and is located at `/Data` inside the container.
+
+### Build with Docker
 **Build:**
 ```sh
-make build-container
+docker build -f Dockerfile -t rwt:latest .
 ```
 
 **Run:**
 ```sh
-make run-container
+mkdir -p Data
+docker run -it --rm -v $$(pwd)/Data:/Data -p 25555:25555 rwt:latest
 ```
+
+### Build with buildah/podman
+**Build:**
+```sh
+buildah build -t rwt:latest .
+```
+
+**Run:**
+```sh
+mkdir -p Data
+podman run -it --rm -v $$(pwd)/Data:/Data:Z -p 25555:25555 rwt:latest
+```
+
 
 ## Contributing
 Interested? Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!
