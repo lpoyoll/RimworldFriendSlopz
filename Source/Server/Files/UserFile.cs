@@ -22,6 +22,8 @@ namespace GameServer.Files
 
         public double AidProtectionTime;
 
+        public double SpyProtectionTime;
+
         public string GuildName;
 
         public string[] RunningMods;
@@ -65,6 +67,12 @@ namespace GameServer.Files
         public void UpdateActivityTime()
         {
             ActivityProtectionTime = TimeConverter.GetCurrentTimeToEpoch();
+            UserManagerH.SaveUserFile(this);
+        }
+
+        public void UpdateSpyTime()
+        {
+            SpyProtectionTime = TimeConverter.GetCurrentTimeToEpoch();
             UserManagerH.SaveUserFile(this);
         }
 

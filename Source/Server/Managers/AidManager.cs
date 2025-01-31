@@ -1,4 +1,6 @@
 ﻿using GameServer.Core;
+using GameServer.Files;
+using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
@@ -48,7 +50,7 @@ namespace GameServer.Managers
                 {
                     ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
 
-                    if (Master.serverConfig.TemporalAidProtection && !TimeConverter.CheckForEpochTimer(target.userFile.AidProtectionTime, Master.serverConfig.TemporalAidProtectionTime * 1000))
+                    if (!ValueChecker.CheckIfCanAid(target.userFile))
                     {
                         data._stepMode = AidStepMode.Reject;
                         Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);

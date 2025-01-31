@@ -12,7 +12,7 @@ namespace Shared
 
         public ModConfigFile Mods;
 
-        public TileComponent[] Tiles = new TileComponent[0];
+        public MapTileDetails[] Tiles = new MapTileDetails[0];
 
         public ThingFile[] FactionThings;
 

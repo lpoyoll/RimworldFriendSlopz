@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using GameClient.Patches.Pages;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Verse;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Values
@@ -24,6 +26,8 @@ namespace GameClient.Values
 
         public static CompLaunchable chosendPods;
 
+        public static Pawn chosenPawnForSpying;
+
         public static TransferData outgoingManifest = new TransferData();
 
         public static TransferData incomingManifest = new TransferData();
@@ -31,6 +35,16 @@ namespace GameClient.Values
         public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();
 
         public static ActionValuesFile actionValues;
+
+        public static ModConfigFile configFile;
+
+        public static ScenarioValuesFile scenarioFile;
+
+        public static StorytellerValuesFile storytellerFile;
+
+        public static DifficultyValuesFile difficultyFile;
+
+        public static WorldValuesFile worldFile;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
@@ -59,6 +73,10 @@ namespace GameClient.Values
             outgoingManifest = new TransferData();
             incomingManifest = new TransferData();
             listToShowInTradesMenu = new List<Tradeable>();
+
+            PatchSelectScenarioPage.executedMessage = false;
+            PreventModOptionsButton.executedMessage = false;
+            PatchSelectStorytellerPage.executedMessage = false;
         }
     }
 }

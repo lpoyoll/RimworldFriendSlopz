@@ -1,4 +1,5 @@
 ﻿using GameServer.Core;
+using GameServer.Files;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
@@ -60,7 +61,7 @@ namespace GameServer.Managers
                 {
                     ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlement.UID);
 
-                    if (Master.serverConfig.TemporalEventProtection && !TimeConverter.CheckForEpochTimer(target.userFile.EventProtectionTime, Master.serverConfig.TemporalEventProtectionTime * 1000))
+                    if (!ValueChecker.CheckIfCanEvent(target.userFile))
                     {
                         eventData._stepMode = EventStepMode.Recover;
                         Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);

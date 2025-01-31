@@ -4,8 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using GameClient.Core;
+using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.TCP;
+using GameClient.Values;
 using RimWorld;
 using Shared;
 using Verse;
@@ -16,24 +19,18 @@ namespace GameClient.Managers
     [RTManager]
     public static class GameParameterManager
     {
-        public static ScenarioValuesFile scenarioFile;
-
-        public static StorytellerValuesFile storytellerFile;
-
-        public static DifficultyValuesFile difficultyFile;
-
         public static void SetValues(ServerGlobalData data)
         {
-            scenarioFile = data._scenarioValues;
-            storytellerFile = data._storytellerValues;
-            difficultyFile = data._difficultyValues;
+            SessionValues.scenarioFile = data._scenarioValues;
+            SessionValues.storytellerFile = data._storytellerValues;
+            SessionValues.difficultyFile = data._difficultyValues;
         }
 
         public static ScenarioValuesFile GetScenario(Page_SelectScenario __instance)
         {
             ScenarioValuesFile file = new ScenarioValuesFile();
 
-            file.ScenarioName = GenManagerH.GetScenarioReference(__instance).name;
+            file.ScenarioName = GameParameterManagerH.GetScenarioReference(__instance).name;
 
             return file;
         }
@@ -60,31 +57,21 @@ namespace GameClient.Managers
         {
             StorytellerValuesFile file = new StorytellerValuesFile();
 
-            file.StorytellerDefname = GenManagerH.GetStorytellerReference(__instance).def.defName;
+            file.StorytellerDefname = GameParameterManagerH.GetStorytellerReference(__instance).def.defName;
 
             return file;
         }
 
-        public static void SetStoryteller(StorytellerValuesFile file)
+        public static void SetStoryteller(StorytellerValuesFile file, bool bypassCheck = false)
         {
-            if (!file.EnforceStoryteller) return;
+            if (!file.EnforceStoryteller && !bypassCheck) return;
             else
             {
                 StorytellerDef storytellerDef = DefDatabase<StorytellerDef>.AllDefs.First(fetch => fetch.defName == file.StorytellerDefname);
-                DifficultyDef difficultyDef = DifficultyDefOf.Rough;
-                Difficulty difficulty = new Difficulty(difficultyDef);
+                DifficultyDef difficultyDef = Current.Game.storyteller.difficultyDef == null ? DifficultyDefOf.Easy : Current.Game.storyteller.difficultyDef;
+                Difficulty difficulty = Current.Game.storyteller.difficulty == null ? new Difficulty(difficultyDef) : Current.Game.storyteller.difficulty;
 
-                if (Current.Game.storyteller != null && Current.Game.storyteller.def == storytellerDef) return;
-                else
-                {
-                    if (Current.Game.storyteller != null)
-                    {
-                        difficultyDef = Current.Game.storyteller.difficultyDef;
-                        difficulty = Current.Game.storyteller.difficulty;
-                    }
-
-                    Current.Game.storyteller = new Storyteller(storytellerDef, difficultyDef, difficulty);
-                }
+                Current.Game.storyteller = new Storyteller(storytellerDef, difficultyDef, difficulty);
             }
         }
 
@@ -100,102 +87,108 @@ namespace GameClient.Managers
             Network.listener.EnqueuePacket(packet);
         }
 
-        public static DifficultyValuesFile GetDifficulty()
+        public static DifficultyValuesFile GetDifficulty(Page_SelectStoryteller __instance)
         {
+            Difficulty difficulty = GameParameterManagerH.GetDifficultyReference(__instance);
+
             DifficultyValuesFile file = new DifficultyValuesFile();
 
-            file.ThreatScale = Current.Game.storyteller.difficulty.threatScale;
+            file.ThreatScale = difficulty.threatScale;
 
-            file.AllowBigThreats = Current.Game.storyteller.difficulty.allowBigThreats;
+            file.AllowBigThreats = difficulty.allowBigThreats;
 
-            file.AllowViolentQuests = Current.Game.storyteller.difficulty.allowViolentQuests;
+            file.AllowViolentQuests = difficulty.allowViolentQuests;
 
-            file.AllowIntroThreats = Current.Game.storyteller.difficulty.allowIntroThreats;
+            file.AllowIntroThreats = difficulty.allowIntroThreats;
 
-            file.PredatorsHuntHumanlikes = Current.Game.storyteller.difficulty.predatorsHuntHumanlikes;
+            file.PredatorsHuntHumanlikes = difficulty.predatorsHuntHumanlikes;
 
-            file.AllowExtremeWeatherIncidents = Current.Game.storyteller.difficulty.allowExtremeWeatherIncidents;
+            file.AllowExtremeWeatherIncidents = difficulty.allowExtremeWeatherIncidents;
 
-            file.CropYieldFactor = Current.Game.storyteller.difficulty.cropYieldFactor;
+            file.CropYieldFactor = difficulty.cropYieldFactor;
 
-            file.MineYieldFactor = Current.Game.storyteller.difficulty.mineYieldFactor;
+            file.MineYieldFactor = difficulty.mineYieldFactor;
 
-            file.ButcherYieldFactor = Current.Game.storyteller.difficulty.butcherYieldFactor;
+            file.ButcherYieldFactor = difficulty.butcherYieldFactor;
 
-            file.ResearchSpeedFactor = Current.Game.storyteller.difficulty.researchSpeedFactor;
+            file.ResearchSpeedFactor = difficulty.researchSpeedFactor;
 
-            file.QuestRewardValueFactor = Current.Game.storyteller.difficulty.questRewardValueFactor;
+            file.QuestRewardValueFactor = difficulty.questRewardValueFactor;
 
-            file.RaidLootPointsFactor = Current.Game.storyteller.difficulty.raidLootPointsFactor;
+            file.RaidLootPointsFactor = difficulty.raidLootPointsFactor;
 
-            file.TradePriceFactorLoss = Current.Game.storyteller.difficulty.tradePriceFactorLoss;
+            file.TradePriceFactorLoss = difficulty.tradePriceFactorLoss;
 
-            file.MaintenanceCostFactor = Current.Game.storyteller.difficulty.maintenanceCostFactor;
+            file.MaintenanceCostFactor = difficulty.maintenanceCostFactor;
 
-            file.ScariaRotChance = Current.Game.storyteller.difficulty.scariaRotChance;
+            file.ScariaRotChance = difficulty.scariaRotChance;
 
-            file.EnemyDeathOnDownedChanceFactor = Current.Game.storyteller.difficulty.enemyDeathOnDownedChanceFactor;
+            file.EnemyDeathOnDownedChanceFactor = difficulty.enemyDeathOnDownedChanceFactor;
 
-            file.ColonistMoodOffset = Current.Game.storyteller.difficulty.colonistMoodOffset;
+            file.ColonistMoodOffset = difficulty.colonistMoodOffset;
 
-            file.FoodPoisonChanceFactor = Current.Game.storyteller.difficulty.foodPoisonChanceFactor;
+            file.FoodPoisonChanceFactor = difficulty.foodPoisonChanceFactor;
 
-            file.ManhunterChanceOnDamageFactor = Current.Game.storyteller.difficulty.manhunterChanceOnDamageFactor;
+            file.ManhunterChanceOnDamageFactor = difficulty.manhunterChanceOnDamageFactor;
 
-            file.PlayerPawnInfectionChanceFactor = Current.Game.storyteller.difficulty.playerPawnInfectionChanceFactor;
+            file.PlayerPawnInfectionChanceFactor = difficulty.playerPawnInfectionChanceFactor;
 
-            file.DiseaseIntervalFactor = Current.Game.storyteller.difficulty.diseaseIntervalFactor;
+            file.DiseaseIntervalFactor = difficulty.diseaseIntervalFactor;
 
-            file.EnemyReproductionRateFactor = Current.Game.storyteller.difficulty.enemyReproductionRateFactor;
+            file.EnemyReproductionRateFactor = difficulty.enemyReproductionRateFactor;
 
-            file.DeepDrillInfestationChanceFactor = Current.Game.storyteller.difficulty.deepDrillInfestationChanceFactor;
+            file.DeepDrillInfestationChanceFactor = difficulty.deepDrillInfestationChanceFactor;
 
-            file.FriendlyFireChanceFactor = Current.Game.storyteller.difficulty.friendlyFireChanceFactor;
+            file.FriendlyFireChanceFactor = difficulty.friendlyFireChanceFactor;
 
-            file.AllowInstantKillChance = Current.Game.storyteller.difficulty.allowInstantKillChance;
+            file.AllowInstantKillChance = difficulty.allowInstantKillChance;
 
-            file.PeacefulTemples = Current.Game.storyteller.difficulty.peacefulTemples;
+            file.PeacefulTemples = difficulty.peacefulTemples;
 
-            file.AllowCaveHives = Current.Game.storyteller.difficulty.allowCaveHives;
+            file.AllowCaveHives = difficulty.allowCaveHives;
 
-            file.UnwaveringPrisoners = Current.Game.storyteller.difficulty.unwaveringPrisoners;
+            file.UnwaveringPrisoners = difficulty.unwaveringPrisoners;
 
-            file.AllowTraps = Current.Game.storyteller.difficulty.allowTraps;
+            file.AllowTraps = difficulty.allowTraps;
 
-            file.AllowTurrets = Current.Game.storyteller.difficulty.allowTurrets;
+            file.AllowTurrets = difficulty.allowTurrets;
 
-            file.AllowMortars = Current.Game.storyteller.difficulty.allowMortars;
+            file.AllowMortars = difficulty.allowMortars;
 
-            file.ClassicMortars = Current.Game.storyteller.difficulty.classicMortars;
+            file.ClassicMortars = difficulty.classicMortars;
 
-            file.AdaptationEffectFactor = Current.Game.storyteller.difficulty.adaptationEffectFactor;
+            file.AdaptationEffectFactor = difficulty.adaptationEffectFactor;
 
-            file.AdaptationGrowthRateFactorOverZero = Current.Game.storyteller.difficulty.adaptationGrowthRateFactorOverZero;
+            file.AdaptationGrowthRateFactorOverZero = difficulty.adaptationGrowthRateFactorOverZero;
 
-            file.FixedWealthMode = Current.Game.storyteller.difficulty.fixedWealthMode;
+            file.FixedWealthMode = difficulty.fixedWealthMode;
 
-            file.LowPopConversionBoost = Current.Game.storyteller.difficulty.lowPopConversionBoost;
+            file.LowPopConversionBoost = difficulty.lowPopConversionBoost;
 
-            file.NoBabiesOrChildren = Current.Game.storyteller.difficulty.noBabiesOrChildren;
+            file.NoBabiesOrChildren = difficulty.noBabiesOrChildren;
 
-            file.BabiesAreHealthy = Current.Game.storyteller.difficulty.babiesAreHealthy;
+            file.BabiesAreHealthy = difficulty.babiesAreHealthy;
 
-            file.ChildRaidersAllowed = Current.Game.storyteller.difficulty.childRaidersAllowed;
+            file.ChildRaidersAllowed = difficulty.childRaidersAllowed;
 
-            file.ChildAgingRate = Current.Game.storyteller.difficulty.childAgingRate;
+            file.ChildAgingRate = difficulty.childAgingRate;
 
-            file.AdultAgingRate = Current.Game.storyteller.difficulty.adultAgingRate;
+            file.AdultAgingRate = difficulty.adultAgingRate;
 
-            file.WastepackInfestationChanceFactor = Current.Game.storyteller.difficulty.wastepackInfestationChanceFactor;
+            file.WastepackInfestationChanceFactor = difficulty.wastepackInfestationChanceFactor;
 
             return file;
         }
 
-        public static void SetDifficulty(DifficultyValuesFile file)
+        public static void SetDifficulty(DifficultyValuesFile file, bool bypass = false)
         {
-            if (!file.EnforceDifficulty) return;
+            if (!file.EnforceDifficulty && !bypass) return;
             else
             {
+                Current.Game.storyteller.difficultyDef = DifficultyDefOf.Rough;
+
+                Current.Game.storyteller.difficulty = new Difficulty(Current.Game.storyteller.difficultyDef);
+
                 Current.Game.storyteller.difficulty.threatScale = file.ThreatScale;
 
                 Current.Game.storyteller.difficulty.allowBigThreats = file.AllowBigThreats;
@@ -295,7 +288,7 @@ namespace GameClient.Managers
         }
     }
 
-    public static class GenManagerH
+    public static class GameParameterManagerH
     {
         public static Scenario GetScenarioReference(Page_SelectScenario __instance)
         {
@@ -308,6 +301,14 @@ namespace GameClient.Managers
                 .GetValue(__instance);
 
             return new Storyteller(toGet, DifficultyDefOf.Rough, new Difficulty(DifficultyDefOf.Rough));
+        }
+
+        public static Difficulty GetDifficultyReference(Page_SelectStoryteller __instance)
+        {
+            Difficulty toGet = (Difficulty)typeof(Page_SelectStoryteller).GetField("difficultyValues", BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetValue(__instance);
+
+            return toGet;
         }
     }
 }

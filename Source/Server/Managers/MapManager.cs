@@ -44,7 +44,7 @@ namespace GameServer.Managers
             else return false;
         }
 
-        public static MapFile GetUserMapFromTile(int mapTileToGet)
+        public static MapFile GetMapFromTile(int mapTileToGet)
         {
             string path = Path.Combine(Master.mapsPath, mapTileToGet + fileExtension);
             return Serializer.FileBytesToObject<MapFile>(path);

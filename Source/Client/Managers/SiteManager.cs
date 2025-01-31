@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
+using GameClient.Scribers;
 using GameClient.TCP;
 using GameClient.Values;
 using GameClient.WorldObjects;
@@ -11,6 +13,8 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
+using Verse.AI.Group;
+using Verse.Noise;
 using static Shared.CommonEnumerators;
 
 
@@ -35,6 +39,10 @@ namespace GameClient.Managers
                     OnSiteAccept();
                     break;
 
+                case SiteStepMode.Deny:
+                    OnSiteDeny();
+                    break;
+
                 case SiteStepMode.Build:
                     SpawnSingleSite(siteData._file);
                     break;
@@ -43,35 +51,42 @@ namespace GameClient.Managers
                     RemoveSingleSite(siteData._file);
                     break;
 
+                case SiteStepMode.Visit:
+                    VisitSite(siteData);
+                    break;
+
+                case SiteStepMode.Raid:
+                    RaidSite(siteData);
+                    break;
+
                 case SiteStepMode.Rewards:
                     ReceiveSiteRewards(siteData._rewardFiles);
                     break;
             }
         }
 
-        public static void SetSiteDefs()
+        public static void RequestVisitSite()
         {
-            siteDefs = new SitePartDef[]
-            {
-                RTSitePartDefOf.RTFarmland,
-                RTSitePartDefOf.RTHunterCamp,
-                RTSitePartDefOf.RTQuarry,
-                RTSitePartDefOf.RTSawmill,
-                RTSitePartDefOf.RTBank,
-                RTSitePartDefOf.RTLaboratory,
-                RTSitePartDefOf.RTRefinery,
-                RTSitePartDefOf.RTHerbalWorkshop,
-                RTSitePartDefOf.RTTextileFactory,
-                RTSitePartDefOf.RTFoodProcessor
-            };
+            SiteData siteData = new SiteData();
+            siteData._file.Tile = SessionValues.chosenSite.Tile;
+            siteData._stepMode = SiteStepMode.Visit;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Network.listener.EnqueuePacket(packet);
+
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
 
-        private static void OnSiteAccept()
+        public static void RequestRaidSite()
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK("The desired site has been built!"));
+            SiteData siteData = new SiteData();
+            siteData._file.Tile = SessionValues.chosenSite.Tile;
+            siteData._stepMode = SiteStepMode.Raid;
 
-            SaveManager.ForceSave();
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Network.listener.EnqueuePacket(packet);
+
+            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
 
         public static void RequestDestroySite()
@@ -90,69 +105,13 @@ namespace GameClient.Managers
             DialogManager.PushNewDialog(d1);
         }
 
-        public static void AddSites(SiteFile[] sites)
-        {
-            foreach (SiteFile toAdd in sites)
-            {
-                SpawnSingleSite(toAdd);
-            }
-        }
-
-        public static void ClearAllSites()
-        {
-            Site[] sites = Find.WorldObjects.Sites.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction) ||
-                fetch.Faction == Faction.OfPlayer).ToArray();
-
-            foreach (Site toRemove in sites)
-            {
-                SiteFile siteFile = new SiteFile();
-                siteFile.Tile = toRemove.Tile;
-                RemoveSingleSite(siteFile);
-            }
-        }
-
-        public static void SpawnSingleSite(SiteFile toAdd)
-        {
-            if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
-            else
-            {
-                try
-                {
-                    SitePartDef siteDef = siteDefs.First(fetch => fetch.defName == toAdd.Type.DefName);
-                    Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: toAdd.Tile,
-                        threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
-
-                    playerSites.Add(site);
-                    Find.WorldObjects.Add(site);
-                }
-                catch (Exception e) { Printer.Error($"Failed to spawn site at {toAdd.Tile}. Reason: {e}"); }
-            }
-        }
-
-        public static void RemoveSingleSite(SiteFile toRemove)
-        {
-            try
-            {
-                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile);
-                if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
-                {
-                    if (playerSites.Contains(toGet)) playerSites.Remove(toGet);
-                    Find.WorldObjects.Remove(toGet);
-                }
-                else Printer.Warning($"Ignored removal of site at {toGet.Tile} because player was inside");
-            }
-            catch (Exception e) { Printer.Error($"Failed to remove site at {toRemove.Tile}. Reason: {e}"); }
-        }
-
         public static void RequestSiteBuild(SiteInfoFile configFile)
         {
             for (int i = 0; i < configFile.DefNameCost.Length; i++)
             {
                 if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.chosenCaravan, configFile.DefNameCost[i], configFile.Cost[i]))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver!" }));
                     return;
                 }
             }
@@ -213,10 +172,106 @@ namespace GameClient.Managers
                 Printer.Message("Rewards delivered", LogImportanceMode.Verbose);
             }
         }
+
+        public static void AddSites(SiteFile[] sites)
+        {
+            foreach (SiteFile toAdd in sites)
+            {
+                SpawnSingleSite(toAdd);
+            }
+        }
+
+        public static void ClearAllSites()
+        {
+            Site[] sites = Find.WorldObjects.Sites.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction) ||
+                fetch.Faction == Faction.OfPlayer).ToArray();
+
+            foreach (Site toRemove in sites)
+            {
+                SiteFile siteFile = new SiteFile();
+                siteFile.Tile = toRemove.Tile;
+                RemoveSingleSite(siteFile);
+            }
+        }
+
+        public static void SpawnSingleSite(SiteFile toAdd)
+        {
+            if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
+            else
+            {
+                try
+                {
+                    SitePartDef siteDef = siteDefs.First(fetch => fetch.defName == toAdd.Type.DefName);
+                    Site site = SiteMaker.MakeSite(sitePart: siteDef,
+                        tile: toAdd.Tile,
+                        threatPoints: 1000,
+                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
+
+                    playerSites.Add(site);
+                    Find.WorldObjects.Add(site);
+                }
+                catch (Exception e) { Printer.Error($"Failed to spawn site at {toAdd.Tile}. Reason: {e}"); }
+            }
+        }
+
+        public static void RemoveSingleSite(SiteFile toRemove)
+        {
+            try
+            {
+                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile);
+                if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
+                {
+                    if (playerSites.Contains(toGet)) playerSites.Remove(toGet);
+                    Find.WorldObjects.Remove(toGet);
+                }
+                else Printer.Warning($"Ignored removal of site at {toGet.Tile} because player was inside");
+            }
+            catch (Exception e) { Printer.Error($"Failed to remove site at {toRemove.Tile}. Reason: {e}"); }
+        }
+
+        private static void VisitSite(SiteData siteData)
+        {
+            DialogManager.PopWaitDialog();
+
+            Map toUse = null;
+            if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
+            else toUse = MapScriber.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, false, WorldObjectMode.Site);
+
+            CaravanEnterMapUtility.Enter(SessionValues.chosenCaravan, toUse, CaravanEnterMode.Edge);
+        }
+
+        private static void RaidSite(SiteData siteData)
+        {
+            DialogManager.PopWaitDialog();
+
+            Map toUse = null;
+            if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
+            else toUse = MapScriber.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, false, WorldObjectMode.Site);
+
+            RimworldManager.HandleMapFactions(toUse, FactionValues.enemyPlayer);
+
+            RimworldManager.PrepareMapLord(toUse, FactionValues.enemyPlayer);
+
+            CaravanEnterMapUtility.Enter(SessionValues.chosenCaravan, toUse, CaravanEnterMode.Edge);
+        }
+
+        private static void OnSiteAccept()
+        {
+            DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "The desired site has been built!" }));
+
+            SaveManager.ForceSave();
+        }
+
+        private static void OnSiteDeny()
+        {
+            DialogManager.PopWaitDialog();
+            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "The current action is not available!" }));
+        }
     }
 }
 
-public static class SiteManagerHelper
+public static class SiteManagerH
 {
     public static SiteFile[] tempSites;
 
@@ -224,6 +279,23 @@ public static class SiteManagerHelper
     {
         SiteManager.siteValues = serverGlobalData._siteValues;
         tempSites = serverGlobalData._playerSites;
+    }
+
+    public static void SetSiteDefs()
+    {
+        SiteManager.siteDefs = new SitePartDef[]
+        {
+            RTSitePartDefOf.RTFarmland,
+            RTSitePartDefOf.RTHunterCamp,
+            RTSitePartDefOf.RTQuarry,
+            RTSitePartDefOf.RTSawmill,
+            RTSitePartDefOf.RTBank,
+            RTSitePartDefOf.RTLaboratory,
+            RTSitePartDefOf.RTRefinery,
+            RTSitePartDefOf.RTHerbalWorkshop,
+            RTSitePartDefOf.RTTextileFactory,
+            RTSitePartDefOf.RTFoodProcessor
+        };
     }
 }
 

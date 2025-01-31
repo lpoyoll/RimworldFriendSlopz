@@ -68,7 +68,7 @@ namespace GameClient.Dialogs
         {
             if (invalid)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("Site could not be loaded because of invalid configuration"));
+                DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Site could not be loaded because of invalid configuration" }));
                 Close();
             }
 

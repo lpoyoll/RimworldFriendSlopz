@@ -39,9 +39,12 @@ namespace GameClient.Scribers
             return mapFile;
         }
 
-        public static Map StringToMap(MapFile mapFile, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false, bool overrideID = false)
+        public static Map StringToMap(MapFile mapFile, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, 
+            bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false, bool overrideID = false, WorldObjectMode mode = WorldObjectMode.Settlement)
         {
-            Map map = SetEmptyMap(mapFile);
+            Map map;
+            if (mode == WorldObjectMode.Settlement) map = SetEmptyMap(mapFile, SessionValues.chosenSettlement.Tile);
+            else map = SetEmptyMap(mapFile, SessionValues.chosenSite.Tile);
 
             SetMapTerrain(mapFile, map);
 
@@ -78,13 +81,13 @@ namespace GameClient.Scribers
         {
             try
             {
-                List<TileComponent> toGet = new List<TileComponent>();
+                List<MapTileDetails> toGet = new List<MapTileDetails>();
 
                 for (int z = 0; z < map.Size.z; ++z)
                 {
                     for (int x = 0; x < map.Size.x; ++x)
                     {
-                        TileComponent component = new TileComponent();
+                        MapTileDetails component = new MapTileDetails();
                         IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
                         component.DefName = map.terrainGrid.TerrainAt(vectorToCheck).defName;
                         component.IsPolluted = map.pollutionGrid.IsPolluted(vectorToCheck);
@@ -181,13 +184,13 @@ namespace GameClient.Scribers
 
         private static void GetMapMods(MapFile mapFile)
         {
-            try { mapFile.Mods = ModManagerHelper.GetRunningModList(); }
+            try { mapFile.Mods = ModManagerH.GetRunningModList(); }
             catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
         }
 
         //Setters
 
-        private static Map SetEmptyMap(MapFile mapFile)
+        private static Map SetEmptyMap(MapFile mapFile, int tileToUse)
         {
             Map toReturn = null;
 
@@ -196,7 +199,7 @@ namespace GameClient.Scribers
                 IntVec3 mapSize = ValueParser.ArrayToIntVec3(mapFile.Size);
 
                 PlanetManagerHelper.SetOverrideGenerators();
-                toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(SessionValues.chosenSettlement.Tile, mapSize, null);
+                toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(tileToUse, mapSize, null);
                 PlanetManagerHelper.SetDefaultGenerators();
 
                 return toReturn;
@@ -216,7 +219,7 @@ namespace GameClient.Scribers
                 {
                     for (int x = 0; x < map.Size.x; ++x)
                     {
-                        TileComponent component = mapFile.Tiles[index];
+                        MapTileDetails component = mapFile.Tiles[index];
                         IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
                         try

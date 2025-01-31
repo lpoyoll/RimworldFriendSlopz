@@ -17,9 +17,9 @@ namespace GameClient.Scribers
     {
         public static StringWriter stringWriter;
 
-        public static readonly string scribeTreeName = "Tree";
+        public static readonly string scribeTreeName = "T";
 
-        public static readonly string scribeNodeName = "Node";
+        public static readonly string scribeNodeName = "N";
 
         public static string ThingToScribe(Thing toSave, int customCount = -1)
         {
@@ -45,7 +45,7 @@ namespace GameClient.Scribers
             return stringWriter.ToString();
         }
 
-        public static Thing ScribeToThing(string scribeData, bool hasCustomID)
+        public static Thing ScribeToThing(string scribeData, bool overrideID)
         {
             ClientValues.ToggleUsingScriber(true);
 
@@ -59,7 +59,7 @@ namespace GameClient.Scribers
 
                 Scribe.loader.FinalizeLoading();
 
-                if (!hasCustomID) toLoad.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
+                if (!overrideID) toLoad.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); };
 

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 
@@ -61,13 +62,13 @@ namespace GameClient.TCP
 
         //Runs in a separate thread and sends all queued packets through the connection
 
-        public void SendData()
+        public async Task SendData()
         {
             try
             {
                 while (!disconnectFlag)
                 {
-                    Thread.Sleep(1);
+                    await Task.Delay(TimeSpan.FromMilliseconds(1));
 
                     if (dataQueue.Count > 0)
                     {
@@ -88,13 +89,13 @@ namespace GameClient.TCP
 
         //Runs in a separate thread and listens for any kind of information being sent through the connection
 
-        public void Listen()
+        public async Task Listen()
         {
             try
             {
                 while (!disconnectFlag)
                 {
-                    Thread.Sleep(1);
+                    await Task.Delay(TimeSpan.FromMilliseconds(1));
 
                     string data = streamReader.ReadLine();
                     if (string.IsNullOrWhiteSpace(data)) disconnectFlag = true;
@@ -138,9 +139,9 @@ namespace GameClient.TCP
 
         //Runs in a separate thread and checks if the connection should still be up
 
-        public void CheckConnectionHealth()
+        public async Task CheckConnectionHealth()
         {
-            try { while (!disconnectFlag) Thread.Sleep(1); }
+            try { while (!disconnectFlag) await Task.Delay(TimeSpan.FromMilliseconds(1)); }
             catch (Exception e)
             {
                 Printer.Warning(e.ToString(), LogImportanceMode.Verbose);
@@ -148,20 +149,20 @@ namespace GameClient.TCP
                 disconnectFlag = true;
             }
 
-            Thread.Sleep(1000);
+            await Task.Delay(TimeSpan.FromMilliseconds(1000));
 
             Master.threadDispatcher.Enqueue(delegate { Network.DisconnectFromServer(); });
         }
 
         //Runs in a separate thread and sends alive pings towards the server
 
-        public void SendKAFlag()
+        public async Task SendKAFlag()
         {
             try
             {
                 while (!disconnectFlag)
                 {
-                    Thread.Sleep(1000);
+                    await Task.Delay(TimeSpan.FromMilliseconds(1000));
 
                     KeepAliveData keepAliveData = new KeepAliveData();
                     Packet packet = Packet.CreatePacketFromObject(nameof(KeepAliveManager), keepAliveData);

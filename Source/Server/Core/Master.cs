@@ -36,8 +36,6 @@ namespace GameServer.Core
 
         public static string settlementsPath;
 
-        public static string caravansPath;
-
         public static string eventsPath;
 
         public static string backupServerPath;

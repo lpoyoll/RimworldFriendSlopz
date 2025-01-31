@@ -1,4 +1,5 @@
 ﻿using System;
+using GameClient.Core;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.TCP;
@@ -19,15 +20,16 @@ namespace GameClient.Patches
             try
             {
                 if (Network.state == ClientNetworkState.Disconnected) return true;
-                if (ClientValues.isSavingGame || ClientValues.isSendingSaveToServer) return false;
+                if (ClientValues.isSavingGame) return false;
                 if (SessionValues.currentRealTimeActivity != OnlineActivityType.None) return false;
 
                 ClientValues.ToggleSavingGame(true);
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
-                GameParameterManager.SetScenario(GameParameterManager.scenarioFile);
-                GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
-                GameParameterManager.SetDifficulty(GameParameterManager.difficultyFile);
+
+                GameParameterManager.SetScenario(SessionValues.scenarioFile);
+                GameParameterManager.SetStoryteller(SessionValues.storytellerFile);
+                GameParameterManager.SetDifficulty(SessionValues.difficultyFile);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
 
@@ -49,7 +51,7 @@ namespace GameClient.Patches
                     MapManager.SendPlayerMapsToServer();
 
                     Printer.Message("Sending save to server");
-                    SaveManager.SendSavePartToServer();
+                    SaveSenderManager.SendSaveToServer();
                 }
             }
             catch (Exception e) { Printer.Error($"{e}"); }

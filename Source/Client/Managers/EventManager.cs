@@ -64,7 +64,7 @@ namespace GameClient.Managers
 
             if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
+                DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
             }
 
             else
@@ -132,7 +132,7 @@ namespace GameClient.Managers
 
             RimworldManager.PlaceThingIntoMap(silverToReturn, toReturnTo, ThingPlaceMode.Near, true);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using GameClient.Core.Preferences;
+using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Scribers;
@@ -8,7 +9,6 @@ using Shared;
 using System;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Verse;
@@ -30,10 +30,9 @@ namespace GameClient.Core
                 CreateUnityDispatcher();
                 LoadAllManagers();
 
-                CaravanManagerHelper.SetCaravanDefs();
-                SiteManager.SetSiteDefs();
-                
                 PlayerPreferenceManager.LoadPlayerPreferences();
+                CaravanManagerH.SetCaravanDef();
+                SiteManagerH.SetSiteDefs();
             }
         }
 
@@ -53,16 +52,15 @@ namespace GameClient.Core
 
         private static void PreparePaths()
         {
-            ModContentPack mod = LoadedModManager.RunningMods.First(m => m.PackageId == "nova.rimworldtogether");
-
             Master.savesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
             Master.appdataPath = GenFilePaths.SaveDataFolderPath;
             Master.appdataRTPath = Path.Combine(Master.appdataPath, "RimWorld Together");
             Master.appdataTempPath = Path.Combine(Master.appdataRTPath, "Temp");
             Master.appdataTempVersionPath = Path.Combine(Master.appdataTempPath, "Version");
+            Master.appdataTempModsPath = Path.Combine(Master.appdataTempPath, "Mods");
 
-            Master.modMainPath = mod.RootDir;
+            Master.modMainPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent.Parent.ToString();
             Master.modAddonsPath = Path.Combine(Master.modMainPath, "Addons");
             Master.modAssemblyPath = Path.Combine(Master.modMainPath, "Current", "Assemblies");
 
@@ -74,6 +72,7 @@ namespace GameClient.Core
             if (!Directory.Exists(Master.appdataRTPath)) Directory.CreateDirectory(Master.appdataRTPath);
             if (!Directory.Exists(Master.appdataTempPath)) Directory.CreateDirectory(Master.appdataTempPath);
             if (!Directory.Exists(Master.appdataTempVersionPath)) Directory.CreateDirectory(Master.appdataTempVersionPath);
+            if (!Directory.Exists(Master.appdataTempModsPath)) Directory.CreateDirectory(Master.appdataTempModsPath);
             if (!Directory.Exists(Master.modAddonsPath)) Directory.CreateDirectory(Master.modAddonsPath);        
         }
 

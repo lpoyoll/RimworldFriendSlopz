@@ -23,16 +23,10 @@ namespace GameServer.Managers
                 string backupPath = $"{Master.backupServerPath + Path.DirectorySeparatorChar}{backupName}{fileExtension}";
 
                 List<string> toArchive = new List<string>();
+                toArchive.AddRange(Directory.GetFiles(Master.assetsPath, "*.*", SearchOption.AllDirectories));
                 toArchive.AddRange(Directory.GetFiles(Master.configsPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.factionsPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.mapsPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.savesPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.settlementsPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.sitesPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.usersPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.caravansPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.eventsPath, "*.*", SearchOption.AllDirectories));
                 toArchive.AddRange(Directory.GetFiles(Master.logsPath, "*.*", SearchOption.AllDirectories));
+
                 CreateArchive(toArchive, backupPath);
 
                 if (Directory.GetFiles(Master.backupServerPath).Count() > Master.backupConfig.Amount && Master.backupConfig.AutomaticDeletion == true)
@@ -86,9 +80,6 @@ namespace GameServer.Managers
 
                 SettlementFile[] playerSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(uid);
                 foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + PlayerSettlementManager.fileExtension));
-
-                CaravanFile[] playerCaravans = CaravanManagerHelper.GetCaravansFromUID(uid);
-                foreach (CaravanFile caravanFile in playerCaravans) toArchive.Add(Path.Combine(Master.caravansPath, caravanFile.ID + CaravanManager.fileExtension));
 
                 CreateArchive(toArchive, playerArchivedSavePath);
 

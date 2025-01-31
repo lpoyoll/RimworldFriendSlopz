@@ -18,10 +18,10 @@ namespace GameClient.Managers
             GameParameterManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);
             NPCSettlementManagerHelper.SetValues(serverGlobalData);
-            SiteManagerHelper.SetValues(serverGlobalData);
-            CaravanManagerHelper.SetValues(serverGlobalData);
+            SiteManagerH.SetValues(serverGlobalData);
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
+            ModManager.ReceiveMods(serverGlobalData);
             RecentServersManager.AddServerToList(serverGlobalData._serverValues.ServerName, $"{Network.ip}:{Network.port}");
         }
     }

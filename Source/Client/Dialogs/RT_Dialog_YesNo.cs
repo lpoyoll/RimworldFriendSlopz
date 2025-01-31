@@ -3,6 +3,7 @@ using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using static GameClient.Managers.DialogManagerH;
 
 namespace GameClient.Dialogs
 {
@@ -12,11 +13,7 @@ namespace GameClient.Dialogs
 
         private readonly string title = "OPTION";
 
-        private readonly string description = "";
-
-        private readonly float buttonX = 150f;
-
-        private readonly float buttonY = 38f;
+        private readonly string description;
 
         private readonly Action actionYes;
 
@@ -51,15 +48,15 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMin, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Confirm"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomLeft), "Confirm"))
             {
-                if (actionYes != null) actionYes.Invoke();
+                actionYes?.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomRight), "Cancel"))
             {
-                if (actionNo != null) actionNo.Invoke();
+                actionNo?.Invoke();
                 Close();
             }
         }

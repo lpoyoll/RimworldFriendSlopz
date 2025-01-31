@@ -5,6 +5,7 @@ using System.Reflection;
 ﻿using System.Reflection;
 using GameClient.Core.Configs;
 using GameClient.Misc;
+using Shared;
 
 namespace GameClient.Core
 {
@@ -29,6 +30,8 @@ namespace GameClient.Core
         public static string appdataTempPath;
 
         public static string appdataTempVersionPath;
+
+        public static string appdataTempModsPath;
 
         public static string modMainPath;
 

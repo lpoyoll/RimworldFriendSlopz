@@ -48,6 +48,7 @@ namespace GameClient.Core.Configs
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
             if (listingStandard.ButtonTextLabeled("Change mod version [Windows only]", "Change")) { VersionManager.PromptChangeVersion(); }
+            if (listingStandard.ButtonTextLabeled("Export account", "Export")) { ShowExportAccountQuestion(); }
 
             GUI.color = Color.red;
             if (listingStandard.ButtonTextLabeled("Reset account [DANGEROUS]", "Reset")) { ShowResetAccountQuestion(); }
@@ -56,8 +57,6 @@ namespace GameClient.Core.Configs
             listingStandard.GapLine();
             listingStandard.Label("External Sources");
             if (listingStandard.ButtonTextLabeled("Check out the mod's wiki!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/wiki");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's Github!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's incompatibility list!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/blob/development/IncompatibilityList.md");
             if (listingStandard.ButtonTextLabeled("Check out the mod's donation page!", "Open")) StartProcess("https://ko-fi.com/rimworldtogether");
             if (listingStandard.ButtonTextLabeled("Check out mod's Discord community!", "Open")) StartProcess("https://discord.gg/yUF2ec8Vt8");
 
@@ -135,7 +134,7 @@ namespace GameClient.Core.Configs
                     byte[] compressedBytes = GZip.CompressBytes(File.ReadAllBytes(toConvertPath));
                     File.WriteAllBytes(conversionPath, compressedBytes);
 
-                    RT_Dialog_OK d2 = new RT_Dialog_OK("Save was converted successfully");
+                    RT_Dialog_Message d2 = new RT_Dialog_Message("MESSAGE", new string[] { "Save was converted successfully" });
                     DialogManager.PushNewDialog(d2);
                 });
 
@@ -145,13 +144,37 @@ namespace GameClient.Core.Configs
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
+        private void ShowExportAccountQuestion()
+        {
+            Action toDo = delegate
+            {
+                try
+                {
+                    string path = Path.Combine(Master.appdataRTPath, "LoginData.json");
+                    string destination = Path.Combine(DialogManager.dialogInputResults[0], Path.GetFileName(path));
+                    File.Copy(path, destination);
+
+                    string[] messages = new string[]
+                    {
+                        "Account file was exported correctly!",
+                        "Put it inside the \"RimWorld Together\" AppData folder of the new machine"
+                    };
+
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", messages));
+                }
+                catch { DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Path couldn't be found!" })); }
+            };
+
+            DialogManager.PushNewDialog(new RT_Dialog_Inputs("Choose where to export the file at", new string[] { "Path" }, new bool[] { false }, toDo));
+        }
+
         private void ShowResetAccountQuestion()
         {
             RT_Dialog_YesNo dialog = new RT_Dialog_YesNo("Are you sure you want to RESET your ACCOUNT?",
                 delegate
                 {
                     UserLoginManager.DeleteLoginData();
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("Account has been reset"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Account has been reset" }));
                 });
 
             DialogManager.PushNewDialog(dialog);

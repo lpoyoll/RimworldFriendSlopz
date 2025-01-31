@@ -234,8 +234,10 @@ namespace GameClient.Managers
         {
             if (hasRoadOnTile)
             {
-                RT_Dialog_2Button d1 = new RT_Dialog_2Button("Road manager", "Select the action you want to do",
-                    "Build", "Destroy", delegate { ShowRoadBuildDialog(neighborTiles); }, delegate { ShowRoadDestroyDialog(neighborTiles); }, null);
+                RT_Dialog_Buttons d1 = new RT_Dialog_Buttons("Road manager", "Select the action you want to do",
+                    new string[] { "Build", "Destroy" }, 
+                    new Action[] { delegate { ShowRoadBuildDialog(neighborTiles); }, delegate { ShowRoadDestroyDialog(neighborTiles); } }, 
+                    null);
 
                 DialogManager.PushNewDialog(d1);
             }
@@ -276,7 +278,7 @@ namespace GameClient.Managers
                             RoadManager.SendRoadAddRequest(SessionValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             SaveManager.ForceSave();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Error("You do not have enough silver for this action!"));
+                        else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
                     });
 
                 DialogManager.PushNewDialog(d1);

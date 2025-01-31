@@ -34,5 +34,9 @@
         public bool TemporalAidProtection = false;
 
         public int TemporalAidProtectionTime = 3600;
+
+        public bool TemporalSpyProtection = true;
+
+        public int TemporalSpyProtectionTime = 3600;
     }
 }

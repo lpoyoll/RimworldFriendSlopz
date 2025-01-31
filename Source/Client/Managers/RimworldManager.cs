@@ -2,12 +2,14 @@
 using System.Linq;
 using GameClient.Misc;
 using GameClient.Scribers;
+using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using Verse.AI.Group;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
@@ -35,6 +37,7 @@ namespace GameClient.Managers
             if (playerNegotiator != null) return true;
             else return false;
         }
+
         public static bool CheckIfHasEnoughSilverInMap(Map map, int requiredQuantity)
         {
             if (requiredQuantity == 0) return true;
@@ -238,5 +241,41 @@ namespace GameClient.Managers
         }
 
         public static void SetGameSpeed(TimeSpeed timeSpeed) { Find.TickManager.CurTimeSpeed = timeSpeed; }
+
+        //Handles the factions of a desired map for the offline visit
+
+        public static void HandleMapFactions(Map map, Faction targetFaction)
+        {
+            foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
+            {
+                if (pawn.Faction == FactionValues.neutralPlayer)
+                {
+                    pawn.SetFaction(targetFaction);
+                }
+            }
+
+            foreach (Thing thing in map.listerThings.AllThings.ToArray())
+            {
+                if (thing.Faction == FactionValues.neutralPlayer)
+                {
+                    if (thing.def.CanHaveFaction) thing.SetFaction(targetFaction);
+                }
+            }
+        }
+
+        //Prepares the map lord of a desired map for the offline visit
+
+        public static void PrepareMapLord(Map map, Faction targetFaction)
+        {
+            Thing toFocusOn;
+
+            IntVec3 deployPlace = map.Center;
+            toFocusOn = map.listerThings.AllThings.Find(x => x.def.defName == "RTDefenseSpot" || x.def.defName == "RTChillSpot");
+            if (toFocusOn != null) deployPlace = toFocusOn.Position;
+
+            Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == targetFaction).ToArray();
+            LordJob_DefendBase job = new LordJob_DefendBase(targetFaction, deployPlace, true);
+            LordMaker.MakeNewLord(targetFaction, job, map, lordPawns);
+        }
     }
 }

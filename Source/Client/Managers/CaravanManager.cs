@@ -6,9 +6,13 @@ using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Verse;
+using Verse.Noise;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
@@ -20,9 +24,9 @@ namespace GameClient.Managers
 
         public static WorldObjectDef onlineCaravanDef;
 
-        public static List<CaravanFile> activeCaravans = new List<CaravanFile>();
+        public static List<Caravan> playerCaravans = new List<Caravan>();
 
-        public static Dictionary<Caravan, int> activePlayerCaravans = new Dictionary<Caravan, int>();
+        public static List<CaravanFile> guestCaravans = new List<CaravanFile>();
 
         public static void ParsePacket(Packet packet)
         {
@@ -44,90 +48,92 @@ namespace GameClient.Managers
             }
         }
 
-        public static void AddCaravans(CaravanFile[] details)
+        public static void AddCaravan(CaravanFile file)
         {
-            if (details == null) return;
+            if (!ClientValues.isReadyToPlay) return;
+            if (file.UID == ClientValues.uid) return;
 
-            foreach (CaravanFile caravan in details)
+            try
             {
-                AddCaravan(caravan);
-            }
-        }
-
-        private static void AddCaravan(CaravanFile details)
-        {
-            activeCaravans.Add(details);
-
-            if (details.UID == ClientValues.uid)
-            {
-                Caravan toAdd = Find.WorldObjects.Caravans.FirstOrDefault(fetch => fetch.Faction == Faction.OfPlayer &&
-                    !activePlayerCaravans.ContainsKey(fetch));
-
-                if (toAdd == null) return;
-                else activePlayerCaravans.Add(toAdd, details.ID);
-            }
-
-            else
-            {
-                OnlineCaravan onlineCaravan = (OnlineCaravan)WorldObjectMaker.MakeWorldObject(onlineCaravanDef);
-                onlineCaravan.Tile = details.Tile;
-                onlineCaravan.SetFaction(FactionValues.neutralPlayer);
-                Find.World.worldObjects.Add(onlineCaravan);
-            }
-        }
-
-        private static void RemoveCaravan(CaravanFile details)
-        {
-            CaravanFile toRemove = CaravanManagerHelper.GetCaravanDetailsFromID(details.ID);
-            if (toRemove == null) return;
-            else
-            {
-                activeCaravans.Remove(toRemove);
-
-                if (details.UID == ClientValues.uid)
+                if (CaravanManagerH.GetExistingCaravanFromFile(file) != null)
                 {
-                    foreach (KeyValuePair<Caravan, int> pair in activePlayerCaravans.ToArray())
+                    Printer.Warning("Caravan to add already existed", LogImportanceMode.Verbose);
+                }
+
+                else
+                {
+                    guestCaravans.Add(file);
+
+                    OnlineCaravan onlineCaravan = (OnlineCaravan)WorldObjectMaker.MakeWorldObject(onlineCaravanDef);
+                    onlineCaravan.Tile = file.Tile;
+                    onlineCaravan.SetFaction(FactionValues.neutralPlayer);
+                    Find.World.worldObjects.AllWorldObjects.Add(onlineCaravan);
+
+                    Printer.Warning("Added");
+                }
+            }
+            catch (Exception e) { Printer.Error(e); }
+        }
+
+        private static void RemoveCaravan(CaravanFile file)
+        {
+            if (!ClientValues.isReadyToPlay) return;
+            if (file.UID == ClientValues.uid) return;
+
+            try
+            {
+                CaravanFile toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
+                if (toFind == null) Printer.Warning("Caravan to remove wasn't found", LogImportanceMode.Verbose);
+                else
+                {
+                    OnlineCaravan toRemove = CaravanManagerH.GetAllExistingOnlineCaravans()
+                        .FirstOrDefault(fetch => fetch.Tile == toFind.Tile);
+
+                    if (toRemove != null)
                     {
-                        if (pair.Value == details.ID)
-                        {
-                            activePlayerCaravans.Remove(pair.Key);
-                            break;
-                        }
+                        Find.World.worldObjects.AllWorldObjects.Remove(toRemove);
+                        guestCaravans.Remove(toFind);
+                        Printer.Warning("Removed");
                     }
                 }
-
-                else
-                {
-                    WorldObject worldObject = Find.World.worldObjects.AllWorldObjects.First(fetch => fetch.Tile == details.Tile
-                        && fetch.def == onlineCaravanDef);
-
-                    Find.World.worldObjects.Remove(worldObject);
-                }
             }
+            catch (Exception e) { Printer.Error(e); }
         }
 
-        private static void MoveCaravan(CaravanFile details)
+        private static void MoveCaravan(CaravanFile file)
         {
-            CaravanFile toMove = CaravanManagerHelper.GetCaravanDetailsFromID(details.ID);
-            if (toMove == null) return;
-            else
+            if (!ClientValues.isReadyToPlay) return;
+            if (file.UID == ClientValues.uid) return;
+
+            try
             {
-                if (details.UID == ClientValues.uid) return;
+                CaravanFile toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
+                if (toFind == null) AddCaravan(file);
                 else
                 {
-                    RemoveCaravan(toMove);
-                    AddCaravan(details);
+                    OnlineCaravan onlineCaravan = CaravanManagerH.GetAllExistingOnlineCaravans()
+                        .FirstOrDefault(fetch => fetch.Tile == toFind.Tile);
+
+                    if (onlineCaravan != null)
+                    {
+                        onlineCaravan.Tile = file.Tile;
+                        toFind.Tile = file.Tile;
+                    }
                 }
             }
+            catch (Exception e) { Printer.Error(e); }
         }
 
         public static void RequestCaravanAdd(Caravan caravan)
         {
+            playerCaravans.Add(caravan);
+
             CaravanData data = new CaravanData();
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.UID = ClientValues.username;
+            data._caravanFile.UID = ClientValues.uid;
+            data._caravanFile.ID = caravan.ID;
 
             Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
             Network.listener.EnqueuePacket(packet);
@@ -135,86 +141,72 @@ namespace GameClient.Managers
 
         public static void RequestCaravanRemove(Caravan caravan)
         {
-            activePlayerCaravans.TryGetValue(caravan, out int caravanID);
+            CaravanData data = new CaravanData();
+            data._stepMode = CaravanStepMode.Remove;
+            data._caravanFile = new CaravanFile();
+            data._caravanFile.Tile = caravan.Tile;
+            data._caravanFile.UID = ClientValues.uid;
+            data._caravanFile.ID = caravan.ID;
 
-            CaravanFile details = CaravanManagerHelper.GetCaravanDetailsFromID(caravanID);
-            if (details == null) return;
-            else
-            {
-                CaravanData data = new CaravanData();
-                data._stepMode = CaravanStepMode.Remove;
-                data._caravanFile = details;
+            playerCaravans.Remove(caravan);
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
-                Network.listener.EnqueuePacket(packet);
-            }
+            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
+            Network.listener.EnqueuePacket(packet);
         }
 
-        public static void RequestCaravanMove(Caravan caravan)
+        public static void RequestCaravanUpdate(Caravan caravan)
         {
-            activePlayerCaravans.TryGetValue(caravan, out int caravanID);
+            CaravanData data = new CaravanData();
+            data._stepMode = CaravanStepMode.Move;
+            data._caravanFile = new CaravanFile();
+            data._caravanFile.Tile = caravan.Tile;
+            data._caravanFile.UID = ClientValues.uid;
+            data._caravanFile.ID = caravan.ID;
 
-            CaravanFile details = CaravanManagerHelper.GetCaravanDetailsFromID(caravanID);
-            if (details == null) return;
-            else
-            {
-                CaravanData data = new CaravanData();
-                data._stepMode = CaravanStepMode.Move;
-                data._caravanFile = details;
-
-                Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
-                Network.listener.EnqueuePacket(packet);
-            }
+            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
+            Network.listener.EnqueuePacket(packet);
         }
 
         public static void ClearAllCaravans()
         {
-            activeCaravans.Clear();
-            activePlayerCaravans.Clear();
+            guestCaravans.Clear();
+            playerCaravans.Clear();
 
-            foreach (WorldObject worldObject in Find.World.worldObjects.AllWorldObjects.ToArray())
+            foreach (WorldObject worldObject in CaravanManagerH.GetAllExistingOnlineCaravans())
             {
-                if (worldObject.def == onlineCaravanDef)
-                {
-                    Find.World.worldObjects.Remove(worldObject);
-                }
-            }
-        }
-
-        public static void ModifyDetailsTile(Caravan caravan, int updatedTile)
-        {
-            activePlayerCaravans.TryGetValue(caravan, out int caravanID);
-
-            foreach (CaravanFile details in activeCaravans)
-            {
-                if (details.ID == caravanID)
-                {
-                    details.Tile = updatedTile;
-                    break;
-                }
+                Find.World.worldObjects.Remove(worldObject);
             }
         }
     }
 }
 
-public static class CaravanManagerHelper
+public static class CaravanManagerH
 {
-    //Variables
-
-    public static CaravanFile[] tempCaravanDetails;
-
-    public static void SetValues(ServerGlobalData serverGlobalData)
+    public static OnlineCaravan[] GetAllExistingOnlineCaravans()
     {
-        tempCaravanDetails = serverGlobalData._playerCaravans;
+        List<OnlineCaravan> onlineCaravans = new List<OnlineCaravan>();
+        foreach (WorldObject wo in Find.World.worldObjects.AllWorldObjects)
+        {
+            if (wo.def == CaravanManager.onlineCaravanDef) onlineCaravans.Add((OnlineCaravan)wo);
+        }
+
+        return onlineCaravans.ToArray();
     }
 
-    public static CaravanFile GetCaravanDetailsFromID(int id)
+    public static CaravanFile GetExistingCaravanFromFile(CaravanFile file)
     {
-        return CaravanManager.activeCaravans.FirstOrDefault(fetch => fetch.ID == id);
+        return CaravanManager.guestCaravans.FirstOrDefault(fetch => fetch.UID == file.UID 
+            && fetch.ID == file.ID);
     }
 
-    public static void SetCaravanDefs()
+    public static void SetCaravanDef()
     {
         CaravanManager.onlineCaravanDef = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTCaravan");
+    }
+
+    public static void SetAllPlayerCaravans()
+    {
+        Caravan[] playerCaravans = Find.World.worldObjects.Caravans.Where(fetch => fetch.Faction == Faction.OfPlayer).ToArray();
+        foreach (Caravan caravan in playerCaravans) CaravanManager.playerCaravans.Add(caravan);
     }
 }

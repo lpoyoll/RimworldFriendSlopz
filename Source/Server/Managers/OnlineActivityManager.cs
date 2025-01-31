@@ -28,7 +28,7 @@ namespace GameServer.Managers
                     AcceptActivity(client, data);
                     break;
 
-                case OnlineActivityStepMode.Reject:
+                case OnlineActivityStepMode.Deny:
                     RejectActivity(client, data);
                     break;
 
@@ -55,7 +55,7 @@ namespace GameServer.Managers
                 ServerClient toGet = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
                 if (toGet == null)
                 {
-                    data._stepMode = OnlineActivityStepMode.Unavailable;
+                    data._stepMode = OnlineActivityStepMode.Deny;
                     Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                     client.listener.EnqueuePacket(packet);
                 }
@@ -64,7 +64,7 @@ namespace GameServer.Managers
                 {
                     if (toGet.activityPartner != null)
                     {
-                        data._stepMode = OnlineActivityStepMode.Unavailable;
+                        data._stepMode = OnlineActivityStepMode.Deny;
                         Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                         client.listener.EnqueuePacket(packet);
                     }

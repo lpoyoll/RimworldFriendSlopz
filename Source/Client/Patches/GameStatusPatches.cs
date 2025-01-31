@@ -1,4 +1,5 @@
-﻿using GameClient.Managers;
+﻿using GameClient.Core;
+using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Scribers;
 using GameClient.TCP;
@@ -23,13 +24,11 @@ namespace GameClient.Patches
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlayerSettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
-                    SaveManager.ForceSave();
 
-                    if (ClientValues.isGeneratingFreshWorld)
-                    {
-                        WorldManager.SendWorldToServer();
-                        ClientValues.ToggleGenerateWorld(false);
-                    }
+                    if (ClientValues.isGeneratingFreshWorld) WorldManagerSender.SendWorld();
+                    else SaveManager.ForceSave();
+
+                    ClientValues.ToggleReadyToPlay(true);
                 }
             }
         }
@@ -43,6 +42,11 @@ namespace GameClient.Patches
                 if (Network.state == ClientNetworkState.Connected)
                 {
                     PlanetManager.BuildPlanet();
+
+                    GameParameterManager.SetScenario(SessionValues.scenarioFile);
+                    GameParameterManager.SetStoryteller(SessionValues.storytellerFile);
+                    GameParameterManager.SetDifficulty(SessionValues.difficultyFile);
+
                     ClientValues.ToggleReadyToPlay(true);
                 }
             }

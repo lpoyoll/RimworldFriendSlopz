@@ -13,40 +13,43 @@ namespace GameClient.Managers
     {
         public static void PromptChangeVersion()
         {
-            RT_Dialog_OK dialog2 = new RT_Dialog_OK("The game will restart to apply the new version", GenCommandLine.Restart);
-            DialogManager.PushNewDialog(new RT_Dialog_2Input("Version selection", "Release number", "Password (optional)",
+            RT_Dialog_Message dialog2 = new RT_Dialog_Message("MESSAGE", new string[] { "The game will restart to apply the new version" }, GenCommandLine.Restart);
+
+            DialogManager.PushNewDialog(new RT_Dialog_Inputs("Version selection", 
+                new string[] { "Release number", "Password (optional)" }, 
+                new bool[] { false, true }, 
                 delegate
                 {
                     string downloadPath = Path.Combine(Master.appdataTempVersionPath, "3005289691.zip");
                     string extractPath = Path.Combine(Master.appdataTempVersionPath, "3005289691");
-                    string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{DialogManager.dialog2ResultOne}/3005289691.zip";
+                    string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{DialogManager.dialogInputResults[0]}/3005289691.zip";
 
                     if (!DownloadVersion(uri, downloadPath))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Version failed to download, check and try again"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Version failed to download, check and try again" }));
                         return;
                     }
 
                     else if (!UnzipVersion(downloadPath, extractPath))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Version failed to decompress, check logs for more information"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Version failed to decompress, check logs for more information" }));
                         return;
                     }
 
                     else if (!InstallVersion(extractPath))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Version failed to install, check logs for more information"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Version failed to install, check logs for more information" }));
                         return;
                     }
 
                     else if (!Cleanup(downloadPath))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Installer failed the cleanup, check logs for more information"));
+                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Installer failed to cleanup, check logs for more information" }));
                         return;
                     }
 
                     DialogManager.PushNewDialog(dialog2);
-                }, null, false, true
+                }
             ));
         }
 
@@ -71,7 +74,7 @@ namespace GameClient.Managers
                 if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
 
                 string appPath = Path.Combine(Master.modAddonsPath, "7z", "7z.exe");
-                StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{DialogManager.dialog2ResultTwo}\" -o\"{extractPath}\"");
+                CMDExecuter.StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{DialogManager.dialogInputResults[1]}\" -o\"{extractPath}\"");
 
                 return true;
             }
@@ -85,9 +88,9 @@ namespace GameClient.Managers
                 string modsDirectory = Directory.GetParent(Master.modMainPath).ToString();
                 string installDirectory = Path.Combine(modsDirectory, "3005289691");
 
-                StartCMDWindow($"rmdir \"{installDirectory}\" /s /q");
+                CMDExecuter.StartCMDWindow($"rmdir \"{installDirectory}\" /s /q");
 
-                StartCMDWindow($"move \"{extractPath}\" \"{modsDirectory}\"");
+                CMDExecuter.StartCMDWindow($"move \"{extractPath}\" \"{modsDirectory}\"");
 
                 return true;
             }
@@ -96,23 +99,8 @@ namespace GameClient.Managers
 
         private static bool Cleanup(string toClean)
         {
-            try { StartCMDWindow($"del \"{toClean}\""); return true; }
+            try { CMDExecuter.StartCMDWindow($"del \"{toClean}\""); return true; }
             catch { return false; }
-        }
-
-        private static void StartCMDWindow(string command)
-        {
-            ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {command}");
-            processInfo.CreateNoWindow = true;
-            processInfo.UseShellExecute = false;
-            processInfo.RedirectStandardError = true;
-
-            Process process = Process.Start(processInfo);
-            process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => Printer.Error(e.Data);
-            process.BeginErrorReadLine();
-
-            process.WaitForExit();
-            process.Close();
         }
     }
 }

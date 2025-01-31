@@ -141,11 +141,13 @@ namespace GameServer.Managers
         public static bool CheckLoginData(ServerClient client, LoginData data)
         {
             bool isInvalid = false;
-            if (string.IsNullOrWhiteSpace(data._uid)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(data._username)) isInvalid = true;
+
+            if (!StringChecker.CheckIfStringIsValid(data._uid)) isInvalid = true;
+            if (!StringChecker.CheckIfStringIsValid(data._username)) isInvalid = true;
+
             if (data._username.Any(char.IsWhiteSpace)) isInvalid = true;
             if (data._username.Length > 32) isInvalid = true;
-            if (data._uid.Length > 128) isInvalid = true;
+            if (data._uid.Length > 64) isInvalid = true;
 
             if (!isInvalid) return true;
             else

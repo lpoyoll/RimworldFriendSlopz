@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
@@ -24,6 +25,7 @@ namespace GameClient.Patches.Pages
             else
             {
                 Find.GameInitData.permadeathChosen = true;
+                Find.GameInitData.permadeath = true;
 
                 if (!ClientValues.isGeneratingFreshWorld)
                 {
@@ -39,7 +41,7 @@ namespace GameClient.Patches.Pages
     [HarmonyPatch(typeof(Page_SelectStoryteller), "DoWindowContents")]
     public static class PatchSelectStorytellerPage
     {
-        private static bool executed;
+        public static bool executedMessage;
 
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStoryteller __instance)
@@ -50,22 +52,20 @@ namespace GameClient.Patches.Pages
             {
                 if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
                 {
-                    Current.Game.storyteller = GenManagerH.GetStorytellerReference(__instance);
+                    Current.Game.storyteller = GameParameterManagerH.GetStorytellerReference(__instance);
 
                     Action difficultyYes = delegate
                     {
-                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty());
-                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(), true);
-
+                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty(__instance), true);
+                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(__instance), true);
                         DialogManager.PushNewDialog(__instance.next);
                         __instance.Close();
                     };
 
                     Action difficultyNo = delegate
                     {
-                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty());
-                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(), false);
-
+                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty(__instance), true);
+                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(__instance), false);
                         DialogManager.PushNewDialog(__instance.next);
                         __instance.Close();
                     };
@@ -74,17 +74,15 @@ namespace GameClient.Patches.Pages
 
                     Action storytellerYes = delegate
                     {
-                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance));
+                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance), true);
                         GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), true);
-
                         DialogManager.PushNewDialog(d2);
                     };
 
                     Action storytellerNo = delegate
                     {
-                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance));
+                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance), true);
                         GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), false);
-
                         DialogManager.PushNewDialog(d2);
                     };
 
@@ -96,23 +94,23 @@ namespace GameClient.Patches.Pages
 
             else
             {
-                if (GameParameterManager.storytellerFile.EnforceStoryteller)
+                if (SessionValues.storytellerFile.EnforceStoryteller)
                 {
-                    if (executed) return true;
+                    if (executedMessage) return true;
                     else
                     {
                         Action toDo = delegate
                         {
-                            GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
-
+                            GameParameterManager.SetStoryteller(SessionValues.storytellerFile);
+                            GameParameterManager.SetDifficulty(SessionValues.difficultyFile, true);
                             DialogManager.PushNewDialog(__instance.next);
                             __instance.Close();
 
-                            executed = false;
+                            executedMessage = false;
                         };
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Storyteller will be forced by the server", toDo));
+                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Storyteller will be forced by the server" }, toDo));
 
-                        executed = true;
+                        executedMessage = true;
                     }
                 }
             }
@@ -141,16 +139,16 @@ namespace GameClient.Patches.Pages
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (GameParameterManager.difficultyFile.EnforceDifficulty || GameParameterManager.storytellerFile.EnforceStoryteller)
+            if (SessionValues.difficultyFile.EnforceDifficulty || SessionValues.storytellerFile.EnforceStoryteller)
             {
                 Action toDo = delegate
                 {
-                    GameParameterManager.SetStoryteller(GameParameterManager.storytellerFile);
+                    GameParameterManager.SetStoryteller(SessionValues.storytellerFile);
 
-                    GameParameterManager.SetDifficulty(GameParameterManager.difficultyFile);
+                    GameParameterManager.SetDifficulty(SessionValues.difficultyFile);
                 };
 
-                DialogManager.PushNewDialog(new RT_Dialog_OK("Settings might change to reflect server enforcements", toDo));
+                DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));
 
                 return false;
             }
@@ -224,9 +222,6 @@ namespace GameClient.Patches.Pages
             Rect rect3 = new Rect(0f, 120f, 290f, 9999f);
             float num = 300f;
 
-            Find.GameInitData.permadeathChosen = true;
-            Find.GameInitData.permadeath = true;
-
             Rect position = new Rect(390f - outRect2.x, rect.height - Storyteller.PortraitSizeLarge.y - 1f, Storyteller.PortraitSizeLarge.x, Storyteller.PortraitSizeLarge.y);
 
             if (chosenStoryteller != null && chosenStoryteller.listVisible)
@@ -265,7 +260,7 @@ namespace GameClient.Patches.Pages
 
                             difficulty = allDef;
                         }
-                        
+
                         infoListing.Gap(3f);
                     }
                 }

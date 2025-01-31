@@ -41,12 +41,12 @@ namespace GameClient.Managers
 
                     case DCReason.SaveQuitToMenu:
                         reason = "Save and Quit to Menu";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { DisconnectToMenu(); }));
+                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your progress has been saved!" }, DisconnectToMenu));
                         break;
 
                     case DCReason.SaveQuitToOS:
                         reason = "Save and Quit to OS";
-                        DialogManager.PushNewDialog(new RT_Dialog_OK("Your progress has been saved!", delegate { QuitGame(); }));
+                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your progress has been saved!" }, QuitGame));
                         break;
 
                     case DCReason.ConnectionLost:

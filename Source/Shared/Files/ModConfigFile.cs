@@ -9,5 +9,11 @@ namespace Shared
         public string[] OptionalMods = new string[0];
 
         public string[] ForbiddenMods = new string[0];
+
+        public bool EnforcedConfigs = false;
+
+        public string[] ModFileNames = new string[0];
+
+        public string[] ModConfigs = new string[0];
     }
 }

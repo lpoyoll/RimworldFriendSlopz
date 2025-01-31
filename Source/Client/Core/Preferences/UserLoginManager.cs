@@ -44,7 +44,7 @@ namespace GameClient.Core.Preferences
                 data._uid = file.UID;
                 data._username = file.Username;
                 data._version = CommonValues.executableVersion;
-                data._runningMods = ModManagerHelper.GetRunningModList();
+                data._runningMods = ModManagerH.GetRunningModList();
 
                 Packet packet = Packet.CreatePacketFromObject(nameof(LoginManager), data);
                 Network.listener.EnqueuePacket(packet);
@@ -63,14 +63,24 @@ namespace GameClient.Core.Preferences
         {
             Action toDo = delegate
             {
-                AssignPlayerUsername(DialogManager.dialog1ResultOne);
-                AssignPlayerHash();
+                if (!StringChecker.CheckIfStringIsValid(DialogManager.dialogInputResults[0]))
+                {
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR",
+                        new string[] { "Your username contains illegal characters", "Please choose another one and try again" }));
+                }
 
-                if (isQuickConnect) QuickConnectUser();
-                else ConnectionManager.ShowConnectDialogs();
+                else
+                {
+                    AssignPlayerUsername(DialogManager.dialogInputResults[0]);
+                    AssignPlayerHash();
+
+                    if (isQuickConnect) QuickConnectUser();
+                    else ConnectionManager.ShowConnectDialogs();
+                }
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_1Input("Question", "What would you like your username to be?", toDo));
+            DialogManager.PushNewDialog(new RT_Dialog_Inputs("Question", 
+                new string[] { "What would you like your username to be?" }, new bool[] { false }, toDo));
         }
 
         public static void AssignPlayerUsername(string user)
@@ -97,7 +107,7 @@ namespace GameClient.Core.Preferences
         {
             UserLoginManagerH.SetupQuickConnectVariables();
             if (UserLoginManagerH.CheckIfQuickConnectIsValid()) UserLoginManagerH.ShowQuickConnectFloatMenu();
-            else DialogManager.PushNewDialog(new RT_Dialog_OK("You must join a server first to use this feature!"));
+            else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You must join a server first to use this feature!" }));
         }
     }
 

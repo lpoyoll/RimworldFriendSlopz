@@ -10,21 +10,21 @@ namespace GameClient.Managers
     [RTManager]
     public static class DialogManager
     {
+        // Variables
+
+        public static Window currentDialog;
+
+        public static Window previousDialog;
+
+        // Dialogs
+
         public static RT_Dialog_Wait dialogWait;
 
         public static RT_Dialog_YesNo dialogYesNo;
 
-        public static RT_Dialog_2Button dialog2Button;
+        public static RT_Dialog_Message dialogMessage;
 
-        public static RT_Dialog_3Button dialog3Button;
-
-        public static RT_Dialog_OK dialogOK;
-
-        public static RT_Dialog_OK_Loop dialogOKLoop;
-
-        public static RT_Dialog_Error dialogError;
-
-        public static RT_Dialog_Error_Loop dialogErrorLoop;
+        public static RT_Dialog_Buttons dialogButtons;
 
         public static RT_Dialog_SiteMenu dialogSiteMenu;
 
@@ -32,41 +32,33 @@ namespace GameClient.Managers
 
         public static RT_Dialog_SiteMenu_Info dialogSiteMenuInfo;
 
-        public static RT_Dialog_1Input dialog1Input;
-
-        public static string dialog1ResultOne;
-
-        public static RT_Dialog_2Input dialog2Input;
-
-        public static string dialog2ResultOne;
-
-        public static string dialog2ResultTwo;
-
-        public static RT_Dialog_3Input dialog3Input;
-
-        public static string dialog3ResultOne;
-
-        public static string dialog3ResultTwo;
-
-        public static string dialog3ResultThree;
+        // Scroll
 
         public static RT_Dialog_ScrollButtons dialogScrollButtons;
 
         public static int selectedScrollButton;
 
-        public static RT_Dialog_TransferMenu dialogTransferMenu;
+        // Input
 
-        public static RT_Dialog_ItemListing dialogItemListing;
+        public static RT_Dialog_Inputs dialogInput;
 
-        public static RT_Dialog_Listing dialogListing;
+        public static string[] dialogInputResults;
+
+        // Button listing
 
         public static RT_Dialog_ListingWithButton dialogButtonListing;
 
-        public static int dialogButtonListingResultInt;
-
         public static string dialogButtonListingResultString;
 
+        public static int dialogButtonListingResultInt;
+
+        // Server listing
+
         public static RT_Dialog_ServerListing dialogServerListing;
+
+        public static int dialogServerListingIndex;
+
+        // Tuple listing
 
         public static RT_Dialog_ListingWithTuple dialogTupleListing;
 
@@ -74,10 +66,13 @@ namespace GameClient.Managers
 
         public static int[] dialogTupleListingResultInt;
 
-        public static Window currentDialog;
+        // More
 
-        public static Window previousDialog;
-        internal static int dialogServerListingIndex;
+        public static RT_Dialog_TransferMenu dialogTransferMenu;
+
+        public static RT_Dialog_ItemListing dialogItemListing;
+
+        public static RT_Dialog_Listing dialogListing;
 
         public static void PushNewDialog(Window window)
         {

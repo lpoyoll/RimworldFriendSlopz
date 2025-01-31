@@ -32,7 +32,7 @@ namespace GameServer.Managers
 
                         if (method != null)
                         {
-                            Master.managerDictionary[type.Name] = method;
+                            Master.managerDictionary[method.Name] = method;
                             Printer.Message($"Found modded manager {type.Name}", CommonEnumerators.LogImportanceMode.Verbose);
                         }
                     }

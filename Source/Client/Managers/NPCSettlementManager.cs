@@ -30,15 +30,15 @@ namespace GameClient.Managers
             }
         }
 
-        public static void AddSettlements(PlanetNPCSettlement[] settlements)
+        public static void AddSettlements(PlanetNPCSettlementDetails[] settlements)
         {
-            foreach (PlanetNPCSettlement settlement in settlements)
+            foreach (PlanetNPCSettlementDetails settlement in settlements)
             {
                 SpawnSingleSettlement(settlement);
             }
         }
 
-        public static void SpawnSingleSettlement(PlanetNPCSettlement toAdd)
+        public static void SpawnSingleSettlement(PlanetNPCSettlementDetails toAdd)
         {
             if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.tile) != null) return;
             else
@@ -87,7 +87,7 @@ namespace GameClient.Managers
             foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
         }
 
-        public static void RemoveNPCSettlementFromPacket(PlanetNPCSettlement data)
+        public static void RemoveNPCSettlementFromPacket(PlanetNPCSettlementDetails data)
         {
             Settlement toRemove = Find.World.worldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data.tile &&
                 fetch.Faction != Faction.OfPlayer);
@@ -138,7 +138,7 @@ namespace GameClient.Managers
 
     public static class NPCSettlementManagerHelper
     {
-        public static PlanetNPCSettlement[] tempNPCSettlements;
+        public static PlanetNPCSettlementDetails[] tempNPCSettlements;
 
         public static Settlement lastRemovedSettlement;
 

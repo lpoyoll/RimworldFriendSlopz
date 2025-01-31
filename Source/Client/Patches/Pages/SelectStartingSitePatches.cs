@@ -79,7 +79,6 @@ namespace GameClient.Patches.Pages
             {
                 if (Network.state == ClientNetworkState.Disconnected) return;
 
-                //Only done once per save
                 if (!ClientValues.isGeneratingFreshWorld)
                 {
                     WorldManager.SetPlanetFeatures();
@@ -88,7 +87,6 @@ namespace GameClient.Patches.Pages
                 }
 
                 PlanetManager.BuildPlanet();
-                ClientValues.ToggleReadyToPlay(true);
             }
         }
     }

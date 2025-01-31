@@ -13,8 +13,7 @@ namespace GameClient.Patches
         public static void DoPost(Caravan __instance)
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
-
-            CaravanManager.RequestCaravanAdd(__instance);
+            else CaravanManager.RequestCaravanAdd(__instance);
         }
     }
 
@@ -25,8 +24,7 @@ namespace GameClient.Patches
         public static void DoPost(Caravan __instance)
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
-
-            CaravanManager.RequestCaravanRemove(__instance);
+            else CaravanManager.RequestCaravanRemove(__instance);
         }
     }
 
@@ -34,13 +32,14 @@ namespace GameClient.Patches
     public static class PatchMoveCaravan
     {
         [HarmonyPrefix]
-        public static bool DoPre(Caravan_PathFollower __instance, Caravan ___caravan)
+        public static bool DoPre(Caravan ___caravan)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-
-            CaravanManager.ModifyDetailsTile(___caravan, __instance.nextTile);
-            CaravanManager.RequestCaravanMove(___caravan);
-            return true;
+            else
+            {
+                CaravanManager.RequestCaravanUpdate(___caravan);
+                return true;
+            }
         }
     }
 }

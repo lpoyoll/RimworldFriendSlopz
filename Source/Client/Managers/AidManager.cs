@@ -81,7 +81,7 @@ namespace GameClient.Managers
             Pawn pawn = HumanScriber.StringtoHuman(data._humanData);
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
         }
 
         private static void AcceptAid(AidData data)

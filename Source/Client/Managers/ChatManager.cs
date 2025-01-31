@@ -122,13 +122,13 @@ namespace GameClient.Managers
 
         private static void TurnOffChatIcon() { AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[0]); }
 
-        public static void ChatClock()
+        public static async Task ChatClock()
         {
             while (isChatIconActive)
             {
                 Master.threadDispatcher.Enqueue(UpdateChatIcon);
 
-                Thread.Sleep(250);
+                await Task.Delay(TimeSpan.FromMilliseconds(250));
             }
 
             chatIconIndex = 0;

@@ -50,12 +50,8 @@ namespace GameClient.Managers
                     OnActivityAccept(data);
                     break;
 
-                case OnlineActivityStepMode.Reject:
+                case OnlineActivityStepMode.Deny:
                     OnActivityReject();
-                    break;
-
-                case OnlineActivityStepMode.Unavailable:
-                    OnActivityUnavailable();
                     break;
 
                 case OnlineActivityStepMode.Stop:
@@ -103,7 +99,7 @@ namespace GameClient.Managers
 
             Action r2 = delegate
             {
-                data._stepMode = OnlineActivityStepMode.Reject;
+                data._stepMode = OnlineActivityStepMode.Deny;
                 Packet packet = Packet.CreatePacketFromObject(nameof(OnlineActivityManager), data);
                 Network.listener.EnqueuePacket(packet);
             };
@@ -153,20 +149,14 @@ namespace GameClient.Managers
         private static void OnActivityReject()
         {
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_OK($"This user has rejected the activity!"));
-        }
-
-        private static void OnActivityUnavailable()
-        {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error($"This user is currently unavailable!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"This player is currently unavailable!" }));
         }
 
         private static void OnActivityStop()
         {
             CleanActivity();
             DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Error($"Activity has ended!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"Activity has ended!" }));
         }
 
         private static void CleanActivity()

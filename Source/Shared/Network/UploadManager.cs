@@ -11,12 +11,6 @@ namespace Shared
 
         public string filePath;
 
-        private double partSize = 262144;
-        
-        public bool isLastPart;
-
-        public Action onFinish;
-
         public UploadManager(string filePath) { this.filePath = filePath; }
 
         public void PrepareUpload()
@@ -25,20 +19,11 @@ namespace Shared
             fileInfo = new FileInfo(filePath);
         }
 
-        public byte[] ReadFilePart()
+        public byte[] ReadFile()
         {
-            double bytesToRead;
-            if (fileStream.Position + partSize <= fileInfo.Length) bytesToRead = partSize;
-            else
-            {
-                bytesToRead = fileInfo.Length - fileStream.Position;
-                isLastPart = true;
-            }
+            byte[] toReturn = new byte[(int)fileInfo.Length];
+            fileStream.Read(toReturn, 0, (int)fileInfo.Length);
 
-            byte[] toReturn = new byte[(int)bytesToRead];
-            fileStream.Read(toReturn, 0, (int)bytesToRead);
-
-            if (isLastPart) FinishFileWrite();
             return toReturn;
         }
 

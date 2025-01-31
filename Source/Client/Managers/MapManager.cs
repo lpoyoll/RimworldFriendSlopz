@@ -17,14 +17,14 @@ namespace GameClient.Managers
             {
                 if (map.IsPlayerHome)
                 {
-                    SendMapToServerSingle(map);
+                    SendMapToServer(map);
                 }
             }
         }
 
         //Sends a desired map to the server
 
-        private static void SendMapToServerSingle(Map map)
+        public static void SendMapToServer(Map map)
         {
             MapData mapData = new MapData();
             mapData._mapFile = MapScriber.MapToString(map, true, true, true, true, true, true);

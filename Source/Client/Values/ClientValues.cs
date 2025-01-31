@@ -11,8 +11,6 @@ namespace GameClient.Values
 
         public static bool isSavingGame;
 
-        public static bool isSendingSaveToServer;
-
         public static bool isInTransfer;
 
         public static bool isUsingScriber;
@@ -63,8 +61,6 @@ namespace GameClient.Values
 
         public static void ToggleSavingGame(bool mode) { isSavingGame = mode; }
 
-        public static void ToggleSendingSaveToServer(bool mode) { isSendingSaveToServer = mode; }
-
         public static void ToggleUsingScriber(bool mode) { isUsingScriber = mode; }
 
         public static void CleanValues()
@@ -74,7 +70,6 @@ namespace GameClient.Values
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleSavingGame(false);
-            ToggleSendingSaveToServer(false);
             ToggleUsingScriber(false);
         }
     }

@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using GameClient.Values;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace GameClient.Managers
     {
         public static void SetPlanetRivers()
         {
-            if (WorldManager.cachedWorldValues.Rivers == null) return;
-            else AddRivers(WorldManager.cachedWorldValues.Rivers, false);
+            if (SessionValues.worldFile.Rivers == null) return;
+            else AddRivers(SessionValues.worldFile.Rivers, false);
         }
 
         public static void AddRivers(RiverDetails[] rivers, bool forceRefresh)

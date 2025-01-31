@@ -6,7 +6,7 @@ namespace GameServer.Misc
 {
     public static class Threader
     {
-        public enum ServerMode { Start, Sites, Caravans, Console }
+        public enum ServerMode { Start, Sites, Console }
 
         public static Task GenerateServerThread(ServerMode mode)
         {
@@ -14,7 +14,6 @@ namespace GameServer.Misc
             {
                 ServerMode.Start => Task.Run(Network.ReadyServer),
                 ServerMode.Sites => Task.Run(SiteManager.StartSiteTicker),
-                ServerMode.Caravans => Task.Run(CaravanManager.StartCaravanTicker),
                 ServerMode.Console => Task.Run(ConsoleManager.ListenForServerCommands),
                 _ => throw new NotImplementedException(),
             };

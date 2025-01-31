@@ -17,39 +17,39 @@ namespace GameClient.Managers
             switch (loginData._tryResponse)
             {
                 case LoginResponse.InvalidLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Login details are invalid! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Login details are invalid! Please try again!" }));
                     break;
 
                 case LoginResponse.BannedLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You are banned from this server!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You are banned from this server!" }));
                     break;
 
                 case LoginResponse.RegisterError:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("There was an error registering! Please try again!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "There was an error registering! Please try again!" }));
                     break;
 
                 case LoginResponse.ExtraLogin:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("You connected from another place!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You connected from another place!" }));
                     break;
 
                 case LoginResponse.WrongMods:
-                    ModManagerHelper.GetConflictingMods(packet);
+                    ModManagerH.GetConflictingMods(packet);
                     break;
 
                 case LoginResponse.ServerFull:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Server is full!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server is full!" }));
                     break;
 
                 case LoginResponse.Whitelist:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Server is whitelisted!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server is whitelisted!" }));
                     break;
 
                 case LoginResponse.WrongVersion:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Mod version mismatch! Expected version '{loginData._extraDetails[0]}'"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"Mod version mismatch! Expected version '{loginData._extraDetails[0]}'" }));
                     break;
 
                 case LoginResponse.NoWorld:
-                    DialogManager.PushNewDialog(new RT_Dialog_Error($"Server is currently being set up! Join again later!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"Server is currently being set up! Join again later!" }));
                     break;
             }
         }

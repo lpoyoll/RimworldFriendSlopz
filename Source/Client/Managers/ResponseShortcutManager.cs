@@ -14,12 +14,12 @@ namespace GameClient.Managers
             {
                 case CommonEnumerators.ResponseStepMode.IllegalAction:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Kicked for ilegal actions!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Kicked for ilegal actions!" }));
                     break;
 
                 case CommonEnumerators.ResponseStepMode.UserUnavailable:
                     DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Error("Player is not currently available!"));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
                     break;
 
                 case CommonEnumerators.ResponseStepMode.Pop:

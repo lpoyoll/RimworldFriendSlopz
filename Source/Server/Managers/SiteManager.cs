@@ -33,6 +33,14 @@ namespace GameServer.Managers
                     DestroySite(client, siteData);
                     break;
 
+                case SiteStepMode.Visit:
+                    VisitSite(client, siteData);
+                    break;
+
+                case SiteStepMode.Raid:
+                    RaidSite(client, siteData);
+                    break;
+
                 case SiteStepMode.Info:
                     SiteManagerHelper.GetSiteInfo(client, siteData);
                     break;
@@ -86,13 +94,32 @@ namespace GameServer.Managers
         private static void DestroySite(ServerClient client, SiteData siteData)
         {
             SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._file.Tile);
-
             if (siteFile.UID == client.userFile.Uid) DestroySiteFromFile(siteFile);
+            else return;
+        }
+
+        private static void VisitSite(ServerClient client, SiteData siteData)
+        {
+            if (MapManager.CheckIfMapExists(siteData._file.Tile)) siteData._siteMap = MapManager.GetMapFromTile(siteData._file.Tile);
+            else siteData._siteMap = null;
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            client.listener.EnqueuePacket(packet);
+        }
+
+        private static void RaidSite(ServerClient client, SiteData siteData)
+        {
+            if (!ValueChecker.CheckIfCanActivity(client.userFile)) siteData._stepMode = SiteStepMode.Deny;
             else
             {
-                ResponseShortcutManager.SendIllegalPacket(client,
-                    $"The site at tile {siteData._file.Tile} was attempted to be destroyed by {client.userFile.Uid}, but {siteFile.UID} owns it");
+                if (MapManager.CheckIfMapExists(siteData._file.Tile)) siteData._siteMap = MapManager.GetMapFromTile(siteData._file.Tile);
+                else siteData._siteMap = null;
+
+                client.userFile.UpdateActivityTime();
             }
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            client.listener.EnqueuePacket(packet);
         }
 
         public static void DestroySiteFromFile(SiteFile siteFile)
@@ -132,6 +159,7 @@ namespace GameServer.Managers
                 List<SiteFile> sitesToAdd = new List<SiteFile>();
                 if (string.IsNullOrEmpty(client.userFile.GuildName)) sitesToAdd = sites.ToList().FindAll(fetch => fetch.UID == client.userFile.Uid);
                 else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.GuildName == client.userFile.GuildName));
+
                 foreach (SiteFile site in sitesToAdd)
                 {
                     SiteRewardFile rewardFile = new SiteRewardFile();
@@ -149,7 +177,7 @@ namespace GameServer.Managers
                     rewards.Add(rewardFile);
                 }
 
-                if (rewards.Count == 0) return;
+                if (rewards.Count == 0) continue;
                 else
                 {
                     SiteData siteData = new SiteData();
@@ -263,8 +291,6 @@ namespace GameServer.Managers
             string[] sites = Directory.GetFiles(Master.sitesPath);
             foreach (string site in sites)
             {
-                if (!site.EndsWith(fileExtension)) continue;
-
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.Tile == tileToGet) return siteFile;
             }

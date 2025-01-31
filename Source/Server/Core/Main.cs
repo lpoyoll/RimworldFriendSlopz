@@ -21,6 +21,7 @@ namespace GameServer.Core
             LoadResources();
             ChangeTitle();
             LoadAllManagers();
+            CheckForServerName();
             CompatibilityManager.LoadAllPatches();
 
             Printer.Title($"----------------------------------------");
@@ -48,7 +49,6 @@ namespace GameServer.Core
             Master.sitesPath = Path.Combine(Master.assetsPath, "Sites");
             Master.factionsPath = Path.Combine(Master.assetsPath, "Factions");
             Master.settlementsPath = Path.Combine(Master.assetsPath, "Settlements");
-            Master.caravansPath = Path.Combine(Master.assetsPath, "Caravans");
             Master.eventsPath = Path.Combine(Master.assetsPath, "Events");
             Master.compatibilityPatchesPath = Path.Combine(Master.assetsPath, "Patches");
 
@@ -74,7 +74,6 @@ namespace GameServer.Core
             if (!Directory.Exists(Master.sitesPath)) Directory.CreateDirectory(Master.sitesPath);
             if (!Directory.Exists(Master.factionsPath)) Directory.CreateDirectory(Master.factionsPath);
             if (!Directory.Exists(Master.settlementsPath)) Directory.CreateDirectory(Master.settlementsPath);
-            if (!Directory.Exists(Master.caravansPath)) Directory.CreateDirectory(Master.caravansPath);
             if (!Directory.Exists(Master.eventsPath)) Directory.CreateDirectory(Master.eventsPath);
 
             if (!Directory.Exists(Master.backupUsersPath)) Directory.CreateDirectory(Master.backupUsersPath);
@@ -130,6 +129,7 @@ namespace GameServer.Core
             SaveValueFile(ServerFileMode.Backup, false);
 
             LoadValueFile(ServerFileMode.Mods);
+            SaveValueFile(ServerFileMode.Mods, false);
 
             LoadValueFile(ServerFileMode.Chat);
             SaveValueFile(ServerFileMode.Chat, false);
@@ -137,7 +137,6 @@ namespace GameServer.Core
             LoadValueFile(ServerFileMode.World);
 
             EventManager.LoadEvents();
-
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)
@@ -168,7 +167,7 @@ namespace GameServer.Core
 
                 case ServerFileMode.World:
                     pathToSave = Path.Combine(Master.configsPath, "WorldConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.worldValues);
+                    Serializer.ObjectBytesToFile(pathToSave, Master.worldValues);
                     break;
 
                 case ServerFileMode.Whitelist:
@@ -264,7 +263,7 @@ namespace GameServer.Core
 
                 case ServerFileMode.World:
                     pathToLoad = Path.Combine(Master.configsPath, "WorldConfig.json");
-                    if (File.Exists(pathToLoad)) Master.worldValues = Serializer.SerializeFromFile<WorldValuesFile>(pathToLoad);
+                    if (File.Exists(pathToLoad)) Master.worldValues = Serializer.FileBytesToObject<WorldValuesFile>(pathToLoad);
                     else return;
                     break;
 
@@ -356,6 +355,15 @@ namespace GameServer.Core
         {
             Console.Title = $"RimWorld Together {CommonValues.executableVersion} - " +
                 $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.serverConfig.MaxPlayers}]";
+        }
+
+        private static void CheckForServerName()
+        {
+            if (!StringChecker.CheckIfStringIsValid(Master.serverConfig.Name))
+            {
+                Printer.Error("ILLEGAL characters detected on the server name");
+                Printer.Error("This will make your players UNABLE to save their games");
+            }
         }
 
         public static void LoadAllManagers()

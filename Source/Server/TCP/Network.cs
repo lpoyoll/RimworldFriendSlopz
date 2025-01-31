@@ -38,7 +38,6 @@ namespace GameServer.TCP
             Printer.Warning("Type 'help' to get a list of available commands");
 
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
-            Threader.GenerateServerThread(Threader.ServerMode.Caravans);
 
             Main_.ChangeTitle();
 

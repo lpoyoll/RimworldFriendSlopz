@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
@@ -17,37 +18,37 @@ namespace GameClient.Patches.Pages
     [HarmonyPatch(typeof(Page_SelectScenario), "DoWindowContents")]
     public static class PatchSelectScenarioPage
     {
-        private static bool executed;
+        public static bool executedMessage;
 
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectScenario __instance)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (!ClientValues.isGeneratingFreshWorld && GameParameterManager.scenarioFile.EnforceScenario)
+            if (!ClientValues.isGeneratingFreshWorld && SessionValues.scenarioFile.EnforceScenario)
             {
-                if (executed) return true;
+                if (executedMessage) return true;
                 else
                 {
                     Action toDo = delegate
                     {
-                        Page_SelectScenario.BeginScenarioConfiguration(GenManagerH.GetScenarioReference(__instance), __instance);
-                        GameParameterManager.SetScenario(GameParameterManager.scenarioFile);
+                        Page_SelectScenario.BeginScenarioConfiguration(GameParameterManagerH.GetScenarioReference(__instance), __instance);
+                        GameParameterManager.SetScenario(SessionValues.scenarioFile);
 
                         DialogManager.PushNewDialog(__instance.next);
                         __instance.Close();
 
-                        executed = false;
+                        executedMessage = false;
                     };
-                    DialogManager.PushNewDialog(new RT_Dialog_OK("Scenario will be forced by the server", toDo));
+                    DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Scenario will be forced by the server" }, toDo));
 
-                    executed = true;
+                    executedMessage = true;
                 }
             }
 
             else
             {
-                if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomLeft), ""))
+                if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomLeft), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                 {
                     __instance.Close();
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
@@ -58,22 +59,18 @@ namespace GameClient.Patches.Pages
                 {
                     if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
                     {
-                        Page_SelectScenario.BeginScenarioConfiguration(GenManagerH.GetScenarioReference(__instance), __instance);
+                        Page_SelectScenario.BeginScenarioConfiguration(GameParameterManagerH.GetScenarioReference(__instance), __instance);
 
                         Action a1 = delegate
                         {
-                            GameParameterManager.SetScenario(GameParameterManager.GetScenario(__instance));
                             GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), true);
-
                             DialogManager.PushNewDialog(__instance.next);
                             __instance.Close();
                         };
 
                         Action a2 = delegate
                         {
-                            GameParameterManager.SetScenario(GameParameterManager.GetScenario(__instance));
                             GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), false);
-
                             DialogManager.PushNewDialog(__instance.next);
                             __instance.Close();
                         };
@@ -104,7 +101,7 @@ namespace GameClient.Patches.Pages
             if (Network.state == ClientNetworkState.Disconnected) return true;
             if (SessionValues.actionValues.EnableCustomScenarios) return true;
 
-            DialogManager.PushNewDialog(new RT_Dialog_Error("This server doesn't allow custom scenarios!"));
+            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
             return false;
         }
     }

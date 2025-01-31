@@ -19,19 +19,22 @@ namespace GameClient.Managers
     [RTManager]
     public static class SaveManager
     {
+        // Variables
+
         public static string customSaveName => $"Server - {Network.ip} - {Network.port} - {ClientValues.username}";
 
-        private static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
+        public static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
 
-        private static string tempSaveFilePath => saveFilePath + ".mpsave";
+        public static string tempSaveFilePath => saveFilePath + ".mpsave";
 
-        private static string serverSaveFilePath => saveFilePath + ".rws.temp";
+        public static string serverSaveFilePath => saveFilePath + ".rws.temp";
 
         public static void ParsePacket(Packet packet)
         {
             SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.contents);
-            if (data._stepMode == SaveStepMode.Receive) ReceiveSavePartFromServer(data);
-            else if (data._stepMode == SaveStepMode.Send) SendSavePartToServer();
+
+            if (data._stepMode == SaveStepMode.Receive) SaveReceiverManager.ReceiveSaveFromServer(data);
+            else if (data._stepMode == SaveStepMode.Send) SaveSenderManager.SendSaveToServer();
             else throw new NotImplementedException();
         }
 
@@ -54,69 +57,7 @@ namespace GameClient.Managers
             Network.listener.EnqueuePacket(packet);
         }
 
-        public static void ReceiveSavePartFromServer(SaveData data)
-        {
-            //If this is the first packet
-            if (Network.listener.downloadManager == null)
-            {
-                Printer.Message($"Receiving save from server");
-
-                Network.listener.downloadManager = new DownloadManager(tempSaveFilePath);
-                Network.listener.downloadManager.PrepareDownload();
-            }
-
-            Network.listener.downloadManager.WriteFilePart(data._fileBytes);
-
-            if (data._isLastPart) OnLastPartReceived(data);
-            else OnPartReceived();
-        }
-
-        private static void OnLastPartReceived(SaveData data)
-        {
-            Network.listener.downloadManager.FinishFileWrite();
-            Network.listener.downloadManager = null;
-
-            byte[] fileBytes = File.ReadAllBytes(tempSaveFilePath);
-            fileBytes = GZip.DecompressBytes(fileBytes);
-
-            File.WriteAllBytes(serverSaveFilePath, fileBytes);
-            File.Delete(tempSaveFilePath);
-
-            if (data._instructions != (int)SaveMode.Strict && File.Exists(saveFilePath))
-            {
-                if (GetRealPlayTimeInteractingFromSave(serverSaveFilePath) >= GetRealPlayTimeInteractingFromSave(saveFilePath))
-                {
-                    Printer.Message("Loading remote save");
-                    File.Delete(saveFilePath);
-                    File.Move(serverSaveFilePath, saveFilePath);
-                }
-
-                else
-                {
-                    Printer.Message("Loading local save");
-                    File.Delete(serverSaveFilePath);
-                }
-            }
-
-            else
-            {
-                File.Delete(saveFilePath);
-                File.Move(serverSaveFilePath, saveFilePath);
-            }
-
-            GameDataSaveLoader.LoadGame(customSaveName);
-        }
-
-        private static void OnPartReceived()
-        {
-            SaveData rData = new SaveData();
-            rData._stepMode = SaveStepMode.Send;
-
-            Packet rPacket = Packet.CreatePacketFromObject(nameof(SaveManager), rData);
-            Network.listener.EnqueuePacket(rPacket);
-        }
-
-        private static double GetRealPlayTimeInteractingFromSave(string filePath)
+        public static double GetRealPlayTimeInteractingFromSave(string filePath)
         {
             if (!File.Exists(filePath)) return 0;
 
@@ -130,24 +71,24 @@ namespace GameClient.Managers
             }
             catch { return 0; }
         }
+    }
 
-        public static void SendSavePartToServer()
+    public static class SaveSenderManager
+    {
+        public static void SendSaveToServer()
         {
             if (Network.listener.uploadManager == null)
             {
-                ClientValues.ToggleSendingSaveToServer(true);
-
-                byte[] saveBytes = File.ReadAllBytes(saveFilePath);
+                byte[] saveBytes = File.ReadAllBytes(SaveManager.saveFilePath);
                 saveBytes = GZip.CompressBytes(saveBytes);
 
-                File.WriteAllBytes(tempSaveFilePath, saveBytes);
-                Network.listener.uploadManager = new UploadManager(tempSaveFilePath);
+                File.WriteAllBytes(SaveManager.tempSaveFilePath, saveBytes);
+                Network.listener.uploadManager = new UploadManager(SaveManager.tempSaveFilePath);
                 Network.listener.uploadManager.PrepareUpload();
             }
 
             SaveData data = new SaveData();
-            data._fileBytes = Network.listener.uploadManager.ReadFilePart();
-            data._isLastPart = Network.listener.uploadManager.isLastPart;
+            data._fileBytes = Network.listener.uploadManager.ReadFile();
             data._stepMode = SaveStepMode.Receive;
 
             // Set the instructions of the packet
@@ -160,14 +101,69 @@ namespace GameClient.Managers
             Packet packet = Packet.CreatePacketFromObject(nameof(SaveManager), data);
             Network.listener.EnqueuePacket(packet);
 
-            if (Network.listener.uploadManager.isLastPart) OnLastPartReceived();
+            OnSaveSent();
         }
 
-        private static void OnLastPartReceived()
+        private static void OnSaveSent()
         {
-            ClientValues.ToggleSendingSaveToServer(false);
+            Network.listener.uploadManager.FinishFileWrite();
             Network.listener.uploadManager = null;
-            File.Delete(tempSaveFilePath);
+            File.Delete(SaveManager.tempSaveFilePath);
+        }
+    }
+
+    public static class SaveReceiverManager
+    {
+        public static void ReceiveSaveFromServer(SaveData data)
+        {
+            //If this is the first packet
+            if (Network.listener.downloadManager == null)
+            {
+                Printer.Message($"Receiving save from server");
+
+                Network.listener.downloadManager = new DownloadManager(SaveManager.tempSaveFilePath);
+                Network.listener.downloadManager.PrepareDownload();
+            }
+
+            Network.listener.downloadManager.WriteFile(data._fileBytes);
+
+            OnSaveReceived(data);
+        }
+
+        private static void OnSaveReceived(SaveData data)
+        {
+            Network.listener.downloadManager.FinishFileWrite();
+            Network.listener.downloadManager = null;
+
+            byte[] fileBytes = File.ReadAllBytes(SaveManager.tempSaveFilePath);
+            fileBytes = GZip.DecompressBytes(fileBytes);
+
+            File.WriteAllBytes(SaveManager.serverSaveFilePath, fileBytes);
+            File.Delete(SaveManager.tempSaveFilePath);
+
+            if (data._instructions != (int)SaveMode.Strict && File.Exists(SaveManager.saveFilePath))
+            {
+                if (SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.serverSaveFilePath) >= SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.saveFilePath))
+                {
+                    Printer.Message("Loading remote save");
+                    File.Delete(SaveManager.saveFilePath);
+                    File.Move(SaveManager.serverSaveFilePath, SaveManager.saveFilePath);
+                }
+
+                else
+                {
+                    Printer.Message("Loading local save");
+                    File.Delete(SaveManager.serverSaveFilePath);
+                }
+            }
+
+            else
+            {
+                File.Delete(SaveManager.saveFilePath);
+                File.Move(SaveManager.serverSaveFilePath, SaveManager.saveFilePath);
+            }
+
+            GameDataSaveLoader.LoadGame(SaveManager.customSaveName);
         }
     }
 }

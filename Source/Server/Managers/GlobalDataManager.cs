@@ -11,38 +11,9 @@ namespace GameServer.Managers
         {
             ServerGlobalData globalData = new ServerGlobalData();
 
-            globalData = GlobalDataManagerHelper.GetClientValues(client, globalData);
-
-            globalData = GlobalDataManagerHelper.GetServerValues(globalData);
-
-            globalData = GlobalDataManagerHelper.GetServerSettlements(client, globalData);
-
-            globalData = GlobalDataManagerHelper.GetServerSites(client, globalData);
-
-            globalData = GlobalDataManagerHelper.GetServerCaravans(globalData);
-
-            globalData = GlobalDataManagerHelper.GetServerRoads(globalData);
-
-            globalData = GlobalDataManagerHelper.GetServerPolution(globalData);
-
-            Packet packet = Packet.CreatePacketFromObject(nameof(GlobalDataManager), globalData);
-            client.listener.EnqueuePacket(packet);
-        }
-    }
-
-    public static class GlobalDataManagerHelper
-    {
-        public static ServerGlobalData GetClientValues(ServerClient client, ServerGlobalData globalData)
-        {
             globalData._isClientAdmin = client.userFile.IsAdmin;
-
             globalData._isClientFactionMember = !string.IsNullOrEmpty(client.userFile.GuildName);
 
-            return globalData;
-        }
-
-        public static ServerGlobalData GetServerValues(ServerGlobalData globalData)
-        {
             globalData._serverValues = new ServerValuesFile(Master.serverConfig.Name);
             globalData._eventValues = EventManagerHelper.loadedEvents;
             globalData._siteValues = Master.siteValues;
@@ -51,14 +22,28 @@ namespace GameServer.Managers
             globalData._storytellerValues = Master.storytellerValues;
             globalData._actionValues = Master.actionConfigs;
             globalData._roadValues = Master.roadValues;
-            return globalData;
-        }
+            globalData._modConfigs = Master.modConfig;
 
-        public static ServerGlobalData GetServerSettlements(ServerClient client, ServerGlobalData globalData)
+            if (Master.worldValues != null)
+            {
+                globalData._roads = Master.worldValues.Roads;
+                globalData._pollutedTiles = Master.worldValues.PollutedTiles;
+                globalData._playerSettlements = GlobalDataManagerHelper.GetServerSettlements(client);
+                globalData._npcSettlements = Master.worldValues.NPCSettlements;
+                globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
+            }
+
+            Packet packet = Packet.CreatePacketFromObject(nameof(GlobalDataManager), globalData);
+            client.listener.EnqueuePacket(packet);
+        }
+    }
+
+    public static class GlobalDataManagerHelper
+    {
+        public static SettlementFile[] GetServerSettlements(ServerClient client)
         {
             List<SettlementFile> tempList = new List<SettlementFile>();
-            SettlementFile[] settlements = PlayerSettlementManager.GetAllSettlements();
-            foreach (SettlementFile settlement in settlements)
+            foreach (SettlementFile settlement in PlayerSettlementManager.GetAllSettlements())
             {
                 SettlementFile file = new SettlementFile();
 
@@ -74,17 +59,13 @@ namespace GameServer.Managers
                 }
             }
 
-            globalData._playerSettlements = tempList.ToArray();
-            if (Master.worldValues != null) globalData._npcSettlements = Master.worldValues.NPCSettlements;
-
-            return globalData;
+            return tempList.ToArray();
         }
 
-        public static ServerGlobalData GetServerSites(ServerClient client, ServerGlobalData globalData)
+        public static SiteFile[] GetServerSites(ServerClient client)
         {
             List<SiteFile> tempList = new List<SiteFile>();
-            SiteFile[] sites = SiteManagerHelper.GetAllSites();
-            foreach (SiteFile site in sites)
+            foreach (SiteFile site in SiteManagerHelper.GetAllSites())
             {
                 SiteFile file = new SiteFile();
 
@@ -97,27 +78,7 @@ namespace GameServer.Managers
                 tempList.Add(file);
             }
 
-            globalData._playerSites = tempList.ToArray();
-
-            return globalData;
-        }
-
-        public static ServerGlobalData GetServerCaravans(ServerGlobalData globalData)
-        {
-            globalData._playerCaravans = CaravanManagerHelper.GetActiveCaravans();
-            return globalData;
-        }
-
-        public static ServerGlobalData GetServerRoads(ServerGlobalData data)
-        {
-            if (Master.worldValues != null) data._roads = Master.worldValues.Roads;
-            return data;
-        }
-
-        public static ServerGlobalData GetServerPolution(ServerGlobalData data)
-        {
-            if (Master.worldValues != null) data._pollutedTiles = Master.worldValues.PollutedTiles;
-            return data;
+            return tempList.ToArray();
         }
     }
 }

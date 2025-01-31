@@ -27,7 +27,7 @@ namespace GameClient.Managers
                 PlayerSettlementManager.AddSettlements(PlayerSettlementManagerHelper.tempSettlements);
 
                 SiteManager.ClearAllSites();
-                SiteManager.AddSites(SiteManagerHelper.tempSites);
+                SiteManager.AddSites(SiteManagerH.tempSites);
 
                 NPCSettlementManager.ClearAllSettlements();
                 NPCSettlementManager.AddSettlements(NPCSettlementManagerHelper.tempNPCSettlements);
@@ -39,7 +39,7 @@ namespace GameClient.Managers
                 PollutionManager.AddPollutedTiles(PollutionManagerHelper.tempPollutionDetails, false);
 
                 CaravanManager.ClearAllCaravans();
-                CaravanManager.AddCaravans(CaravanManagerHelper.tempCaravanDetails);
+                CaravanManagerH.SetAllPlayerCaravans();
             }
         }
     }

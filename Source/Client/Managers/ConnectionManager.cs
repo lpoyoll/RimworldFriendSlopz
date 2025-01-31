@@ -13,31 +13,25 @@ namespace GameClient.Managers
     {
         public static void ShowConnectDialogs()
         {
-            RT_Dialog_2Input dialog = new RT_Dialog_2Input("Connection Details", "IP", "Port", 
-                delegate { ParseConnectionDetails(); }, null);
-
-            ConnectionDataFile connectionData = ConnectionDataManager.LoadConnectionData();
-            DialogManager.dialog2Input.inputOneResult = connectionData.IP;
-            DialogManager.dialog2Input.inputTwoResult = connectionData.Port;
-
-            DialogManager.PushNewDialog(dialog);
+            DialogManager.PushNewDialog(new RT_Dialog_Inputs("Connection Details", new string[] { "IP", "Port" }, new bool[] { false, false },
+                delegate { ParseConnectionDetails(); }));
         }
 
         public static void ParseConnectionDetails()
         {
             bool isInvalid = false;
 
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultOne)) isInvalid = true;
-            if (string.IsNullOrWhiteSpace(DialogManager.dialog2ResultTwo)) isInvalid = true;
-            if (DialogManager.dialog2ResultTwo.Count() > 5) isInvalid = true;
-            if (!DialogManager.dialog2ResultTwo.All(char.IsDigit)) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(DialogManager.dialogInputResults[0])) isInvalid = true;
+            if (string.IsNullOrWhiteSpace(DialogManager.dialogInputResults[1])) isInvalid = true;
+            if (DialogManager.dialogInputResults[1].Count() > 5) isInvalid = true;
+            if (!DialogManager.dialogInputResults[1].All(char.IsDigit)) isInvalid = true;
 
-            if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_Error("Server details are invalid! Please try again!"));
+            if (isInvalid) DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server details are invalid! Please try again!" }));
             else
             {
-                Network.ip = DialogManager.dialog2ResultOne;
-                Network.port = DialogManager.dialog2ResultTwo;
-                ConnectionDataManager.SaveConnectionData(DialogManager.dialog2ResultOne, DialogManager.dialog2ResultTwo);
+                Network.ip = DialogManager.dialogInputResults[0];
+                Network.port = DialogManager.dialogInputResults[1];
+                ConnectionDataManager.SaveConnectionData(DialogManager.dialogInputResults[0], DialogManager.dialogInputResults[1]);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                 Threader.GenerateThread(Threader.Mode.Start);

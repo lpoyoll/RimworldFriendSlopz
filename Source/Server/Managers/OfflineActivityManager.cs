@@ -1,5 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Files;
+using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
@@ -24,10 +25,6 @@ namespace GameServer.Managers
                 case OfflineActivityStepMode.Request:
                     SendRequestedMap(client, data);
                     break;
-
-                case OfflineActivityStepMode.Deny:
-                    //Nothing goes here
-                    break;
             }
         }
 
@@ -35,7 +32,7 @@ namespace GameServer.Managers
         {
             if (!MapManager.CheckIfMapExists(data._targetTile))
             {
-                data._stepMode = OfflineActivityStepMode.Unavailable;
+                data._stepMode = OfflineActivityStepMode.Deny;
                 Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
                 client.listener.EnqueuePacket(packet);
             }
@@ -55,21 +52,15 @@ namespace GameServer.Managers
                 {
                     UserFile userFile = UserManagerH.GetUserFileFromName(settlementFile.UID);
 
-                    if (Master.serverConfig.TemporalActivityProtection && !TimeConverter.CheckForEpochTimer(userFile.ActivityProtectionTime, Master.serverConfig.TemporalActivityProtectionTime * 1000))
-                    {
-                        data._stepMode = OfflineActivityStepMode.Deny;
-                        Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
-                        client.listener.EnqueuePacket(packet);
-                    }
-
+                    if (!ValueChecker.CheckIfCanActivity(userFile)) data._stepMode = OfflineActivityStepMode.Deny;
                     else
                     {
                         userFile.UpdateActivityTime();
-
-                        data._mapFile = MapManager.GetUserMapFromTile(data._targetTile);
-                        Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
-                        client.listener.EnqueuePacket(packet);
+                        data._mapFile = MapManager.GetMapFromTile(data._targetTile);
                     }
+
+                    Packet packet = Packet.CreatePacketFromObject(nameof(OfflineActivityManager), data);
+                    client.listener.EnqueuePacket(packet);
                 }
             }
         }

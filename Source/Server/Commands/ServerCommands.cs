@@ -559,16 +559,9 @@ namespace GameServer.Commands
 
             BackupManager.BackupServer();
 
-            Directory.Delete($"{Master.caravansPath}", true);
-            Directory.Delete($"{Master.configsPath}", true);
-            Directory.Delete($"{Master.eventsPath}", true);
-            Directory.Delete($"{Master.factionsPath}", true);
-            Directory.Delete($"{Master.logsPath}", true);
-            Directory.Delete($"{Master.mapsPath}", true);
-            Directory.Delete($"{Master.savesPath}", true);
-            Directory.Delete($"{Master.settlementsPath}", true);
-            Directory.Delete($"{Master.sitesPath}", true);
-            Directory.Delete($"{Master.usersPath}", true);
+            Directory.Delete(Master.assetsPath, true);
+            Directory.Delete(Master.configsPath, true);
+            Directory.Delete(Master.tempPath, true);
 
             Environment.Exit(0);
         }
