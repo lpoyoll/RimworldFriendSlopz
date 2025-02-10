@@ -6,10 +6,7 @@
 
 ### Mods that completely break with Rimworld Together:
 - [RimSaves](https://steamcommunity.com/sharedfiles/filedetails/?id=1713367505) > Since it allows for the creation of local folders for saves, it breaks the path where the mod is supposed to look for a save to upload to the server, therefore not allowing to save at all progress.
-- [Zetrith's Multiplayer](https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745) > Absolutely breaks the game without any possibility of working, since complex multiplayer mods are not meant to work together.
-- [My Little Planet](https://steamcommunity.com/sharedfiles/filedetails/?id=1117406550) > Breaks world generation and sending the world towards the server for storing, since it modifies the world generation above our patches.
-- [Realistic Planets](https://steamcommunity.com/sharedfiles/filedetails/?id=2557451791) > Breaks world generation and sending the world towards the server for storing, since it modifies the world generation above our patches.
-- [Alpha Biomes](https://steamcommunity.com/workshop/filedetails/?id=1841354677) > Breaks UI whenever you relog into the server and access the world map.
+- [Zetrith's Multiplayer](https://steamcommunity.com/sharedfiles/filedetails/?id=2606448745) > Breaks the mod without any possibility of working, complex multiplayer mods are not meant to work together.
 - [SOS2](https://steamcommunity.com/workshop/filedetails/?id=1909914131) > Breaks many of the functions RimWorld Together has, such as trading, caravans, settlements, etc.
 - [Prepatcher](https://steamcommunity.com/workshop/filedetails/?id=2934420800) > On some cases only, might prevent the mod from starting correctly. Might depend on loading priority.
   
