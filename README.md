@@ -20,34 +20,28 @@ Download the latest server files at [here](https://github.com/Byte-Nova/Rimworld
 > When extracting the server files somewhere, be mindful on where this location might be, avoid installing it at privileged locations (where admin permissions are needed) to prevent your antivirus/system kicking off.
 
 ## Container-based Deployment:
-We provide a Dockerfile to build and run the official RimWorld-Together Container with [docker](https://www.docker.com/) , or  [buildah](https://github.com/containers/buildah) and [podman](https://github.com/containers/podman)
+We provide an official container image on the Github Container Repository and an exemple docker-compose file to run the server.
 
-The `GameServer` executable is located at the `/App/Server` directory.  
-The `Data` volume contains all server files and is located at `/Data` inside the container.
+The following commands allow you to runs the server after creating a `Data` directory that will contain all the server's user files.
+Make sure you have Docker (or Podman) installed.
 
-### Build with Docker
-**Build:**
-```sh
-docker build -f Dockerfile -t rwt:latest .
-```
-
-**Run:**
+### 1 - Create a Data directory
 ```sh
 mkdir -p Data
-docker run -it --rm -v $$(pwd)/Data:/Data -p 25555:25555 rwt:latest
 ```
 
-### Build with buildah/podman
-**Build:**
+### 2 - Run the server
+
+**Run with Docker:**
 ```sh
-buildah build -t rwt:latest .
+docker run -it --rm -v $(pwd)/Data:/Data -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
 ```
 
-**Run:**
+**Run with Podman:**
 ```sh
-mkdir -p Data
-podman run -it --rm -v $$(pwd)/Data:/Data:Z -p 25555:25555 rwt:latest
+podman run -it --rm -v $(pwd)/Data:/Data:Z -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
 ```
+
 
 ## Contributing
 Interested? Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!
