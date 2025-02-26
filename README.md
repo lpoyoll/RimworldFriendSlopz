@@ -20,26 +20,26 @@ Download the latest server files at [here](https://github.com/Byte-Nova/Rimworld
 > When extracting the server files somewhere, be mindful on where this location might be, avoid installing it at privileged locations (where admin permissions are needed) to prevent your antivirus/system kicking off.
 
 ## Container-based Deployment:
-We provide an official container image on the Github Container Repository and an exemple docker-compose file to run the server.
+We provide an official container image hosted on the Github Container Repository and an exemple docker-compose file to run the server.
 
-The following commands allow you to runs the server after creating a `Data` directory that will contain all the server's user files.
-Make sure you have Docker (or Podman) installed.
+The following commands allow you to runs the server after creating a `RWTData` directory that will contain all the server's user files.
+
+Make sure you have [Docker](https://www.docker.com/) (or [Podman](https://github.com/containers/podman)) installed.
 
 ### 1 - Create a Data directory
 ```sh
-mkdir -p Data
+mkdir -p RWTData
 ```
 
 ### 2 - Run the server
 
-**Run with Docker:**
+**Run with Docker on Linux:**
 ```sh
-docker run -it --rm -v $(pwd)/Data:/Data -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
+docker run -it --rm -v './RWTData:/Data' -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
 ```
-
-**Run with Podman:**
+**Run with Docker on Windows:**
 ```sh
-podman run -it --rm -v $(pwd)/Data:/Data:Z -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
+docker run -it --rm -v '.\RWTData:/Data' -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
 ```
 
 
