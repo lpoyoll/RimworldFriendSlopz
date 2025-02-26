@@ -4,6 +4,7 @@
 
 ### TODOs:
 
+- [ ] - I confirm this PR is at its final form and will not receive more pushes to it unless modifications are required.
 - [ ] - I confirm this PR has been previously tested by me and has no apparent issues.
 - [ ] - I confirm this PR is complying with this project's [Contribution Guidelines](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md).
 - [ ] - I confirm this PR is complying with this project's [Syntax Ruleset](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/SYNTAX.md).
