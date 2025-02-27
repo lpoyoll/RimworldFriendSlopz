@@ -20,34 +20,28 @@ Download the latest server files at [here](https://github.com/Byte-Nova/Rimworld
 > When extracting the server files somewhere, be mindful on where this location might be, avoid installing it at privileged locations (where admin permissions are needed) to prevent your antivirus/system kicking off.
 
 ## Container-based Deployment:
-We provide a Dockerfile to build and run the official RimWorld-Together Container with [docker](https://www.docker.com/) , or  [buildah](https://github.com/containers/buildah) and [podman](https://github.com/containers/podman)
+We provide an official container image hosted on the Github Container Repository and an exemple docker-compose file to run the server.
 
-The `GameServer` executable is located at the `/App/Server` directory.  
-The `Data` volume contains all server files and is located at `/Data` inside the container.
+The following commands allow you to runs the server after creating a `RWTData` directory that will contain all the server's user files.
 
-### Build with Docker
-**Build:**
+Make sure you have [Docker](https://www.docker.com/) (or [Podman](https://github.com/containers/podman)) installed.
+
+### 1 - Create a Data directory
 ```sh
-docker build -f Dockerfile -t rwt:latest .
+mkdir -p RWTData
 ```
 
-**Run:**
+### 2 - Run the server
+
+**Run with Docker on Linux:**
 ```sh
-mkdir -p Data
-docker run -it --rm -v $$(pwd)/Data:/Data -p 25555:25555 rwt:latest
+docker run -it --rm -v './RWTData:/Data' -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
+```
+**Run with Docker on Windows:**
+```sh
+docker run -it --rm -v '.\RWTData:/Data' -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
 ```
 
-### Build with buildah/podman
-**Build:**
-```sh
-buildah build -t rwt:latest .
-```
-
-**Run:**
-```sh
-mkdir -p Data
-podman run -it --rm -v $$(pwd)/Data:/Data:Z -p 25555:25555 rwt:latest
-```
 
 ## Contributing
 Interested? Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!

@@ -1,0 +1,11 @@
+services:
+  rimworld-together:
+    image: ghcr.io/byte-nova/rimworld-together:latest
+    ports:
+      - 25555:25555
+    volumes:
+      - ./Data:/Data
+    container_name: rimworld-together
+    restart: always
+    stdin_open: true
+    tty: true
