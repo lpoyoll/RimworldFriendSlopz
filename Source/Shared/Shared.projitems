@@ -11,7 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)network\ListenerBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\ListenerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packet.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Data\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Details\*.cs" />
