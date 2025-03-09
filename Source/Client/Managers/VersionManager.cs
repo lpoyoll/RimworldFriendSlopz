@@ -1,56 +1,75 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using GameClient.Core;
+using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Misc;
+using GameClient.TCP;
+using Shared;
 using Verse;
 
 namespace GameClient.Managers
 {
+    [RTManager]
     public static class VersionManager
     {
+        private static void ParsePacket(Packet packet)
+        {
+            VersionData data = Serializer.ConvertBytesToObject<VersionData>(packet.Contents);
+
+            switch (data._step)
+            {
+                case VersionData.VersionStep.Ask:
+                    SendClientVersion();
+                    break;
+
+                case VersionData.VersionStep.Pass:
+                    UserLoginHandler.UseLoginData();
+                    break;
+            }
+        }
+
+        public static void SendClientVersion()
+        {
+            VersionData data = new VersionData();
+            data._version = CommonValues.ExecutableVersion;
+
+            Packet packet = Packet.CreateFromObject(nameof(VersionManager), data);
+            Network.listener.EnqueuePacket(packet);
+        }
+
         public static void PromptChangeVersion()
         {
-            RT_Dialog_Message dialog2 = new RT_Dialog_Message("MESSAGE", new string[] { "The game will restart to apply the new version" }, GenCommandLine.Restart);
-
             DialogManager.PushNewDialog(new RT_Dialog_Inputs("Version selection", 
                 new string[] { "Release number", "Password (optional)" }, 
-                new bool[] { false, true }, 
-                delegate
-                {
-                    string downloadPath = Path.Combine(Master.appdataTempVersionPath, "3005289691.zip");
-                    string extractPath = Path.Combine(Master.appdataTempVersionPath, "3005289691");
-                    string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{DialogManager.dialogInputResults[0]}/3005289691.zip";
+                new bool[] { false, true }, ChangeVersion));
+        }
 
-                    if (!DownloadVersion(uri, downloadPath))
-                    {
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Version failed to download, check and try again" }));
-                        return;
-                    }
+        private static void ChangeVersion()
+        {
+            string downloadPath = Path.Combine(Master.appdataTempVersionPath, "3005289691.zip");
+            string extractPath = Path.Combine(Master.appdataTempVersionPath, "3005289691");
+            string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{DialogManager.dialogInputResults[0]}/3005289691.zip";
 
-                    else if (!UnzipVersion(downloadPath, extractPath))
-                    {
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Version failed to decompress, check logs for more information" }));
-                        return;
-                    }
+            bool freezeGame = true;
+            Task.Run(delegate
+            {
+                if (!DownloadVersion(uri, downloadPath)) { freezeGame = false; return; }
+                else if (!UnzipVersion(downloadPath, extractPath)) { freezeGame = false; return; }
+                else if (!InstallVersion(extractPath)) { freezeGame = false; return; }
+                else if (!Cleanup(downloadPath)) { freezeGame = false; return; }
+                freezeGame = false;
+            });
 
-                    else if (!InstallVersion(extractPath))
-                    {
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Version failed to install, check logs for more information" }));
-                        return;
-                    }
+            while (freezeGame) Thread.Sleep(1);
 
-                    else if (!Cleanup(downloadPath))
-                    {
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Installer failed to cleanup, check logs for more information" }));
-                        return;
-                    }
+            RT_Dialog_Message dialog2 = new RT_Dialog_Message("MESSAGE", new string[] { "The game will restart to apply the new version" }, 
+                GenCommandLine.Restart);
 
-                    DialogManager.PushNewDialog(dialog2);
-                }
-            ));
+            DialogManager.PushNewDialog(dialog2);
         }
 
         private static bool DownloadVersion(string uri, string downloadPath)

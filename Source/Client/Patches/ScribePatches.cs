@@ -19,7 +19,7 @@ namespace GameClient.Patches
         public static bool DoPre(ScribeSaver __instance, ref XmlWriter ___writer, string documentElementName)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.isUsingScriber) return true;
+            else if (!ClientValues.IsUsingScriber) return true;
             else
             {
                 try
@@ -29,9 +29,10 @@ namespace GameClient.Patches
                     XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
                     xmlWriterSettings.Indent = true;
                     xmlWriterSettings.IndentChars = "\t";
+                    xmlWriterSettings.OmitXmlDeclaration = true;
 
-                    RTScriber.stringWriter = new StringWriter();
-                    ___writer = XmlWriter.Create(RTScriber.stringWriter, xmlWriterSettings);
+                    RTScriber.StringWriter = new StringWriter();
+                    ___writer = XmlWriter.Create(RTScriber.StringWriter, xmlWriterSettings);
                     ___writer.WriteStartDocument();
                     __instance.EnterNode(documentElementName);
                 }
@@ -55,7 +56,7 @@ namespace GameClient.Patches
         public static bool DoPre(ScribeLoader __instance, string filePath)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.isUsingScriber) return true;
+            else if (!ClientValues.IsUsingScriber) return true;
             else
             {
                 try
@@ -181,7 +182,7 @@ namespace GameClient.Patches
         public static bool DoPre()
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.isUsingScriber) return true;
+            else if (!ClientValues.IsUsingScriber) return true;
             else return false;
         }
     }
@@ -193,7 +194,7 @@ namespace GameClient.Patches
         public static bool DoPre()
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.isUsingScriber) return true;
+            else if (!ClientValues.IsUsingScriber) return true;
             else return false;
         }
     }

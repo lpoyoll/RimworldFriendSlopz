@@ -44,10 +44,6 @@ namespace GameServer.Commands
             "Forcefully disconnects you from the server",
             DisconnectCommandAction);
 
-        private static readonly BaseChatCommand stopOnlineActivityCommand = new BaseChatCommand("/stopactivity", 0,
-            "Forcefully disconnects you from an activity",
-            StopOnlineActivityCommandAction);
-
         private static readonly BaseChatCommand privateMessage = new BaseChatCommand("/w", 0,
             "Sends a private message to a specific user",
             PrivateMessageCommandAction);
@@ -58,7 +54,6 @@ namespace GameServer.Commands
             toolsCommand,
             pingCommand,
             disconnectCommand,
-            stopOnlineActivityCommand,
             privateMessage
         };
     }
@@ -101,13 +96,7 @@ namespace GameServer.Commands
         public static void DisconnectCommandAction()
         {
             if (targetClient == null) return;
-            else targetClient.listener.disconnectFlag = true;
-        }
-
-        public static void StopOnlineActivityCommandAction()
-        {
-            if (targetClient == null) return;
-            else OnlineActivityManager.StopActivity(targetClient);
+            else targetClient.listener.DisconnectFlag = true;
         }
 
         public static void PrivateMessageCommandAction()
@@ -136,12 +125,12 @@ namespace GameServer.Commands
 
                             //Send to sender
                             chatData._username = $">> {toFind.userFile.Label}";
-                            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
+                            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
                             targetClient.listener.EnqueuePacket(packet);
 
                             //Send to recipient
                             chatData._username = $"<< {targetClient.userFile.Label}";
-                            packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
+                            packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
                             toFind.listener.EnqueuePacket(packet);
 
                             ChatManagerHelper.ShowChatInConsole(chatData._username, message);

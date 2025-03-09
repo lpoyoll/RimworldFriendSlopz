@@ -10,69 +10,56 @@ namespace GameClient.Values
 {
     public static class SessionValues
     {
-        public static OnlineActivityType currentRealTimeActivity;
+        public static ActivityType latestActivity = ActivityType.None;
 
-        public static OfflineActivityType latestOfflineActivity;
+        public static bool IsActivityHost = false;
 
-        public static bool isActivityHost;
+        public static bool IsActivityReady = false;
 
-        public static bool isActivityReady;
+        public static Settlement ChosenSettlement = null;
 
-        public static Settlement chosenSettlement;
+        public static Caravan ChosenCaravan = null;
 
-        public static Caravan chosenCaravan;
+        public static Site ChosenSite = null;
 
-        public static Site chosenSite;
+        public static CompLaunchable ChosendPods = null;
 
-        public static CompLaunchable chosendPods;
+        public static TransferData OutgoingManifest = new TransferData();
 
-        public static Pawn chosenPawnForSpying;
+        public static TransferData IncomingManifest = new TransferData();
 
-        public static TransferData outgoingManifest = new TransferData();
+        public static List<Tradeable> ListToShowInTradesMenu = new List<Tradeable>();
 
-        public static TransferData incomingManifest = new TransferData();
+        public static ActionValuesFile ActionValues = null;
 
-        public static List<Tradeable> listToShowInTradesMenu = new List<Tradeable>();
+        public static ModConfigFile ConfigFile = null;
 
-        public static ActionValuesFile actionValues;
+        public static ScenarioValuesFile ScenarioFile = null;
 
-        public static ModConfigFile configFile;
+        public static StorytellerValuesFile StorytellerFile = null;
 
-        public static ScenarioValuesFile scenarioFile;
+        public static DifficultyValuesFile DifficultyFile = null;
 
-        public static StorytellerValuesFile storytellerFile;
-
-        public static DifficultyValuesFile difficultyFile;
-
-        public static WorldValuesFile worldFile;
+        public static WorldValuesFile WorldFile = null;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
-            actionValues = serverGlobalData._actionValues;
+            ActionValues = serverGlobalData._actionValues;
         }
 
-        public static void ToggleOnlineActivity(OnlineActivityType type) { currentRealTimeActivity = type; }
-
-        public static void ToggleOfflineActivity(OfflineActivityType type) { latestOfflineActivity = type; }
-
-        public static void ToggleOnlineActivityHost(bool type) { isActivityHost = type; }
-
-        public static void ToggleOnlineActivityReady(bool type) { isActivityReady = type; }
+        public static void ToggleActivity(ActivityType type) { latestActivity = type; }
 
         public static void CleanValues()
         {
-            ToggleOnlineActivity(OnlineActivityType.None);
-            ToggleOfflineActivity(OfflineActivityType.None);
-            ToggleOnlineActivityHost(false);
-            ToggleOnlineActivityReady(false);
+            ToggleActivity(ActivityType.None);
 
-            chosenSettlement = null;
-            chosenCaravan = null;
-            chosenSite = null;
+            ChosenSettlement = null;
+            ChosenCaravan = null;
+            ChosenSite = null;
 
-            outgoingManifest = new TransferData();
-            incomingManifest = new TransferData();
-            listToShowInTradesMenu = new List<Tradeable>();
+            OutgoingManifest = new TransferData();
+            IncomingManifest = new TransferData();
+            ListToShowInTradesMenu = new List<Tradeable>();
 
             PatchSelectScenarioPage.executedMessage = false;
             PreventModOptionsButton.executedMessage = false;

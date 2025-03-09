@@ -7,9 +7,9 @@ using static Shared.CommonEnumerators;
 namespace GameServer.Managers
 {
     [RTManager]
-    public static class NPCSettlementManager
+    public static class NPCManager
     {
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionConfigs.EnableNPCDestruction)
             {
@@ -17,7 +17,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.contents);
+            NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -62,7 +62,7 @@ namespace GameServer.Managers
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData = settlement;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(NPCSettlementManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(NPCManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
         }
     }

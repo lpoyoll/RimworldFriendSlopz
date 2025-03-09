@@ -8,11 +8,11 @@ namespace GameClient.Managers
     [RTManager]
     public static class GlobalDataManager
     {
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.contents);
+            ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.Contents);
 
-            ServerValues.SetValues(serverGlobalData);
+            ClientValues.SetValues(serverGlobalData);
             SessionValues.SetValues(serverGlobalData);
             EventManagerHelper.SetValues(serverGlobalData);
             GameParameterManager.SetValues(serverGlobalData);
@@ -22,7 +22,7 @@ namespace GameClient.Managers
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
             ModManager.ReceiveMods(serverGlobalData);
-            RecentServersManager.AddServerToList(serverGlobalData._serverValues.ServerName, $"{Network.ip}:{Network.port}");
+            RecentServersHandler.AddServerToList(serverGlobalData._serverValues.ServerName, $"{Network.ip}:{Network.port}");
         }
     }
 }

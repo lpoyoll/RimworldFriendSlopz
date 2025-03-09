@@ -81,9 +81,7 @@ namespace GameClient.Managers
         public static void DisconnectToMenu()
         {
             ClientValues.CleanValues();
-            ServerValues.CleanValues();
             SessionValues.CleanValues();
-            PlayerRecountManager.CleanValues();
             ChatManager.CleanChat();
 
             DialogManager.PopWaitDialog();

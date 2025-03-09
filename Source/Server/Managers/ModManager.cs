@@ -9,9 +9,9 @@ namespace GameServer.Managers
     [RTManager]
     public static class ModManager
     {
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
-            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(packet.contents);
+            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -106,7 +106,7 @@ namespace GameServer.Managers
                 else
                 {
                     InformationDisplayer.DisplayModMismatch(client.userFile.Label);
-                    LoginManagerH.SendLoginResponse(client, LoginResponse.WrongMods, conflictingMods);
+                    LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }
             }

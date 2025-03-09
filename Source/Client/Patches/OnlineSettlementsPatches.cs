@@ -16,7 +16,7 @@ namespace GameClient.Patches
         public static bool DoPre(Settlement factionBase)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            else if (FactionValues.playerFactions.Contains(factionBase.Faction)) return false;
+            else if (ClientValues.playerFactions.Contains(factionBase.Faction)) return false;
             else return true;
         }
     }
@@ -28,7 +28,7 @@ namespace GameClient.Patches
         public static void DoPost(Map map)
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
-            if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
+            if (!ClientValues.playerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
         }
@@ -41,7 +41,7 @@ namespace GameClient.Patches
         public static void DoPost(Map map)
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
-            if (!FactionValues.playerFactions.Contains(map.Parent.Faction)) return;
+            if (!ClientValues.playerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
         }
@@ -55,7 +55,7 @@ namespace GameClient.Patches
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (FactionValues.playerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
+            if (ClientValues.playerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
             {
                 __result = 25;
                 return false;

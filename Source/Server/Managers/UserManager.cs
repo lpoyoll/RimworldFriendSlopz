@@ -13,10 +13,10 @@ namespace GameServer.Managers
         public static void SendPlayerRecount()
         {
             PlayerRecountData playerRecountData = new PlayerRecountData();
-            playerRecountData._currentPlayers = NetworkHelper.GetConnectedClientsSafe().Count().ToString();
+            playerRecountData._currentPlayerCount = NetworkHelper.GetConnectedClientsSafe().Count();
             foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.userFile.Label);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PlayerRecountManager), playerRecountData);
+            Packet packet = Packet.CreateFromObject(nameof(RecountManager), playerRecountData);
             NetworkHelper.SendPacketToAllClients(packet);
         }
 
@@ -31,7 +31,7 @@ namespace GameServer.Managers
                 else
                 {
                     userFile.UpdateBan(true);
-                    client.listener.disconnectFlag = true;
+                    client.listener.DisconnectFlag = true;
                     Printer.Warning($"User '{userFile.Label}' has been banned from the server");
                 }
             }
@@ -122,7 +122,7 @@ namespace GameServer.Managers
             if (toFind != null) return true;
             else
             {
-                LoginManagerH.SendLoginResponse(client, LoginResponse.InvalidLogin);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.InvalidLogin);
                 return false;
             }
         }
@@ -133,7 +133,7 @@ namespace GameServer.Managers
             else
             {
                 Printer.Message($"Banned user '{client.userFile.Uid}' tried to join the server");
-                LoginManagerH.SendLoginResponse(client, LoginResponse.BannedLogin);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.BannedLogin);
                 return true;
             }
         }
@@ -152,7 +152,7 @@ namespace GameServer.Managers
             if (!isInvalid) return true;
             else
             {
-                LoginManagerH.SendLoginResponse(client, LoginResponse.InvalidLogin);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.InvalidLogin);
                 return false;
             }
         }
@@ -163,25 +163,14 @@ namespace GameServer.Managers
             else if (Master.whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.userFile.Uid) != null) return true;
             else
             {
-                LoginManagerH.SendLoginResponse(client, LoginResponse.Whitelist);
-                return false;
-            }
-        }
-
-        public static bool CheckIfUserUpdated(ServerClient client, LoginData loginData)
-        {
-            if (loginData._version == CommonValues.executableVersion) return true;
-            else
-            {
-                InformationDisplayer.DisplayVersionMismatch(client.userFile.Label);
-                LoginManagerH.SendLoginResponse(client, LoginResponse.WrongVersion);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Whitelist);
                 return false;
             }
         }
 
         public static int[] GetUserStructuresTilesFromUsername(string username)
         {
-            SettlementFile[] settlements = PlayerSettlementManager.GetAllSettlements().ToList().FindAll(x => x.UID == username).ToArray();
+            SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.UID == username).ToArray();
             SiteFile[] sites = SiteManagerHelper.GetAllSites().ToList().FindAll(x => x.UID == username).ToArray();
 
             List<int> tilesToExclude = new List<int>();

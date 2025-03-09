@@ -16,9 +16,9 @@ namespace GameClient.Managers
     [RTManager]
     public static class GoodwillManager
     {
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
+            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.Contents);
             ChangeStructureGoodwill(factionGoodwillData);
             DialogManager.PopWaitDialog();
         }
@@ -28,16 +28,16 @@ namespace GameClient.Managers
         public static void TryRequestGoodwill(Goodwill type, GoodwillTarget target)
         {
             int tileToUse = 0;
-            if (target == GoodwillTarget.Settlement) tileToUse = SessionValues.chosenSettlement.Tile;
-            else if (target == GoodwillTarget.Site) tileToUse = SessionValues.chosenSite.Tile;
+            if (target == GoodwillTarget.Settlement) tileToUse = SessionValues.ChosenSettlement.Tile;
+            else if (target == GoodwillTarget.Site) tileToUse = SessionValues.ChosenSite.Tile;
 
             Faction factionToUse = null;
-            if (target == GoodwillTarget.Settlement) factionToUse = SessionValues.chosenSettlement.Faction;
-            else if (target == GoodwillTarget.Site) factionToUse = SessionValues.chosenSite.Faction;
+            if (target == GoodwillTarget.Settlement) factionToUse = SessionValues.ChosenSettlement.Faction;
+            else if (target == GoodwillTarget.Site) factionToUse = SessionValues.ChosenSite.Faction;
 
             if (type == Goodwill.Enemy)
             {
-                if (factionToUse == FactionValues.enemyPlayer)
+                if (factionToUse == ClientValues.enemyPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as enemy!" });
                     DialogManager.PushNewDialog(d1);
@@ -47,7 +47,7 @@ namespace GameClient.Managers
 
             else if (type == Goodwill.Neutral)
             {
-                if (factionToUse == FactionValues.neutralPlayer)
+                if (factionToUse == ClientValues.neutralPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as neutral!" });
                     DialogManager.PushNewDialog(d1);
@@ -57,7 +57,7 @@ namespace GameClient.Managers
 
             else if (type == Goodwill.Ally)
             {
-                if (factionToUse == FactionValues.allyPlayer)
+                if (factionToUse == ClientValues.allyPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as ally!" });
                     DialogManager.PushNewDialog(d1);
@@ -74,7 +74,7 @@ namespace GameClient.Managers
             factionGoodwillData._tile = structureTile;
             factionGoodwillData._goodwill = goodwill;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GoodwillManager), factionGoodwillData);
+            Packet packet = Packet.CreateFromObject(nameof(GoodwillManager), factionGoodwillData);
             Network.listener.EnqueuePacket(packet);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
@@ -103,7 +103,7 @@ namespace GameClient.Managers
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                PlayerSettlementManager.playerSettlements.Remove(toChange[i]);
+                SettlementManager.playerSettlements.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
@@ -111,7 +111,7 @@ namespace GameClient.Managers
                 newSettlement.Name = toChange[i].Name;
                 newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._settlementGoodwills[i]));
 
-                PlayerSettlementManager.playerSettlements.Add(newSettlement);
+                SettlementManager.playerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
             }
         }

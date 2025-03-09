@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Text.RegularExpressions;
 using GameClient.Misc;
 using GameClient.Values;
 using RimWorld.Planet;
@@ -11,28 +9,29 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Scribers
 {
-    // TODO
-    // Find a way to make it usable
-
     public static class TileScriber
     {
         public static string TileToScribe(Tile toSave)
         {
             ClientValues.ToggleUsingScriber(true);
 
+            string scribeData = "";
+
             try
             {
-                Scribe.saver.InitSaving("", RTScriber.scribeTreeName);
+                Scribe.saver.InitSaving("", RTScriber.ScribeTreeName);
 
-                Scribe_Deep.Look(ref toSave, RTScriber.scribeNodeName);
+                Scribe_Deep.Look(ref toSave, RTScriber.ScribeNodeName);
 
                 Scribe.saver.FinalizeSaving();
+
+                scribeData = new Regex(@">\s*<").Replace(RTScriber.StringWriter.ToString(), "><");
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); };
 
             ClientValues.ToggleUsingScriber(false);
 
-            return RTScriber.stringWriter.ToString();
+            return scribeData.ToString();
         }
 
         public static Tile ScribeToTile(string scribeData)
@@ -45,7 +44,7 @@ namespace GameClient.Scribers
             {
                 Scribe.loader.InitLoading(scribeData);
 
-                Scribe_Deep.Look(ref toLoad, RTScriber.scribeNodeName);
+                Scribe_Deep.Look(ref toLoad, RTScriber.ScribeNodeName);
 
                 Scribe.loader.FinalizeLoading();
             }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GameServer.Core;
+﻿using GameServer.Core;
 using GameServer.Files;
-using GameServer.TCP;
 using Shared;
 
 namespace GameServer.Misc

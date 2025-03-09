@@ -1,5 +1,4 @@
-﻿using GameClient.Core;
-using GameClient.Dialogs;
+﻿using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
@@ -9,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -18,9 +16,9 @@ namespace GameClient.Managers
     [RTManager]
     public static class ModManager
     {
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(packet.contents);
+            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -48,20 +46,20 @@ namespace GameClient.Managers
 
         public static void ReceiveMods(ServerGlobalData data)
         {
-            SessionValues.configFile = data._modConfigs;
+            SessionValues.ConfigFile = data._modConfigs;
 
-            if (!SessionValues.configFile.EnforcedConfigs) return;
+            if (!SessionValues.ConfigFile.EnforcedConfigs) return;
             else
             {
                 Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
 
-                for (int i = 0; i < SessionValues.configFile.ModFileNames.Length; i++)
+                for (int i = 0; i < SessionValues.ConfigFile.ModFileNames.Length; i++)
                 {
-                    string filePath = GenFilePaths.ConfigFolderPath + Path.DirectorySeparatorChar + SessionValues.configFile.ModFileNames[i];
+                    string filePath = GenFilePaths.ConfigFolderPath + Path.DirectorySeparatorChar + SessionValues.ConfigFile.ModFileNames[i];
                     if (File.Exists(filePath)) File.Delete(filePath);
-                    File.WriteAllText(filePath, SessionValues.configFile.ModConfigs[i]);
+                    File.WriteAllText(filePath, SessionValues.ConfigFile.ModConfigs[i]);
 
-                    Printer.Warning($"Loaded > {SessionValues.configFile.ModFileNames[i]}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Loaded > {SessionValues.ConfigFile.ModFileNames[i]}", LogImportanceMode.Verbose);
                 }
             }
         }
@@ -81,7 +79,7 @@ namespace GameClient.Managers
 
             Action toDoNo = delegate
             {
-                Packet packet = Packet.CreatePacketFromObject(nameof(ModManager), data);
+                Packet packet = Packet.CreateFromObject(nameof(ModManager), data);
                 Network.listener.EnqueuePacket(packet);
                 if (isFirstEdit) OnFirstEdit();
             };
@@ -103,7 +101,7 @@ namespace GameClient.Managers
             data._configFile.ModConfigs = modConfigs.ToArray();
             data._configFile.EnforcedConfigs = true;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(ModManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(ModManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -137,7 +135,7 @@ namespace GameClient.Managers
 
         public static void GetConflictingMods(Packet packet)
         {
-            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.Contents);
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
                 loginData._extraDetails.ToArray()));

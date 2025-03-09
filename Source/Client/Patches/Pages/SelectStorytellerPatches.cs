@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
@@ -27,7 +25,7 @@ namespace GameClient.Patches.Pages
                 Find.GameInitData.permadeathChosen = true;
                 Find.GameInitData.permadeath = true;
 
-                if (!ClientValues.isGeneratingFreshWorld)
+                if (!ClientValues.IsGeneratingFreshWorld)
                 {
                     ___difficulty = DifficultyDefOf.Rough;
                     ___difficultyValues = new Difficulty(___difficulty);
@@ -48,7 +46,7 @@ namespace GameClient.Patches.Pages
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (ClientValues.isGeneratingFreshWorld)
+            if (ClientValues.IsGeneratingFreshWorld)
             {
                 if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
                 {
@@ -94,15 +92,15 @@ namespace GameClient.Patches.Pages
 
             else
             {
-                if (SessionValues.storytellerFile.EnforceStoryteller)
+                if (SessionValues.StorytellerFile.EnforceStoryteller)
                 {
                     if (executedMessage) return true;
                     else
                     {
                         Action toDo = delegate
                         {
-                            GameParameterManager.SetStoryteller(SessionValues.storytellerFile);
-                            GameParameterManager.SetDifficulty(SessionValues.difficultyFile, true);
+                            GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
+                            GameParameterManager.SetDifficulty(SessionValues.DifficultyFile, true);
                             DialogManager.PushNewDialog(__instance.next);
                             __instance.Close();
 
@@ -122,7 +120,7 @@ namespace GameClient.Patches.Pages
         public static void DoPost(Rect rect)
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
-            if (ClientValues.isGeneratingFreshWorld) return;
+            if (ClientValues.IsGeneratingFreshWorld) return;
 
             Text.Font = GameFont.Small;
             Vector2 buttonSize = new Vector2(150f, 38f);
@@ -139,13 +137,13 @@ namespace GameClient.Patches.Pages
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (SessionValues.difficultyFile.EnforceDifficulty || SessionValues.storytellerFile.EnforceStoryteller)
+            if (SessionValues.DifficultyFile.EnforceDifficulty || SessionValues.StorytellerFile.EnforceStoryteller)
             {
                 Action toDo = delegate
                 {
-                    GameParameterManager.SetStoryteller(SessionValues.storytellerFile);
+                    GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
 
-                    GameParameterManager.SetDifficulty(SessionValues.difficultyFile);
+                    GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
                 };
 
                 DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));
@@ -239,7 +237,7 @@ namespace GameClient.Patches.Pages
                 infoListing.Gap(6f);
             }
 
-            if (ClientValues.isGeneratingFreshWorld)
+            if (ClientValues.IsGeneratingFreshWorld)
             {
                 if (chosenStoryteller != null && chosenStoryteller.listVisible)
                 {
@@ -270,7 +268,7 @@ namespace GameClient.Patches.Pages
             num = rect3.y + infoListing.CurHeight;
             infoListing.End();
 
-            if (ClientValues.isGeneratingFreshWorld)
+            if (ClientValues.IsGeneratingFreshWorld)
             {
                 if (difficulty != null && difficulty.isCustom)
                 {

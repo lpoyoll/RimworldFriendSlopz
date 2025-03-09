@@ -29,7 +29,7 @@ namespace GameClient.Patches.Tabs
         {
             if (Network.state == ClientNetworkState.Connected)
             {
-                tabTitle = $"Players Online [{PlayerRecountManager.currentPlayers}]";
+                tabTitle = $"Players Online [{RecountManager.CurrentPlayers}]";
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -45,7 +45,7 @@ namespace GameClient.Patches.Tabs
 
         private void GenerateList(Rect mainRect)
         {
-            List<string> orderedList = PlayerRecountManager.currentPlayerNames;
+            List<string> orderedList = RecountManager.CurrentPlayerNames;
             orderedList.Sort();
 
             float height = 6f + orderedList.Count() * 30f;

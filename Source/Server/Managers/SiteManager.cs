@@ -14,7 +14,7 @@ namespace GameServer.Managers
 
         private static readonly double taskDelayMS = 1800000;
 
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionConfigs.EnableSites)
             {
@@ -22,7 +22,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
+            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.Contents);
             switch (siteData._stepMode)
             {
                 case SiteStepMode.Build:
@@ -63,13 +63,13 @@ namespace GameServer.Managers
             foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
             {
                 siteData._file.Goodwill = GoodwillManager.GetSiteGoodwill(cClient, siteFile);
-                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+                Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
 
                 cClient.listener.EnqueuePacket(packet);
             }
 
             siteData._stepMode = SiteStepMode.Accept;
-            Packet rPacket = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Packet rPacket = Packet.CreateFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(rPacket);
 
             InformationDisplayer.DisplayAddSite(siteFile.Tile.ToString());
@@ -77,7 +77,7 @@ namespace GameServer.Managers
 
         private static void AddNewSite(ServerClient client, SiteData siteData)
         {
-            if (PlayerSettlementManager.CheckIfTileIsInUse(siteData._file.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._file.Tile}, but that tile already has a settlement");
+            if (SettlementManager.CheckIfTileIsInUse(siteData._file.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._file.Tile}, but that tile already has a settlement");
             else if (SiteManagerHelper.CheckIfTileIsInUse(siteData._file.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._file.Tile}, but that tile already has a site");
             else
             {
@@ -103,7 +103,7 @@ namespace GameServer.Managers
             if (MapManager.CheckIfMapExists(siteData._file.Tile)) siteData._siteMap = MapManager.GetMapFromTile(siteData._file.Tile);
             else siteData._siteMap = null;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -118,7 +118,7 @@ namespace GameServer.Managers
                 client.userFile.UpdateActivityTime();
             }
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(packet);
         }
 
@@ -128,7 +128,7 @@ namespace GameServer.Managers
             siteData._stepMode = SiteStepMode.Destroy;
             siteData._file = siteFile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             File.Delete(Path.Combine(Master.sitesPath, siteFile.Tile + SiteManagerHelper.fileExtension));
@@ -136,14 +136,14 @@ namespace GameServer.Managers
             InformationDisplayer.DisplayRemoveSite(siteFile.Tile.ToString());
         }
 
-        public static async Task StartSiteTicker()
+        public static void StartSiteTicker()
         {
             while (true)
             {
                 try { SiteRewardTick(); }
                 catch (Exception e) { Printer.Error($"Site tick failed, this should never happen. Exception > {e}"); }
 
-                await Task.Delay(TimeSpan.FromMinutes(Master.siteValues.TimeIntervalMinutes));
+                Thread.Sleep(TimeSpan.FromMinutes(Master.siteValues.TimeIntervalMinutes));
             }
         }
 
@@ -184,7 +184,7 @@ namespace GameServer.Managers
                     siteData._stepMode = SiteStepMode.Rewards;
                     siteData._rewardFiles = rewards.ToArray();
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+                    Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
                     client.listener.EnqueuePacket(packet);
                 }
             }
@@ -303,7 +303,7 @@ namespace GameServer.Managers
             SiteFile siteFile = GetSiteFileFromTile(siteData._file.Tile);
             siteData._file = siteFile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
             client.listener.EnqueuePacket(packet);
         }
 

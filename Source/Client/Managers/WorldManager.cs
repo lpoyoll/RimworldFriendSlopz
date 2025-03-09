@@ -14,7 +14,6 @@ using Shared;
 using UnityEngine;
 using Verse;
 using Verse.Profile;
-using static GameClient.Managers.DisconnectionManager;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
@@ -36,9 +35,9 @@ namespace GameClient.Managers
             typeof(WorldGenStep_Features)
         };
 
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            WorldData data = Serializer.ConvertBytesToObject<WorldData>(packet.contents);
+            WorldData data = Serializer.ConvertBytesToObject<WorldData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -47,7 +46,7 @@ namespace GameClient.Managers
                     break;
 
                 case WorldStepMode.Sent:
-                    WorldManagerReceiver.ReceiveWorldPart(data);
+                    WorldManagerReceiver.ReceiveWorld(data);
                     break;
             }
         }
@@ -73,15 +72,15 @@ namespace GameClient.Managers
 
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
         {
-            SessionValues.worldFile = new WorldValuesFile();
-            SessionValues.worldFile.SeedString = seedString;
-            SessionValues.worldFile.PersistentRandomValue = GenText.StableStringHash(seedString);
-            SessionValues.worldFile.PlanetCoverage = planetCoverage;
-            SessionValues.worldFile.Rainfall = (int)rainfall;
-            SessionValues.worldFile.Temperature = (int)temperature;
-            SessionValues.worldFile.Population = (int)population;
-            SessionValues.worldFile.Pollution = pollution;
-            SessionValues.worldFile.NPCFactions = WorldManagerH.GetNPCFactionsFromDef(factions.ToArray());
+            SessionValues.WorldFile = new WorldValuesFile();
+            SessionValues.WorldFile.SeedString = seedString;
+            SessionValues.WorldFile.PersistentRandomValue = GenText.StableStringHash(seedString);
+            SessionValues.WorldFile.PlanetCoverage = planetCoverage;
+            SessionValues.WorldFile.Rainfall = (int)rainfall;
+            SessionValues.WorldFile.Temperature = (int)temperature;
+            SessionValues.WorldFile.Population = (int)population;
+            SessionValues.WorldFile.Pollution = pollution;
+            SessionValues.WorldFile.NPCFactions = WorldManagerH.GetNPCFactionsFromDef(factions.ToArray());
         }
 
         public static void GeneratePatchedWorld()
@@ -102,35 +101,35 @@ namespace GameClient.Managers
 
         private static World GenerateWorld()
         {
-            Rand.PushState(SessionValues.worldFile.PersistentRandomValue);
+            Rand.PushState(SessionValues.WorldFile.PersistentRandomValue);
 
             Current.CreatingWorld = new World();
-            Current.CreatingWorld.info.seedString = SessionValues.worldFile.SeedString;
-            Current.CreatingWorld.info.persistentRandomValue = SessionValues.worldFile.PersistentRandomValue;
-            Current.CreatingWorld.info.planetCoverage = SessionValues.worldFile.PlanetCoverage;
-            Current.CreatingWorld.info.overallRainfall = (OverallRainfall)SessionValues.worldFile.Rainfall;
-            Current.CreatingWorld.info.overallTemperature = (OverallTemperature)SessionValues.worldFile.Temperature;
-            Current.CreatingWorld.info.overallPopulation = (OverallPopulation)SessionValues.worldFile.Population;
+            Current.CreatingWorld.info.seedString = SessionValues.WorldFile.SeedString;
+            Current.CreatingWorld.info.persistentRandomValue = SessionValues.WorldFile.PersistentRandomValue;
+            Current.CreatingWorld.info.planetCoverage = SessionValues.WorldFile.PlanetCoverage;
+            Current.CreatingWorld.info.overallRainfall = (OverallRainfall)SessionValues.WorldFile.Rainfall;
+            Current.CreatingWorld.info.overallTemperature = (OverallTemperature)SessionValues.WorldFile.Temperature;
+            Current.CreatingWorld.info.overallPopulation = (OverallPopulation)SessionValues.WorldFile.Population;
             Current.CreatingWorld.info.name = NameGenerator.GenerateName(RulePackDefOf.NamerWorld);
-            Current.CreatingWorld.info.factions = WorldManagerH.GetFactionDefsFromNPCFaction(SessionValues.worldFile.NPCFactions);
-            Current.CreatingWorld.info.pollution = SessionValues.worldFile.Pollution;
+            Current.CreatingWorld.info.factions = WorldManagerH.GetFactionDefsFromNPCFaction(SessionValues.WorldFile.NPCFactions);
+            Current.CreatingWorld.info.pollution = SessionValues.WorldFile.Pollution;
 
             WorldGenStepDef[] worldGenSteps = GenStepsInOrder.ToArray();
             for (int i = 0; i < worldGenSteps.Count(); i++)
             {
                 WorldGenStep toGenerate = worldGenSteps[i].worldGenStep;
 
-                if (ClientValues.isGeneratingFreshWorld || stepsToUseIfNotFresh.Contains(toGenerate.GetType()))
+                if (ClientValues.IsGeneratingFreshWorld || stepsToUseIfNotFresh.Contains(toGenerate.GetType()))
                 {
-                    toGenerate.GenerateFresh(SessionValues.worldFile.SeedString);
+                    toGenerate.GenerateFresh(SessionValues.WorldFile.SeedString);
                 }
                 else continue;
             }
 
-            if (!ClientValues.isGeneratingFreshWorld && SessionValues.worldFile.Tiles != null && SessionValues.worldFile.Tiles.Length > 0)
+            if (!ClientValues.IsGeneratingFreshWorld && SessionValues.WorldFile.Tiles != null && SessionValues.WorldFile.Tiles.Length > 0)
             {
                 Current.CreatingWorld.grid.tiles = new List<Tile>();
-                foreach (string str in SessionValues.worldFile.Tiles) Current.CreatingWorld.grid.tiles.Add(TileScriber.ScribeToTile(str));
+                foreach (string str in SessionValues.WorldFile.Tiles) Current.CreatingWorld.grid.tiles.Add(TileScriber.ScribeToTile(str));
             }
 
             Current.CreatingWorld.grid.StandardizeTileData();
@@ -170,9 +169,9 @@ namespace GameClient.Managers
             WorldFeature[] worldFeatures = Find.WorldFeatures.features.ToArray();
             foreach (WorldFeature feature in worldFeatures) Find.WorldFeatures.features.Remove(feature);
 
-            for (int i = 0; i < SessionValues.worldFile.Features.Length; i++)
+            for (int i = 0; i < SessionValues.WorldFile.Features.Length; i++)
             {
-                PlanetFeatureDetails planetFeature = SessionValues.worldFile.Features[i];
+                PlanetFeatureDetails planetFeature = SessionValues.WorldFile.Features[i];
 
                 try
                 {
@@ -196,13 +195,13 @@ namespace GameClient.Managers
         {
             Faction[] planetFactions = Find.World.factionManager.AllFactions.ToArray();
 
-            for (int i = 0; i < SessionValues.worldFile.NPCFactions.Length; i++)
+            for (int i = 0; i < SessionValues.WorldFile.NPCFactions.Length; i++)
             {
                 try
                 {
-                    PlanetNPCFactionDetails faction = SessionValues.worldFile.NPCFactions[i];
+                    PlanetNPCFactionDetails faction = SessionValues.WorldFile.NPCFactions[i];
 
-                    Faction toModify = planetFactions.First(fetch => fetch.def.defName == SessionValues.worldFile.NPCFactions[i].defName);
+                    Faction toModify = planetFactions.First(fetch => fetch.def.defName == SessionValues.WorldFile.NPCFactions[i].defName);
 
                     toModify.Name = faction.name;
 
@@ -211,7 +210,7 @@ namespace GameClient.Managers
                         faction.color[2],
                         faction.color[3]);
                 }
-                catch (Exception e) { Printer.Warning($"Failed set planet faction from def '{SessionValues.worldFile.NPCFactions[i].defName}'. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed set planet faction from def '{SessionValues.WorldFile.NPCFactions[i].defName}'. Reason: {e}"); }
             }
         }
     }
@@ -220,13 +219,13 @@ namespace GameClient.Managers
     {
         public static void PopulateWorldValues()
         {
-            SessionValues.worldFile.Tiles = GetPlanetTiles();
-            SessionValues.worldFile.Features = GetPlanetFeatures();
-            SessionValues.worldFile.Roads = RoadManagerHelper.GetPlanetRoads();
-            SessionValues.worldFile.Rivers = RiverManagerHelper.GetPlanetRivers();
-            SessionValues.worldFile.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
-            SessionValues.worldFile.NPCSettlements = GetPlanetNPCSettlements();
-            SessionValues.worldFile.NPCFactions = GetPlanetNPCFactions();
+            SessionValues.WorldFile.Tiles = GetPlanetTiles();
+            SessionValues.WorldFile.Features = GetPlanetFeatures();
+            SessionValues.WorldFile.Roads = RoadManagerHelper.GetPlanetRoads();
+            SessionValues.WorldFile.Rivers = RiverManagerHelper.GetPlanetRivers();
+            SessionValues.WorldFile.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
+            SessionValues.WorldFile.NPCSettlements = GetPlanetNPCSettlements();
+            SessionValues.WorldFile.NPCFactions = GetPlanetNPCFactions();
         }
 
         public static string[] GetPlanetTiles()
@@ -321,7 +320,7 @@ namespace GameClient.Managers
                     Printer.Warning($"Loaded {newFaction.defName}", LogImportanceMode.Verbose);
                 }
 
-                SessionValues.worldFile.NPCFactions = serverFactions.ToArray();
+                SessionValues.WorldFile.NPCFactions = serverFactions.ToArray();
             }
 
             return defList;
@@ -355,7 +354,7 @@ namespace GameClient.Managers
 
         public static PlanetNPCSettlementDetails[] GetPlanetNPCSettlements()
         {
-            Faction[] worldNPCFactions = Find.FactionManager.AllFactions.Where(fetch => !FactionValues.playerFactions.Contains(fetch) &&
+            Faction[] worldNPCFactions = Find.FactionManager.AllFactions.Where(fetch => !ClientValues.playerFactions.Contains(fetch) &&
                 fetch != Faction.OfPlayer).ToArray();
 
             List<FactionDef> worldNPCFactionDefs = new List<FactionDef>();
@@ -403,31 +402,15 @@ namespace GameClient.Managers
 
     public static class WorldManagerSender
     {
-        public static void SetupWorldSender()
-        {
-            if (Network.listener.uploadManager != null) return;
-            else
-            {
-                WorldManagerH.PopulateWorldValues();
-
-                byte[] bytes = Serializer.ConvertObjectToBytes(SessionValues.worldFile);
-                bytes = GZip.CompressBytes(bytes);
-                File.WriteAllBytes(WorldManager.tempWorldPath, bytes);
-
-                Network.listener.uploadManager = new UploadManager(WorldManager.tempWorldPath);
-                Network.listener.uploadManager.PrepareUpload();
-            }
-        }
-
         public static void SendWorld()
         {
-            SetupWorldSender();
+            WorldManagerH.PopulateWorldValues();
 
             WorldData data = new WorldData();
-            data._fileBytes = Network.listener.uploadManager.ReadFile();
             data._stepMode = WorldStepMode.Sent;
+            data._fileBytes = Serializer.ConvertObjectToBytes(SessionValues.WorldFile);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(WorldManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(WorldManager), data);
             Network.listener.EnqueuePacket(packet);
 
             OnWorldSent();
@@ -435,9 +418,6 @@ namespace GameClient.Managers
 
         private static void OnWorldSent()
         {
-            Network.listener.uploadManager.FinishFileWrite();
-            Network.listener.uploadManager = null;
-
             File.Delete(WorldManager.tempWorldPath);
 
             ClientValues.ToggleGenerateWorld(false);
@@ -448,35 +428,9 @@ namespace GameClient.Managers
 
     public static class WorldManagerReceiver
     {
-        public static void SetupWorldReceiver()
+        public static void ReceiveWorld(WorldData data)
         {
-            if (Network.listener.downloadManager != null) return;
-            else
-            {
-                Network.listener.downloadManager = new DownloadManager(WorldManager.tempWorldPath);
-                Network.listener.downloadManager.PrepareDownload();
-
-                Printer.Message($"Receiving planet from server");
-            }
-        }
-
-        public static void ReceiveWorldPart(WorldData data)
-        {
-            SetupWorldReceiver();
-
-            Network.listener.downloadManager.WriteFile(data._fileBytes);
-
-            OnPartReceived();
-        }
-
-        private static void OnPartReceived()
-        {
-            Network.listener.downloadManager.FinishFileWrite();
-            Network.listener.downloadManager = null;
-
-            SessionValues.worldFile = Serializer.FileBytesToObject<WorldValuesFile>(WorldManager.tempWorldPath);
-
-            File.Delete(WorldManager.tempWorldPath);
+            SessionValues.WorldFile = Serializer.ConvertBytesToObject<WorldValuesFile>(data._fileBytes);
 
             WorldManager.OnExistingWorld();
         }

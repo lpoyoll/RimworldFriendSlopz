@@ -5,12 +5,9 @@ using Verse;
 
 namespace GameClient.Managers
 {
-    //Class that handles map functions for the mod to use
     [RTManager]
     public static class MapManager
     {
-        //Sends all the player maps to the server
-
         public static void SendPlayerMapsToServer()
         {
             foreach (Map map in Find.Maps.ToArray())
@@ -22,14 +19,12 @@ namespace GameClient.Managers
             }
         }
 
-        //Sends a desired map to the server
-
         public static void SendMapToServer(Map map)
         {
             MapData mapData = new MapData();
             mapData._mapFile = MapScriber.MapToString(map, true, true, true, true, true, true);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(MapManager), mapData);
+            Packet packet = Packet.CreateFromObject(nameof(MapManager), mapData);
             Network.listener.EnqueuePacket(packet);
         }
     }

@@ -12,9 +12,9 @@ namespace GameServer.Managers
 
         public readonly static string fileExtension = ".mpmap";
 
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
-            MapData mapData = Serializer.ConvertBytesToObject<MapData>(packet.contents);
+            MapData mapData = Serializer.ConvertBytesToObject<MapData>(packet.Contents);
             SaveUserMap(client, mapData._mapFile);
         }
 

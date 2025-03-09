@@ -261,7 +261,7 @@ namespace GameServer.Commands
                     CommandData commandData = new CommandData();
                     commandData._commandMode = CommandMode.Op;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(ConsoleManager), commandData);
+                    Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
                     toFind.listener.EnqueuePacket(packet);
 
                     Printer.Warning($"User '{toFind.userFile.Label}' has now admin privileges");
@@ -295,7 +295,7 @@ namespace GameServer.Commands
                     CommandData commandData = new CommandData();
                     commandData._commandMode = CommandMode.Deop;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(ConsoleManager), commandData);
+                    Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
                     toFind.listener.EnqueuePacket(packet);
 
                     Printer.Warning($"User '{toFind.userFile.Label}' is no longer an admin");
@@ -321,7 +321,7 @@ namespace GameServer.Commands
             if (toFind == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
             else
             {
-                toFind.listener.disconnectFlag = true;
+                toFind.listener.DisconnectFlag = true;
 
                 Printer.Warning($"User '{toFind.userFile.Label}' has been kicked from the server");
             }
@@ -385,7 +385,7 @@ namespace GameServer.Commands
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
+                    Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
                     client.listener.EnqueuePacket(packet);
 
                     Printer.Title($"Sent event '{ConsoleManager.commandParameters[1]}' to '{ConsoleManager.commandParameters[0]}'");
@@ -408,7 +408,7 @@ namespace GameServer.Commands
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
+                    Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -434,7 +434,7 @@ namespace GameServer.Commands
             commandData._commandMode = CommandMode.Broadcast;
             commandData._details = fullText;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(ConsoleManager), commandData);
+            Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
             NetworkHelper.SendPacketToAllClients(packet);
 
             Printer.Title($"Sent broadcast: '{fullText}'");
@@ -517,7 +517,7 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(ConsoleManager), commandData);
+                Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
                 toFind.listener.EnqueuePacket(packet);
 
                 Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' has been forced to save");
@@ -577,7 +577,7 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(ConsoleManager), commandData);
+                Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
                 client.listener.EnqueuePacket(packet);
             }
 

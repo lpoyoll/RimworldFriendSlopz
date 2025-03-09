@@ -14,9 +14,9 @@ namespace GameClient.Managers
     [RTManager]
     public static class EventManager
     {
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
+            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.Contents);
 
             switch (eventData._stepMode)
             {
@@ -74,10 +74,10 @@ namespace GameClient.Managers
                 EventData eventData = new EventData();
                 eventData._stepMode = EventStepMode.Send;
                 eventData._fromTile = toGetSilverFrom.Tile;
-                eventData._toTile = SessionValues.chosenSettlement.Tile;
+                eventData._toTile = SessionValues.ChosenSettlement.Tile;
                 eventData._eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
+                Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
                 Network.listener.EnqueuePacket(packet);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
@@ -88,7 +88,7 @@ namespace GameClient.Managers
         {
             IncidentParms parms = StorytellerUtility.DefaultParmsNow(eventToTrigger.category, targetMap);
             parms.customLetterLabel = $"Event - {eventToTrigger.LabelCap}";
-            parms.faction = FactionValues.neutralPlayer;
+            parms.faction = ClientValues.neutralPlayer;
             parms.target = targetMap;
 
             eventToTrigger.Worker.TryExecute(parms);
@@ -98,7 +98,7 @@ namespace GameClient.Managers
 
         public static void OnEventReceived(EventData eventData)
         {
-            if (ClientValues.isReadyToPlay)
+            if (ClientValues.IsReadyToPlay)
             {
                 Map targetMap;
                 if (eventData._toTile != -1) targetMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == eventData._toTile).Map;

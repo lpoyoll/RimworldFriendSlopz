@@ -1,23 +1,15 @@
-
-using System;
 using System.Collections.Generic;
 using System.Reflection;
-﻿using System.Reflection;
 using GameClient.Core.Configs;
 using GameClient.Misc;
-using Shared;
 
 namespace GameClient.Core
 {
-    // Class with all the critical variables for the client to work
-
     public static class Master
     {
         // Instances
 
-        public static UnityMainThreadDispatcher threadDispatcher;
-
-        public static ModExposer modConfigs = new ModExposer();
+        public static ModConfigGetter modConfigs = new ModConfigGetter();
 
         public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
 
@@ -50,6 +42,8 @@ namespace GameClient.Core
         public static string savesFolderPath;
 
         // Values
+
+        public static readonly string modPackageID = "nova.rimworldtogether";
 
         public static readonly string modID = "RimWorld Together";
     }

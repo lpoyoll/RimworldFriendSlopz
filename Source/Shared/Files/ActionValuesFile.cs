@@ -5,9 +5,7 @@ namespace Shared
     [Serializable]
     public class ActionValuesFile
     {
-        public bool EnableOnlineActivities = true;
-
-        public bool EnableOfflineActivities = true;
+        public bool EnableActivities = true;
 
         public bool EnableEvents = true;
 
@@ -32,7 +30,5 @@ namespace Shared
         public int EnforcedGameSpeed = 0;
 
         public int SpyCost = 100;
-
-        public int OnlineActivityTickMS = 500;
     }
 }

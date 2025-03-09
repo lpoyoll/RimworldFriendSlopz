@@ -1,5 +1,4 @@
 ﻿using System;
-using GameClient.Core;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.TCP;
@@ -20,16 +19,15 @@ namespace GameClient.Patches
             try
             {
                 if (Network.state == ClientNetworkState.Disconnected) return true;
-                if (ClientValues.isSavingGame) return false;
-                if (SessionValues.currentRealTimeActivity != OnlineActivityType.None) return false;
+                if (ClientValues.IsSavingGame) return false;
 
                 ClientValues.ToggleSavingGame(true);
                 ClientValues.ForcePermadeath();
                 ClientValues.ManageDevOptions();
 
-                GameParameterManager.SetScenario(SessionValues.scenarioFile);
-                GameParameterManager.SetStoryteller(SessionValues.storytellerFile);
-                GameParameterManager.SetDifficulty(SessionValues.difficultyFile);
+                GameParameterManager.SetScenario(SessionValues.ScenarioFile);
+                GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
+                GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
 
@@ -59,37 +57,6 @@ namespace GameClient.Patches
             ClientValues.ToggleSavingGame(false);
 
             return false;
-        }
-    }
-
-    [HarmonyPatch(typeof(Autosaver), "DoAutosave")]
-    public static class Autosave
-    {
-        [HarmonyPrefix]
-        public static bool DoPre()
-        {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
-            else return false;
-        }
-    }
-
-    [HarmonyPatch(typeof(Autosaver), "AutosaverTick")]
-    public static class AutosaveTick
-    {
-        [HarmonyPrefix]
-        public static bool DoPre()
-        {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
-
-            ClientValues.autosaveCurrentTicks++;
-
-            if (ClientValues.autosaveCurrentTicks >= ClientValues.autosaveInternalTicks && !GameDataSaveLoader.SavingIsTemporarilyDisabled)
-            {
-                SaveManager.ForceSave();
-            }
-
-            return false;
-
         }
     }
 }

@@ -32,7 +32,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                 action = delegate
                 {
-                    SessionValues.chosenSettlement = __instance;
+                    SessionValues.ChosenSettlement = __instance;
 
                     Action r1 = delegate
                     {
@@ -68,11 +68,11 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                 action = delegate
                 {
-                    SessionValues.chosenSettlement = __instance;
+                    SessionValues.ChosenSettlement = __instance;
 
-                    if (SessionValues.actionValues.EnableFactions)
+                    if (SessionValues.ActionValues.EnableFactions)
                     {
-                        if (SessionValues.chosenSettlement.Faction == FactionValues.yourOnlineFaction) GuildManager.OnFactionOpenOnMember();
+                        if (SessionValues.ChosenSettlement.Faction == ClientValues.yourOnlineFaction) GuildManager.OnFactionOpenOnMember();
                         else GuildManager.OnFactionOpenOnNonMember();
                     }
                     else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
@@ -86,7 +86,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("UI/Commands/FormCaravan"),
                 action = delegate
                 {
-                    SessionValues.chosenSettlement = __instance;
+                    SessionValues.ChosenSettlement = __instance;
 
                     Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved: true);
                     DialogManager.PushNewDialog(d1);
@@ -100,9 +100,9 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Aid"),
                 action = delegate
                 {
-                    SessionValues.chosenSettlement = __instance;
+                    SessionValues.ChosenSettlement = __instance;
 
-                    if (SessionValues.actionValues.EnableAids)
+                    if (SessionValues.ActionValues.EnableAids)
                     {
                         List<string> pawnNames = new List<string>();
                         foreach (Pawn pawn in RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
@@ -120,9 +120,9 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Event"),
                 action = delegate
                 {
-                    SessionValues.chosenSettlement = __instance;
+                    SessionValues.ChosenSettlement = __instance;
 
-                    if (SessionValues.actionValues.EnableEvents) EventManager.ShowEventMenu();
+                    if (SessionValues.ActionValues.EnableEvents) EventManager.ShowEventMenu();
                     else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
@@ -134,8 +134,10 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Spy"),
                 action = delegate
                 {
-                    SessionValues.chosenSettlement = __instance;
-                    SpyManager.RequestSpy(WorldObjectMode.Settlement);
+                    SessionValues.ChosenSettlement = __instance;
+
+                    ActivityManager.RequestActivity(ActivityType.Spy, 
+                        SessionValues.ChosenSettlement.Tile);
                 }
             };
 
@@ -146,31 +148,31 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
                 action = delegate
                 {
-                    SessionValues.chosenSettlement = __instance;
+                    SessionValues.ChosenSettlement = __instance;
 
-                    if (SessionValues.actionValues.EnableFactions)
+                    if (SessionValues.ActionValues.EnableFactions)
                     {
-                        if (ServerValues.hasFaction) GuildManager.OnFactionOpen();
+                        if (ClientValues.HasFaction) GuildManager.OnFactionOpen();
                         else GuildManager.OnNoFactionOpen();
                     }
                     else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
 
-            if (FactionValues.playerFactions.Contains(__instance.Faction))
+            if (ClientValues.playerFactions.Contains(__instance.Faction))
             {
                 gizmoList.Clear();
 
                 if (__instance.Map != null) gizmoList.Add(command_Caravan);
                 else
                 {
-                    if (__instance.Faction != FactionValues.yourOnlineFaction)
+                    if (__instance.Faction != ClientValues.yourOnlineFaction)
                     {
                         gizmoList.Add(command_Goodwill);
                         gizmoList.Add(command_Spy);
                     }
 
-                    if (ServerValues.hasFaction) gizmoList.Add(command_FactionMenu);
+                    if (ClientValues.HasFaction) gizmoList.Add(command_FactionMenu);
 
                     gizmoList.Add(command_Event);
                     gizmoList.Add(command_Aid);
@@ -195,7 +197,7 @@ namespace GameClient.Patches
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
 
-            if (FactionValues.playerFactions.Contains(__instance.Faction))
+            if (ClientValues.playerFactions.Contains(__instance.Faction))
             {
                 List<Gizmo> gizmoList = __result.ToList();
 
@@ -215,15 +217,11 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Raid"),
                     action = delegate
                     {
-                        SessionValues.chosenSettlement = __instance;
-                        SessionValues.chosenCaravan = caravan;
+                        SessionValues.ChosenSettlement = __instance;
+                        SessionValues.ChosenCaravan = caravan;
 
-                        RT_Dialog_Buttons d1 = new RT_Dialog_Buttons("Raid Mode", "Please choose your raid mode",
-                            new string[] { "[BETA] Online", "Offline" },
-                            new Action[] { delegate { OnlineActivityManager.RequestOnlineActivity(OnlineActivityType.Raid); }, delegate { OfflineActivityManager.RequestOfflineActivity(OfflineActivityType.Raid); } },
-                            null);
-
-                        DialogManager.PushNewDialog(d1);
+                        ActivityManager.RequestActivity(ActivityType.Raid, 
+                            SessionValues.ChosenSettlement.Tile);
                     }
                 };
 
@@ -234,15 +232,11 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Visit"),
                     action = delegate
                     {
-                        SessionValues.chosenSettlement = __instance;
-                        SessionValues.chosenCaravan = caravan;
+                        SessionValues.ChosenSettlement = __instance;
+                        SessionValues.ChosenCaravan = caravan;
 
-                        RT_Dialog_Buttons d1 = new RT_Dialog_Buttons("Visit Mode", "Please choose your visit mode",
-                            new string[] { "[BETA] Online", "Offline" },
-                            new Action[] { delegate { OnlineActivityManager.RequestOnlineActivity(OnlineActivityType.Visit); }, delegate { OfflineActivityManager.RequestOfflineActivity(OfflineActivityType.Visit); } },
-                            null);
-
-                        DialogManager.PushNewDialog(d1);
+                        ActivityManager.RequestActivity(ActivityType.Visit, 
+                            SessionValues.ChosenSettlement.Tile);
                     }
                 };
 
@@ -253,10 +247,10 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Transfer"),
                     action = delegate
                     {
-                        SessionValues.chosenSettlement = __instance;
-                        SessionValues.chosenCaravan = caravan;
+                        SessionValues.ChosenSettlement = __instance;
+                        SessionValues.ChosenCaravan = caravan;
 
-                        if (!SessionValues.actionValues.EnableTrading)
+                        if (!SessionValues.ActionValues.EnableTrading)
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                             return;
@@ -264,7 +258,7 @@ namespace GameClient.Patches
 
                         else
                         {
-                            if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.chosenCaravan))
+                            if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.ChosenCaravan))
                             {
                                 DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
                             }
@@ -279,7 +273,7 @@ namespace GameClient.Patches
                     gizmoList.Add(command_Visit);
                 }
 
-                if (__instance.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_Raid);
+                if (__instance.Faction != ClientValues.yourOnlineFaction) gizmoList.Add(command_Raid);
 
                 __result = gizmoList;
             }
@@ -292,7 +286,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<FloatMenuOption> __result, Caravan caravan, Settlement __instance)
         {
-            if (FactionValues.playerFactions.Contains(__instance.Faction))
+            if (ClientValues.playerFactions.Contains(__instance.Faction))
             {
                 List<FloatMenuOption> gizmoList = __result.ToList();
 
@@ -328,7 +322,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("UI/Commands/FormCaravan"),
                 action = delegate
                 {
-                    SessionValues.chosenSite = __instance;
+                    SessionValues.ChosenSite = __instance;
 
                     Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved: true);
                     DialogManager.PushNewDialog(d1);
@@ -342,7 +336,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                 action = delegate
                 {
-                    SessionValues.chosenSite = __instance;
+                    SessionValues.ChosenSite = __instance;
 
                     Action r1 = delegate
                     {
@@ -378,34 +372,21 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/SiteConfig"),
                 action = delegate
                 {
-                    if (SessionValues.actionValues.EnableSites) DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                    if (SessionValues.ActionValues.EnableSites) DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(true));
                     else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
 
-            Command_Action command_Spy = new Command_Action
-            {
-                defaultLabel = "Spy",
-                defaultDesc = "Spy this location",
-                icon = ContentFinder<Texture2D>.Get("Commands/Spy"),
-                action = delegate
-                {
-                    SessionValues.chosenSite = __instance;
-                    SpyManager.RequestSpy(WorldObjectMode.Site);
-                }
-            };
-
-            if (FactionValues.playerFactions.Contains(__instance.Faction))
+            if (ClientValues.playerFactions.Contains(__instance.Faction))
             {
                 gizmoList.Clear();
 
-                if (__instance.Faction == FactionValues.yourOnlineFaction) gizmoList.Add(command_Config);
+                if (__instance.Faction == ClientValues.yourOnlineFaction) gizmoList.Add(command_Config);
                 else
                 {
                     if (__instance.Map == null)
                     {
                         gizmoList.Add(command_Goodwill);
-                        gizmoList.Add(command_Spy);
                     }
                 }
 
@@ -431,7 +412,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Site __instance, ref IEnumerable<FloatMenuOption> __result)
         {
-            if (FactionValues.playerFactions.Contains(__instance.Faction) || __instance.Faction == Faction.OfPlayer)
+            if (ClientValues.playerFactions.Contains(__instance.Faction) || __instance.Faction == Faction.OfPlayer)
             {
                 List<FloatMenuOption> floatMenuList = __result.ToList();
 
@@ -461,9 +442,9 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
                     action = delegate
                     {
-                        SessionValues.chosenCaravan = __instance;
+                        SessionValues.ChosenCaravan = __instance;
 
-                        if (SessionValues.actionValues.EnableSites)
+                        if (SessionValues.ActionValues.EnableSites)
                         {
                             DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(false));
                         }
@@ -478,10 +459,10 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Visit"),
                     action = delegate
                     {
-                        SessionValues.chosenCaravan = __instance;
-                        SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
+                        SessionValues.ChosenCaravan = __instance;
+                        SessionValues.ChosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
-                        if (SessionValues.actionValues.EnableSites) SiteManager.RequestVisitSite();
+                        if (SessionValues.ActionValues.EnableSites) SiteManager.RequestVisitSite();
                         else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
@@ -493,10 +474,10 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Raid"),
                     action = delegate
                     {
-                        SessionValues.chosenCaravan = __instance;
-                        SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
+                        SessionValues.ChosenCaravan = __instance;
+                        SessionValues.ChosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
-                        if (SessionValues.actionValues.EnableSites) SiteManager.RequestRaidSite();
+                        if (SessionValues.ActionValues.EnableSites) SiteManager.RequestRaidSite();
                         else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
@@ -508,10 +489,10 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/DestroySite"),
                     action = delegate
                     {
-                        SessionValues.chosenCaravan = __instance;
-                        SessionValues.chosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
+                        SessionValues.ChosenCaravan = __instance;
+                        SessionValues.ChosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
-                        if (SessionValues.actionValues.EnableSites) SiteManager.RequestDestroySite();
+                        if (SessionValues.ActionValues.EnableSites) SiteManager.RequestDestroySite();
                         else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
@@ -523,12 +504,12 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Road"),
                     action = delegate
                     {
-                        SessionValues.chosenCaravan = __instance;
+                        SessionValues.ChosenCaravan = __instance;
 
-                        if (SessionValues.actionValues.EnableRoads)
+                        if (SessionValues.ActionValues.EnableRoads)
                         {
                             List<int> neighborTiles = new List<int>();
-                            Find.WorldGrid.GetTileNeighbors(SessionValues.chosenCaravan.Tile, neighborTiles);
+                            Find.WorldGrid.GetTileNeighbors(SessionValues.ChosenCaravan.Tile, neighborTiles);
                             RoadManagerHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), Find.WorldGrid[__instance.Tile].Roads != null);
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
@@ -544,9 +525,9 @@ namespace GameClient.Patches
                         gizmoList.Add(command_DestroySite);
                     }
 
-                    else if (FactionValues.playerFactions.Contains(presentSite.Faction))
+                    else if (ClientValues.playerFactions.Contains(presentSite.Faction))
                     {
-                        if (presentSite.Faction != FactionValues.yourOnlineFaction) gizmoList.Add(command_RaidSite);
+                        if (presentSite.Faction != ClientValues.yourOnlineFaction) gizmoList.Add(command_RaidSite);
                     }
                 }
 
@@ -563,20 +544,20 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement, CompLaunchable representative)
         {
-            if (FactionValues.playerFactions.Contains(settlement.Faction))
+            if (ClientValues.playerFactions.Contains(settlement.Faction))
             {
                 List<FloatMenuOption> floatMenuList = __result.ToList();
                 floatMenuList.Clear();
 
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    SessionValues.chosenSettlement = settlement;
-                    SessionValues.chosendPods = representative;
+                    SessionValues.ChosenSettlement = settlement;
+                    SessionValues.ChosendPods = representative;
 
                     string optionLabel = $"Transfer things to {settlement.Name}";
                     Action toDo = delegate
                     {
-                        TransferManager.TakeTransferItemsFromPods(SessionValues.chosendPods);
+                        TransferManager.TakeTransferItemsFromPods(SessionValues.ChosendPods);
                         TransferManager.SendTransferRequestToServer(TransferLocation.Pod);
                     };
 
@@ -595,7 +576,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement)
         {
-            if (FactionValues.playerFactions.Contains(settlement.Faction))
+            if (ClientValues.playerFactions.Contains(settlement.Faction))
             {
                 List<FloatMenuOption> floatMenuList = __result.ToList();
 
@@ -634,7 +615,7 @@ namespace GameClient.Patches
         public static bool DoPre(MapParent __instance)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            else if (__instance.Faction != Faction.OfPlayer && !FactionValues.playerFactions.Contains(__instance.Faction)) return true;
+            else if (__instance.Faction != Faction.OfPlayer && !ClientValues.playerFactions.Contains(__instance.Faction)) return true;
             else
             {
                 if (__instance.ParentHolder != null)
@@ -699,7 +680,7 @@ namespace GameClient.Patches
             {
                 Settlement settlement = settlements[i];
 
-                if (FactionValues.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
+                if (ClientValues.playerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
                 else
                 {
                     int num = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, maxDist);

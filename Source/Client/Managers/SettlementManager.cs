@@ -13,13 +13,13 @@ using GameClient.TCP;
 namespace GameClient.Managers
 {
     [RTManager]
-    public static class PlayerSettlementManager
+    public static class SettlementManager
     {
         public static List<Settlement> playerSettlements = new List<Settlement>();
 
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
+            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.Contents);
 
             switch (settlementData._stepMode)
             {
@@ -43,7 +43,9 @@ namespace GameClient.Managers
 
         public static void ClearAllSettlements()
         {
-            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction)).ToArray();
+            playerSettlements.Clear();
+
+            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => ClientValues.playerFactions.Contains(fetch.Faction)).ToArray();
             foreach (Settlement settlement in settlements)
             {
                 SettlementFile toRemove = new SettlementFile();
@@ -75,7 +77,7 @@ namespace GameClient.Managers
         {
             try
             {
-                Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && FactionValues.playerFactions.Contains(fetch.Faction));
+                Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && ClientValues.playerFactions.Contains(fetch.Faction));
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
                     if (playerSettlements.Contains(toGet)) playerSettlements.Remove(toGet);
@@ -92,7 +94,7 @@ namespace GameClient.Managers
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Add;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
+            Packet packet = Packet.CreateFromObject(nameof(SettlementManager), settlementData);
             Network.listener.EnqueuePacket(packet);
         }
     }

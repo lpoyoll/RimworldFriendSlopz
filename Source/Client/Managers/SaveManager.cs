@@ -21,7 +21,7 @@ namespace GameClient.Managers
     {
         // Variables
 
-        public static string customSaveName => $"Server - {Network.ip} - {Network.port} - {ClientValues.username}";
+        public static string customSaveName => $"Server - {Network.ip} - {Network.port} - {ClientValues.Username}";
 
         public static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
 
@@ -29,9 +29,9 @@ namespace GameClient.Managers
 
         public static string serverSaveFilePath => saveFilePath + ".rws.temp";
 
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.contents);
+            SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.Contents);
 
             if (data._stepMode == SaveStepMode.Receive) SaveReceiverManager.ReceiveSaveFromServer(data);
             else if (data._stepMode == SaveStepMode.Send) SaveSenderManager.SendSaveToServer();
@@ -43,8 +43,6 @@ namespace GameClient.Managers
             FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
             FticksSinceSave.SetValue(Current.Game.autosaver, 0);
 
-            ClientValues.autosaveCurrentTicks = 0;
-
             GameDataSaveLoader.SaveGame(customSaveName);
         }
 
@@ -53,7 +51,7 @@ namespace GameClient.Managers
             SaveData data = new SaveData();
             data._stepMode = SaveStepMode.Reset;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SaveManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(SaveManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -77,18 +75,11 @@ namespace GameClient.Managers
     {
         public static void SendSaveToServer()
         {
-            if (Network.listener.uploadManager == null)
-            {
-                byte[] saveBytes = File.ReadAllBytes(SaveManager.saveFilePath);
-                saveBytes = GZip.CompressBytes(saveBytes);
-
-                File.WriteAllBytes(SaveManager.tempSaveFilePath, saveBytes);
-                Network.listener.uploadManager = new UploadManager(SaveManager.tempSaveFilePath);
-                Network.listener.uploadManager.PrepareUpload();
-            }
+            byte[] saveBytes = File.ReadAllBytes(SaveManager.saveFilePath);
+            saveBytes = GZip.CompressBytes(saveBytes);
 
             SaveData data = new SaveData();
-            data._fileBytes = Network.listener.uploadManager.ReadFile();
+            data._fileBytes = saveBytes;
             data._stepMode = SaveStepMode.Receive;
 
             // Set the instructions of the packet
@@ -98,17 +89,8 @@ namespace GameClient.Managers
             }
             else data._instructions = (int)SaveMode.Autosave;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SaveManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(SaveManager), data);
             Network.listener.EnqueuePacket(packet);
-
-            OnSaveSent();
-        }
-
-        private static void OnSaveSent()
-        {
-            Network.listener.uploadManager.FinishFileWrite();
-            Network.listener.uploadManager = null;
-            File.Delete(SaveManager.tempSaveFilePath);
         }
     }
 
@@ -116,25 +98,15 @@ namespace GameClient.Managers
     {
         public static void ReceiveSaveFromServer(SaveData data)
         {
-            //If this is the first packet
-            if (Network.listener.downloadManager == null)
-            {
-                Printer.Message($"Receiving save from server");
+            Printer.Message($"Receiving save from server");
 
-                Network.listener.downloadManager = new DownloadManager(SaveManager.tempSaveFilePath);
-                Network.listener.downloadManager.PrepareDownload();
-            }
-
-            Network.listener.downloadManager.WriteFile(data._fileBytes);
+            File.WriteAllBytes(SaveManager.tempSaveFilePath, data._fileBytes);
 
             OnSaveReceived(data);
         }
 
         private static void OnSaveReceived(SaveData data)
         {
-            Network.listener.downloadManager.FinishFileWrite();
-            Network.listener.downloadManager = null;
-
             byte[] fileBytes = File.ReadAllBytes(SaveManager.tempSaveFilePath);
             fileBytes = GZip.DecompressBytes(fileBytes);
 

@@ -151,9 +151,9 @@ namespace GameClient.Dialogs
 
                 else if (transferMode == TransferMode.Rebound)
                 {
-                    SessionValues.incomingManifest._stepMode = TransferStepMode.TradeReAccept;
+                    SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(TransferManager), SessionValues.incomingManifest);
+                    Packet packet = Packet.CreateFromObject(nameof(TransferManager), SessionValues.IncomingManifest);
                     Network.listener.EnqueuePacket(packet);
 
                     TransferManager.GetTransferedItemsToCaravan(listedThings);
@@ -162,8 +162,7 @@ namespace GameClient.Dialogs
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?",
-                r1, null));
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?", r1, null));
         }
 
         private void OnReject()
@@ -175,8 +174,7 @@ namespace GameClient.Dialogs
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
-                r1, null));
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?", r1, null));
         }
     }
 }

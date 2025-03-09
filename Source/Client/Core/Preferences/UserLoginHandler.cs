@@ -13,7 +13,7 @@ using Verse;
 
 namespace GameClient.Core.Preferences
 {
-    public static class UserLoginManager
+    public static class UserLoginHandler
     {
         public static void SaveLoginData(LoginDataFile file) { Serializer.SerializeToFile(Master.loginDataPath, file); }
 
@@ -37,16 +37,15 @@ namespace GameClient.Core.Preferences
             else
             {
                 LoginDataFile file = LoadLoginData();
-                ClientValues.username = file.Username;
-                ClientValues.uid = file.UID;
+                ClientValues.Username = file.Username;
+                ClientValues.Uid = file.UID;
 
                 LoginData data = new LoginData();
                 data._uid = file.UID;
                 data._username = file.Username;
-                data._version = CommonValues.executableVersion;
                 data._runningMods = ModManagerH.GetRunningModList();
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(LoginManager), data);
+                Packet packet = Packet.CreateFromObject(nameof(LoginManager), data);
                 Network.listener.EnqueuePacket(packet);
             }
         }
@@ -115,7 +114,7 @@ namespace GameClient.Core.Preferences
     {
         public static bool CheckIfLoginIsValid()
         {
-            LoginDataFile file = UserLoginManager.LoadLoginData();
+            LoginDataFile file = UserLoginHandler.LoadLoginData();
             if (string.IsNullOrWhiteSpace(file.UID)) return false;
             else if (string.IsNullOrWhiteSpace(file.Username)) return false;
             else return true;
@@ -123,7 +122,7 @@ namespace GameClient.Core.Preferences
 
         public static void SetupQuickConnectVariables()
         {
-            ConnectionDataFile connectionData = ConnectionDataManager.LoadConnectionData();
+            ConnectionDataFile connectionData = ConnectionDataHandler.LoadConnectionData();
             Network.ip = connectionData.IP;
             Network.port = connectionData.Port;
         }

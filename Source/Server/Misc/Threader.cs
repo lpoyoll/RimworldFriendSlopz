@@ -1,12 +1,11 @@
 ﻿using GameServer.Managers;
-using GameServer.Managers.External;
 using GameServer.TCP;
 
 namespace GameServer.Misc
 {
     public static class Threader
     {
-        public enum ServerMode { Start, Sites, Console }
+        public enum ServerMode { Start, Sites, Console, Backup }
 
         public static Task GenerateServerThread(ServerMode mode)
         {
@@ -15,33 +14,7 @@ namespace GameServer.Misc
                 ServerMode.Start => Task.Run(Network.ReadyServer),
                 ServerMode.Sites => Task.Run(SiteManager.StartSiteTicker),
                 ServerMode.Console => Task.Run(ConsoleManager.ListenForServerCommands),
-                _ => throw new NotImplementedException(),
-            };
-        }
-
-        public enum ClientMode { Listener, Sender, Health, KAFlag }
-
-        public static Task GenerateClientThread(Listener listener, ClientMode mode)
-        {
-            return mode switch
-            {
-                ClientMode.Listener => Task.Run(listener.Listen),
-                ClientMode.Sender => Task.Run(listener.SendData),
-                ClientMode.Health => Task.Run(listener.CheckConnectionHealth),
-                ClientMode.KAFlag => Task.Run(listener.CheckKAFlag),
-                _ => throw new NotImplementedException(),
-            };
-        }
-
-        public enum DiscordMode { Start, Console, Count }
-
-        public static Task GenerateDiscordThread(DiscordMode mode)
-        {
-            return mode switch
-            {
-                DiscordMode.Start => Task.Run(DiscordManager.TryStartDiscordIntegration),
-                DiscordMode.Console => Task.Run(DiscordManager.LoopMessagesToConsoleChannel),
-                DiscordMode.Count => Task.Run(DiscordManager.LoopUpdatePlayerCount),
+                ServerMode.Backup => Task.Run(BackupManager.AutoBackup),
                 _ => throw new NotImplementedException(),
             };
         }

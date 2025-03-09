@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
@@ -25,7 +23,7 @@ namespace GameClient.Patches.Pages
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            if (!ClientValues.isGeneratingFreshWorld && SessionValues.scenarioFile.EnforceScenario)
+            if (!ClientValues.IsGeneratingFreshWorld && SessionValues.ScenarioFile.EnforceScenario)
             {
                 if (executedMessage) return true;
                 else
@@ -33,7 +31,7 @@ namespace GameClient.Patches.Pages
                     Action toDo = delegate
                     {
                         Page_SelectScenario.BeginScenarioConfiguration(GameParameterManagerH.GetScenarioReference(__instance), __instance);
-                        GameParameterManager.SetScenario(SessionValues.scenarioFile);
+                        GameParameterManager.SetScenario(SessionValues.ScenarioFile);
 
                         DialogManager.PushNewDialog(__instance.next);
                         __instance.Close();
@@ -52,10 +50,10 @@ namespace GameClient.Patches.Pages
                 {
                     __instance.Close();
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.listener.disconnectFlag = true;
+                    Network.listener.DisconnectFlag = true;
                 }
 
-                if (ClientValues.isGeneratingFreshWorld)
+                if (ClientValues.IsGeneratingFreshWorld)
                 {
                     if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
                     {
@@ -99,7 +97,7 @@ namespace GameClient.Patches.Pages
         public static bool DoPre()
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            if (SessionValues.actionValues.EnableCustomScenarios) return true;
+            if (SessionValues.ActionValues.EnableCustomScenarios) return true;
 
             DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
             return false;
@@ -117,7 +115,7 @@ namespace GameClient.Patches.Pages
         public static bool DoPre(Rect rect, ref Scenario ___curScen)
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
-            if (SessionValues.actionValues.EnableCustomScenarios) return true;
+            if (SessionValues.ActionValues.EnableCustomScenarios) return true;
 
             if (curScen != null) ___curScen = curScen;
             rect.xMax += 2f;

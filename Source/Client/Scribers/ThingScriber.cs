@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shared;
+﻿using Shared;
 using Verse;
 
 namespace GameClient.Scribers
@@ -21,9 +16,9 @@ namespace GameClient.Scribers
             return thingData;
         }
 
-        public static Thing StringToThing(ThingFile thingData, bool overrideID = false)
+        public static Thing StringToThing(ThingFile thingData)
         {
-            return RTScriber.ScribeToThing(thingData.ScribeData, overrideID);
+            return RTScriber.ScribeToThing(thingData.ScribeData);
         }
     }
 }

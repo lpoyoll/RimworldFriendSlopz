@@ -16,7 +16,7 @@ namespace GameClient.Patches
         {
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
-            foreach (Faction faction in FactionValues.playerFactions)
+            foreach (Faction faction in ClientValues.playerFactions)
             {
                 if (quest.InvolvedFactions.Contains(faction))
                 {

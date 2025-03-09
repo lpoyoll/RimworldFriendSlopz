@@ -25,9 +25,9 @@ namespace GameServer.Misc
 
         public static void DisplayChatMap(string label, string message) { Printer.Message($"[Chat - {label}] > {message}"); }
 
-        public static void DisplaySiteTick() { Printer.Message($"[Tick] > Sites", LogImportanceMode.Verbose); }
+        public static void DisplaySiteTick() { Printer.Warning($"[Tick] > Sites", LogImportanceMode.Verbose); }
 
-        public static void DisplayCaravanTick() { Printer.Message($"[Tick] > Caravans", LogImportanceMode.Verbose); }
+        public static void DisplayCaravanTick() { Printer.Warning($"[Tick] > Caravans", LogImportanceMode.Verbose); }
 
         public static void DisplayAddSettlement(string value) { Printer.Message($"[Add settlement] > {value}"); }
 

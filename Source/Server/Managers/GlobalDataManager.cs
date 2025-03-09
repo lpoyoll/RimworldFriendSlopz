@@ -33,7 +33,7 @@ namespace GameServer.Managers
                 globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
             }
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GlobalDataManager), globalData);
+            Packet packet = Packet.CreateFromObject(nameof(GlobalDataManager), globalData);
             client.listener.EnqueuePacket(packet);
         }
     }
@@ -43,7 +43,7 @@ namespace GameServer.Managers
         public static SettlementFile[] GetServerSettlements(ServerClient client)
         {
             List<SettlementFile> tempList = new List<SettlementFile>();
-            foreach (SettlementFile settlement in PlayerSettlementManager.GetAllSettlements())
+            foreach (SettlementFile settlement in SettlementManager.GetAllSettlements())
             {
                 SettlementFile file = new SettlementFile();
 

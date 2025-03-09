@@ -5,7 +5,7 @@ using Shared;
 
 namespace GameClient.Core.Preferences
 {
-    public static class RecentServersManager
+    public static class RecentServersHandler
     {
         public static void SaveRecentServers(RecentServersFile toSave) { Serializer.SerializeToFile(Master.recentServersPath, toSave); }
 

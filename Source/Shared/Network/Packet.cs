@@ -2,43 +2,32 @@
 
 namespace Shared
 {
-    [Serializable]
     public class Packet
     {
-        public string header;
+        public static int DefaultPacketSizeInBytes { get; private set; } = 4;
 
-        public byte[] contents;
+        public static int CurrentPacketSizeInBytes { get; private set; }
 
-        public bool isModded;
+        public string Header = string.Empty;
 
-        public string targetPatchName;
+        public byte[] Contents = Array.Empty<byte>();
 
-        public Packet(string header, byte[] contents, bool isModded, string targetPatchName = "")
+        public Packet(string header, byte[] contents)
         {
-            this.header = header;
-            this.contents = contents;
-            this.isModded = isModded;
-            this.targetPatchName = targetPatchName;
+            this.Header = header;
+            this.Contents = contents;
         }
 
-        public static Packet CreatePacketFromObject(string header, object objectToUse = null)
+        public static Packet CreateFromObject(string header, object objectToUse)
         {
-            if (objectToUse == null) return new Packet(header, null, false);
-            else
-            {
-                byte[] contents = Serializer.ConvertObjectToBytes(objectToUse, true);
-                return new Packet(header, contents, false);
-            }
+            byte[] contents = Serializer.ConvertObjectToBytes(objectToUse);
+            return new Packet(header, contents);
         }
 
-        public static Packet CreateModdedPacketFromObject(string header, string targetPatchName, object objectToUse = null)
-        {
-            if (objectToUse == null) return new Packet(header, null, true);
-            else
-            {
-                byte[] contents = Serializer.ConvertObjectToBytes(objectToUse, true);
-                return new Packet(header, contents, true, targetPatchName);
-            }
-        }
+        public static void SetPacketSize(int newSize) { CurrentPacketSizeInBytes = newSize; }
+
+        public static byte[] CompressPacket(Packet packet) { return Serializer.ConvertObjectToBytes(packet, true); }
+
+        public static Packet DecompressPacket(byte[] contents) { return Serializer.ConvertBytesToObject<Packet>(contents, true); }
     }
 }

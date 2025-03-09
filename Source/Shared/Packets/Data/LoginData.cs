@@ -11,8 +11,6 @@ namespace Shared
 
         public string _username;
 
-        public string _version;
-
         public ModConfigFile _runningMods;
 
         public LoginResponse _tryResponse;

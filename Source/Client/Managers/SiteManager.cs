@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Managers;
@@ -13,8 +12,6 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
-using Verse.AI.Group;
-using Verse.Noise;
 using static Shared.CommonEnumerators;
 
 
@@ -29,9 +26,9 @@ namespace GameClient.Managers
 
         public static List<Site> playerSites = new List<Site>();
 
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.contents);
+            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.Contents);
 
             switch (siteData._stepMode)
             {
@@ -68,10 +65,10 @@ namespace GameClient.Managers
         public static void RequestVisitSite()
         {
             SiteData siteData = new SiteData();
-            siteData._file.Tile = SessionValues.chosenSite.Tile;
+            siteData._file.Tile = SessionValues.ChosenSite.Tile;
             siteData._stepMode = SiteStepMode.Visit;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
@@ -80,10 +77,10 @@ namespace GameClient.Managers
         public static void RequestRaidSite()
         {
             SiteData siteData = new SiteData();
-            siteData._file.Tile = SessionValues.chosenSite.Tile;
+            siteData._file.Tile = SessionValues.ChosenSite.Tile;
             siteData._stepMode = SiteStepMode.Raid;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
@@ -94,10 +91,10 @@ namespace GameClient.Managers
             Action r1 = delegate
             {
                 SiteData siteData = new SiteData();
-                siteData._file.Tile = SessionValues.chosenSite.Tile;
+                siteData._file.Tile = SessionValues.ChosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+                Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
                 Network.listener.EnqueuePacket(packet);
             };
 
@@ -109,7 +106,7 @@ namespace GameClient.Managers
         {
             for (int i = 0; i < configFile.DefNameCost.Length; i++)
             {
-                if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.chosenCaravan, configFile.DefNameCost[i], configFile.Cost[i]))
+                if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.ChosenCaravan, configFile.DefNameCost[i], configFile.Cost[i]))
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver!" }));
                     return;
@@ -118,16 +115,16 @@ namespace GameClient.Managers
 
             for (int i = 0; i < configFile.DefNameCost.Length; i++)
             {
-                RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan,
+                RimworldManager.RemoveThingFromCaravan(SessionValues.ChosenCaravan,
                     DefDatabase<ThingDef>.GetNamed(configFile.DefNameCost[i]), configFile.Cost[i]);
             }
 
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.Build;
-            siteData._file.Tile = SessionValues.chosenCaravan.Tile;
+            siteData._file.Tile = SessionValues.ChosenCaravan.Tile;
             siteData._file.Type.DefName = configFile.DefName;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), siteData);
+            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
             Network.listener.EnqueuePacket(packet);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
@@ -143,7 +140,7 @@ namespace GameClient.Managers
             packetData._stepMode = SiteStepMode.Config;
             packetData._rewardConfig = rewardConfig;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(SiteManager), packetData);
+            Packet packet = Packet.CreateFromObject(nameof(SiteManager), packetData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -183,7 +180,9 @@ namespace GameClient.Managers
 
         public static void ClearAllSites()
         {
-            Site[] sites = Find.WorldObjects.Sites.Where(fetch => FactionValues.playerFactions.Contains(fetch.Faction) ||
+            playerSites.Clear();
+
+            Site[] sites = Find.WorldObjects.Sites.Where(fetch => ClientValues.playerFactions.Contains(fetch.Faction) ||
                 fetch.Faction == Faction.OfPlayer).ToArray();
 
             foreach (Site toRemove in sites)
@@ -235,9 +234,9 @@ namespace GameClient.Managers
 
             Map toUse = null;
             if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
-            else toUse = MapScriber.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, false, WorldObjectMode.Site);
+            else toUse = MapScriber.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
 
-            CaravanEnterMapUtility.Enter(SessionValues.chosenCaravan, toUse, CaravanEnterMode.Edge);
+            CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, toUse, CaravanEnterMode.Edge);
         }
 
         private static void RaidSite(SiteData siteData)
@@ -246,13 +245,13 @@ namespace GameClient.Managers
 
             Map toUse = null;
             if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
-            else toUse = MapScriber.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, false, WorldObjectMode.Site);
+            else toUse = MapScriber.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
 
-            RimworldManager.HandleMapFactions(toUse, FactionValues.enemyPlayer);
+            RimworldManager.HandleMapFactions(toUse, ClientValues.enemyPlayer);
 
-            RimworldManager.PrepareMapLord(toUse, FactionValues.enemyPlayer);
+            RimworldManager.PrepareMapLord(toUse, ClientValues.enemyPlayer);
 
-            CaravanEnterMapUtility.Enter(SessionValues.chosenCaravan, toUse, CaravanEnterMode.Edge);
+            CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, toUse, CaravanEnterMode.Edge);
         }
 
         private static void OnSiteAccept()

@@ -11,7 +11,7 @@ namespace GameServer.Managers
     {
         public readonly static string fileExtension = ".mproad";
 
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionConfigs.EnableRoads)
             {
@@ -19,7 +19,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.contents);
+            RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -43,7 +43,7 @@ namespace GameServer.Managers
 
             SaveRoad(data._details, client);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(RoadManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
         }
 
@@ -76,7 +76,7 @@ namespace GameServer.Managers
 
             void BroadcastDeletion(RoadDetails toRemove)
             {
-                Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
+                Packet packet = Packet.CreateFromObject(nameof(RoadManager), data);
                 NetworkHelper.SendPacketToAllClients(packet);
             }
         }

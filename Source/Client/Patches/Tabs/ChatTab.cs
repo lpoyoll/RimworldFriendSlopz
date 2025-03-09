@@ -82,7 +82,7 @@ namespace GameClient.Patches.Tabs
 
         private void DrawPlayerCount(Rect rect)
         {
-            string toShow = PlayerRecountManager.currentPlayers > 1 ? $"{PlayerRecountManager.currentPlayers} Players Online" : $"{PlayerRecountManager.currentPlayers} Player Online";
+            string toShow = RecountManager.CurrentPlayers > 1 ? $"{RecountManager.CurrentPlayers} Players Online" : $"{RecountManager.CurrentPlayers} Player Online";
 
             Text.Font = GameFont.Small;
             Widgets.Label(new(rect.x, rect.y, Text.CalcSize(toShow).x, Text.CalcSize(toShow).y), $"<color=grey>{toShow}</color>");
@@ -90,7 +90,7 @@ namespace GameClient.Patches.Tabs
 
         private void DrawPlayerList(Rect mainRect)
         {
-            List<string> orderedList = PlayerRecountManager.currentPlayerNames;
+            List<string> orderedList = RecountManager.CurrentPlayerNames;
             orderedList.Sort();
 
             float height = 6f + orderedList.Count() * 25f;

@@ -9,16 +9,14 @@ namespace GameServer.Managers
     [RTManager]
     public static class LoginManager
     {
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
-            LoginData data = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
+            LoginData data = Serializer.ConvertBytesToObject<LoginData>(packet.Contents);
             HandleUser(client, data);
         }
 
         public static void HandleUser(ServerClient client, LoginData data)
         {
-            if (!UserManagerH.CheckIfUserUpdated(client, data)) return;
-
             if (!UserManagerH.CheckLoginData(client, data)) return;
 
             if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);
@@ -58,7 +56,7 @@ namespace GameServer.Managers
 
                 LoginUser(client, data);
             }
-            catch { LoginManagerH.SendLoginResponse(client, LoginResponse.RegisterError); }
+            catch { LoginManagerH.DenyConnectionWithReason(client, LoginResponse.RegisterError); }
         }
 
         private static void PostLogin(ServerClient client)
@@ -95,23 +93,23 @@ namespace GameServer.Managers
                 {
                     if (toFind.userFile.Uid == client.userFile.Uid)
                     {
-                        SendLoginResponse(toFind, LoginResponse.ExtraLogin);
+                        DenyConnectionWithReason(toFind, LoginResponse.ExtraLogin);
                     }
                 }
             }
         }
 
-        public static void SendLoginResponse(ServerClient client, LoginResponse response, object extraDetails = null)
+        public static void DenyConnectionWithReason(ServerClient client, LoginResponse response, object extraDetails = null)
         {
             LoginData loginData = new LoginData();
             loginData._tryResponse = response;
 
             if (response == LoginResponse.WrongMods) loginData._extraDetails = (List<string>)extraDetails;
-            else if (response == LoginResponse.WrongVersion) loginData._extraDetails = new List<string>() { CommonValues.executableVersion };
+            else if (response == LoginResponse.WrongVersion) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(LoginManager), loginData);
+            Packet packet = Packet.CreateFromObject(nameof(LoginManager), loginData);
             client.listener.EnqueuePacket(packet);
-            client.listener.disconnectFlag = true;
+            client.listener.DisconnectFlag = true;
         }
     }
 }

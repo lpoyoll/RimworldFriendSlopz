@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using GameClient.Core;
-using GameClient.Dialogs;
-using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using RimWorld;
@@ -21,9 +14,9 @@ namespace GameClient.Managers
     {
         public static void SetValues(ServerGlobalData data)
         {
-            SessionValues.scenarioFile = data._scenarioValues;
-            SessionValues.storytellerFile = data._storytellerValues;
-            SessionValues.difficultyFile = data._difficultyValues;
+            SessionValues.ScenarioFile = data._scenarioValues;
+            SessionValues.StorytellerFile = data._storytellerValues;
+            SessionValues.DifficultyFile = data._difficultyValues;
         }
 
         public static ScenarioValuesFile GetScenario(Page_SelectScenario __instance)
@@ -49,7 +42,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Scenario;
             data._scenario = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GameParameterManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(GameParameterManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -83,7 +76,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Storyteller;
             data._storyteller = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GameParameterManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(GameParameterManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -283,7 +276,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Difficulty;
             data._difficulty = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GameParameterManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(GameParameterManager), data);
             Network.listener.EnqueuePacket(packet);
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using GameServer.Core;
-using GameServer.Managers.External;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Misc
@@ -47,8 +46,6 @@ namespace GameServer.Misc
                     Console.ForegroundColor = colorDictionary[mode];
                     Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
                     Console.ForegroundColor = ConsoleColor.White;
-
-                    if (Master.discordConfig != null && Master.discordConfig.Enabled) DiscordManager.SendMessageToConsoleChannelBuffer(text);
                 }
             }
             catch { throw new Exception($"Logger encountered an error. This should never happen"); }

@@ -13,8 +13,8 @@ namespace GameClient.Managers
     {
         public static void SetPlanetRivers()
         {
-            if (SessionValues.worldFile.Rivers == null) return;
-            else AddRivers(SessionValues.worldFile.Rivers, false);
+            if (SessionValues.WorldFile.Rivers == null) return;
+            else AddRivers(SessionValues.WorldFile.Rivers, false);
         }
 
         public static void AddRivers(RiverDetails[] rivers, bool forceRefresh)

@@ -43,24 +43,22 @@ namespace GameClient.Managers
         public static int chatIconIndex;
         public static List<Texture2D> chatIcons = new List<Texture2D>();
 
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.contents);
+            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.Contents);
 
             bool hasBeenTagged = false;
-            if (ChatManagerHelper.GetMessageWords(chatData._message).Contains($"@{ClientValues.username}"))
+            if (ChatManagerHelper.GetMessageWords(chatData._message).Contains($"@{ClientValues.Username}"))
             {
                 hasBeenTagged = true;
-                chatData._message = chatData._message.Replace($"@{ClientValues.username}", $"<color=red>@{ClientValues.username}</color>");
+                chatData._message = chatData._message.Replace($"@{ClientValues.Username}", $"<color=red>@{ClientValues.Username}</color>");
             }
 
             AddMessageToChat(chatData._username, chatData._message, chatData._usernameColor, chatData._messageColor);
 
-            if (!ClientValues.isReadyToPlay) return;
+            if (!ClientValues.IsReadyToPlay) return;
 
             if (!isChatTabOpen) ToggleChatIcon(true);
-
-            if (ClientValues.muteSoundBool) return;
 
             if (hasBeenTagged) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
         }
@@ -70,10 +68,10 @@ namespace GameClient.Managers
             ChatSounds.OwnChatDing.PlayOneShotOnCamera();
 
             ChatData chatData = new ChatData();
-            chatData._username = ClientValues.username;
+            chatData._username = ClientValues.Username;
             chatData._message = messageToSend;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(ChatManager), chatData);
+            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -99,7 +97,7 @@ namespace GameClient.Managers
 
         public static void ToggleChatIcon(bool mode)
         {
-            if (!ClientValues.isReadyToPlay) return;
+            if (!ClientValues.IsReadyToPlay) return;
 
             isChatIconActive = mode;
 
@@ -122,18 +120,18 @@ namespace GameClient.Managers
 
         private static void TurnOffChatIcon() { AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[0]); }
 
-        public static async Task ChatClock()
+        public static void ChatClock()
         {
             while (isChatIconActive)
             {
-                Master.threadDispatcher.Enqueue(UpdateChatIcon);
+                MainThreadHandler.Instance.Enqueue(UpdateChatIcon);
 
-                await Task.Delay(TimeSpan.FromMilliseconds(250));
+                Thread.Sleep(250);
             }
 
             chatIconIndex = 0;
 
-            Master.threadDispatcher.Enqueue(TurnOffChatIcon);
+            MainThreadHandler.Instance.Enqueue(TurnOffChatIcon);
 
             chatClockTask = null;
         }

@@ -7,15 +7,15 @@ using static Shared.CommonEnumerators;
 namespace GameServer.Managers
 {
     [RTManager]
-    public static class PlayerSettlementManager
+    public static class SettlementManager
     {
         //Variables
 
         public readonly static string fileExtension = ".mpsettlement";
 
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
-            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.contents);
+            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.Contents);
 
             switch (settlementData._stepMode)
             {
@@ -50,7 +50,7 @@ namespace GameServer.Managers
                     {
                         settlementData._settlementFile.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
 
-                        Packet rPacket = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
+                        Packet rPacket = Packet.CreateFromObject(nameof(SettlementManager), settlementData);
                         cClient.listener.EnqueuePacket(rPacket);
                     }
                 }
@@ -97,7 +97,7 @@ namespace GameServer.Managers
             {
                 settlementData._stepMode = SettlementStepMode.Remove;
 
-                Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
+                Packet packet = Packet.CreateFromObject(nameof(SettlementManager), settlementData);
                 NetworkHelper.SendPacketToAllClients(packet, client);
             }
         }

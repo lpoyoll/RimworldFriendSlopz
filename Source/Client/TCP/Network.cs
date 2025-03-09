@@ -32,15 +32,9 @@ namespace GameClient.TCP
             if (TryConnectToServer())
             {
                 ClientValues.ManageDevOptions();
-
-                Threader.GenerateThread(Threader.Mode.Listener);
-                Threader.GenerateThread(Threader.Mode.Sender);
-                Threader.GenerateThread(Threader.Mode.Health);
-                Threader.GenerateThread(Threader.Mode.KASender);
+                ConnectionDataHandler.SaveConnectionData(ip, port);
 
                 state = ClientNetworkState.Connected;
-
-                UserLoginManager.UseLoginData();
 
                 Printer.Message($"Connected to server");
             }

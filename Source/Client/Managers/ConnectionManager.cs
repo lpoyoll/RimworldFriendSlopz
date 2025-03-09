@@ -2,7 +2,6 @@ using System.Linq;
 using Shared;
 using GameClient.Core.Preferences;
 using GameClient.Dialogs;
-using GameClient.Files;
 using GameClient.Misc;
 using GameClient.TCP;
 
@@ -31,7 +30,6 @@ namespace GameClient.Managers
             {
                 Network.ip = DialogManager.dialogInputResults[0];
                 Network.port = DialogManager.dialogInputResults[1];
-                ConnectionDataManager.SaveConnectionData(DialogManager.dialogInputResults[0], DialogManager.dialogInputResults[1]);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                 Threader.GenerateThread(Threader.Mode.Start);

@@ -14,15 +14,13 @@ using System.Diagnostics;
 
 namespace GameClient.Core.Configs
 {
-    public class ModTweaker : Mod
+    public class ModConfigSetter : Mod
     {
-        //Variables
+        private readonly ModConfigGetter modConfigs;
 
-        private readonly ModExposer modConfigs;
-
-        public ModTweaker(ModContentPack content) : base(content)
+        public ModConfigSetter(ModContentPack content) : base(content)
         {
-            modConfigs = GetSettings<ModExposer>();
+            modConfigs = GetSettings<ModConfigGetter>();
         }
 
         public override string SettingsCategory() { return "RimWorld Together"; }
@@ -34,16 +32,14 @@ namespace GameClient.Core.Configs
 
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref modConfigs.rejectTransfersBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref modConfigs.rejectSiteRewardsBool, "Automatically site rewards");
-            listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref modConfigs.muteChatSoundBool, "Mute chat messages");
-            if (listingStandard.ButtonTextLabeled("[When Playing] Server sync interval", $"[{ClientValues.autosaveDays}] Day/s")) ShowAutosaveFloatMenu();
+            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref ModConfigGetter.RejectTransfersBool, "Automatically denies transfers");
+            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref ModConfigGetter.RejectSiteRewardsBool, "Automatically site rewards");
+            listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref ModConfigGetter.MuteChatSoundBool, "Mute chat messages");
 
             listingStandard.GapLine();
             listingStandard.Label("Debugging");
-            if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ClientValues.currentVerboseMode}")) ShowVerboseFloatMenu();
+            if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ModConfigGetter.CurrentVerboseMode}")) ShowVerboseFloatMenu();
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.appdataPath);
-            if (listingStandard.ButtonTextLabeled("Convert save for server use", "Convert")) { ShowConvertSaveFloatMenu(); }
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
@@ -54,46 +50,8 @@ namespace GameClient.Core.Configs
             if (listingStandard.ButtonTextLabeled("Reset account [DANGEROUS]", "Reset")) { ShowResetAccountQuestion(); }
             GUI.color = Color.white;
 
-            listingStandard.GapLine();
-            listingStandard.Label("External Sources");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's wiki!", "Open")) StartProcess("https://github.com/Byte-Nova/Rimworld-Together/wiki");
-            if (listingStandard.ButtonTextLabeled("Check out the mod's donation page!", "Open")) StartProcess("https://ko-fi.com/rimworldtogether");
-            if (listingStandard.ButtonTextLabeled("Check out mod's Discord community!", "Open")) StartProcess("https://discord.gg/yUF2ec8Vt8");
-
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
-        }
-
-        private void ShowAutosaveFloatMenu()
-        {
-            List<FloatMenuOption> list = new List<FloatMenuOption>();
-            List<Tuple<string, float>> autosaveDays = new List<Tuple<string, float>>()
-            {
-                Tuple.Create("0.125 Days", 0.125f),
-                Tuple.Create("0.25 Days", 0.25f),
-                Tuple.Create("0.5 Days", 0.5f),
-                Tuple.Create("1 Day", 1.0f),
-                Tuple.Create("2 Days", 2.0f),
-                Tuple.Create("3 Days", 3.0f),
-                Tuple.Create("5 Days", 5.0f),
-                Tuple.Create("7 Days", 7.0f),
-                Tuple.Create("14 Days", 14.0f)
-            };
-
-            foreach (Tuple<string, float> tuple in autosaveDays)
-            {
-                FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
-                {
-                    ClientValues.autosaveDays = tuple.Item2;
-                    ClientValues.autosaveInternalTicks = Mathf.RoundToInt(tuple.Item2 * 60000f);
-
-                    PlayerPreferenceManager.SavePlayerPreferences();
-                });
-
-                list.Add(item);
-            }
-
-            Find.WindowStack.Add(new FloatMenu(list));
         }
 
         private void ShowVerboseFloatMenu()
@@ -110,32 +68,7 @@ namespace GameClient.Core.Configs
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
-                    ClientValues.currentVerboseMode = tuple.Item2;
-                    PlayerPreferenceManager.SavePlayerPreferences();
-                });
-
-                list.Add(item);
-            }
-
-            Find.WindowStack.Add(new FloatMenu(list));
-        }
-
-        private void ShowConvertSaveFloatMenu()
-        {
-            List<FloatMenuOption> list = new List<FloatMenuOption>();
-
-            foreach (string str in Directory.GetFiles(Master.savesFolderPath).Where(fetch => fetch.EndsWith(".rws")))
-            {
-                FloatMenuOption item = new FloatMenuOption(Path.GetFileNameWithoutExtension(str), delegate
-                {
-                    string toConvertPath = str;
-                    string conversionPath = str.Replace(".rws", ".mpsave");
-
-                    byte[] compressedBytes = GZip.CompressBytes(File.ReadAllBytes(toConvertPath));
-                    File.WriteAllBytes(conversionPath, compressedBytes);
-
-                    RT_Dialog_Message d2 = new RT_Dialog_Message("MESSAGE", new string[] { "Save was converted successfully" });
-                    DialogManager.PushNewDialog(d2);
+                    ModConfigGetter.CurrentVerboseMode = tuple.Item2;
                 });
 
                 list.Add(item);
@@ -173,7 +106,7 @@ namespace GameClient.Core.Configs
             RT_Dialog_YesNo dialog = new RT_Dialog_YesNo("Are you sure you want to RESET your ACCOUNT?",
                 delegate
                 {
-                    UserLoginManager.DeleteLoginData();
+                    UserLoginHandler.DeleteLoginData();
                     DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Account has been reset" }));
                 });
 

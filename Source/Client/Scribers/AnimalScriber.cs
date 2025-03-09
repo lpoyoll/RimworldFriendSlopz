@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shared;
+﻿using Shared;
 using Verse;
 
 namespace GameClient.Scribers
@@ -21,9 +16,9 @@ namespace GameClient.Scribers
             return animalData;
         }
 
-        public static Pawn StringToAnimal(AnimalFile file, bool overrideID = false)
+        public static Pawn StringToAnimal(AnimalFile file)
         {
-            return (Pawn)RTScriber.ScribeToThing(file.ScribeData, overrideID);
+            return (Pawn)RTScriber.ScribeToThing(file.ScribeData);
         }
     }
 }

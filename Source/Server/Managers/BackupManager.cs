@@ -78,8 +78,8 @@ namespace GameServer.Managers
                 SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
                 foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
 
-                SettlementFile[] playerSettlements = PlayerSettlementManager.GetAllSettlementsFromUsername(uid);
-                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + PlayerSettlementManager.fileExtension));
+                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(uid);
+                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
 
                 CreateArchive(toArchive, playerArchivedSavePath);
 
@@ -115,14 +115,14 @@ namespace GameServer.Managers
             }
         }
 
-        public static async Task AutoBackup()
+        public static void AutoBackup()
         {
             while (true)
             {
                 try { BackupServer(); }
                 catch (Exception e) { Printer.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
 
-                await Task.Delay(TimeSpan.FromHours(Master.backupConfig.IntervalHours));
+                Thread.Sleep(TimeSpan.FromHours(Master.backupConfig.IntervalHours));
             }
         }
     }

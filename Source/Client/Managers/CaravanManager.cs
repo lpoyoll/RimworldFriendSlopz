@@ -9,10 +9,7 @@ using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Verse;
-using Verse.Noise;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
@@ -28,9 +25,9 @@ namespace GameClient.Managers
 
         public static List<CaravanFile> guestCaravans = new List<CaravanFile>();
 
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(packet.contents);
+            CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -50,8 +47,8 @@ namespace GameClient.Managers
 
         public static void AddCaravan(CaravanFile file)
         {
-            if (!ClientValues.isReadyToPlay) return;
-            if (file.UID == ClientValues.uid) return;
+            if (!ClientValues.IsReadyToPlay) return;
+            if (file.UID == ClientValues.Uid) return;
 
             try
             {
@@ -66,10 +63,8 @@ namespace GameClient.Managers
 
                     OnlineCaravan onlineCaravan = (OnlineCaravan)WorldObjectMaker.MakeWorldObject(onlineCaravanDef);
                     onlineCaravan.Tile = file.Tile;
-                    onlineCaravan.SetFaction(FactionValues.neutralPlayer);
+                    onlineCaravan.SetFaction(ClientValues.neutralPlayer);
                     Find.World.worldObjects.AllWorldObjects.Add(onlineCaravan);
-
-                    Printer.Warning("Added");
                 }
             }
             catch (Exception e) { Printer.Error(e); }
@@ -77,8 +72,8 @@ namespace GameClient.Managers
 
         private static void RemoveCaravan(CaravanFile file)
         {
-            if (!ClientValues.isReadyToPlay) return;
-            if (file.UID == ClientValues.uid) return;
+            if (!ClientValues.IsReadyToPlay) return;
+            if (file.UID == ClientValues.Uid) return;
 
             try
             {
@@ -93,7 +88,6 @@ namespace GameClient.Managers
                     {
                         Find.World.worldObjects.AllWorldObjects.Remove(toRemove);
                         guestCaravans.Remove(toFind);
-                        Printer.Warning("Removed");
                     }
                 }
             }
@@ -102,8 +96,8 @@ namespace GameClient.Managers
 
         private static void MoveCaravan(CaravanFile file)
         {
-            if (!ClientValues.isReadyToPlay) return;
-            if (file.UID == ClientValues.uid) return;
+            if (!ClientValues.IsReadyToPlay) return;
+            if (file.UID == ClientValues.Uid) return;
 
             try
             {
@@ -132,10 +126,10 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.UID = ClientValues.uid;
+            data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -145,12 +139,12 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Remove;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.UID = ClientValues.uid;
+            data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
             playerCaravans.Remove(caravan);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -160,10 +154,10 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Move;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.UID = ClientValues.uid;
+            data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 

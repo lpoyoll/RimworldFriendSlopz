@@ -13,11 +13,11 @@ using GameClient.TCP;
 namespace GameClient.Managers
 {
     [RTManager]
-    public static class NPCSettlementManager
+    public static class NPCManager
     {
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.contents);
+            NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -76,12 +76,12 @@ namespace GameClient.Managers
 
         public static void ClearAllSettlements()
         {
-            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !FactionValues.playerFactions.Contains(fetch.Faction) &&
+            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !ClientValues.playerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
             foreach (Settlement settlement in settlements) RemoveSingleSettlement(settlement, null);
 
-            DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !FactionValues.playerFactions.Contains(fetch.Faction) &&
+            DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !ClientValues.playerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
             foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
@@ -131,7 +131,7 @@ namespace GameClient.Managers
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData.tile = settlement.Tile;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(NPCSettlementManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(NPCManager), data);
             Network.listener.EnqueuePacket(packet);
         }
     }

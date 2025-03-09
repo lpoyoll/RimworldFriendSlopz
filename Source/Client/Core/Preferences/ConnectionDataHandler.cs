@@ -4,7 +4,7 @@ using System.IO;
 
 namespace GameClient.Core.Preferences
 {
-    public static class ConnectionDataManager
+    public static class ConnectionDataHandler
     {
         public static void SaveConnectionData(string ip, string port)
         {

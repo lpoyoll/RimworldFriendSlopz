@@ -8,16 +8,16 @@ namespace GameServer.Managers
     [RTManager]
     public static class GoodwillManager
     {
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
-            FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.contents);
+            FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.Contents);
             ChangeUserGoodwills(client, data);
 
         }
 
         public static void ChangeUserGoodwills(ServerClient client, FactionGoodwillData data)
         {
-            SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(data._tile);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._tile);
             SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(data._tile);
 
             if (settlementFile != null) data._uid = settlementFile.UID;
@@ -49,7 +49,7 @@ namespace GameServer.Managers
             }
 
             List<Goodwill> tempSettlementList = new List<Goodwill>();
-            SettlementFile[] settlements = PlayerSettlementManager.GetAllSettlements();
+            SettlementFile[] settlements = SettlementManager.GetAllSettlements();
             foreach (SettlementFile settlement in settlements)
             {
                 //Check if settlement owner is the one we are looking for
@@ -78,13 +78,13 @@ namespace GameServer.Managers
 
             UserManagerH.SaveUserFile(client.userFile);
 
-            Packet rPacket = Packet.CreatePacketFromObject(nameof(GoodwillManager), data);
+            Packet rPacket = Packet.CreateFromObject(nameof(GoodwillManager), data);
             client.listener.EnqueuePacket(rPacket);
         }
 
         public static Goodwill GetGoodwillFromTile(ServerClient client, int tileToCheck)
         {
-            SettlementFile settlementFile = PlayerSettlementManager.GetSettlementFileFromTile(tileToCheck);
+            SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(tileToCheck);
             SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(tileToCheck);
 
             string usernameToCheck;
@@ -206,7 +206,7 @@ namespace GameServer.Managers
 
         public static void UpdateClientGoodwills(ServerClient client)
         {
-            SettlementFile[] settlements = PlayerSettlementManager.GetAllSettlements();
+            SettlementFile[] settlements = SettlementManager.GetAllSettlements();
 
             FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
             SiteFile[] sites = SiteManagerHelper.GetAllSites();
@@ -229,7 +229,7 @@ namespace GameServer.Managers
             }
             factionGoodwillData._siteGoodwills = tempList.ToArray();
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(GoodwillManager), factionGoodwillData);
+            Packet packet = Packet.CreateFromObject(nameof(GoodwillManager), factionGoodwillData);
             client.listener.EnqueuePacket(packet);
         }
     }

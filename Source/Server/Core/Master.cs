@@ -64,8 +64,6 @@ namespace GameServer.Core
 
         public static RoadValuesFile roadValues;
 
-        public static DiscordConfigFile discordConfig;
-
         public static BackupConfigFile backupConfig;
 
         public static ModConfigFile modConfig;

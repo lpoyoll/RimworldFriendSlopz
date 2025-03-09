@@ -26,7 +26,7 @@ namespace GameClient.Dialogs
 
         private readonly Vector2 deleteButton = new Vector2(47f, 25f);
 
-        public RecentServersFile recentServers => RecentServersManager.LoadRecentServers();
+        public RecentServersFile recentServers => RecentServersHandler.LoadRecentServers();
 
         public RT_Dialog_ServerListing()
         {
@@ -109,7 +109,7 @@ namespace GameClient.Dialogs
             {
                 DialogManager.dialogServerListingIndex = index;
 
-                RecentServersManager.RemoveServerFromList(serverName, serverAddress);
+                RecentServersHandler.RemoveServerFromList(serverName, serverAddress);
 
                 ResetWindow();
             }

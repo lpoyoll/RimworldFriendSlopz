@@ -16,19 +16,16 @@ namespace GameClient.Patches
             if (Network.state == ClientNetworkState.Disconnected) return true;
 
             //Check if feature is disabled
-            if (SessionValues.actionValues.EnforcedGameSpeed == 0) return true;
-
-            //Check if in activity
-            if (SessionValues.currentRealTimeActivity != OnlineActivityType.None) return true;
+            if (SessionValues.ActionValues.EnforcedGameSpeed == 0) return true;
 
             //Check if required speed is valid
-            if (SessionValues.actionValues.EnforcedGameSpeed < 0 || SessionValues.actionValues.EnforcedGameSpeed > 4) return true;
+            if (SessionValues.ActionValues.EnforcedGameSpeed < 0 || SessionValues.ActionValues.EnforcedGameSpeed > 4) return true;
 
             //Check if speed needs to be modified
-            if (__instance.CurTimeSpeed != (TimeSpeed)SessionValues.actionValues.EnforcedGameSpeed)
+            if (__instance.CurTimeSpeed != (TimeSpeed)SessionValues.ActionValues.EnforcedGameSpeed)
             {
                 if (__instance.CurTimeSpeed == TimeSpeed.Paused) return true;
-                else __instance.CurTimeSpeed = (TimeSpeed)SessionValues.actionValues.EnforcedGameSpeed;
+                else __instance.CurTimeSpeed = (TimeSpeed)SessionValues.ActionValues.EnforcedGameSpeed;
             }
 
             return true;

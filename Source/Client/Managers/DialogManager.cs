@@ -76,7 +76,7 @@ namespace GameClient.Managers
 
         public static void PushNewDialog(Window window)
         {
-            if (ClientValues.isReadyToPlay || Current.ProgramState == ProgramState.Entry)
+            if (ClientValues.IsReadyToPlay || Current.ProgramState == ProgramState.Entry)
             {
                 previousDialog = currentDialog;
                 currentDialog = window;

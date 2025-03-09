@@ -1,14 +1,11 @@
 ﻿using GameClient.Core.Preferences;
-using GameClient.Dialogs;
-using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Scribers;
 using HarmonyLib;
-using RimWorld;
 using Shared;
 using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Verse;
@@ -30,7 +27,6 @@ namespace GameClient.Core
                 CreateUnityDispatcher();
                 LoadAllManagers();
 
-                PlayerPreferenceManager.LoadPlayerPreferences();
                 CaravanManagerH.SetCaravanDef();
                 SiteManagerH.SetSiteDefs();
             }
@@ -60,7 +56,7 @@ namespace GameClient.Core
             Master.appdataTempVersionPath = Path.Combine(Master.appdataTempPath, "Version");
             Master.appdataTempModsPath = Path.Combine(Master.appdataTempPath, "Mods");
 
-            Master.modMainPath = Directory.GetParent(Assembly.GetExecutingAssembly().Location).Parent.Parent.ToString();
+            Master.modMainPath = LoadedModManager.RunningMods.First(m => m.PackageId == Master.modPackageID).RootDir;
             Master.modAddonsPath = Path.Combine(Master.modMainPath, "Addons");
             Master.modAssemblyPath = Path.Combine(Master.modMainPath, "Current", "Assemblies");
 
@@ -78,13 +74,10 @@ namespace GameClient.Core
 
         private static void CreateUnityDispatcher()
         {
-            if (Master.threadDispatcher == null)
+            if (MainThreadHandler.Instance == null)
             {
-                GameObject go = new GameObject("Dispatcher");
-                Master.threadDispatcher = go.AddComponent(typeof(UnityMainThreadDispatcher)) as UnityMainThreadDispatcher;
-                UnityEngine.Object.Instantiate(go);
-
-                Printer.Message($"Created dispatcher for version '{CommonValues.executableVersion}'");
+                GameObject go = UnityEngine.Object.Instantiate(new GameObject());
+                go.AddComponent(typeof(MainThreadHandler));
             }
         }
 
@@ -94,8 +87,8 @@ namespace GameClient.Core
             {
                 if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
                 {
-                    try { Master.managerDictionary[type.Name] = type.GetMethod("ParsePacket"); }
-                    catch (Exception exception) { Printer.Error($"{type.Name} failed to load\n{exception}"); }
+                    try { Master.managerDictionary[type.Name] = type.GetMethod("ParsePacket", BindingFlags.Static | BindingFlags.NonPublic); }
+                    catch (Exception exception) { Printer.Error($"{type.Name} failed to load > {exception}"); }
                 }
             }
         }

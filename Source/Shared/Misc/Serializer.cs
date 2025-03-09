@@ -34,7 +34,7 @@ namespace Shared
             else return memoryStream.ToArray();
         }
 
-        public static T ConvertBytesToObject<T>(byte[] bytes, bool compression = true)
+        public static T ConvertBytesToObject<T>(byte[] bytes, bool compression = false)
         {
             if (compression) bytes = GZip.DecompressBytes(bytes);
 
@@ -61,6 +61,6 @@ namespace Shared
 
         public static void ObjectBytesToFile(string path, object serializable) { File.WriteAllBytes(path, ConvertObjectToBytes(serializable, true)); }
 
-        public static T FileBytesToObject<T>(string path) { return ConvertBytesToObject<T>(File.ReadAllBytes(path)); }
+        public static T FileBytesToObject<T>(string path) { return ConvertBytesToObject<T>(File.ReadAllBytes(path), true); }
     }
 }

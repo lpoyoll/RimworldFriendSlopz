@@ -48,7 +48,7 @@ namespace GameClient.Patches
             public static void DoPost(float pollutionAmount)
             {
                 if (Network.state == ClientNetworkState.Disconnected) return;
-                else if (!SessionValues.actionValues.EnablePollutionSpread) return;
+                else if (!SessionValues.ActionValues.EnablePollutionSpread) return;
                 else if (addedByServer) addedByServer = false;
                 else
                 {
@@ -59,7 +59,7 @@ namespace GameClient.Patches
                     PollutionData data = new PollutionData();
                     data._pollutionData = pollution;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PollutionManager), data);
+                    Packet packet = Packet.CreateFromObject(nameof(PollutionManager), data);
                     Network.listener.EnqueuePacket(packet);
                 }
             }

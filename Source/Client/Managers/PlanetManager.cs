@@ -16,21 +16,21 @@ namespace GameClient.Managers
 
         public static void BuildPlanet()
         {
-            FactionValues.FindPlayerFactionsInWorld();
+            ClientValues.FindPlayerFactionsInWorld();
             PlanetManagerHelper.GetMapGenerators();
 
             //This step gets skiped if it's the first time building the planet
-            if (ClientValues.isGeneratingFreshWorld) return;
+            if (ClientValues.IsGeneratingFreshWorld) return;
             else
             {
-                PlayerSettlementManager.ClearAllSettlements();
-                PlayerSettlementManager.AddSettlements(PlayerSettlementManagerHelper.tempSettlements);
+                SettlementManager.ClearAllSettlements();
+                SettlementManager.AddSettlements(PlayerSettlementManagerHelper.tempSettlements);
 
                 SiteManager.ClearAllSites();
                 SiteManager.AddSites(SiteManagerH.tempSites);
 
-                NPCSettlementManager.ClearAllSettlements();
-                NPCSettlementManager.AddSettlements(NPCSettlementManagerHelper.tempNPCSettlements);
+                NPCManager.ClearAllSettlements();
+                NPCManager.AddSettlements(NPCSettlementManagerHelper.tempNPCSettlements);
 
                 RoadManager.ClearAllRoads();
                 RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails, false);
@@ -60,19 +60,19 @@ namespace GameClient.Managers
             switch (goodwill)
             {
                 case Goodwill.Enemy:
-                    factionToUse = FactionValues.enemyPlayer;
+                    factionToUse = ClientValues.enemyPlayer;
                     break;
 
                 case Goodwill.Neutral:
-                    factionToUse = FactionValues.neutralPlayer;
+                    factionToUse = ClientValues.neutralPlayer;
                     break;
 
                 case Goodwill.Ally:
-                    factionToUse = FactionValues.allyPlayer;
+                    factionToUse = ClientValues.allyPlayer;
                     break;
 
                 case Goodwill.Faction:
-                    factionToUse = FactionValues.yourOnlineFaction;
+                    factionToUse = ClientValues.yourOnlineFaction;
                     break;
 
                 case Goodwill.Personal:

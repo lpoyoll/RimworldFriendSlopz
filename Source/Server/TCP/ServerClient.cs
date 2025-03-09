@@ -18,8 +18,6 @@ namespace GameServer.TCP
 
         [NonSerialized] public Listener listener;
 
-        [NonSerialized] public ServerClient activityPartner;
-
         public ServerClient(TcpClient tcp)
         {
             if (tcp == null) return;

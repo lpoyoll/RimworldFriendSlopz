@@ -18,6 +18,7 @@ namespace GameClient.WorldObjects
         public static SitePartDef RTFoodProcessor;
         static RTSitePartDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(SitePartDefOf));
     }
+
     [DefOf]
     public static class RTFactionDefOf
     {
@@ -27,6 +28,7 @@ namespace GameClient.WorldObjects
         public static FactionDef RTFaction;
         static RTFactionDefOf() => DefOfHelper.EnsureInitializedInCtor(typeof(FactionDefOf));
     }
+
     [DefOf]
     public static class RTWorldObjectDefOf
     {

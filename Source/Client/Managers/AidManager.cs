@@ -13,9 +13,9 @@ namespace GameClient.Managers
     [RTManager]
     public static class AidManager
     {
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            AidData data = Serializer.ConvertBytesToObject<AidData>(packet.contents);
+            AidData data = Serializer.ConvertBytesToObject<AidData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -50,13 +50,13 @@ namespace GameClient.Managers
             AidData aidData = new AidData();
             aidData._stepMode = AidStepMode.Send;
             aidData._fromTile = Find.AnyPlayerHomeMap.Tile;
-            aidData._toTile = SessionValues.chosenSettlement.Tile;
+            aidData._toTile = SessionValues.ChosenSettlement.Tile;
 
             Pawn toGet = RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResultInt];
             aidData._humanData = HumanScriber.HumanToString(toGet);
             RimworldManager.RemovePawnFromGame(toGet);
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), aidData);
+            Packet packet = Packet.CreateFromObject(nameof(AidManager), aidData);
             Network.listener.EnqueuePacket(packet);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
@@ -78,7 +78,10 @@ namespace GameClient.Managers
             DialogManager.PopWaitDialog();
 
             Map map = Find.World.worldObjects.SettlementAt(data._fromTile).Map;
+
             Pawn pawn = HumanScriber.StringtoHuman(data._humanData);
+            pawn.SetFactionDirect(Faction.OfPlayer);
+
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
             DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
@@ -87,11 +90,14 @@ namespace GameClient.Managers
         private static void AcceptAid(AidData data)
         {
             Map map = Find.World.worldObjects.SettlementAt(data._toTile).Map;
+
             Pawn pawn = HumanScriber.StringtoHuman(data._humanData);
+            pawn.SetFactionDirect(Faction.OfPlayer);
+
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true, true);
 
             data._stepMode = AidStepMode.Accept;
-            Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
             Network.listener.EnqueuePacket(packet);
 
             RimworldManager.GenerateLetter("Received aid",
@@ -104,7 +110,7 @@ namespace GameClient.Managers
         private static void RejectAid(AidData data)
         {
             data._stepMode = AidStepMode.Reject;
-            Packet packet = Packet.CreatePacketFromObject(nameof(AidManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
             Network.listener.EnqueuePacket(packet);
         }
     }

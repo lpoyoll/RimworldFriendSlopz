@@ -12,9 +12,9 @@ namespace GameClient.Managers
     {
         //Parses the received packet into a command to execute
 
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.contents);
+            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.Contents);
 
             switch (commandData._commandMode)
             {
@@ -40,14 +40,14 @@ namespace GameClient.Managers
 
         private static void OnOpCommand()
         {
-            ServerValues.isAdmin = true;
+            ClientValues.IsAdmin = true;
             ClientValues.ManageDevOptions();
             DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are now an admin!" }));
         }
 
         private static void OnDeopCommand()
         {
-            ServerValues.isAdmin = false;
+            ClientValues.IsAdmin = false;
             ClientValues.ManageDevOptions();
             DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are no longer an admin!" }));
         }
@@ -59,7 +59,7 @@ namespace GameClient.Managers
 
         private static void OnForceSaveCommand()
         {
-            if (!ClientValues.isReadyToPlay) DisconnectionManager.DisconnectToMenu();
+            if (!ClientValues.IsReadyToPlay) DisconnectionManager.DisconnectToMenu();
             else
             {
                 ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);

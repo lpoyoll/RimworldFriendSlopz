@@ -8,23 +8,15 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer.TCP
 {
-    //Main class that is used to handle the connection with the clients
-
     public static class Network
     {
-        //IP and Port that the connection will be bound to
-
         private static IPAddress localAddress = IPAddress.Parse(Master.serverConfig.IP);
 
         public static int port = int.Parse(Master.serverConfig.Port);
 
-        //TCP listener that will handle the connection with the clients, and list of currently connected clients
-
         private static TcpListener connection;
 
         public static List<ServerClient> connectedClients = new List<ServerClient>();
-
-        //Entry point function of the network class
 
         public static void ReadyServer()
         {
@@ -44,8 +36,6 @@ namespace GameServer.TCP
             while (true) ListenForIncomingUsers();
         }
 
-        //Listens for any user that might connect and executes all required tasks  with it
-
         private static void ListenForIncomingUsers()
         {
             TcpClient newTCP = connection.AcceptTcpClient();
@@ -53,33 +43,32 @@ namespace GameServer.TCP
             Listener newListener = new Listener(newServerClient, newTCP);
             newServerClient.listener = newListener;
 
-            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Listener);
-            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Sender);
-            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.Health);
-            Threader.GenerateClientThread(newServerClient.listener, Threader.ClientMode.KAFlag);
+            if (Master.isClosing)
+            {
+                newServerClient.listener.DisconnectFlag = true;
+            }
 
-            if (Master.isClosing) newServerClient.listener.disconnectFlag = true;
-            else if (Master.worldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0) LoginManagerH.SendLoginResponse(newServerClient, LoginResponse.NoWorld);
+            else if (NetworkHelper.GetConnectedClientsSafe().Length >= int.Parse(Master.serverConfig.MaxPlayers))
+            {
+                LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.ServerFull);
+            }
+
+            else if (Master.worldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0)
+            {
+                LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.NoWorld);
+            }
+
             else
             {
-                if (NetworkHelper.GetConnectedClientsSafe().Length >= int.Parse(Master.serverConfig.MaxPlayers))
-                {
-                    LoginManagerH.SendLoginResponse(newServerClient, LoginResponse.ServerFull);
-                    Printer.Error($"Server Full");
-                }
+                connectedClients.Add(newServerClient);
 
-                else
-                {
-                    connectedClients.Add(newServerClient);
+                Main_.ChangeTitle();
 
-                    Main_.ChangeTitle();
+                InformationDisplayer.DisplayConnect(newServerClient);
 
-                    InformationDisplayer.DisplayConnect(newServerClient);
-                }
+                VersionManager.AskForClientVersion(newServerClient);
             }
         }
-
-        //Kicks specified client from the server
 
         public static void KickClient(ServerClient client)
         {

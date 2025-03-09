@@ -1,4 +1,5 @@
-﻿using GameClient.Dialogs;
+﻿using GameClient.Core.Preferences;
+using GameClient.Dialogs;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -10,9 +11,9 @@ namespace GameClient.Managers
     {
         //Parses the received packet into an order
 
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.contents);
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.Contents);
 
             switch (loginData._tryResponse)
             {

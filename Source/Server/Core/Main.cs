@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Reflection;
 using GameServer.Core.Configs;
 using GameServer.Managers;
-using GameServer.Managers.External;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
@@ -26,12 +25,10 @@ namespace GameServer.Core
 
             Printer.Title($"----------------------------------------");
 
-            if (Master.discordConfig.Enabled) DiscordManager.StartDiscordIntegration();
-            if (Master.backupConfig.AutomaticBackups) BackupManager.AutoBackup();
-            if (Master.actionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
-
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
+            if (Master.actionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
+            if (Master.backupConfig.AutomaticBackups) Threader.GenerateServerThread(Threader.ServerMode.Backup);
 
             while (true) Thread.Sleep(1);
         }
@@ -94,7 +91,7 @@ namespace GameServer.Core
 
         public static void LoadResources()
         {
-            Printer.Title($"Server version {CommonValues.executableVersion}");
+            Printer.Title($"Server version {CommonValues.ExecutableVersion}");
             Printer.Title($"Loading all necessary resources");
             Printer.Title($"----------------------------------------");
 
@@ -121,9 +118,6 @@ namespace GameServer.Core
 
             LoadValueFile(ServerFileMode.Storyteller);
             SaveValueFile(ServerFileMode.Storyteller, false);
-
-            LoadValueFile(ServerFileMode.Discord);
-            SaveValueFile(ServerFileMode.Discord, false);
 
             LoadValueFile(ServerFileMode.Backup);
             SaveValueFile(ServerFileMode.Backup, false);
@@ -188,11 +182,6 @@ namespace GameServer.Core
                 case ServerFileMode.Storyteller:
                     pathToSave = Path.Combine(Master.configsPath, "StorytellerConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.storytellerValues);
-                    break;
-
-                case ServerFileMode.Discord:
-                    pathToSave = Path.Combine(Master.configsPath, "DiscordConfig.json");
-                    Serializer.SerializeToFile(pathToSave, Master.discordConfig);
                     break;
 
                 case ServerFileMode.Backup:
@@ -307,16 +296,6 @@ namespace GameServer.Core
                     }
                     break;
 
-                case ServerFileMode.Discord:
-                    pathToLoad = Path.Combine(Master.configsPath, "DiscordConfig.json");
-                    if (File.Exists(pathToLoad)) Master.discordConfig = Serializer.SerializeFromFile<DiscordConfigFile>(pathToLoad);
-                    else
-                    {
-                        Master.discordConfig = new DiscordConfigFile();
-                        Serializer.SerializeToFile(pathToLoad, Master.discordConfig);
-                    }
-                    break;
-
                 case ServerFileMode.Backup:
                     pathToLoad = Path.Combine(Master.configsPath, "BackupConfig.json");
                     if (File.Exists(pathToLoad)) Master.backupConfig = Serializer.SerializeFromFile<BackupConfigFile>(pathToLoad);
@@ -353,7 +332,7 @@ namespace GameServer.Core
 
         public static void ChangeTitle()
         {
-            Console.Title = $"RimWorld Together {CommonValues.executableVersion} - " +
+            Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - " +
                 $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.serverConfig.MaxPlayers}]";
         }
 
@@ -372,8 +351,8 @@ namespace GameServer.Core
             {
                 if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
                 {
-                    try { Master.managerDictionary[type.Name] = type.GetMethod("ParsePacket"); }
-                    catch (Exception exception) { Printer.Error($"{type.Name} failed to load\n{exception}"); }
+                    try { Master.managerDictionary[type.Name] = type.GetMethod("ParsePacket", BindingFlags.Static | BindingFlags.NonPublic); }
+                    catch (Exception exception) { Printer.Error($"{type.Name} failed to load > {exception}"); }
                 }
             }
         }

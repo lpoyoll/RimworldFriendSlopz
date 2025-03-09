@@ -9,9 +9,9 @@ namespace GameServer.Managers
     [RTManager]
     public static class GameParameterManager
     {
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
-            GameParameterData data = Serializer.ConvertBytesToObject<GameParameterData>(packet.contents);
+            GameParameterData data = Serializer.ConvertBytesToObject<GameParameterData>(packet.Contents);
 
             switch (data._stepMode)
             {

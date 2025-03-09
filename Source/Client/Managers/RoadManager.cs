@@ -17,9 +17,9 @@ namespace GameClient.Managers
     [RTManager]
     public static class RoadManager
     {
-        public static void ParsePacket(Packet packet)
+        private static void ParsePacket(Packet packet)
         {
-            RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.contents);
+            RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -43,7 +43,7 @@ namespace GameClient.Managers
             data._details.toTile = tileBID;
             data._details.roadDefName = roadDef.defName;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(RoadManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -56,7 +56,7 @@ namespace GameClient.Managers
             data._details.fromTile = tileAID;
             data._details.toTile = tileBID;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(RoadManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(RoadManager), data);
             Network.listener.EnqueuePacket(packet);
         }
 
@@ -252,7 +252,7 @@ namespace GameClient.Managers
             foreach (int tileID in neighborTiles)
             {
                 if (!CheckIfCanBuildRoadOnTile(tileID)) continue;
-                else if (CheckIfTwoTilesAreConnected(SessionValues.chosenCaravan.Tile, tileID)) continue;
+                else if (CheckIfTwoTilesAreConnected(SessionValues.ChosenCaravan.Tile, tileID)) continue;
                 else
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
@@ -272,10 +272,10 @@ namespace GameClient.Managers
                     {
                         int selectedIndex = DialogManager.dialogButtonListingResultInt;
 
-                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.chosenCaravan, allowedRoadCosts[selectedIndex]))
+                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.ChosenCaravan, allowedRoadCosts[selectedIndex]))
                         {
-                            RimworldManager.RemoveThingFromCaravan(SessionValues.chosenCaravan, ThingDefOf.Silver, allowedRoadCosts[selectedIndex]);
-                            RoadManager.SendRoadAddRequest(SessionValues.chosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
+                            RimworldManager.RemoveThingFromCaravan(SessionValues.ChosenCaravan, ThingDefOf.Silver, allowedRoadCosts[selectedIndex]);
+                            RoadManager.SendRoadAddRequest(SessionValues.ChosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             SaveManager.ForceSave();
                         }
                         else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
@@ -295,7 +295,7 @@ namespace GameClient.Managers
 
             foreach (int tileID in neighborTiles)
             {
-                if (CheckIfTwoTilesAreConnected(SessionValues.chosenCaravan.Tile, tileID))
+                if (CheckIfTwoTilesAreConnected(SessionValues.ChosenCaravan.Tile, tileID))
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
                     string toDisplay = $"Tile at {vector.y.ToStringLatitude()} - {vector.x.ToStringLongitude()}";
@@ -308,7 +308,7 @@ namespace GameClient.Managers
             {
                 int selectedTile = selectableTiles[DialogManager.dialogButtonListingResultInt];
 
-                RoadManager.SendRoadRemoveRequest(SessionValues.chosenCaravan.Tile, selectedTile);
+                RoadManager.SendRoadRemoveRequest(SessionValues.ChosenCaravan.Tile, selectedTile);
             };
 
             DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road destroyer", "Select a tile to disconnect from",

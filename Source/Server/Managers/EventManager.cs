@@ -1,5 +1,4 @@
 ﻿using GameServer.Core;
-using GameServer.Files;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
@@ -10,7 +9,7 @@ namespace GameServer.Managers
     [RTManager]
     public static class EventManager
     {
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
             if (!Master.actionConfigs.EnableEvents)
             {
@@ -18,7 +17,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.contents);
+            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.Contents);
 
             switch (eventData._stepMode)
             {
@@ -46,14 +45,14 @@ namespace GameServer.Managers
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!PlayerSettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Uid} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Uid} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlement = PlayerSettlementManager.GetSettlementFileFromTile(eventData._toTile);
+                SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData._toTile);
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.UID))
                 {
                     eventData._stepMode = EventStepMode.Recover;
-                    Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
+                    Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
                     client.listener.EnqueuePacket(packet);
                 }
 
@@ -64,7 +63,7 @@ namespace GameServer.Managers
                     if (!ValueChecker.CheckIfCanEvent(target.userFile))
                     {
                         eventData._stepMode = EventStepMode.Recover;
-                        Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
+                        Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
                         client.listener.EnqueuePacket(packet);
                     }
 
@@ -72,7 +71,7 @@ namespace GameServer.Managers
                     {
                         //Back to player
 
-                        Packet packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
+                        Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
                         client.listener.EnqueuePacket(packet);
 
                         //To the person that should receive it
@@ -81,7 +80,7 @@ namespace GameServer.Managers
 
                         target.userFile.UpdateEventTime();
 
-                        packet = Packet.CreatePacketFromObject(nameof(EventManager), eventData);
+                        packet = Packet.CreateFromObject(nameof(EventManager), eventData);
                         target.listener.EnqueuePacket(packet);
                     }
                 }

@@ -14,7 +14,7 @@ namespace Shared
 
         public enum SpyStepMode { Request, Accept, Deny }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Scenario, Storyteller, Discord, Backup, Mods, Chat }
+        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Scenario, Storyteller, Backup, Mods, Chat }
 
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
@@ -46,21 +46,9 @@ namespace Shared
 
         public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
 
-        public enum OfflineActivityStepMode { Request, Deny }
+        public enum ActivityStepMode { Request, Deny }
 
-        public enum OnlineActivityStepMode { Request, Accept, Deny, Ready, Stop, Buffer }
-
-        public enum OnlineActivityTargetFaction { Faction, NonFaction, None }
-
-        public enum OnlineActivityApplyMode { Add, Remove }
-
-        public enum OnlineActivityType { None, Visit, Raid }
-
-        public enum OfflineActivityType { None, Visit, Raid }
-
-        public enum ActionTargetType { Thing, Human, Animal, Cell, Invalid }
-
-        public enum CreationType { Human, Animal, Corpse, Thing }
+        public enum ActivityType { None, Visit, Raid, Spy }
 
         public enum SiteStepMode { Accept, Deny, Build, Visit, Raid, Destroy, Info, Config, Rewards}
 

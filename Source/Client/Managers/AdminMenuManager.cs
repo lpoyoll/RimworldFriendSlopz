@@ -1,9 +1,8 @@
 using GameClient.Dialogs;
+using Shared;
 
 namespace GameClient.Managers
 {
-    using RimWorld;
-    using Shared;
     [RTManager]
     public static class AdminMenuManager
     {

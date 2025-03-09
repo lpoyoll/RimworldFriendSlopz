@@ -42,7 +42,7 @@ namespace GameClient.Patches.Pages
                 {
                     SceneManager.LoadScene(0);
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.listener.disconnectFlag = true;
+                    Network.listener.DisconnectFlag = true;
                 }
                 return true;
             }
@@ -79,7 +79,7 @@ namespace GameClient.Patches.Pages
             {
                 if (Network.state == ClientNetworkState.Disconnected) return;
 
-                if (!ClientValues.isGeneratingFreshWorld)
+                if (!ClientValues.IsGeneratingFreshWorld)
                 {
                     WorldManager.SetPlanetFeatures();
                     WorldManager.SetPlanetFactions();

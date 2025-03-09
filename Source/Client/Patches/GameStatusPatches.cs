@@ -1,7 +1,4 @@
-﻿using GameClient.Core;
-using GameClient.Managers;
-using GameClient.Misc;
-using GameClient.Scribers;
+﻿using GameClient.Managers;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
@@ -23,9 +20,9 @@ namespace GameClient.Patches
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
+                    SettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
 
-                    if (ClientValues.isGeneratingFreshWorld) WorldManagerSender.SendWorld();
+                    if (ClientValues.IsGeneratingFreshWorld) WorldManagerSender.SendWorld();
                     else SaveManager.ForceSave();
 
                     ClientValues.ToggleReadyToPlay(true);
@@ -43,9 +40,9 @@ namespace GameClient.Patches
                 {
                     PlanetManager.BuildPlanet();
 
-                    GameParameterManager.SetScenario(SessionValues.scenarioFile);
-                    GameParameterManager.SetStoryteller(SessionValues.storytellerFile);
-                    GameParameterManager.SetDifficulty(SessionValues.difficultyFile);
+                    GameParameterManager.SetScenario(SessionValues.ScenarioFile);
+                    GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
+                    GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
 
                     ClientValues.ToggleReadyToPlay(true);
                 }
@@ -60,7 +57,7 @@ namespace GameClient.Patches
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementManager.SendNewPlayerSettlement(caravan.Tile);
+                    SettlementManager.SendNewPlayerSettlement(caravan.Tile);
 
                     SaveManager.ForceSave();
                 }
@@ -75,7 +72,7 @@ namespace GameClient.Patches
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    PlayerSettlementManager.SendNewPlayerSettlement(map.Tile);
+                    SettlementManager.SendNewPlayerSettlement(map.Tile);
 
                     SaveManager.ForceSave();
                 }
@@ -94,7 +91,7 @@ namespace GameClient.Patches
                     settlementData._settlementFile.Tile = settlement.Tile;
                     settlementData._stepMode = SettlementStepMode.Remove;
 
-                    Packet packet = Packet.CreatePacketFromObject(nameof(PlayerSettlementManager), settlementData);
+                    Packet packet = Packet.CreateFromObject(nameof(SettlementManager), settlementData);
                     Network.listener.EnqueuePacket(packet);
 
                     SaveManager.ForceSave();
@@ -110,12 +107,12 @@ namespace GameClient.Patches
             {
                 if (Network.state == ClientNetworkState.Connected)
                 {
-                    if (!ClientValues.isReadyToPlay) return;
-                    if (!SessionValues.actionValues.EnableNPCDestruction) return;
+                    if (!ClientValues.IsReadyToPlay) return;
+                    if (!SessionValues.ActionValues.EnableNPCDestruction) return;
 
                     if (__instance.Faction == Faction.OfPlayer) return;
-                    else if (FactionValues.playerFactions.Contains(__instance.Faction)) return;
-                    else if (NPCSettlementManagerHelper.lastRemovedSettlement != __instance) NPCSettlementManager.RequestSettlementRemoval(__instance);
+                    else if (ClientValues.playerFactions.Contains(__instance.Faction)) return;
+                    else if (NPCSettlementManagerHelper.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
                 }
             }
         }

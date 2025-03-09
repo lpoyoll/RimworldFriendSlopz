@@ -107,17 +107,6 @@ namespace GameClient.Managers
                 letterType);
         }
 
-        public static int GetGameTicks() { return Find.TickManager.TicksSinceSettle; }
-
-        public static void SetGameTicks(int newGameTicks) { Find.TickManager.DebugSetTicksGame(newGameTicks); }
-
-        public static JobDef GetJobFromDef(string defToFind) { return DefDatabase<JobDef>.AllDefs.First(fetch => fetch.defName == defToFind); }
-
-        public static Job SetJobFromDef(JobDef jobDef, LocalTargetInfo targetA, LocalTargetInfo targetB, LocalTargetInfo targetC)
-        {
-            return JobMaker.MakeJob(jobDef, targetA, targetB, targetC);
-        }
-
         public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false, bool byDropPod = false)
         {
             IntVec3 positionToPlaceAt = IntVec3.Zero;
@@ -240,15 +229,11 @@ namespace GameClient.Managers
             else return false;
         }
 
-        public static void SetGameSpeed(TimeSpeed timeSpeed) { Find.TickManager.CurTimeSpeed = timeSpeed; }
-
-        //Handles the factions of a desired map for the offline visit
-
         public static void HandleMapFactions(Map map, Faction targetFaction)
         {
             foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
             {
-                if (pawn.Faction == FactionValues.neutralPlayer)
+                if (pawn.Faction == ClientValues.neutralPlayer)
                 {
                     pawn.SetFaction(targetFaction);
                 }
@@ -256,14 +241,12 @@ namespace GameClient.Managers
 
             foreach (Thing thing in map.listerThings.AllThings.ToArray())
             {
-                if (thing.Faction == FactionValues.neutralPlayer)
+                if (thing.Faction == ClientValues.neutralPlayer)
                 {
                     if (thing.def.CanHaveFaction) thing.SetFaction(targetFaction);
                 }
             }
         }
-
-        //Prepares the map lord of a desired map for the offline visit
 
         public static void PrepareMapLord(Map map, Faction targetFaction)
         {

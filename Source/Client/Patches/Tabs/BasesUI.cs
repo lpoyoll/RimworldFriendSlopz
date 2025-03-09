@@ -29,7 +29,7 @@ namespace GameClient.Patches.Tabs
         {
             if (Network.state == ClientNetworkState.Connected)
             {
-                tabTitle = $"Player Bases [{PlayerSettlementManager.playerSettlements.Count()}]";
+                tabTitle = $"Player Bases [{SettlementManager.playerSettlements.Count()}]";
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -45,7 +45,7 @@ namespace GameClient.Patches.Tabs
 
         private void GenerateList(Rect mainRect)
         {
-            var orderedDictionary = PlayerSettlementManager.playerSettlements.OrderBy(x => x.Name);
+            var orderedDictionary = SettlementManager.playerSettlements.OrderBy(x => x.Name);
 
             float height = 6f + orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
@@ -101,7 +101,7 @@ namespace GameClient.Patches.Tabs
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        SessionValues.chosenSettlement = settlement;
+                        SessionValues.ChosenSettlement = settlement;
 
                         GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
                             GoodwillTarget.Settlement);
@@ -117,7 +117,7 @@ namespace GameClient.Patches.Tabs
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        SessionValues.chosenSettlement = settlement;
+                        SessionValues.ChosenSettlement = settlement;
 
                         GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
                             GoodwillTarget.Settlement);
@@ -133,7 +133,7 @@ namespace GameClient.Patches.Tabs
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        SessionValues.chosenSettlement = settlement;
+                        SessionValues.ChosenSettlement = settlement;
 
                         GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
                             GoodwillTarget.Settlement);

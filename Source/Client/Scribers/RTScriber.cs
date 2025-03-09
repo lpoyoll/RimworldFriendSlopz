@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GameClient.Managers;
+using System.Text.RegularExpressions;
+using System.Threading;
 using GameClient.Misc;
 using GameClient.Values;
-using RimWorld;
-using RimWorld.Planet;
-using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -15,37 +12,41 @@ namespace GameClient.Scribers
 {
     public static class RTScriber
     {
-        public static StringWriter stringWriter;
+        public static StringWriter StringWriter;
 
-        public static readonly string scribeTreeName = "T";
+        public static readonly string ScribeTreeName = "T";
 
-        public static readonly string scribeNodeName = "N";
+        public static readonly string ScribeNodeName = "N";
 
         public static string ThingToScribe(Thing toSave, int customCount = -1)
         {
             ClientValues.ToggleUsingScriber(true);
+
+            string scribeData = "";
 
             try
             {
                 int originalCount = toSave.stackCount;
                 if (customCount != -1) toSave.stackCount = customCount;
 
-                Scribe.saver.InitSaving("", scribeTreeName);
+                Scribe.saver.InitSaving("", ScribeTreeName);
 
-                Scribe_Deep.Look(ref toSave, scribeNodeName);
+                Scribe_Deep.Look(ref toSave, ScribeNodeName);
 
                 Scribe.saver.FinalizeSaving();
 
                 if (customCount != -1) toSave.stackCount = originalCount;
+
+                scribeData = new Regex(@">\s*<").Replace(StringWriter.ToString(), "><");
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); };
 
             ClientValues.ToggleUsingScriber(false);
 
-            return stringWriter.ToString();
+            return scribeData.ToString();
         }
 
-        public static Thing ScribeToThing(string scribeData, bool overrideID)
+        public static Thing ScribeToThing(string scribeData)
         {
             ClientValues.ToggleUsingScriber(true);
 
@@ -55,11 +56,9 @@ namespace GameClient.Scribers
             {
                 Scribe.loader.InitLoading(scribeData);
 
-                Scribe_Deep.Look(ref toLoad, scribeNodeName);
+                Scribe_Deep.Look(ref toLoad, ScribeNodeName);
 
                 Scribe.loader.FinalizeLoading();
-
-                if (!overrideID) toLoad.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); };
 

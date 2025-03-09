@@ -1,5 +1,4 @@
-﻿using GameServer.Core;
-using GameServer.Misc;
+﻿using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
 using static Shared.CommonEnumerators;
@@ -13,9 +12,9 @@ namespace GameServer.Managers
 
         public static readonly string fileExtension = ".mpcaravan";
 
-        public static void ParsePacket(ServerClient client, Packet packet)
+        private static void ParsePacket(ServerClient client, Packet packet)
         {
-            CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(packet.contents);
+            CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(packet.Contents);
 
             switch (data._stepMode)
             {
@@ -39,7 +38,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
 
             InformationDisplayer.DisplayAddCaravan(client.userFile.Uid);
@@ -51,7 +50,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Remove;
             data._caravanFile = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
             NetworkHelper.SendPacketToAllClients(packet);
 
             InformationDisplayer.DisplayRemoveCaravan(client.userFile.Uid);
@@ -63,7 +62,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Move;
             data._caravanFile = file;
 
-            Packet packet = Packet.CreatePacketFromObject(nameof(CaravanManager), data);
+            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
             NetworkHelper.SendPacketToAllClients(packet, client);
 
             InformationDisplayer.DisplayMoveCaravan(client.userFile.Uid);
