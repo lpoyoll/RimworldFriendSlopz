@@ -131,6 +131,8 @@ namespace GameServer.Core
             LoadValueFile(ServerFileMode.World);
 
             EventManager.LoadEvents();
+
+            ServerBrowserManager.StartLoops();
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)
