@@ -5,6 +5,7 @@ using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.TCP;
 using RimWorld;
+using Shared.MasterServer;
 using UnityEngine;
 using Verse;
 
@@ -14,9 +15,9 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(650f, 400f);
 
-        public readonly string title = "Recent servers";
+        public readonly string title = "Server Browser";
 
-        public readonly string description = "This list shows the servers you last joined";
+        public readonly string description = "This is a list of all publicly available servers!";
 
         private Vector2 scrollPosition = Vector2.zero;
 
@@ -28,8 +29,10 @@ namespace GameClient.Dialogs
 
         public RecentServersFile recentServers => RecentServersHandler.LoadRecentServers();
 
+        public ServerInfo[] AllServers = new ServerInfo[0];
         public RT_Dialog_ServerListing()
         {
+            GetServers();
             DialogManager.dialogServerListing = this;
 
             forcePause = true;
@@ -38,6 +41,12 @@ namespace GameClient.Dialogs
 
             closeOnAccept = false;
             closeOnCancel = false;
+        }
+
+        private void GetServers() 
+        {
+            ServerInfo[] servers = ServerBrowserManager.GetAllServersAvailable();
+            AllServers = servers;
         }
 
         public override void DoWindowContents(Rect rect)
@@ -73,12 +82,12 @@ namespace GameClient.Dialogs
             float num3 = scrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < recentServers.ServerAddresses.Count(); i++)
+            for (int i = 0; i < AllServers.Length; i++)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, recentServers.ServerNames[i], recentServers.ServerAddresses[i], num4);
+                    DrawCustomRow(rect, AllServers[i], num4);
                 }
 
                 num += 30f;
@@ -88,30 +97,21 @@ namespace GameClient.Dialogs
             Widgets.EndScrollView();
         }
 
-        private void DrawCustomRow(Rect rect, string serverName, string serverAddress, int index)
+        private void DrawCustomRow(Rect rect, ServerInfo server, int index)
         {
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            Widgets.Label(fixedRect, $"{serverName} - {serverAddress}");
+            Widgets.Label(fixedRect, $"{server._name} - {server._ip}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButton.x - deleteButton.x - 5f, rect.yMax - selectButton.y), selectButton), "Select"))
             {
-                Network.ip = serverAddress.Split(':')[0];
-                Network.port = serverAddress.Split(':')[1];
+                Network.ip = server._ip;
+                Network.port = server._port.ToString();
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                 Threader.GenerateThread(Threader.Mode.Start);
                 Close();
-            }
-
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - deleteButton.x, rect.yMax - deleteButton.y), deleteButton), "Delete"))
-            {
-                DialogManager.dialogServerListingIndex = index;
-
-                RecentServersHandler.RemoveServerFromList(serverName, serverAddress);
-
-                ResetWindow();
             }
         }
 

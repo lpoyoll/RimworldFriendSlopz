@@ -23,8 +23,6 @@ namespace GameClient.Core
         {
             static RimworldTogether()
             {
-                SteamUGC.SubscribeItem(new PublishedFileId_t(3454412612));
-
                 ApplyHarmonyPathches();
                 PrepareCulture();
                 PreparePaths();
