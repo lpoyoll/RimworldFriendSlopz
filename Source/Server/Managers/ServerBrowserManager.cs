@@ -16,37 +16,45 @@ namespace GameServer.Managers
     {
         private const string MasterServer = "https://rimworldtogether.eragon.dev";
         private static HttpClient Client = new HttpClient();
+        private const int DelayBetweenRequest = 5000; //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
+        private const int DelayBetweenErrors = 18000000;
         public static void StartLoops()
         {
             Task.Run(async () =>
             {
                 if(Master.serverConfig.EnableServerBrowser) 
                 {
+                    Printer.Warning($"You have enabled the server browser feature. By doing so, you understand that:" +
+                        $"\n- Your server's information (name, description, player count, ect... will be shared to possibly all Rimworld Together's users." +
+                        $"\n- Your server's contact information (public ip adress and port) will be shared to possibly all Rimworld Together's users." +
+                        $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.configsPath, "ServerConfig.json")} "+ 
+                        "\nunder the `EnableServerBrowser` setting and then restart the server.");
                     while (true)
                     {
                         bool result = await SendServerInfo();
                         if (result)
                         {
-                            await Task.Delay(5000); //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
+                            await Task.Delay(DelayBetweenRequest); 
                         }
                         else
                         {
-                            await Task.Delay(1800000);
+                            await Task.Delay(DelayBetweenErrors);
                         }
                     }
                 }
                 else 
                 {
+                    Printer.Warning($"The server browser is currently disabled. If you want to advertise your server to all Rimworld Together's users, you can turn on the server browser");
                     while (true)
                     {
                         bool result = await SendServerPlayerCount();
                         if (result)
                         {
-                            await Task.Delay(5000); //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
+                            await Task.Delay(DelayBetweenRequest);
                         }
                         else
                         {
-                            await Task.Delay(1800000);
+                            await Task.Delay(DelayBetweenErrors);
                         }
                     }
                 }
@@ -68,9 +76,7 @@ namespace GameServer.Managers
                     _description = Master.serverConfig.Description,
                     _maximumPlayerCount = int.Parse(Master.serverConfig.MaxPlayers),
                     _currentPlayerCount = Network.connectedClients.Count,
-                    _runningModsByNameRequired = Master.modConfig.RequiredMods,
-                    _runningModsByNameOptional = Master.modConfig.OptionalMods,
-                    _runningModsByNameForbidden = Master.modConfig.ForbiddenMods
+                    _config = Master.modConfig
                 };
                 HttpResponseMessage response = await Client.PostAsync(MasterServer, 
                     new StringContent(Serializer.SerializeToString(info), Encoding.UTF8, "application/json"));
@@ -80,8 +86,8 @@ namespace GameServer.Managers
             }
             catch (Exception ex)
             {
-                Printer.Warning($"Error while notifying the Master Server\n {ex}");
-                Printer.Warning($"Will retry in 30 minutes");
+                Printer.Error($"Error while notifying the Master Server\n {ex}");
+                Printer.Error($"Will retry in 30 minutes");
                 return false;
             }
         }
@@ -118,21 +124,8 @@ namespace GameServer.Managers
         {
             Client.DefaultRequestHeaders.Clear();
             Client.DefaultRequestHeaders.Add("action", "Remove-Server-Browser");
-            string publicIp = await Client.GetStringAsync($"https://api.ipify.org"); //Gets the public ip adress of this server.
-            ServerInfo info = new ServerInfo()
-            {
-                _ip = publicIp,
-                _port = int.Parse(Master.serverConfig.Port),
-                _name = Master.serverConfig.Name,
-                _description = Master.serverConfig.Description,
-                _maximumPlayerCount = int.Parse(Master.serverConfig.MaxPlayers),
-                _currentPlayerCount = Network.connectedClients.Count,
-                _runningModsByNameRequired = Master.modConfig.RequiredMods,
-                _runningModsByNameOptional = Master.modConfig.OptionalMods,
-                _runningModsByNameForbidden = Master.modConfig.ForbiddenMods
-            };
             HttpResponseMessage response = await Client.PostAsync(MasterServer,
-                new StringContent(Serializer.SerializeToString(info), Encoding.UTF8, "application/json"));
+                new StringContent(""));
         }
     }
 }

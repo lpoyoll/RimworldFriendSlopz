@@ -29,7 +29,7 @@ namespace GameServer.Core
             Threader.GenerateServerThread(Threader.ServerMode.Console);
             if (Master.actionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
             if (Master.backupConfig.AutomaticBackups) Threader.GenerateServerThread(Threader.ServerMode.Backup);
-
+            ServerBrowserManager.StartLoops();
             while (true) Thread.Sleep(1);
         }
 
@@ -131,8 +131,6 @@ namespace GameServer.Core
             LoadValueFile(ServerFileMode.World);
 
             EventManager.LoadEvents();
-
-            ServerBrowserManager.StartLoops();
         }
 
         public static void SaveValueFile(ServerFileMode mode, bool broadcast = true)

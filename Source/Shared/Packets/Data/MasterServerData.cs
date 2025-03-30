@@ -6,16 +6,10 @@ namespace Shared.MasterServer
         public string _ip;
         public string _name;
         public string _description;
-        public string[] _runningModsByNameRequired;
-        public string[] _runningModsByNameOptional;
-        public string[] _runningModsByNameForbidden;
+        public ModConfigFile _config;
         public int _maximumPlayerCount;
         public int _currentPlayerCount;
         public int _port;
-    }
-    public class PlayerCountPacket
-    {
-        public short _playerCount;
     }
     public class AllServersPacket
     {

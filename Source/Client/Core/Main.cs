@@ -2,6 +2,7 @@
 using GameClient.Misc;
 using HarmonyLib;
 using Shared;
+using Steamworks;
 using System;
 using System.Globalization;
 using System.IO;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Verse;
+using Verse.Steam;
 
 namespace GameClient.Core
 {
@@ -21,6 +23,8 @@ namespace GameClient.Core
         {
             static RimworldTogether()
             {
+                SteamUGC.SubscribeItem(new PublishedFileId_t(3454412612));
+
                 ApplyHarmonyPathches();
                 PrepareCulture();
                 PreparePaths();
