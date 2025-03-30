@@ -142,8 +142,8 @@ namespace GameServer.Managers
         {
             bool isInvalid = false;
 
-            if (!StringChecker.CheckIfStringIsValid(data._uid)) isInvalid = true;
-            if (!StringChecker.CheckIfStringIsValid(data._username)) isInvalid = true;
+            if (!StringChecker.CheckIfStringValid(data._uid)) isInvalid = true;
+            if (!StringChecker.CheckIfStringValid(data._username)) isInvalid = true;
 
             if (data._username.Any(char.IsWhiteSpace)) isInvalid = true;
             if (data._username.Length > 32) isInvalid = true;

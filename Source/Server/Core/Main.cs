@@ -338,10 +338,9 @@ namespace GameServer.Core
 
         private static void CheckForServerName()
         {
-            if (!StringChecker.CheckIfStringIsValid(Master.serverConfig.Name))
+            if (!StringChecker.CheckIfStringValid(Master.serverConfig.Name))
             {
-                Printer.Error("ILLEGAL characters detected on the server name");
-                Printer.Error("This will make your players UNABLE to save their games");
+                
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using GameServer.Core;
@@ -15,20 +16,29 @@ namespace GameServer.Managers
     public static class ServerBrowserManager
     {
         private const string MasterServer = "https://rimworldtogether.eragon.dev";
-        private static HttpClient Client = new HttpClient();
+        private static HttpClientHandler handler = new HttpClientHandler() { UseProxy = false };
+        private static HttpClient Client = new HttpClient(handler) 
+        {
+            DefaultRequestVersion = HttpVersion.Version11
+        };
         private const int DelayBetweenRequest = 5000; //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
         private const int DelayBetweenErrors = 18000000;
         public static void StartLoops()
         {
             Task.Run(async () =>
             {
-                if(Master.serverConfig.EnableServerBrowser) 
+                if (Master.serverConfig.EnableServerBrowser) 
                 {
                     Printer.Warning($"You have enabled the server browser feature. By doing so, you understand that:" +
                         $"\n- Your server's information (name, description, player count, ect... will be shared to possibly all Rimworld Together's users." +
                         $"\n- Your server's contact information (public ip adress and port) will be shared to possibly all Rimworld Together's users." +
                         $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.configsPath, "ServerConfig.json")} "+ 
                         "\nunder the `EnableServerBrowser` setting and then restart the server.");
+                    if (string.IsNullOrEmpty(Master.serverConfig.PublicEndPoint))
+                    {
+                        Printer.Error($"Tried enabling Server Browser features without an PublicEndPoint. Add your public ip adress, DNS or domain and restart the server.");
+                        return;
+                    }
                     while (true)
                     {
                         bool result = await SendServerInfo();
@@ -41,6 +51,8 @@ namespace GameServer.Managers
                             await Task.Delay(DelayBetweenErrors);
                         }
                     }
+                    Console.CancelKeyPress += SendClosureSignalFromConsole;
+                    AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
                 }
                 else 
                 {
@@ -59,8 +71,6 @@ namespace GameServer.Managers
                     }
                 }
             });
-            Console.CancelKeyPress += SendClosureSignalFromConsole;
-            AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
         }
 
         private static async Task<bool> SendServerInfo()
@@ -71,6 +81,7 @@ namespace GameServer.Managers
                 Client.DefaultRequestHeaders.Add("action", "Add-Server-Browser");
                 ServerInfo info = new ServerInfo()
                 {
+                    _ip = Master.serverConfig.PublicEndPoint,
                     _port = int.Parse(Master.serverConfig.Port),
                     _name = Master.serverConfig.Name,
                     _description = Master.serverConfig.Description,
@@ -124,8 +135,18 @@ namespace GameServer.Managers
         {
             Client.DefaultRequestHeaders.Clear();
             Client.DefaultRequestHeaders.Add("action", "Remove-Server-Browser");
+            ServerInfo info = new ServerInfo()
+            {
+                _ip = Master.serverConfig.PublicEndPoint,
+                _port = int.Parse(Master.serverConfig.Port),
+                _name = Master.serverConfig.Name,
+                _description = Master.serverConfig.Description,
+                _maximumPlayerCount = int.Parse(Master.serverConfig.MaxPlayers),
+                _currentPlayerCount = Network.connectedClients.Count,
+                _config = Master.modConfig
+            };
             HttpResponseMessage response = await Client.PostAsync(MasterServer,
-                new StringContent(""));
+                new StringContent(Serializer.SerializeToString(info)));
         }
     }
 }

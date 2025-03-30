@@ -62,7 +62,7 @@ namespace GameClient.Core.Preferences
         {
             Action toDo = delegate
             {
-                if (!StringChecker.CheckIfStringIsValid(DialogManager.dialogInputResults[0]))
+                if (!StringChecker.CheckIfStringValid(DialogManager.dialogInputResults[0]))
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR",
                         new string[] { "Your username contains illegal characters", "Please choose another one and try again" }));
