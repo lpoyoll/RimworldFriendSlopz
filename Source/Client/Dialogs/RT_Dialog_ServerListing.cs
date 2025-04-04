@@ -106,12 +106,7 @@ namespace GameClient.Dialogs
             Widgets.Label(fixedRect, $"{server._name} - {server._ip}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButton.x - deleteButton.x - 5f, rect.yMax - selectButton.y), selectButton), "Select"))
             {
-                Network.ip = server._ip;
-                Network.port = server._port.ToString();
-
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-                Threader.GenerateThread(Threader.Mode.Start);
-                Close();
+                DialogManager.PushNewDialog(new RT_Dialog_ServerListingInfo(server));
             }
         }
 
