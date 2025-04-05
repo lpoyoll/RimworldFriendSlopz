@@ -410,3 +410,4 @@ Source/publishServer.sh
 
 # Visual Studio Code
 Source/.vscode/*.*
+Mod/Windows.bat
