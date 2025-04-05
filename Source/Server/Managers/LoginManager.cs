@@ -9,9 +9,10 @@ namespace GameServer.Managers
     [RTManager]
     public static class LoginManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.LoginManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            LoginData data = Serializer.ConvertBytesToObject<LoginData>(packet.Contents);
+            LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
             HandleUser(client, data);
         }
 
@@ -107,8 +108,7 @@ namespace GameServer.Managers
             if (response == LoginResponse.WrongMods) loginData._extraDetails = (List<string>)extraDetails;
             else if (response == LoginResponse.WrongVersion) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
 
-            Packet packet = Packet.CreateFromObject(nameof(LoginManager), loginData);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
             client.listener.DisconnectFlag = true;
         }
     }

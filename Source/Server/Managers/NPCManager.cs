@@ -9,7 +9,8 @@ namespace GameServer.Managers
     [RTManager]
     public static class NPCManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.NPCManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             if (!Master.actionConfigs.EnableNPCDestruction)
             {
@@ -17,7 +18,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(packet.Contents);
+            NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(bytes);
 
             switch (data._stepMode)
             {
@@ -62,8 +63,7 @@ namespace GameServer.Managers
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData = settlement;
 
-            Packet packet = Packet.CreateFromObject(nameof(NPCManager), data);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.NPCManager, data);
         }
     }
 

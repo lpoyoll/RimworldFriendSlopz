@@ -8,11 +8,12 @@ namespace GameClient.Managers
     [RTManager]
     public static class PollutionManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.PollutionManager)]
+        private static void ParsePacket(byte[] bytes)
         {
             if (ModsConfig.BiotechActive)
             {
-                PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(packet.Contents);
+                PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(bytes);
                 AddPollutedTileOrganic(data._pollutionData);
             }
         }

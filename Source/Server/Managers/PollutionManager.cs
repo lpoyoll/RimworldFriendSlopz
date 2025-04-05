@@ -9,7 +9,8 @@ namespace GameServer.Managers
     [RTManager]
     public static class PollutionManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.PollutionManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             if (!Master.actionConfigs.EnablePollutionSpread)
             {
@@ -17,7 +18,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(packet.Contents);
+            PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(bytes);
             AddPollutionToTile(data, client, true);
         }
 
@@ -44,11 +45,7 @@ namespace GameServer.Managers
                     Master.worldValues.PollutedTiles = existingPollutedTiles.ToArray();
                 }
 
-                if (shouldBroadcast)
-                {
-                    Packet packet = Packet.CreateFromObject(nameof(PollutionManager), data);
-                    NetworkHelper.SendPacketToAllClients(packet, client);
-                }
+                if (shouldBroadcast) NetworkHelper.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
 
                 Main_.SaveValueFile(ServerFileMode.World, false);
             }

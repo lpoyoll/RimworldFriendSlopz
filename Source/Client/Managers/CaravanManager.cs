@@ -25,9 +25,10 @@ namespace GameClient.Managers
 
         public static List<CaravanFile> guestCaravans = new List<CaravanFile>();
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.CaravanManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(packet.Contents);
+            CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(bytes);
 
             switch (data._stepMode)
             {
@@ -129,8 +130,7 @@ namespace GameClient.Managers
             data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
-            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void RequestCaravanRemove(Caravan caravan)
@@ -144,8 +144,7 @@ namespace GameClient.Managers
 
             playerCaravans.Remove(caravan);
 
-            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void RequestCaravanUpdate(Caravan caravan)
@@ -157,8 +156,7 @@ namespace GameClient.Managers
             data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
-            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void ClearAllCaravans()

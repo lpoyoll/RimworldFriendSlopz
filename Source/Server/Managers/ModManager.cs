@@ -9,9 +9,10 @@ namespace GameServer.Managers
     [RTManager]
     public static class ModManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.ModManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(packet.Contents);
+            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
 
             switch (data._stepMode)
             {

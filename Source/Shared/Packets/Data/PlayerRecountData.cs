@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using MessagePack;
 
 namespace Shared
 {
-    [Serializable]
+    [MessagePackObject]
     public class PlayerRecountData
     {
         public int _currentPlayerCount;

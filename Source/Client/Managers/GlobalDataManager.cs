@@ -8,9 +8,10 @@ namespace GameClient.Managers
     [RTManager]
     public static class GlobalDataManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.GlobalDataManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(packet.Contents);
+            ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(bytes);
 
             ClientValues.SetValues(serverGlobalData);
             SessionValues.SetValues(serverGlobalData);

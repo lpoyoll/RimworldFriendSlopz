@@ -125,13 +125,11 @@ namespace GameServer.Commands
 
                             //Send to sender
                             chatData._username = $">> {toFind.userFile.Label}";
-                            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-                            targetClient.listener.EnqueuePacket(packet);
+                            targetClient.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
                             //Send to recipient
                             chatData._username = $"<< {targetClient.userFile.Label}";
-                            packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-                            toFind.listener.EnqueuePacket(packet);
+                            toFind.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
                             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
                         }

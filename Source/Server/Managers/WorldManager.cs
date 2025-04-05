@@ -11,9 +11,10 @@ namespace GameServer.Managers
     {
         public static string baseWorldPath = Path.Combine(Master.configsPath, "WorldConfig.json");
 
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.WorldManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            WorldData data = Serializer.ConvertBytesToObject<WorldData>(packet.Contents);
+            WorldData data = Serializer.ConvertBytesToObject<WorldData>(bytes);
 
             switch (data._stepMode)
             {
@@ -30,8 +31,7 @@ namespace GameServer.Managers
             WorldData worldData = new WorldData();
             worldData._stepMode = WorldStepMode.AskFor;
 
-            Packet packet = Packet.CreateFromObject(nameof(WorldManager), worldData);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.WorldManager, worldData);
         }
     }
 
@@ -43,8 +43,7 @@ namespace GameServer.Managers
             data._fileBytes = GZip.DecompressBytes(File.ReadAllBytes(WorldManager.baseWorldPath));
             data._stepMode = WorldStepMode.Sent;
 
-            Packet packet = Packet.CreateFromObject(nameof(WorldManager), data);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.WorldManager, data);
         }
     }
 

@@ -34,9 +34,10 @@ namespace GameServer.Managers
             "HTML color inside brackets - Followed by the text you want to [ff0000]change color"
         };
 
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.ChatManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.Contents);
+            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(bytes);
 
             if (chatData._message.StartsWith("/")) ExecuteChatCommand(client, chatData._message.Split(' '));
             else BroadcastChatMessage(client, chatData._message);
@@ -73,8 +74,7 @@ namespace GameServer.Managers
             chatData._usernameColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
             chatData._messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
-            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(client.userFile.Label, message);
             ChatManagerHelper.ShowChatInConsole(client.userFile.Label, message);
@@ -88,8 +88,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Discord;
             chatData._messageColor = MessageColor.Discord;
 
-            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(client, message);
             ChatManagerHelper.ShowChatInConsole(client, message, true);
@@ -103,8 +102,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
 
-            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(chatData._username, message);
             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
@@ -118,8 +116,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Server;
             chatData._messageColor = MessageColor.Server;
 
-            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(chatData._username, message);
             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
@@ -133,8 +130,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
 
-            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         public static void SendServerMessage(ServerClient client, string message)
@@ -145,8 +141,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Server;
             chatData._messageColor = MessageColor.Server;
 
-            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         private static void WriteToLogs(string username, string message)

@@ -9,7 +9,8 @@ namespace GameServer.Managers
     [RTManager]
     public static class EventManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.EventManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             if (!Master.actionConfigs.EnableEvents)
             {
@@ -17,7 +18,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.Contents);
+            EventData eventData = Serializer.ConvertBytesToObject<EventData>(bytes);
 
             switch (eventData._stepMode)
             {
@@ -52,8 +53,7 @@ namespace GameServer.Managers
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.UID))
                 {
                     eventData._stepMode = EventStepMode.Recover;
-                    Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
-                    client.listener.EnqueuePacket(packet);
+                    client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                 }
 
                 else
@@ -63,16 +63,14 @@ namespace GameServer.Managers
                     if (!ValueChecker.CheckIfCanEvent(target.userFile))
                     {
                         eventData._stepMode = EventStepMode.Recover;
-                        Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
-                        client.listener.EnqueuePacket(packet);
+                        client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                     }
 
                     else
                     {
                         //Back to player
 
-                        Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
-                        client.listener.EnqueuePacket(packet);
+                        client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                         //To the person that should receive it
 
@@ -80,8 +78,7 @@ namespace GameServer.Managers
 
                         target.userFile.UpdateEventTime();
 
-                        packet = Packet.CreateFromObject(nameof(EventManager), eventData);
-                        target.listener.EnqueuePacket(packet);
+                        target.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                     }
                 }
             }

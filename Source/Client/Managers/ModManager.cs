@@ -16,9 +16,10 @@ namespace GameClient.Managers
     [RTManager]
     public static class ModManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.ModManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(packet.Contents);
+            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
 
             switch (data._stepMode)
             {
@@ -79,8 +80,7 @@ namespace GameClient.Managers
 
             Action toDoNo = delegate
             {
-                Packet packet = Packet.CreateFromObject(nameof(ModManager), data);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.EnqueuePacket(PacketHeader.ModManager, data);
                 if (isFirstEdit) OnFirstEdit();
             };
 
@@ -101,8 +101,7 @@ namespace GameClient.Managers
             data._configFile.ModConfigs = modConfigs.ToArray();
             data._configFile.EnforcedConfigs = true;
 
-            Packet packet = Packet.CreateFromObject(nameof(ModManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.ModManager, data);
         }
 
         public static void OnFirstEdit()
@@ -133,9 +132,9 @@ namespace GameClient.Managers
             return configFile;
         }
 
-        public static void GetConflictingMods(Packet packet)
+        public static void GetConflictingMods(byte[] bytes)
         {
-            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.Contents);
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
             DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
                 loginData._extraDetails.ToArray()));

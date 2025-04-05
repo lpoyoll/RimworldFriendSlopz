@@ -42,29 +42,34 @@ namespace GameClient.TCP
 
                     if (Stream.DataAvailable)
                     {
-                        byte[] buffer = new byte[Packet.DefaultPacketSizeInBytes];
+                        // Read packet header
+                        byte[] buffer = new byte[1];
                         Stream.Read(buffer, 0, buffer.Length);
-                        Packet.SetPacketSize(BitConverter.ToInt32(buffer, 0));
+                        PacketHeader header = (PacketHeader)buffer[0];
 
-                        buffer = new byte[Packet.CurrentPacketSizeInBytes];
+                        // Read packet size
+                        buffer = new byte[4];
+                        Stream.Read(buffer, 0, buffer.Length);
+
+                        // Read packet contents
+                        buffer = new byte[BitConverter.ToInt32(buffer, 0)];
                         ReadFullPacket(buffer);
-                        Packet packet = Packet.DecompressPacket(buffer);
 
-                        if (!IgnoredLogPackets.Contains(packet.Header)) Printer.Message($"[Packet] > {packet.Header}", LogImportanceMode.Verbose);
-                        else Printer.Message($"[Packet] > {packet.Header}", LogImportanceMode.Extreme);
+                        if (!IgnoredLogPackets.Contains(header)) Printer.Message($"[Packet] > {header}", LogImportanceMode.Verbose);
+                        else Printer.Message($"[Packet] > {header}", LogImportanceMode.Extreme);
 
                         try 
                         {
                             MainThreadHandler.Instance.Enqueue(delegate
                             {
-                                Master.managerDictionary[packet.Header].Invoke(null, new object[] { packet });
+                                MethodGatherer.ClientMethodDictionary[header].Invoke(null, new object[] { buffer });
                             });
                         }
                         catch (Exception ex) { OnHandleError(ex); }
 
                         void OnHandleError(Exception ex)
                         {
-                            Printer.Error($"Error while trying to execute method from type '{packet.Header}'");
+                            Printer.Error($"Error while trying to execute method from type '{header}'");
                             Printer.Error("Forcefully disconnecting due to MethodManager exception");
                             Printer.Error(ex.ToString());
                             DisconnectFlag = true;

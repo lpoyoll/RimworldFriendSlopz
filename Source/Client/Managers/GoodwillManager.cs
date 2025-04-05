@@ -16,9 +16,10 @@ namespace GameClient.Managers
     [RTManager]
     public static class GoodwillManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.GoodWillManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.Contents);
+            FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(bytes);
             ChangeStructureGoodwill(factionGoodwillData);
             DialogManager.PopWaitDialog();
         }
@@ -74,8 +75,7 @@ namespace GameClient.Managers
             factionGoodwillData._tile = structureTile;
             factionGoodwillData._goodwill = goodwill;
 
-            Packet packet = Packet.CreateFromObject(nameof(GoodwillManager), factionGoodwillData);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
             DialogManager.PushNewDialog(d1);

@@ -10,7 +10,8 @@ namespace GameServer.Managers
     [RTManager]
     public static class ActivityManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.ActivityManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             if (!Master.actionConfigs.EnableActivities)
             {
@@ -18,7 +19,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            ActivityData data = Serializer.ConvertBytesToObject<ActivityData>(packet.Contents);
+            ActivityData data = Serializer.ConvertBytesToObject<ActivityData>(bytes);
 
             switch (data._stepMode)
             {
@@ -33,8 +34,7 @@ namespace GameServer.Managers
             if (!MapManager.CheckIfMapExists(data._targetTile))
             {
                 data._stepMode = ActivityStepMode.Deny;
-                Packet packet = Packet.CreateFromObject(nameof(ActivityManager), data);
-                client.listener.EnqueuePacket(packet);
+                client.listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }
 
             else
@@ -42,8 +42,7 @@ namespace GameServer.Managers
                 data._stepMode = ActivityStepMode.Request;
                 data._mapFile = MapManager.GetMapFromTile(data._targetTile);
 
-                Packet packet = Packet.CreateFromObject(nameof(ActivityManager), data);
-                client.listener.EnqueuePacket(packet);
+                client.listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }
         }
     }

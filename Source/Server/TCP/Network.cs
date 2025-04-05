@@ -99,11 +99,11 @@ namespace GameServer.TCP
             return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Uid == uid);
         }
 
-        public static void SendPacketToAllClients(Packet packet, ServerClient toExclude = null)
+        public static void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
         {
             foreach (ServerClient client in GetConnectedClientsSafe(toExclude))
             {
-                client.listener.EnqueuePacket(packet);
+                client.listener.EnqueuePacket(header, obj);
             }
         }
     }

@@ -30,11 +30,11 @@ namespace GameServer.Managers
                     {
                         MethodInfo method = type.GetMethod("ParsePacket");
 
-                        if (method != null)
-                        {
-                            Master.managerDictionary[method.Name] = method;
-                            Printer.Message($"Found modded manager {type.Name}", CommonEnumerators.LogImportanceMode.Verbose);
-                        }
+                        //if (method != null)
+                        //{
+                        //    MethodGatherer.ServerMethodDictionary[method.Name] = method;
+                        //    Printer.Message($"Found modded manager {type.Name}", CommonEnumerators.LogImportanceMode.Verbose);
+                        //}
                     }
 
                     else if (type.GetCustomAttributes(typeof(RTStartupAttribute), false).Length != 0)

@@ -12,9 +12,10 @@ namespace GameServer.Managers
 
         public static readonly string fileExtension = ".mpcaravan";
 
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.CaravanManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(packet.Contents);
+            CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(bytes);
 
             switch (data._stepMode)
             {
@@ -38,8 +39,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = file;
 
-            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.CaravanManager, data);
 
             InformationDisplayer.DisplayAddCaravan(client.userFile.Uid);
         }
@@ -50,8 +50,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Remove;
             data._caravanFile = file;
 
-            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.CaravanManager, data);
 
             InformationDisplayer.DisplayRemoveCaravan(client.userFile.Uid);
         }
@@ -62,8 +61,7 @@ namespace GameServer.Managers
             data._stepMode = CaravanStepMode.Move;
             data._caravanFile = file;
 
-            Packet packet = Packet.CreateFromObject(nameof(CaravanManager), data);
-            NetworkHelper.SendPacketToAllClients(packet, client);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
 
             InformationDisplayer.DisplayMoveCaravan(client.userFile.Uid);
         }

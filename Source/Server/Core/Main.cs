@@ -19,9 +19,9 @@ namespace GameServer.Core
             SetCulture();
             LoadResources();
             ChangeTitle();
-            LoadAllManagers();
             CheckForServerName();
-            CompatibilityManager.LoadAllPatches();
+            //CompatibilityManager.LoadAllPatches();
+            MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
 
             Printer.Title($"----------------------------------------");
 
@@ -342,18 +342,6 @@ namespace GameServer.Core
             {
                 Printer.Error("ILLEGAL characters detected on the server name");
                 Printer.Error("This will make your players UNABLE to save their games");
-            }
-        }
-
-        public static void LoadAllManagers()
-        {
-            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
-            {
-                if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
-                {
-                    try { Master.managerDictionary[type.Name] = type.GetMethod("ParsePacket", BindingFlags.Static | BindingFlags.NonPublic); }
-                    catch (Exception exception) { Printer.Error($"{type.Name} failed to load > {exception}"); }
-                }
             }
         }
     }

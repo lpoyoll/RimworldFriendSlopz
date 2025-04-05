@@ -9,7 +9,8 @@ namespace GameServer.Managers
     [RTManager]
     public static class AidManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.AidManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             if (!Master.actionConfigs.EnableAids)
             {
@@ -17,7 +18,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            AidData data = Serializer.ConvertBytesToObject<AidData>(packet.Contents);
+            AidData data = Serializer.ConvertBytesToObject<AidData>(bytes);
 
             switch (data._stepMode)
             {
@@ -52,23 +53,20 @@ namespace GameServer.Managers
                     if (!ValueChecker.CheckIfCanAid(target.userFile))
                     {
                         data._stepMode = AidStepMode.Reject;
-                        Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
-                        client.listener.EnqueuePacket(packet);
+                        client.listener.EnqueuePacket(PacketHeader.AidManager, data);
                     }
 
                     else
                     {
                         data._stepMode = AidStepMode.Receive;
-                        Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
-                        target.listener.EnqueuePacket(packet);
+                        target.listener.EnqueuePacket(PacketHeader.AidManager, data);
                     }
                 }
 
                 else
                 {
                     data._stepMode = AidStepMode.Reject;
-                    Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
-                    client.listener.EnqueuePacket(packet);
+                    client.listener.EnqueuePacket(PacketHeader.AidManager, data);
                 }
             }
         }
@@ -84,8 +82,7 @@ namespace GameServer.Managers
                     client.userFile.UpdateAidTime();
 
                     ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
-                    Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
-                    target.listener.EnqueuePacket(packet);
+                    target.listener.EnqueuePacket(PacketHeader.AidManager, data);
                 }
 
                 //Back to client sending the request
@@ -93,8 +90,7 @@ namespace GameServer.Managers
                 else
                 {
                     data._stepMode = AidStepMode.Reject;
-                    Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
-                    client.listener.EnqueuePacket(packet);
+                    client.listener.EnqueuePacket(PacketHeader.AidManager, data);
                 }
             }
         }
@@ -108,17 +104,12 @@ namespace GameServer.Managers
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.UID))
                 {
                     ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlementFile.UID);
-                    Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
-                    target.listener.EnqueuePacket(packet);
+                    target.listener.EnqueuePacket(PacketHeader.AidManager, data);
                 }
 
                 //Back to client sending the request
 
-                else
-                {
-                    Packet packet = Packet.CreateFromObject(nameof(AidManager), data);
-                    client.listener.EnqueuePacket(packet);
-                }
+                else client.listener.EnqueuePacket(PacketHeader.AidManager, data);
             }
         }
     }

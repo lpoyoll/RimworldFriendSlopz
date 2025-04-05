@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using MessagePack;
 using static Shared.CommonEnumerators;
 
 namespace Shared
 {
-    [Serializable]
+    [MessagePackObject]
     public class FactionGoodwillData
     {
         public int _tile;

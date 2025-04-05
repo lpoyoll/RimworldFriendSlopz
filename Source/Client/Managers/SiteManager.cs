@@ -11,6 +11,7 @@ using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using UnityEngine.Tilemaps;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -26,9 +27,10 @@ namespace GameClient.Managers
 
         public static List<Site> playerSites = new List<Site>();
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.SiteManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(packet.Contents);
+            SiteData siteData = Serializer.ConvertBytesToObject<SiteData>(bytes);
 
             switch (siteData._stepMode)
             {
@@ -68,8 +70,7 @@ namespace GameClient.Managers
             siteData._file.Tile = SessionValues.ChosenSite.Tile;
             siteData._stepMode = SiteStepMode.Visit;
 
-            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
@@ -80,8 +81,7 @@ namespace GameClient.Managers
             siteData._file.Tile = SessionValues.ChosenSite.Tile;
             siteData._stepMode = SiteStepMode.Raid;
 
-            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
@@ -94,8 +94,7 @@ namespace GameClient.Managers
                 siteData._file.Tile = SessionValues.ChosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
-                Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
@@ -124,8 +123,7 @@ namespace GameClient.Managers
             siteData._file.Tile = SessionValues.ChosenCaravan.Tile;
             siteData._file.Type.DefName = configFile.DefName;
 
-            Packet packet = Packet.CreateFromObject(nameof(SiteManager), siteData);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
             DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
         }
@@ -136,12 +134,11 @@ namespace GameClient.Managers
             rewardConfig._siteDef = config.DefName;
             rewardConfig._rewardDef = reward;
 
-            SiteData packetData = new SiteData();
-            packetData._stepMode = SiteStepMode.Config;
-            packetData._rewardConfig = rewardConfig;
+            SiteData siteData = new SiteData();
+            siteData._stepMode = SiteStepMode.Config;
+            siteData._rewardConfig = rewardConfig;
 
-            Packet packet = Packet.CreateFromObject(nameof(SiteManager), packetData);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
 
         private static void ReceiveSiteRewards(SiteRewardFile[] files)

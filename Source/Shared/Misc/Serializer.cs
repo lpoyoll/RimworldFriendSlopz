@@ -1,3 +1,6 @@
+using MessagePack;
+using MessagePack.Formatters;
+using MessagePack.Resolvers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Bson;
 using System.IO;
@@ -12,8 +15,8 @@ namespace Shared
 
         private static JsonSerializerSettings DefaultSettings => new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.None };
 
-        private static JsonSerializerSettings IndentedSettings => new JsonSerializerSettings() 
-        { 
+        private static JsonSerializerSettings IndentedSettings => new JsonSerializerSettings()
+        {
             TypeNameHandling = TypeNameHandling.None,
             Formatting = Formatting.Indented
         };
@@ -25,9 +28,9 @@ namespace Shared
             JsonSerializer serializer = JsonSerializer.Create(DefaultSettings);
             MemoryStream memoryStream = new MemoryStream();
 
-            using (BsonWriter writer = new BsonWriter(memoryStream)) 
-            { 
-                serializer.Serialize(writer, toConvert); 
+            using (BsonWriter writer = new BsonWriter(memoryStream))
+            {
+                serializer.Serialize(writer, toConvert);
             }
 
             if (compression) return GZip.CompressBytes(memoryStream.ToArray());
@@ -44,12 +47,6 @@ namespace Shared
             using BsonReader reader = new BsonReader(memoryStream);
             return serializer.Deserialize<T>(reader);
         }
-
-        // Serialize from and to strings
-
-        public static string SerializeToString(object serializable) { return JsonConvert.SerializeObject(serializable, DefaultSettings); }
-
-        public static T SerializeFromString<T>(string serializable) { return JsonConvert.DeserializeObject<T>(serializable, DefaultSettings); }
 
         // Serialize from and to files text
 

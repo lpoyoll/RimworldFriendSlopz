@@ -25,7 +25,7 @@ namespace GameClient.Core
                 PrepareCulture();
                 PreparePaths();
                 CreateUnityDispatcher();
-                LoadAllManagers();
+                MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Client);
 
                 CaravanManagerH.SetCaravanDef();
                 SiteManagerH.SetSiteDefs();
@@ -78,18 +78,6 @@ namespace GameClient.Core
             {
                 GameObject go = UnityEngine.Object.Instantiate(new GameObject());
                 go.AddComponent(typeof(MainThreadHandler));
-            }
-        }
-
-        public static void LoadAllManagers() 
-        {
-            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes()) 
-            {
-                if (type.GetCustomAttributes(typeof(RTManager), false).Length != 0)
-                {
-                    try { Master.managerDictionary[type.Name] = type.GetMethod("ParsePacket", BindingFlags.Static | BindingFlags.NonPublic); }
-                    catch (Exception exception) { Printer.Error($"{type.Name} failed to load > {exception}"); }
-                }
             }
         }
     }

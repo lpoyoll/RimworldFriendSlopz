@@ -35,9 +35,10 @@ namespace GameClient.Managers
             typeof(WorldGenStep_Features)
         };
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.WorldManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            WorldData data = Serializer.ConvertBytesToObject<WorldData>(packet.Contents);
+            WorldData data = Serializer.ConvertBytesToObject<WorldData>(bytes);
 
             switch (data._stepMode)
             {
@@ -410,8 +411,7 @@ namespace GameClient.Managers
             data._stepMode = WorldStepMode.Sent;
             data._fileBytes = Serializer.ConvertObjectToBytes(SessionValues.WorldFile);
 
-            Packet packet = Packet.CreateFromObject(nameof(WorldManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.WorldManager, data);
 
             OnWorldSent();
         }

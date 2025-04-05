@@ -17,8 +17,7 @@ namespace GameServer.Managers
             playerRecountData._currentPlayerCount = NetworkHelper.GetConnectedClientsSafe().Count();
             foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.userFile.Label);
 
-            Packet packet = Packet.CreateFromObject(nameof(RecountManager), playerRecountData);
-            NetworkHelper.SendPacketToAllClients(packet);
+            NetworkHelper.SendPacketToAllClients(PacketHeader.RecountManager, playerRecountData);
         }
 
         public static void BanPlayerFromName(string uid)

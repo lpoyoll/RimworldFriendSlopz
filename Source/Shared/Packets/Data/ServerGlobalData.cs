@@ -1,8 +1,9 @@
 ﻿using System;
+using MessagePack;
 
 namespace Shared
 {
-    [Serializable]
+    [MessagePackObject]
     public class ServerGlobalData
     {
         public bool _isClientAdmin;

@@ -21,9 +21,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Reference Include="Newtonsoft.Json">
-		<HintPath>Assemblies\Client\Newtonsoft.Json.dll</HintPath>
-		</Reference>
+	  <Reference Include="MessagePack">
+	    <HintPath>..\Shared\Assemblies\MessagePack.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Newtonsoft.Json">
+	    <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	<Import Project="..\Shared\Shared.projitems" Label="Shared" />

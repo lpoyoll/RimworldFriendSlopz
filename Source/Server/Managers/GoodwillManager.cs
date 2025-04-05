@@ -8,9 +8,10 @@ namespace GameServer.Managers
     [RTManager]
     public static class GoodwillManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.GoodWillManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(packet.Contents);
+            FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(bytes);
             ChangeUserGoodwills(client, data);
 
         }
@@ -78,8 +79,7 @@ namespace GameServer.Managers
 
             UserManagerH.SaveUserFile(client.userFile);
 
-            Packet rPacket = Packet.CreateFromObject(nameof(GoodwillManager), data);
-            client.listener.EnqueuePacket(rPacket);
+            client.listener.EnqueuePacket(PacketHeader.GoodWillManager, data);
         }
 
         public static Goodwill GetGoodwillFromTile(ServerClient client, int tileToCheck)
@@ -229,8 +229,7 @@ namespace GameServer.Managers
             }
             factionGoodwillData._siteGoodwills = tempList.ToArray();
 
-            Packet packet = Packet.CreateFromObject(nameof(GoodwillManager), factionGoodwillData);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
         }
     }
 }

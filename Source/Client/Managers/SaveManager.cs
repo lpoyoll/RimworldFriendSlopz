@@ -29,9 +29,10 @@ namespace GameClient.Managers
 
         public static string serverSaveFilePath => saveFilePath + ".rws.temp";
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.SaveManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.Contents);
+            SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
 
             if (data._stepMode == SaveStepMode.Receive) SaveReceiverManager.ReceiveSaveFromServer(data);
             else if (data._stepMode == SaveStepMode.Send) SaveSenderManager.SendSaveToServer();
@@ -51,8 +52,7 @@ namespace GameClient.Managers
             SaveData data = new SaveData();
             data._stepMode = SaveStepMode.Reset;
 
-            Packet packet = Packet.CreateFromObject(nameof(SaveManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
         public static double GetRealPlayTimeInteractingFromSave(string filePath)
@@ -89,8 +89,7 @@ namespace GameClient.Managers
             }
             else data._instructions = (int)SaveMode.Autosave;
 
-            Packet packet = Packet.CreateFromObject(nameof(SaveManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
     }
 

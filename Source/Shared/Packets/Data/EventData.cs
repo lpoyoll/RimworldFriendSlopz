@@ -1,9 +1,10 @@
 ﻿using System;
+using MessagePack;
 using static Shared.CommonEnumerators;
 
 namespace Shared
 {
-    [Serializable]
+    [MessagePackObject]
     public class EventData
     {
         public EventStepMode _stepMode;

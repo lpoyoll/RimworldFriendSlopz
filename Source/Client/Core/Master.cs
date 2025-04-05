@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using GameClient.Core.Configs;
 using GameClient.Misc;
+using Shared;
 
 namespace GameClient.Core
 {
@@ -10,8 +11,6 @@ namespace GameClient.Core
         // Instances
 
         public static ModConfigGetter modConfigs = new ModConfigGetter();
-
-        public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
 
         // Paths
 

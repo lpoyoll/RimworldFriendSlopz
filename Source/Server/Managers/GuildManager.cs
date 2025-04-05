@@ -10,7 +10,8 @@ namespace GameServer.Managers
     [RTManager]
     public static class GuildManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.GuildManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
             if (!Master.actionConfigs.EnableFactions)
             {
@@ -18,7 +19,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            PlayerGuildData factionManifest = Serializer.ConvertBytesToObject<PlayerGuildData>(packet.Contents);
+            PlayerGuildData factionManifest = Serializer.ConvertBytesToObject<PlayerGuildData>(bytes);
 
             switch (factionManifest._stepMode)
             {
@@ -62,8 +63,7 @@ namespace GameServer.Managers
             {
                 factionManifest._stepMode = GuildStepMode.NameInUse;
 
-                Packet packet = Packet.CreateFromObject(nameof(GuildManager), factionManifest);
-                client.listener.EnqueuePacket(packet);
+                client.listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
             }
 
             else
@@ -82,8 +82,7 @@ namespace GameServer.Managers
                     SiteManagerHelper.UpdateFaction(site, factionFile);
                 }
 
-                Packet packet = Packet.CreateFromObject(nameof(GuildManager), factionManifest);
-                client.listener.EnqueuePacket(packet);
+                client.listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
 
                 InformationDisplayer.DisplayAddFaction(factionFile.Name);
             }
@@ -108,7 +107,6 @@ namespace GameServer.Managers
                     UserFile[] toUpdateOffline = GuildManagerH.GetUsersFromFactionMembers(factionFile);
                     foreach (UserFile userFile in toUpdateOffline) userFile.UpdateFaction(null);
 
-                    Packet packet = Packet.CreateFromObject(nameof(GuildManager), factionManifest);
                     SiteFile[] factionSites = GuildManagerH.GetFactionSites(factionFile);
 
                     foreach (SiteFile site in factionSites)
@@ -119,7 +117,7 @@ namespace GameServer.Managers
                     foreach (ServerClient toUpdateConnected in GuildManagerH.GetConnectedFactionMembers(factionFile))
                     {
                         toUpdateConnected.userFile.UpdateFaction(null);
-                        toUpdateConnected.listener.EnqueuePacket(packet);
+                        toUpdateConnected.listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
                         GoodwillManager.UpdateClientGoodwills(toUpdateConnected);
                     }
                     File.Delete(Path.Combine(Master.factionsPath, factionFile.Name + GuildManagerH.fileExtension));
@@ -148,8 +146,7 @@ namespace GameServer.Managers
                     else
                     {
                         factionManifest._file.Name = factionFile.Name;
-                        Packet packet = Packet.CreateFromObject(nameof(GuildManager), factionManifest);
-                        toAdd.listener.EnqueuePacket(packet);
+                        toAdd.listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
                     }
                 }
             }
@@ -213,8 +210,7 @@ namespace GameServer.Managers
                 if (settlementFile.UID == client.userFile.Uid)
                 {
                     factionManifest._stepMode = GuildStepMode.AdminProtection;
-                    Packet packet = Packet.CreateFromObject(nameof(GuildManager), factionManifest);
-                    client.listener.EnqueuePacket(packet);
+                    client.listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
                 }
                 else RemoveFromFaction();
             }
@@ -232,8 +228,7 @@ namespace GameServer.Managers
                             SiteManagerHelper.UpdateFaction(site, null);
                         }
 
-                        Packet packet = Packet.CreateFromObject(nameof(GuildManager), factionManifest);
-                        toRemoveConnected.listener.EnqueuePacket(packet);
+                        toRemoveConnected.listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
                         GoodwillManager.UpdateClientGoodwills(toRemoveConnected);
                     }
 
@@ -329,8 +324,7 @@ namespace GameServer.Managers
         private static void SendFactionMemberList(ServerClient client, PlayerGuildData factionManifest)
         {
             factionManifest._file = GuildManagerH.GetFactionFromFactionName(client.userFile.GuildName);
-            Packet packet = Packet.CreateFromObject(nameof(GuildManager), factionManifest);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
         }
     }
 

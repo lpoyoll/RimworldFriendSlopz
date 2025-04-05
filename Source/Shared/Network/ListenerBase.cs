@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Shared
 {
@@ -15,9 +16,12 @@ namespace Shared
 
         public bool DisconnectFlag { get; set; }
 
-        public ConcurrentQueue<Packet> PacketQueue { get; set; } = new ConcurrentQueue<Packet>();
+        public ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; private set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
 
-        public void EnqueuePacket(Packet packet) { PacketQueue.Enqueue(packet); }
+        public void EnqueuePacket(PacketHeader header, object obj) 
+        {
+            PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
+        }
 
         public Action PrintVerboseAction { get; set; }
 
@@ -35,14 +39,17 @@ namespace Shared
 
                     if (PacketQueue.Count > 0)
                     {
-                        if (!PacketQueue.TryDequeue(out Packet packet)) return;
-                        else
-                        {
-                            byte[] packetBuffer = Packet.CompressPacket(packet);
-                            byte[] tracerBuffer = BitConverter.GetBytes(packetBuffer.Length);
-                            byte[] completeBuffer = tracerBuffer.Concat(packetBuffer).ToArray();
-                            Stream.Write(completeBuffer, 0, completeBuffer.Length);
-                        }
+                        if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
+                        byte[] packetSize = BitConverter.GetBytes(packetData.Value.Length);
+
+                        // Write packet header
+                        Stream.Write(new byte[] { packetData.Key }, 0, 1);
+
+                        // Write packet size
+                        Stream.Write(packetSize, 0, packetSize.Length);
+
+                        // Write packet data
+                        Stream.Write(packetData.Value, 0, packetData.Value.Length);
                     }
                 }
             }
@@ -93,8 +100,7 @@ namespace Shared
                     Thread.Sleep(CommonValues.KeepAliveCooldown);
 
                     KeepAliveData keepAliveData = new KeepAliveData();
-                    Packet packet = Packet.CreateFromObject("KeepAliveManager", keepAliveData);
-                    EnqueuePacket(packet);
+                    EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
                 }
             }
 

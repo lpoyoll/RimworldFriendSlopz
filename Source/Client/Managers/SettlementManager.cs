@@ -17,9 +17,10 @@ namespace GameClient.Managers
     {
         public static List<Settlement> playerSettlements = new List<Settlement>();
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.SettlementManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.Contents);
+            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
 
             switch (settlementData._stepMode)
             {
@@ -94,8 +95,7 @@ namespace GameClient.Managers
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Add;
 
-            Packet packet = Packet.CreateFromObject(nameof(SettlementManager), settlementData);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
         }
     }
 

@@ -10,11 +10,12 @@ namespace GameClient.Managers
 
         public static List<string> CurrentPlayerNames { get; private set; }
 
-        private static void ParsePacket(Packet packet) { SetServerPlayers(packet); }
+        [HandlesPacket(PacketHeader.RecountManager)]
+        private static void ParsePacket(byte[] bytes) { SetServerPlayers(bytes); }
 
-        public static void SetServerPlayers(Packet packet)
+        public static void SetServerPlayers(byte[] bytes)
         {
-            PlayerRecountData playerRecountData = Serializer.ConvertBytesToObject<PlayerRecountData>(packet.Contents);
+            PlayerRecountData playerRecountData = Serializer.ConvertBytesToObject<PlayerRecountData>(bytes);
             CurrentPlayers = playerRecountData._currentPlayerCount;
             CurrentPlayerNames = playerRecountData._currentPlayerNames;
         }

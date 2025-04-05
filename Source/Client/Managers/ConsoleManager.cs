@@ -12,9 +12,10 @@ namespace GameClient.Managers
     {
         //Parses the received packet into a command to execute
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.ConsoleManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(packet.Contents);
+            CommandData commandData = Serializer.ConvertBytesToObject<CommandData>(bytes);
 
             switch (commandData._commandMode)
             {

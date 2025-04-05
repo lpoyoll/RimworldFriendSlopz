@@ -17,9 +17,10 @@ namespace GameClient.Managers
     [RTManager]
     public static class RoadManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.RoadManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            RoadData data = Serializer.ConvertBytesToObject<RoadData>(packet.Contents);
+            RoadData data = Serializer.ConvertBytesToObject<RoadData>(bytes);
 
             switch (data._stepMode)
             {
@@ -43,8 +44,7 @@ namespace GameClient.Managers
             data._details.toTile = tileBID;
             data._details.roadDefName = roadDef.defName;
 
-            Packet packet = Packet.CreateFromObject(nameof(RoadManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
 
         public static void SendRoadRemoveRequest(int tileAID, int tileBID)
@@ -56,8 +56,7 @@ namespace GameClient.Managers
             data._details.fromTile = tileAID;
             data._details.toTile = tileBID;
 
-            Packet packet = Packet.CreateFromObject(nameof(RoadManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
 
         public static void AddRoads(RoadDetails[] details, bool forceRefresh)

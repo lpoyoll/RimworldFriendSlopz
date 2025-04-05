@@ -16,9 +16,10 @@ namespace GameClient.Managers
     [RTManager]
     public static class VersionManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.VersionManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            VersionData data = Serializer.ConvertBytesToObject<VersionData>(packet.Contents);
+            VersionData data = Serializer.ConvertBytesToObject<VersionData>(bytes);
 
             switch (data._step)
             {
@@ -34,11 +35,12 @@ namespace GameClient.Managers
 
         public static void SendClientVersion()
         {
+            Printer.Warning("Here");
+
             VersionData data = new VersionData();
             data._version = CommonValues.ExecutableVersion;
 
-            Packet packet = Packet.CreateFromObject(nameof(VersionManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.VersionManager, data);
         }
 
         public static void PromptChangeVersion()

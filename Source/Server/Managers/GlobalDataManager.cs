@@ -33,8 +33,7 @@ namespace GameServer.Managers
                 globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
             }
 
-            Packet packet = Packet.CreateFromObject(nameof(GlobalDataManager), globalData);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.GlobalDataManager, globalData);
         }
     }
 

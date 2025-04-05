@@ -59,8 +59,7 @@ namespace GameClient.Patches
                     PollutionData data = new PollutionData();
                     data._pollutionData = pollution;
 
-                    Packet packet = Packet.CreateFromObject(nameof(PollutionManager), data);
-                    Network.listener.EnqueuePacket(packet);
+                    Network.listener.EnqueuePacket(PacketHeader.PollutionManager, data);
                 }
             }
         }

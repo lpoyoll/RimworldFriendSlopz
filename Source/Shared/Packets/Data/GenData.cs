@@ -1,7 +1,9 @@
+using MessagePack;
 using static Shared.CommonEnumerators;
 
 namespace Shared
 {
+    [MessagePackObject]
     public class GameParameterData
     {
         public GenStepMode _stepMode;

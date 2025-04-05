@@ -43,9 +43,10 @@ namespace GameClient.Managers
         public static int chatIconIndex;
         public static List<Texture2D> chatIcons = new List<Texture2D>();
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.ChatManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(packet.Contents);
+            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(bytes);
 
             bool hasBeenTagged = false;
             if (ChatManagerHelper.GetMessageWords(chatData._message).Contains($"@{ClientValues.Username}"))
@@ -71,8 +72,7 @@ namespace GameClient.Managers
             chatData._username = ClientValues.Username;
             chatData._message = messageToSend;
 
-            Packet packet = Packet.CreateFromObject(nameof(ChatManager), chatData);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)

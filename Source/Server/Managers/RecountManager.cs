@@ -6,7 +6,8 @@ namespace GameServer.Managers
     [RTManager]
     public static class RecountManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.RecountManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
 
         }

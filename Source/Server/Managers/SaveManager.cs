@@ -15,9 +15,10 @@ namespace GameServer.Managers
 
         public readonly static string tempFileExtension = ".mpsavetemp";
 
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.SaveManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            SaveData data = Serializer.ConvertBytesToObject<SaveData>(packet.Contents);
+            SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
 
             if (data._stepMode == SaveStepMode.Receive) SaveReceiverManager.ReceiveSaveFromClient(client, data);
             else if (data._stepMode == SaveStepMode.Send) SaveSenderManager.SendSaveToClient(client);
@@ -110,8 +111,7 @@ namespace GameServer.Managers
             data._stepMode = SaveStepMode.Receive;
             if (!Master.serverConfig.SyncLocalSave) data._instructions = (int)SaveMode.Strict;
 
-            Packet packet = Packet.CreateFromObject(nameof(SaveManager), data);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
     }
 

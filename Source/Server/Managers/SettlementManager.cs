@@ -13,9 +13,10 @@ namespace GameServer.Managers
 
         public readonly static string fileExtension = ".mpsettlement";
 
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.SettlementManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(packet.Contents);
+            PlayerSettlementData settlementData = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
 
             switch (settlementData._stepMode)
             {
@@ -50,8 +51,7 @@ namespace GameServer.Managers
                     {
                         settlementData._settlementFile.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
 
-                        Packet rPacket = Packet.CreateFromObject(nameof(SettlementManager), settlementData);
-                        cClient.listener.EnqueuePacket(rPacket);
+                        cClient.listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
                     }
                 }
 
@@ -97,8 +97,7 @@ namespace GameServer.Managers
             {
                 settlementData._stepMode = SettlementStepMode.Remove;
 
-                Packet packet = Packet.CreateFromObject(nameof(SettlementManager), settlementData);
-                NetworkHelper.SendPacketToAllClients(packet, client);
+                NetworkHelper.SendPacketToAllClients(PacketHeader.SettlementManager, settlementData, client);
             }
         }
 

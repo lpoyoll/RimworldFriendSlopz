@@ -24,8 +24,7 @@ namespace GameClient.Managers
             MapData mapData = new MapData();
             mapData._mapFile = MapScriber.MapToString(map, true, true, true, true, true, true);
 
-            Packet packet = Packet.CreateFromObject(nameof(MapManager), mapData);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.MapManager, mapData);
         }
     }
 }

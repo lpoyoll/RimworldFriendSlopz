@@ -70,8 +70,6 @@ namespace GameServer.Core
 
         public static ChatConfigFile chatConfig;
 
-        public static Dictionary<string, MethodInfo> managerDictionary = new Dictionary<string, MethodInfo>();
-
         //Booleans
 
         public static bool isClosing;

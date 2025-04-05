@@ -23,9 +23,10 @@ namespace GameClient.Managers
     {
         //Parses the packet into useful orders
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.TransferManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(packet.Contents);
+            TransferData transferData = Serializer.ConvertBytesToObject<TransferData>(bytes);
 
             switch (transferData._stepMode)
             {
@@ -126,24 +127,21 @@ namespace GameClient.Managers
             {
                 SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
 
-                Packet packet = Packet.CreateFromObject(nameof(TransferManager), SessionValues.OutgoingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
             {
                 SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeReRequest;
 
-                Packet packet = Packet.CreateFromObject(nameof(TransferManager), SessionValues.OutgoingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Pod)
             {
                 SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
 
-                Packet packet = Packet.CreateFromObject(nameof(TransferManager), SessionValues.OutgoingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
         }
 
@@ -336,8 +334,7 @@ namespace GameClient.Managers
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReject;
 
-                Packet packet = Packet.CreateFromObject(nameof(TransferManager), SessionValues.IncomingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
             }
 
             else if (transferMode == TransferMode.Pod)
@@ -349,8 +346,7 @@ namespace GameClient.Managers
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReReject;
 
-                Packet packet = Packet.CreateFromObject(nameof(TransferManager), SessionValues.IncomingManifest);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
 
                 RecoverTradeItems(TransferLocation.Caravan);
             }

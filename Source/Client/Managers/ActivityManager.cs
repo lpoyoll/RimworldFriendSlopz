@@ -14,9 +14,10 @@ namespace GameClient.Managers
     [RTManager]
     public static class ActivityManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.ActivityManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            ActivityData data = Serializer.ConvertBytesToObject<ActivityData>(packet.Contents);
+            ActivityData data = Serializer.ConvertBytesToObject<ActivityData>(bytes);
 
             switch (data._stepMode)
             {
@@ -51,8 +52,7 @@ namespace GameClient.Managers
             data._stepMode = ActivityStepMode.Request;
             data._targetTile = targetTile;
 
-            Packet packet = Packet.CreateFromObject(nameof(ActivityManager), data);
-            Network.listener.EnqueuePacket(packet);
+            Network.listener.EnqueuePacket(PacketHeader.ActivityManager, data);
         }
 
         private static void OnAccept(ActivityData offlineVisitData) 

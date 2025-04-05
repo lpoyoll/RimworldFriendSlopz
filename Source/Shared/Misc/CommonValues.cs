@@ -6,7 +6,7 @@ namespace Shared
 
         public static readonly string DefaultParserMethodName = "ParsePacket";
 
-        public static readonly string[] IgnoredLogPackets = { "OnlineActivityManager", "KeepAliveManager" };
+        public static readonly PacketHeader[] IgnoredLogPackets = { PacketHeader.KeepAliveManager };
 
         public static readonly int KeepAliveCooldown = 3000;
     }

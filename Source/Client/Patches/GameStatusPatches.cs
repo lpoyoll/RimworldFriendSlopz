@@ -91,8 +91,7 @@ namespace GameClient.Patches
                     settlementData._settlementFile.Tile = settlement.Tile;
                     settlementData._stepMode = SettlementStepMode.Remove;
 
-                    Packet packet = Packet.CreateFromObject(nameof(SettlementManager), settlementData);
-                    Network.listener.EnqueuePacket(packet);
+                    Network.listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
 
                     SaveManager.ForceSave();
                 }

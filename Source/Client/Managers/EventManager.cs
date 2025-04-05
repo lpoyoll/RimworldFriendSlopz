@@ -14,9 +14,10 @@ namespace GameClient.Managers
     [RTManager]
     public static class EventManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.EventManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            EventData eventData = Serializer.ConvertBytesToObject<EventData>(packet.Contents);
+            EventData eventData = Serializer.ConvertBytesToObject<EventData>(bytes);
 
             switch (eventData._stepMode)
             {
@@ -77,8 +78,7 @@ namespace GameClient.Managers
                 eventData._toTile = SessionValues.ChosenSettlement.Tile;
                 eventData._eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
 
-                Packet packet = Packet.CreateFromObject(nameof(EventManager), eventData);
-                Network.listener.EnqueuePacket(packet);
+                Network.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                 DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }

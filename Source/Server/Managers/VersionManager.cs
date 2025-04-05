@@ -13,14 +13,15 @@ namespace GameServer.Managers
     [RTManager]
     public static class VersionManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.VersionManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            VersionData data = Serializer.ConvertBytesToObject<VersionData>(packet.Contents);
+            VersionData data = Serializer.ConvertBytesToObject<VersionData>(bytes);
 
             if (data._version == CommonValues.ExecutableVersion)
             {
                 data._step = VersionData.VersionStep.Pass;
-                client.listener.EnqueuePacket(Packet.CreateFromObject(nameof(VersionManager), data));
+                client.listener.EnqueuePacket(PacketHeader.VersionManager, data);
             }
             else LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongVersion);
         }
@@ -30,8 +31,7 @@ namespace GameServer.Managers
             VersionData data = new VersionData();
             data._step = VersionData.VersionStep.Ask;
 
-            Packet packet = Packet.CreateFromObject(nameof(VersionManager), data);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.VersionManager, data);
         }
     }
 }

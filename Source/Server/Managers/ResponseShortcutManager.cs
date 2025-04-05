@@ -13,8 +13,7 @@ namespace GameServer.Managers
             ResponseShortcutData data = new ResponseShortcutData();
             data.stepMode = ResponseStepMode.IllegalAction;
 
-            Packet packet = Packet.CreateFromObject(nameof(ResponseShortcutManager), data);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
             client.listener.DisconnectFlag = true;
 
             if (shouldBroadcast)
@@ -29,8 +28,7 @@ namespace GameServer.Managers
             ResponseShortcutData data = new ResponseShortcutData();
             data.stepMode = ResponseStepMode.UserUnavailable;
 
-            Packet packet = Packet.CreateFromObject(nameof(ResponseShortcutManager), data);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
 
         public static void SendBreakPacket(ServerClient client)
@@ -38,16 +36,14 @@ namespace GameServer.Managers
             ResponseShortcutData data = new ResponseShortcutData();
             data.stepMode = ResponseStepMode.Pop;
 
-            Packet packet = Packet.CreateFromObject(nameof(ResponseShortcutManager), data);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
 
         public static void SendNoPowerPacket(ServerClient client, PlayerGuildData data)
         {
             data._stepMode = GuildStepMode.NoPower;
 
-            Packet packet = Packet.CreateFromObject(nameof(GuildManager), data);
-            client.listener.EnqueuePacket(packet);
+            client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
     }
 }

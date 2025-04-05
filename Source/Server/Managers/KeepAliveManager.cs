@@ -6,7 +6,8 @@ namespace GameServer.Managers
     [RTManager]
     public static class KeepAliveManager
     {
-        private static void ParsePacket(ServerClient client, Packet packet)
+        [HandlesPacket(PacketHeader.KeepAliveManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes)
         {
 
         }

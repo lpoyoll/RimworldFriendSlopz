@@ -6,9 +6,10 @@ namespace GameClient.Managers
     [RTManager]
     public static class ResponseShortcutManager
     {
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.ResponseShortcutManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            ResponseShortcutData data = Serializer.ConvertBytesToObject<ResponseShortcutData>(packet.Contents);
+            ResponseShortcutData data = Serializer.ConvertBytesToObject<ResponseShortcutData>(bytes);
 
             switch (data.stepMode)
             {

@@ -11,9 +11,10 @@ namespace GameClient.Managers
     {
         //Parses the received packet into an order
 
-        private static void ParsePacket(Packet packet)
+        [HandlesPacket(PacketHeader.LoginManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(packet.Contents);
+            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
             switch (loginData._tryResponse)
             {
@@ -34,7 +35,7 @@ namespace GameClient.Managers
                     break;
 
                 case LoginResponse.WrongMods:
-                    ModManagerH.GetConflictingMods(packet);
+                    ModManagerH.GetConflictingMods(bytes);
                     break;
 
                 case LoginResponse.ServerFull:
