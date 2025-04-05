@@ -411,3 +411,4 @@ Source/publishServer.sh
 # Visual Studio Code
 Source/.vscode/*.*
 Mod/Windows.bat
+Mod/Build/Rimworld-Together/Current/Assemblies/GameClient.dll
