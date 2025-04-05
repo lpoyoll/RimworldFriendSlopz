@@ -171,6 +171,10 @@ namespace GameClient.Managers
                     var hook = mod.GetWorkshopItemHook();
                     steamIds.Add(hook.PublishedFileId.m_PublishedFileId);
                 }
+                else 
+                {
+                    steamIds.Add(0);
+                }
             }
 
             configFile.UnsortedMods = modNames;

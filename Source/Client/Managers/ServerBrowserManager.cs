@@ -40,22 +40,7 @@ namespace GameClient.Managers
             }
         }
 
-        public static void DownloadMissingMods(ServerInfo info) 
-        {
-            var AllMods = ModLister.AllInstalledMods;
-            List<string> modsFailDownload = new List<string>();
-            for (int i = 0; i < info._config.UnsortedMods.Length; i++)
-            {
-                string mod = info._config.UnsortedMods[i];
-                if (!ModLister.AllInstalledMods.Any(x => x.PackageId == mod)) 
-                {
-                    if(!DownloadMod(info._config.AllModIds[i]))
-                        modsFailDownload.Add(mod);
-                }
-            }
-        }
-
-        private static bool DownloadMod(ulong steamId)
+        public static bool DownloadMod(ulong steamId)
         {
             try
             {
