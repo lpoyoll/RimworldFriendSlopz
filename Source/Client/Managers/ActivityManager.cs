@@ -11,7 +11,7 @@ using GameClient.TCP;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class ActivityManager
     {
         [HandlesPacket(PacketHeader.ActivityManager)]

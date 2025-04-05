@@ -8,7 +8,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class GuildManager
     {
         [HandlesPacket(PacketHeader.GuildManager)]

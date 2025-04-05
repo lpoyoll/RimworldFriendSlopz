@@ -9,7 +9,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class GameParameterManager
     {
         public static void SetValues(ServerGlobalData data)

@@ -16,7 +16,7 @@ using GameClient.TCP;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class SaveManager
     {
         // Variables

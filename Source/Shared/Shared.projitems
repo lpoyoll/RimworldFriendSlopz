@@ -10,7 +10,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Misc\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Attributes.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonValues.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\GZip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Hasher.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\StringChecker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\StringUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
     <Compile Include="..\Shared\misc\MethodGatherer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\ListenerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Data\*.cs" />

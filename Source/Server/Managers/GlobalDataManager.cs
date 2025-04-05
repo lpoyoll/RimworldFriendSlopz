@@ -4,7 +4,7 @@ using Shared;
 
 namespace GameServer.Managers
 {
-    [RTManager]
+
     public static class GlobalDataManager
     {
         public static void SendServerGlobalData(ServerClient client)

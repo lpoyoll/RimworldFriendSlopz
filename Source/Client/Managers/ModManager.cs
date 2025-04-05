@@ -13,7 +13,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class ModManager
     {
         [HandlesPacket(PacketHeader.ModManager)]

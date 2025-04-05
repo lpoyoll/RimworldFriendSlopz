@@ -6,7 +6,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
-    [RTManager]
+
     public static class WorldManager
     {
         public static string baseWorldPath = Path.Combine(Master.configsPath, "WorldConfig.json");

@@ -12,7 +12,7 @@ using GameClient.TCP;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class NPCManager
     {
         [HandlesPacket(PacketHeader.NPCManager)]

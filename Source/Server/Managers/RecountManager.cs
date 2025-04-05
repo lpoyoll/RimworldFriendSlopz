@@ -3,7 +3,7 @@ using Shared;
 
 namespace GameServer.Managers
 {
-    [RTManager]
+
     public static class RecountManager
     {
         [HandlesPacket(PacketHeader.RecountManager)]

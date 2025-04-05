@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Verse;
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class PollutionManager
     {
         [HandlesPacket(PacketHeader.PollutionManager)]

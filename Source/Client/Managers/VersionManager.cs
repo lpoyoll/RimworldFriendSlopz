@@ -13,7 +13,7 @@ using Verse;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class VersionManager
     {
         [HandlesPacket(PacketHeader.VersionManager)]

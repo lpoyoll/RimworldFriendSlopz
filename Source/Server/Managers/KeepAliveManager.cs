@@ -3,7 +3,7 @@ using Shared;
 
 namespace GameServer.Managers
 {
-    [RTManager]
+
     public static class KeepAliveManager
     {
         [HandlesPacket(PacketHeader.KeepAliveManager)]

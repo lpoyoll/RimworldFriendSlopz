@@ -17,7 +17,7 @@ namespace Shared
         {
             if (type == AssemblyType.Client)
             {
-                MethodInfo[] clientMethods = GetPacketHandlerAttributes(GetAllTypes(type));
+                MethodInfo[] clientMethods = GetPacketHandlerAttributes((Type[])Assembly.GetExecutingAssembly().GetTypes().ToArray());
                 ClientMethodDictionary = new Dictionary<PacketHeader, MethodInfo>();
                 for (int i = 0; i < clientMethods.Length; i++)
                 {
@@ -28,7 +28,7 @@ namespace Shared
 
             else
             {
-                MethodInfo[] serverMethods = GetPacketHandlerAttributes(GetAllTypes(type));
+                MethodInfo[] serverMethods = GetPacketHandlerAttributes((Type[])Assembly.GetExecutingAssembly().GetTypes().ToArray());
                 ServerMethodDictionary = new Dictionary<PacketHeader, MethodInfo>();
                 for (int i = 0; i < serverMethods.Length; i++)
                 {
@@ -36,12 +36,6 @@ namespace Shared
                         serverMethods[i]);
                 }
             }
-        }
-
-        private static Type[] GetAllTypes(AssemblyType type)
-        {
-            if (type == AssemblyType.Client) return (Type[])Assembly.GetExecutingAssembly().GetTypes().ToArray();
-            else return (Type[])Assembly.GetExecutingAssembly().GetTypes().ToArray();
         }
 
         private static MethodInfo[] GetPacketHandlerAttributes(Type[] types)

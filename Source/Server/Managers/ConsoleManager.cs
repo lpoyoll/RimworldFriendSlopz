@@ -4,7 +4,7 @@ using Shared;
 
 namespace GameServer.Managers
 {
-    [RTManager]
+
     public static class ConsoleManager
     {
         public static string[] commandParameters;

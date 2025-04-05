@@ -8,7 +8,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
-    [RTManager]
+
     public static class UserManager
     {
         public static void SendPlayerRecount()

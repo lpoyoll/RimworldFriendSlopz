@@ -7,7 +7,7 @@ using Shared;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class DialogManager
     {
         // Variables

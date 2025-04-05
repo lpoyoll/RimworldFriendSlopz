@@ -6,7 +6,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
-    [RTManager]
+
     public static class ModManager
     {
         [HandlesPacket(PacketHeader.ModManager)]

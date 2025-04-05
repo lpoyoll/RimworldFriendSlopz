@@ -10,7 +10,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-    [RTManager]
     public static class AidManager
     {
         [HandlesPacket(PacketHeader.AidManager)]

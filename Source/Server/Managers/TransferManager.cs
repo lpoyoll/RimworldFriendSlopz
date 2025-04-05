@@ -5,7 +5,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
-    [RTManager]
+
     public static class TransferManager
     {
         [HandlesPacket(PacketHeader.TransferManager)]

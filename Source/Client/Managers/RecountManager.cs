@@ -3,7 +3,7 @@ using Shared;
 
 namespace GameClient.Managers
 {
-    [RTManager]
+
     public static class RecountManager
     {
         public static int CurrentPlayers { get; private set; }

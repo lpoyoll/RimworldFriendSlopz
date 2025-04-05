@@ -3,7 +3,6 @@ using Shared;
 
 namespace GameClient.Managers
 {
-    [RTManager]
     public static class AdminMenuManager
     {
         private static readonly string dialogTitle = "Admin menu";
