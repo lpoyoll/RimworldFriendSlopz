@@ -21,9 +21,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="MessagePack">
-	    <HintPath>..\Shared\Assemblies\MessagePack.dll</HintPath>
-	  </Reference>
 	  <Reference Include="Newtonsoft.Json">
 	    <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
 	  </Reference>

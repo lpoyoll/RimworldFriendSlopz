@@ -1,6 +1,4 @@
 using System.Linq;
-using Shared;
-using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.TCP;

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using GameClient.Core;
 using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;

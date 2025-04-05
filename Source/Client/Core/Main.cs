@@ -1,8 +1,6 @@
-﻿using GameClient.Core.Preferences;
-using GameClient.Misc;
+﻿using GameClient.Misc;
 using HarmonyLib;
 using Shared;
-using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;

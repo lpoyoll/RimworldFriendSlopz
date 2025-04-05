@@ -1,9 +1,6 @@
-﻿using System;
-using MessagePack;
-
-namespace Shared
+﻿namespace Shared
 {
-    [MessagePackObject]
+
 
     public class MapData
     {

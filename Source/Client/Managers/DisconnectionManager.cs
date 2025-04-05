@@ -1,7 +1,6 @@
 
 using Verse;
-using Shared;
-﻿using GameClient.Dialogs;
+using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
 

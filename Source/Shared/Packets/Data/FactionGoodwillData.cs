@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using MessagePack;
+﻿using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
 namespace Shared
 {
-    [MessagePackObject]
+
     public class FactionGoodwillData
     {
         public int _tile;

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using MessagePack;
+﻿using System.Collections.Generic;
 
 namespace Shared
 {
-    [MessagePackObject]
+
     public class PlayerRecountData
     {
         public int _currentPlayerCount;

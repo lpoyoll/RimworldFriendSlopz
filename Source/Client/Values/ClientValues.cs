@@ -4,7 +4,6 @@ using GameClient.Managers;
 using GameClient.WorldObjects;
 using RimWorld;
 using Shared;
-using TMPro;
 using Verse;
 
 namespace GameClient.Values

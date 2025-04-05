@@ -1,5 +1,4 @@
 using GameClient.Dialogs;
-using Shared;
 
 namespace GameClient.Managers
 {

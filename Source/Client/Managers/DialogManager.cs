@@ -3,7 +3,6 @@ using GameClient.Dialogs;
 using GameClient.Values;
 using UnityEngine;
 using Verse;
-using Shared;
 
 namespace GameClient.Managers
 {

@@ -1,16 +1,10 @@
-﻿using GameClient.Core;
-using GameClient.Managers;
-using GameClient.Misc;
+﻿using GameClient.Misc;
 using Shared;
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 

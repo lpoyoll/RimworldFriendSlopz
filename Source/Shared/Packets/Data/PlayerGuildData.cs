@@ -1,10 +1,8 @@
-﻿using System;
-using MessagePack;
-using static Shared.CommonEnumerators;
+﻿using static Shared.CommonEnumerators;
 
 namespace Shared
 {
-    [MessagePackObject]
+
     public class PlayerGuildData
     {
         public GuildStepMode _stepMode;

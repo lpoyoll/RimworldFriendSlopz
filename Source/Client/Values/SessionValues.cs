@@ -3,7 +3,6 @@ using GameClient.Patches.Pages;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using Verse;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Values

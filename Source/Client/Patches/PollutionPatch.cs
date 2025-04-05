@@ -1,5 +1,4 @@
-﻿using GameClient.Managers;
-using GameClient.TCP;
+﻿using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
 using Shared;

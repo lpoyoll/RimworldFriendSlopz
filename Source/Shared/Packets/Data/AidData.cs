@@ -1,10 +1,8 @@
-using System;
-using MessagePack;
 using static Shared.CommonEnumerators;
 
 namespace Shared
 {
-    [MessagePackObject]
+
     public class AidData
     {
         public AidStepMode _stepMode;

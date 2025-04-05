@@ -9,7 +9,6 @@ using GameClient.Managers;
 using GameClient.TCP;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics.Eventing.Reader;
 
 namespace GameClient.Patches.Pages
 {

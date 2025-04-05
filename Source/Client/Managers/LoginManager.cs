@@ -1,5 +1,4 @@
-﻿using GameClient.Core.Preferences;
-using GameClient.Dialogs;
+﻿using GameClient.Dialogs;
 using Shared;
 using static Shared.CommonEnumerators;
 

@@ -5,10 +5,8 @@ using GameClient.Scribers;
 using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 using Verse.AI.Group;
 using static Shared.CommonEnumerators;
 

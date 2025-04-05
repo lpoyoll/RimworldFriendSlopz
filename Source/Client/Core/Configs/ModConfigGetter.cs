@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using GameClient.Values;
-using Verse;
+﻿using Verse;
 using static GameClient.Values.ClientValues;
 
 namespace GameClient.Core.Configs

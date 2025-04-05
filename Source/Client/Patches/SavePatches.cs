@@ -4,7 +4,6 @@ using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
-using RimWorld;
 using Verse;
 using static Shared.CommonEnumerators;
 

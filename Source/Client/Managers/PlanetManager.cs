@@ -3,7 +3,6 @@ using System.Linq;
 using GameClient.Values;
 using RimWorld;
 using Verse;
-using Shared;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
