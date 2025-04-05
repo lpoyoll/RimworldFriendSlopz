@@ -204,7 +204,7 @@ namespace GameServer.Commands
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(ConsoleManager.commandParameters[0]);
 
-            if (userFile == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (userFile == null) ThrowUserNotFoundError();
             else
             {
                 Printer.Warning("Do you want this backup to be persistent? (Will not be automatically deleted)");
@@ -250,7 +250,7 @@ namespace GameServer.Commands
         {
             ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
 
-            if (toFind == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (toFind == null) ThrowUserNotFoundError();
             else
             {
                 if (CheckIfIsAlready(toFind)) return;
@@ -284,7 +284,7 @@ namespace GameServer.Commands
         {
             ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
 
-            if (toFind == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (toFind == null) ThrowUserNotFoundError();
             else
             {
                 if (CheckIfIsAlready(toFind)) return;
@@ -318,7 +318,7 @@ namespace GameServer.Commands
         {
             ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
 
-            if (toFind == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (toFind == null) ThrowUserNotFoundError();
             else
             {
                 toFind.listener.DisconnectFlag = true;
@@ -465,8 +465,7 @@ namespace GameServer.Commands
         public static void WhitelistAddCommandAction()
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(ConsoleManager.commandParameters[0]);
-            if (userFile == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
-
+            if (userFile == null) ThrowUserNotFoundError();
             else
             {
                 if (CheckIfIsAlready(userFile)) return;
@@ -488,7 +487,7 @@ namespace GameServer.Commands
         public static void WhitelistRemoveCommandAction()
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(ConsoleManager.commandParameters[0]);
-            if (userFile == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (userFile == null) ThrowUserNotFoundError();
 
             else
             {
@@ -511,7 +510,7 @@ namespace GameServer.Commands
         public static void ForceSaveCommandAction()
         {
             ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
-            if (toFind == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (toFind == null) ThrowUserNotFoundError();
             else
             {
                 CommandData commandData = new CommandData();
@@ -527,7 +526,7 @@ namespace GameServer.Commands
         public static void ResetPlayerCommandAction()
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(ConsoleManager.commandParameters[0]);
-            if (userFile == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            if (userFile == null) ThrowUserNotFoundError();
             else
             {
                 ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(userFile.Uid);
@@ -593,6 +592,20 @@ namespace GameServer.Commands
             Console.Clear();
 
             Printer.Title("[Cleared console]");
+        }
+        public static void ThrowUserNotFoundError()
+        {
+            Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
+            UserFile[] allUsers = UserManagerH.GetAllUserFiles();
+            if (allUsers.Any(u => u.Label == ConsoleManager.commandParameters[0]))
+                Printer.Warning($"Username detected. You can only use UIDs for user commands. " +
+                    $"Use the command `deeplist` to get the UID of {ConsoleManager.commandParameters[0]}.");
+            UserFile[] usersWithMatchingUsername = allUsers.Where(u => u.Label == ConsoleManager.commandParameters[0]).ToArray();
+            if (usersWithMatchingUsername.Length == 1)
+            {
+                Printer.Warning($"Since only one person with the username {ConsoleManager.commandParameters[0]} exists, " +
+                    $"we were able to fetch his UID automatically: {usersWithMatchingUsername.First().Uid}");
+            }
         }
     }
 }
