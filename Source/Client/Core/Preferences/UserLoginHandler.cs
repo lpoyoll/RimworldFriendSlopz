@@ -33,29 +33,19 @@ namespace GameClient.Core.Preferences
 
         public static void UseLoginData()
         {
-            Printer.Warning("or Here?");
-
             if (Network.state != CommonEnumerators.ClientNetworkState.Connected) return;
             else
             {
-                Printer.Warning(1);
-
                 LoginDataFile file = LoadLoginData();
                 ClientValues.Username = file.Username;
                 ClientValues.Uid = file.UID;
-
-                Printer.Warning(2);
 
                 LoginData data = new LoginData();
                 data._uid = file.UID;
                 data._username = file.Username;
                 data._runningMods = ModManagerH.GetRunningModList();
 
-                Printer.Warning(3);
-
                 Network.listener.EnqueuePacket(PacketHeader.LoginManager, data);
-
-                Printer.Warning(4);
             }
         }
 

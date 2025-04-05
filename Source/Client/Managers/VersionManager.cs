@@ -35,8 +35,6 @@ namespace GameClient.Managers
 
         public static void SendClientVersion()
         {
-            Printer.Warning("Here");
-
             VersionData data = new VersionData();
             data._version = CommonValues.ExecutableVersion;
 
