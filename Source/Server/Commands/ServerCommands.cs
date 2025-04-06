@@ -248,31 +248,34 @@ namespace GameServer.Commands
 
         public static void OpCommandAction()
         {
-            ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
-
-            if (toFind == null) ThrowUserNotFoundError();
-            else
+            UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Uid == ConsoleManager.commandParameters[0]).FirstOrDefault();
+            if (toFind == null) 
             {
-                if (CheckIfIsAlready(toFind)) return;
-                else
-                {
-                    toFind.userFile.UpdateAdmin(true);
-
-                    CommandData commandData = new CommandData();
-                    commandData._commandMode = CommandMode.Op;
-
-                    Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
-                    toFind.listener.EnqueuePacket(packet);
-
-                    Printer.Warning($"User '{toFind.userFile.Label}' has now admin privileges");
-                }
+                ThrowUserNotFoundError();
+                return;
             }
 
-            bool CheckIfIsAlready(ServerClient client)
+            if (CheckIfIsAlready(toFind)) return;
+
+            toFind.UpdateAdmin(true);
+
+            ServerClient client = NetworkHelper.GetConnectedClientFromUid(toFind.Uid);
+            if (client != null)
             {
-                if (client.userFile.IsAdmin)
+                CommandData commandData = new CommandData();
+                commandData._commandMode = CommandMode.Op;
+
+                Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
+                client.listener.EnqueuePacket(packet);
+            }
+            UserManagerH.SaveUserFile(toFind);
+
+            Printer.Warning($"User '{toFind.Label}' has now admin privileges");
+            bool CheckIfIsAlready(UserFile userFile)
+            {
+                if (userFile.IsAdmin)
                 {
-                    Printer.Warning($"User '{client.userFile.Label}' was already an admin");
+                    Printer.Warning($"User '{userFile.Label}' was already an admin");
                     return true;
                 }
 
@@ -282,31 +285,35 @@ namespace GameServer.Commands
 
         public static void DeopCommandAction()
         {
-            ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
+            UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Uid == ConsoleManager.commandParameters[0]).FirstOrDefault();
 
-            if (toFind == null) ThrowUserNotFoundError();
-            else
+            if (toFind == null)
             {
-                if (CheckIfIsAlready(toFind)) return;
-                else
-                {
-                    toFind.userFile.UpdateAdmin(false);
-
-                    CommandData commandData = new CommandData();
-                    commandData._commandMode = CommandMode.Deop;
-
-                    Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
-                    toFind.listener.EnqueuePacket(packet);
-
-                    Printer.Warning($"User '{toFind.userFile.Label}' is no longer an admin");
-                }
+                ThrowUserNotFoundError();
+                return;
             }
 
-            bool CheckIfIsAlready(ServerClient client)
+            if (CheckIfIsAlready(toFind)) return;
+
+            toFind.UpdateAdmin(false);
+            ServerClient client = NetworkHelper.GetConnectedClientFromUid(toFind.Uid);
+            if (client != null)
             {
-                if (!client.userFile.IsAdmin)
+                CommandData commandData = new CommandData();
+                commandData._commandMode = CommandMode.Deop;
+
+                Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
+                client.listener.EnqueuePacket(packet);
+            }
+            UserManagerH.SaveUserFile(toFind);
+
+            Printer.Warning($"User '{toFind.Label}' is no longer an admin");
+
+            bool CheckIfIsAlready(UserFile client)
+            {
+                if (!client.IsAdmin)
                 {
-                    Printer.Warning($"User '{client.userFile.Label}' was not an admin");
+                    Printer.Warning($"User '{client.Label}' was not an admin");
                     return true;
                 }
 
@@ -318,13 +325,14 @@ namespace GameServer.Commands
         {
             ServerClient toFind = NetworkHelper.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
 
-            if (toFind == null) ThrowUserNotFoundError();
-            else
+            if (toFind == null)
             {
-                toFind.listener.DisconnectFlag = true;
-
-                Printer.Warning($"User '{toFind.userFile.Label}' has been kicked from the server");
+                ThrowUserNotFoundError();
+                return;
             }
+            toFind.listener.DisconnectFlag = true;
+
+            Printer.Warning($"User '{toFind.userFile.Label}' has been kicked from the server");
         }
 
         public static void BanListCommandAction()
