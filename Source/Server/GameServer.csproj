@@ -19,39 +19,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="Mono.Nat" Version="3.0.4" />
-		<PackageReference Include="System.Security.Permissions" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-	    <Reference Include="Discord.Net.Commands">
-			<HintPath>Assemblies\Server\Discord.Net.Commands.dll</HintPath>
-			<Private>True</Private>
-	    </Reference>
-
-	    <Reference Include="Discord.Net.Core">
-	      	<HintPath>Assemblies\Server\Discord.Net.Core.dll</HintPath>
-			<Private>True</Private>
-	    </Reference>
-
-	    <Reference Include="Discord.Net.Interactions">
-			<HintPath>Assemblies\Server\Discord.Net.Interactions.dll</HintPath>
-	      	<Private>True</Private>
-	    </Reference>
-
-	    <Reference Include="Discord.Net.Rest">
-	      	<HintPath>Assemblies\Server\Discord.Net.Rest.dll</HintPath>
-	      	<Private>True</Private>
-	    </Reference>
-
-	    <Reference Include="Discord.Net.Webhook">
-	      	<HintPath>Assemblies\Server\Discord.Net.Webhook.dll</HintPath>
-	      	<Private>True</Private>
-	    </Reference>
-
-	    <Reference Include="Discord.Net.WebSocket">
-	      	<HintPath>Assemblies\Server\Discord.Net.WebSocket.dll</HintPath>
-	      	<Private>True</Private>
-	    </Reference>
 
 	    <Reference Include="Newtonsoft.Json">
 	      <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
