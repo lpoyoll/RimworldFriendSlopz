@@ -265,8 +265,7 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.Op;
 
-                Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
-                client.listener.EnqueuePacket(packet);
+                client.listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
             UserManagerH.SaveUserFile(toFind);
 
@@ -302,8 +301,7 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.Deop;
 
-                Packet packet = Packet.CreateFromObject(nameof(ConsoleManager), commandData);
-                client.listener.EnqueuePacket(packet);
+                client.listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
             UserManagerH.SaveUserFile(toFind);
 
