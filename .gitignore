@@ -413,3 +413,4 @@ Source/.vscode/*.*
 Mod/Windows.bat
 Mod/Build/Rimworld-Together/Current/Assemblies/GameClient.dll
 Mod/Build/Rimworld-Together/Current/Assemblies/MessagePack.dll
+Mod/WindowsDouble.bat
