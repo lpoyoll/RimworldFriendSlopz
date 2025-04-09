@@ -129,7 +129,7 @@ namespace GameClient.Managers
             if (!ClientValues.IsGeneratingFreshWorld && SessionValues.WorldFile.Tiles != null && SessionValues.WorldFile.Tiles.Length > 0)
             {
                 Current.CreatingWorld.grid.tiles = new List<Tile>();
-                foreach (string str in SessionValues.WorldFile.Tiles) Current.CreatingWorld.grid.tiles.Add(TileScriber.ScribeToTile(str));
+                foreach (string str in SessionValues.WorldFile.Tiles) Current.CreatingWorld.grid.tiles.Add(ScribeManager.ScribeToTile(str));
             }
 
             Current.CreatingWorld.grid.StandardizeTileData();
@@ -231,7 +231,7 @@ namespace GameClient.Managers
         public static string[] GetPlanetTiles()
         {
             List<string> toGet = new List<string>();
-            foreach (Tile tile in Find.WorldGrid.tiles) toGet.Add(TileScriber.TileToScribe(tile));
+            foreach (Tile tile in Find.WorldGrid.tiles) toGet.Add(ScribeManager.TileToScribe(tile));
             return toGet.ToArray();
         }
 

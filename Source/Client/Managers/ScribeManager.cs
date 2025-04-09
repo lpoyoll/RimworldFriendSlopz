@@ -19,7 +19,7 @@ namespace GameClient.Managers
 
         public static string ScribeNodeName { get; private set; } = "N";
 
-        public static string ThingToScribe(Thing toSave, int customCount = -1)
+        public static string SerializeFromThing(Thing toSave, int customCount = -1)
         {
             ClientValues.ToggleUsingScriber(true);
 
@@ -47,7 +47,7 @@ namespace GameClient.Managers
             return scribeData.ToString();
         }
 
-        public static Thing ScribeToThing(string scribeData)
+        public static Thing SerializeToThing(string scribeData)
         {
             ClientValues.ToggleUsingScriber(true);
 
@@ -67,67 +67,55 @@ namespace GameClient.Managers
 
             return toLoad;
         }
-    }
 
-    public static class HumanScriber
-    {
-        public static HumanFile HumanToString(Pawn human)
-        {
-            HumanFile humanFile = new HumanFile();
-
-            humanFile.ID = human.ThingID;
-
-            humanFile.ScribeData = ScribeManager.ThingToScribe(human);
-
-            return humanFile;
-        }
-
-        public static Pawn StringtoHuman(HumanFile file)
-        {
-            return (Pawn)ScribeManager.ScribeToThing(file.ScribeData);
-        }
-    }
-
-    public static class AnimalScriber
-    {
-        public static AnimalFile AnimalToString(Pawn animal)
-        {
-            AnimalFile animalData = new AnimalFile();
-
-            animalData.ID = animal.ThingID;
-
-            animalData.ScribeData = ScribeManager.ThingToScribe(animal);
-
-            return animalData;
-        }
-
-        public static Pawn StringToAnimal(AnimalFile file)
-        {
-            return (Pawn)ScribeManager.ScribeToThing(file.ScribeData);
-        }
-    }
-
-    public static class ThingScriber
-    {
         public static ThingFile ThingToString(Thing thing, int thingCount)
         {
             ThingFile thingData = new ThingFile();
 
             thingData.ID = thing.ThingID;
 
-            thingData.ScribeData = ScribeManager.ThingToScribe(thing, thingCount);
+            thingData.ScribeData = ScribeManager.SerializeFromThing(thing, thingCount);
 
             return thingData;
         }
 
         public static Thing StringToThing(ThingFile thingData)
         {
-            return ScribeManager.ScribeToThing(thingData.ScribeData);
+            return ScribeManager.SerializeToThing(thingData.ScribeData);
         }
-    }
 
-    public static class TileScriber
-    {
+        public static HumanFile HumanToString(Pawn human)
+        {
+            HumanFile humanFile = new HumanFile();
+
+            humanFile.ID = human.ThingID;
+
+            humanFile.ScribeData = ScribeManager.SerializeFromThing(human);
+
+            return humanFile;
+        }
+
+        public static Pawn StringtoHuman(HumanFile file)
+        {
+            return (Pawn)ScribeManager.SerializeToThing(file.ScribeData);
+        }
+
+        public static AnimalFile AnimalToString(Pawn animal)
+        {
+            AnimalFile animalData = new AnimalFile();
+
+            animalData.ID = animal.ThingID;
+
+            animalData.ScribeData = ScribeManager.SerializeFromThing(animal);
+
+            return animalData;
+        }
+
+        public static Pawn StringToAnimal(AnimalFile file)
+        {
+            return (Pawn)ScribeManager.SerializeToThing(file.ScribeData);
+        }
+
         public static string TileToScribe(Tile toSave)
         {
             ClientValues.ToggleUsingScriber(true);
@@ -145,7 +133,6 @@ namespace GameClient.Managers
                 scribeData = new Regex(@">\s*<").Replace(ScribeManager.StringWriter.ToString(), "><");
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
-            ;
 
             ClientValues.ToggleUsingScriber(false);
 
@@ -167,7 +154,6 @@ namespace GameClient.Managers
                 Scribe.loader.FinalizeLoading();
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
-            ;
 
             ClientValues.ToggleUsingScriber(false);
 

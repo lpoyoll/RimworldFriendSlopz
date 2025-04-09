@@ -112,7 +112,7 @@ namespace GameClient.Misc
                 {
                     if (!ScriberH.CheckIfThingIsHuman(thing) && !ScriberH.CheckIfThingIsAnimal(thing))
                     {
-                        ThingFile thingData = ThingScriber.ThingToString(thing, thing.stackCount);
+                        ThingFile thingData = ScribeManager.ThingToString(thing, thing.stackCount);
 
                         if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(thingData);
                         else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(thingData);
@@ -136,7 +136,7 @@ namespace GameClient.Misc
                 {
                     if (ScriberH.CheckIfThingIsHuman(thing))
                     {
-                        HumanFile humanData = HumanScriber.HumanToString(thing as Pawn);
+                        HumanFile humanData = ScribeManager.HumanToString(thing as Pawn);
 
                         if (thing.Faction == Faction.OfPlayer && factionHumans) tempFactionHumans.Add(humanData);
                         else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) tempNonFactionHumans.Add(humanData);
@@ -160,7 +160,7 @@ namespace GameClient.Misc
                 {
                     if (ScriberH.CheckIfThingIsAnimal(thing))
                     {
-                        AnimalFile animalData = AnimalScriber.AnimalToString(thing as Pawn);
+                        AnimalFile animalData = ScribeManager.AnimalToString(thing as Pawn);
 
                         if (thing.Faction == Faction.OfPlayer && factionAnimals) tempFactionAnimals.Add(animalData);
                         else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) tempNonFactionAnimals.Add(animalData);
@@ -255,7 +255,7 @@ namespace GameClient.Misc
                     {
                         try
                         {
-                            Thing toGet = ThingScriber.StringToThing(item);
+                            Thing toGet = ScribeManager.StringToThing(item);
 
                             if (lessLoot)
                             {
@@ -274,7 +274,7 @@ namespace GameClient.Misc
                     {
                         try
                         {
-                            Thing toGet = ThingScriber.StringToThing(item);
+                            Thing toGet = ScribeManager.StringToThing(item);
                             thingsToGetInThisTile.Add(toGet);
                         }
                         catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
@@ -304,7 +304,7 @@ namespace GameClient.Misc
                     {
                         try
                         {
-                            Pawn human = HumanScriber.StringtoHuman(pawn);
+                            Pawn human = ScribeManager.StringtoHuman(pawn);
                             human.SetFaction(ClientValues.neutralPlayer);
 
                             GenSpawn.Spawn(human, human.Position, map, human.Rotation);
@@ -319,7 +319,7 @@ namespace GameClient.Misc
                     {
                         try
                         {
-                            Pawn human = HumanScriber.StringtoHuman(pawn);
+                            Pawn human = ScribeManager.StringtoHuman(pawn);
                             GenSpawn.Spawn(human, human.Position, map, human.Rotation);
                         }
                         catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
@@ -339,7 +339,7 @@ namespace GameClient.Misc
                     {
                         try
                         {
-                            Pawn animal = AnimalScriber.StringToAnimal(pawn);
+                            Pawn animal = ScribeManager.StringToAnimal(pawn);
                             animal.SetFaction(ClientValues.neutralPlayer);
 
                             GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
@@ -354,7 +354,7 @@ namespace GameClient.Misc
                     {
                         try
                         {
-                            Pawn animal = AnimalScriber.StringToAnimal(pawn);
+                            Pawn animal = ScribeManager.StringToAnimal(pawn);
                             GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
                         }
                         catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
