@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.Values;
 using RimWorld;
 using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Scribers
+namespace GameClient.Misc
 {
-    public static class MapScriber
+    public static class MapSaveLoader
     {
-        //Functions
-
-        public static MapFile MapToString(Map map, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, bool factionAnimals, bool nonFactionAnimals)
+        public static MapFile MapToString(Map map, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, 
+            bool factionAnimals, bool nonFactionAnimals)
         {
             MapFile mapFile = new MapFile();
 

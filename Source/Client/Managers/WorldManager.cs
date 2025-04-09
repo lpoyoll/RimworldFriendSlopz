@@ -5,7 +5,6 @@ using System.Linq;
 using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Scribers;
 using GameClient.TCP;
 using GameClient.Values;
 using RimWorld;

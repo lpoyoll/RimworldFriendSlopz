@@ -4,7 +4,6 @@ using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Scribers;
 using GameClient.TCP;
 using GameClient.Values;
 using GameClient.WorldObjects;
@@ -230,7 +229,7 @@ namespace GameClient.Managers
 
             Map toUse = null;
             if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
-            else toUse = MapScriber.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
+            else toUse = MapSaveLoader.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
 
             CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, toUse, CaravanEnterMode.Edge);
         }
@@ -241,7 +240,7 @@ namespace GameClient.Managers
 
             Map toUse = null;
             if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
-            else toUse = MapScriber.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
+            else toUse = MapSaveLoader.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
 
             RimworldManager.HandleMapFactions(toUse, ClientValues.enemyPlayer);
 

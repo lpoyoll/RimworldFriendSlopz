@@ -4,9 +4,9 @@ using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 using GameClient.Dialogs;
-using GameClient.Scribers;
 using GameClient.Values;
 using GameClient.TCP;
+using GameClient.Misc;
 
 namespace GameClient.Managers
 {
@@ -74,17 +74,17 @@ namespace GameClient.Managers
 
             if (SessionValues.latestActivity == ActivityType.Visit)
             {
-                map = MapScriber.StringToMap(mapFile, false, true, true, true, true, true, false);
+                map = MapSaveLoader.StringToMap(mapFile, false, true, true, true, true, true, false);
             }
 
             else if (SessionValues.latestActivity == ActivityType.Raid)
             {
-                map = MapScriber.StringToMap(mapFile, true, true, true, true, true, true, true);
+                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
             }
 
             else if (SessionValues.latestActivity == ActivityType.Spy)
             {
-                map = MapScriber.StringToMap(mapFile, true, true, true, true, true, true, true);
+                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
             }
 
             Faction faction;

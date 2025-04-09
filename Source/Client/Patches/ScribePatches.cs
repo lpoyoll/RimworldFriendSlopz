@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Scribers;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
@@ -31,8 +31,8 @@ namespace GameClient.Patches
                     xmlWriterSettings.IndentChars = "\t";
                     xmlWriterSettings.OmitXmlDeclaration = true;
 
-                    RTScriber.StringWriter = new StringWriter();
-                    ___writer = XmlWriter.Create(RTScriber.StringWriter, xmlWriterSettings);
+                    ScribeManager.StringWriter = new StringWriter();
+                    ___writer = XmlWriter.Create(ScribeManager.StringWriter, xmlWriterSettings);
                     ___writer.WriteStartDocument();
                     __instance.EnterNode(documentElementName);
                 }
