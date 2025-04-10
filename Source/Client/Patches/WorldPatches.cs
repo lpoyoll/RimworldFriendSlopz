@@ -57,7 +57,7 @@ namespace GameClient.Patches
                         new Action[] { r1, r2, r3 },
                         null);
 
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 }
             };
 
@@ -75,7 +75,7 @@ namespace GameClient.Patches
                         if (SessionValues.ChosenSettlement.Faction == ClientValues.yourOnlineFaction) GuildManager.OnFactionOpenOnMember();
                         else GuildManager.OnFactionOpenOnNonMember();
                     }
-                    else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                    else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
 
@@ -89,7 +89,7 @@ namespace GameClient.Patches
                     SessionValues.ChosenSettlement = __instance;
 
                     Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved: true);
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 }
             };
 
@@ -106,10 +106,10 @@ namespace GameClient.Patches
                     {
                         List<string> pawnNames = new List<string>();
                         foreach (Pawn pawn in RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
-                        DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Aid menu", "Select the pawn you want to send for aid",
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_ListingWithButton("Aid menu", "Select the pawn you want to send for aid",
                             pawnNames.ToArray(), AidManager.SendAidRequest));
                     }
-                    else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                    else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
 
@@ -123,7 +123,7 @@ namespace GameClient.Patches
                     SessionValues.ChosenSettlement = __instance;
 
                     if (SessionValues.ActionValues.EnableEvents) EventManager.ShowEventMenu();
-                    else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                    else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
 
@@ -155,7 +155,7 @@ namespace GameClient.Patches
                         if (ClientValues.HasFaction) GuildManager.OnFactionOpen();
                         else GuildManager.OnNoFactionOpen();
                     }
-                    else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                    else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
 
@@ -252,7 +252,7 @@ namespace GameClient.Patches
 
                         if (!SessionValues.ActionValues.EnableTrading)
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                             return;
                         }
 
@@ -260,9 +260,9 @@ namespace GameClient.Patches
                         {
                             if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.ChosenCaravan))
                             {
-                                DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
+                                RT_Dialog_Base.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
                             }
-                            else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
+                            else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
                         }
                     }
                 };
@@ -325,7 +325,7 @@ namespace GameClient.Patches
                     SessionValues.ChosenSite = __instance;
 
                     Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved: true);
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 }
             };
 
@@ -361,7 +361,7 @@ namespace GameClient.Patches
                         new Action[] { r1, r2, r3 },
                         null);
 
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 }
             };
 
@@ -372,8 +372,8 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/SiteConfig"),
                 action = delegate
                 {
-                    if (SessionValues.ActionValues.EnableSites) DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(true));
-                    else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                    if (SessionValues.ActionValues.EnableSites) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                    else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
 
@@ -446,9 +446,9 @@ namespace GameClient.Patches
 
                         if (SessionValues.ActionValues.EnableSites)
                         {
-                            DialogManager.PushNewDialog(new RT_Dialog_SiteMenu(false));
+                            RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(false));
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                        else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
 
@@ -463,7 +463,7 @@ namespace GameClient.Patches
                         SessionValues.ChosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                         if (SessionValues.ActionValues.EnableSites) SiteManager.RequestVisitSite();
-                        else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                        else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
 
@@ -478,7 +478,7 @@ namespace GameClient.Patches
                         SessionValues.ChosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                         if (SessionValues.ActionValues.EnableSites) SiteManager.RequestRaidSite();
-                        else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                        else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
 
@@ -493,7 +493,7 @@ namespace GameClient.Patches
                         SessionValues.ChosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
 
                         if (SessionValues.ActionValues.EnableSites) SiteManager.RequestDestroySite();
-                        else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                        else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
 
@@ -512,7 +512,7 @@ namespace GameClient.Patches
                             Find.WorldGrid.GetTileNeighbors(SessionValues.ChosenCaravan.Tile, neighborTiles);
                             RoadManagerHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), Find.WorldGrid[__instance.Tile].Roads != null);
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                        else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
 

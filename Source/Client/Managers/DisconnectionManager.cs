@@ -39,12 +39,12 @@ namespace GameClient.Managers
 
                     case DCReason.SaveQuitToMenu:
                         reason = "Save and Quit to Menu";
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your progress has been saved!" }, DisconnectToMenu));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your progress has been saved!" }, DisconnectToMenu));
                         break;
 
                     case DCReason.SaveQuitToOS:
                         reason = "Save and Quit to OS";
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your progress has been saved!" }, QuitGame));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your progress has been saved!" }, QuitGame));
                         break;
 
                     case DCReason.ConnectionLost:
@@ -67,7 +67,7 @@ namespace GameClient.Managers
 
                 if (Current.ProgramState != ProgramState.Entry)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?",
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?",
                         delegate { SaveManager.ForceSave(); DisconnectToMenu(); }, delegate { DisconnectToMenu(); }));
                 }
                 else DisconnectToMenu();
@@ -82,7 +82,7 @@ namespace GameClient.Managers
             SessionValues.CleanValues();
             ChatManager.CleanChat();
 
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             if (Current.ProgramState != ProgramState.Entry)
             {

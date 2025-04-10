@@ -7,37 +7,18 @@ using Verse;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_Listing : Window
+    public class RT_Dialog_Listing : RT_Dialog_Base
     {
         public override Vector2 InitialSize => new Vector2(500f, 400f);
 
-        public readonly string title;
-
-        public readonly string description;
-
         public readonly string[] elements;
-
-        private readonly Action actionOK;
-
-        private Vector2 scrollPosition = Vector2.zero;
-
-        private readonly float buttonX = 100f;
-
-        private readonly float buttonY = 37f;
 
         public RT_Dialog_Listing(string title, string description, string[] elements, Action actionOK = null)
         {
-            DialogManager.dialogListing = this;
-            this.title = title;
-            this.description = description;
+            this.Title = title;
+            this.Description = description;
             this.elements = elements;
-            this.actionOK = actionOK;
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-
-            soundAppear = SoundDefOf.CommsWindow_Open;
-
+            this.OnAccept = actionOK;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -47,26 +28,26 @@ namespace GameClient.Dialogs
         {
             float centeredX = rect.width / 2;
 
-            float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;
-            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(description).y * 0.25f;
-            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(description).y * 1.1f;
+            float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
+            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
+            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(Description).y * 1.1f;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
             Text.Font = GameFont.Medium;
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
-            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - buttonY - 85f));
+            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - SlimButtonSize.y - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "OK"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - SlimButtonSize.x / 2, rect.yMax - SlimButtonSize.y), SlimButtonSize), "OK"))
             {
-                if (actionOK != null) actionOK.Invoke();
+                if (OnAccept != null) OnAccept.Invoke();
                 Close();
             }
         }
@@ -75,10 +56,10 @@ namespace GameClient.Dialogs
         {
             float height = 6f + elements.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
-            float num2 = scrollPosition.y - 30f;
-            float num3 = scrollPosition.y + mainRect.height;
+            float num2 = ScrollPosition.y - 30f;
+            float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
             for (int i = 0; i < elements.Count(); i++)

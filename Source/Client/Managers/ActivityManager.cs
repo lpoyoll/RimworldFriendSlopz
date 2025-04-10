@@ -34,7 +34,7 @@ namespace GameClient.Managers
         {
             if (!SessionValues.ActionValues.EnableActivities)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 return;
             }
 
@@ -45,7 +45,7 @@ namespace GameClient.Managers
 
         private static void SendRequest(int targetTile)
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for map"));
 
             ActivityData data = new ActivityData();
             data._stepMode = ActivityStepMode.Request;
@@ -56,16 +56,16 @@ namespace GameClient.Managers
 
         private static void OnAccept(ActivityData offlineVisitData) 
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             PrepareMap(offlineVisitData._mapFile); 
         }
 
         private static void OnDeny()
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
-            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This map is currently unavailable!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This map is currently unavailable!" }));
         }
 
         private static void PrepareMap(MapFile mapFile)

@@ -8,7 +8,7 @@ using GameClient.Managers;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_SiteMenu : Window
+    public class RT_Dialog_SiteMenu : RT_Dialog_Base
     {
         public List<SiteInfoFile> SiteInfoFileList = new List<SiteInfoFile>();
 
@@ -16,16 +16,12 @@ namespace GameClient.Dialogs
 
         public override Vector2 InitialSize => initialSize;
 
-        public string title = "Choose a site";
-
-        private Vector2 scrollPosition = Vector2.zero;
-
-        private bool isInConfigMode;
+        private bool IsInConfigMode;
 
         public RT_Dialog_SiteMenu(bool configMode)
         {
-            isInConfigMode = configMode;
-            DialogManager.dialogSiteMenu = this;
+            this.Title = "Choose a site";
+            this.IsInConfigMode = configMode;
         }
 
         public override void DoWindowContents(Rect rect)
@@ -35,16 +31,16 @@ namespace GameClient.Dialogs
 
             float centeredX = rect.width / 2;
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
             if (Widgets.CloseButtonFor(rect)) Close();
 
             Rect mainRect = new Rect(0, 50f, rect.width, rect.height - 50f);
             float height = 6f + SiteManager.siteDefs.Count() * 50f;
             Rect viewRect = new Rect(0f, 50f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 50;
-            float num2 = scrollPosition.y - 30f;
-            float num3 = scrollPosition.y + mainRect.height;
+            float num2 = ScrollPosition.y - 30f;
+            float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
             for (int i = 0; i < SiteManager.siteDefs.Length; i++)
@@ -83,7 +79,7 @@ namespace GameClient.Dialogs
 
             if (Widgets.ButtonInvisible(highLightRect))
             {
-                if (isInConfigMode) Find.WindowStack.Add(new RT_Dialog_SiteMenu_Config(thing));
+                if (IsInConfigMode) Find.WindowStack.Add(new RT_Dialog_SiteMenu_Config(thing));
                 else Find.WindowStack.Add(new RT_Dialog_SiteMenu_Info(thing));
             }
         }

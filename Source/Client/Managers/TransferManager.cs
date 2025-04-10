@@ -34,37 +34,37 @@ namespace GameClient.Managers
                     break;
 
                 case TransferStepMode.TradeAccept:
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Transfer was a success!" }));
+                    RT_Dialog_Wait.Instance.Close();
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Transfer was a success!" }));
                     if (transferData._transferMode == TransferMode.Pod) LaunchDropPods();
                     FinishTransfer(true);
                     break;
 
                 case TransferStepMode.TradeReject:
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player rejected the trade!" }));
+                    RT_Dialog_Wait.Instance.Close();
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player rejected the trade!" }));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
 
                 case TransferStepMode.TradeReRequest:
-                    DialogManager.PopWaitDialog();
+                    RT_Dialog_Wait.Instance.Close();
                     ReceiveReboundRequest(transferData);
                     break;
 
                 case TransferStepMode.TradeReAccept:
-                    DialogManager.PopWaitDialog();
+                    RT_Dialog_Wait.Instance.Close();
                     GetTransferedItemsToSettlement(TransferManagerHelper.GetAllTransferedItems(SessionValues.IncomingManifest));
                     break;
 
                 case TransferStepMode.TradeReReject:
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player rejected the trade!" }));
+                    RT_Dialog_Wait.Instance.Close();
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player rejected the trade!" }));
                     RecoverTradeItems(TransferLocation.Settlement);
                     break;
 
                 case TransferStepMode.Recover:
-                    DialogManager.PopWaitDialog();
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
+                    RT_Dialog_Wait.Instance.Close();
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
                     RecoverTradeItems(TransferLocation.Caravan);
                     break;
             }
@@ -120,7 +120,7 @@ namespace GameClient.Managers
 
         public static void SendTransferRequestToServer(TransferLocation transferLocation)
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for transfer response"));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for transfer response"));
 
             if (transferLocation == TransferLocation.Caravan)
             {
@@ -199,8 +199,8 @@ namespace GameClient.Managers
 
             if (invokeMessage)
             {
-                if (success) DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Transfer was a success!" }, r1));
-                else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Transfer was cancelled!" }, r1));
+                if (success) RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Transfer was a success!" }, r1));
+                else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Transfer was cancelled!" }, r1));
             }
             else r1.Invoke();
         }
@@ -218,8 +218,8 @@ namespace GameClient.Managers
 
             if (invokeMessage)
             {
-                if (success) DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Transfer was a success!" }, r1));
-                else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Transfer was cancelled!" }, r1));
+                if (success) RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Transfer was a success!" }, r1));
+                else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Transfer was cancelled!" }, r1));
             }
             else r1.Invoke();
         }
@@ -255,35 +255,35 @@ namespace GameClient.Managers
                         if (transferData._transferMode == TransferMode.Gift)
                         {
                             RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Gift);
-                            DialogManager.PushNewDialog(d1);
+                            RT_Dialog_Base.PushNewDialog(d1);
                         }
 
                         else if (transferData._transferMode == TransferMode.Trade)
                         {
                             RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Trade);
-                            DialogManager.PushNewDialog(d1);
+                            RT_Dialog_Base.PushNewDialog(d1);
                         }
 
                         else if (transferData._transferMode == TransferMode.Pod)
                         {
                             RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Pod);
-                            DialogManager.PushNewDialog(d1);
+                            RT_Dialog_Base.PushNewDialog(d1);
                         }
                     };
 
                     if (transferData._transferMode == TransferMode.Gift)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a gift request" }, r1));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a gift request" }, r1));
                     }
 
                     else if (transferData._transferMode == TransferMode.Trade)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a trade request" }, r1));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a trade request" }, r1));
                     }
 
                     else if (transferData._transferMode == TransferMode.Pod)
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a gift request" }, r1));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are receiving a gift request" }, r1));
                     }
                 }
             }
@@ -307,7 +307,7 @@ namespace GameClient.Managers
                 SessionValues.IncomingManifest = transferData;
 
                 RT_Dialog_ItemListing d1 = new RT_Dialog_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Rebound);
-                DialogManager.PushNewDialog(d1);
+                RT_Dialog_Base.PushNewDialog(d1);
             }
 
             catch
@@ -406,7 +406,7 @@ namespace GameClient.Managers
                     "Build a trading spot to change the drop location!"
                 });
 
-                DialogManager.PushNewDialog(d1);
+                RT_Dialog_Base.PushNewDialog(d1);
 
                 return new IntVec3(map.Center.x, map.Center.y, map.Center.z);
             }

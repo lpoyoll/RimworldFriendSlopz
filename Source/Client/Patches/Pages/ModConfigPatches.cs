@@ -27,7 +27,7 @@ namespace GameClient.Patches.Pages
                 {
                     executedMessage = true;
 
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("Error",
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("Error",
                         new string[] { "Mod options can't be changed in this server!" },
                         delegate { executedMessage = false; }));
                 }

@@ -61,15 +61,15 @@ namespace GameClient.Core.Preferences
         {
             Action toDo = delegate
             {
-                if (!StringChecker.CheckIfStringIsValid(DialogManager.dialogInputResults[0]))
+                if (!StringChecker.CheckIfStringIsValid(RT_Dialog_Inputs.dialogInputResults[0]))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR",
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
                         new string[] { "Your username contains illegal characters", "Please choose another one and try again" }));
                 }
 
                 else
                 {
-                    AssignPlayerUsername(DialogManager.dialogInputResults[0]);
+                    AssignPlayerUsername(RT_Dialog_Inputs.dialogInputResults[0]);
                     AssignPlayerHash();
 
                     if (isQuickConnect) QuickConnectUser();
@@ -77,7 +77,7 @@ namespace GameClient.Core.Preferences
                 }
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_Inputs("Question", 
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Question", 
                 new string[] { "What would you like your username to be?" }, new bool[] { false }, toDo));
         }
 
@@ -105,7 +105,7 @@ namespace GameClient.Core.Preferences
         {
             UserLoginManagerH.SetupQuickConnectVariables();
             if (UserLoginManagerH.CheckIfQuickConnectIsValid()) UserLoginManagerH.ShowQuickConnectFloatMenu();
-            else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You must join a server first to use this feature!" }));
+            else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You must join a server first to use this feature!" }));
         }
     }
 
@@ -136,12 +136,12 @@ namespace GameClient.Core.Preferences
 
             FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                 Threader.GenerateThread(Threader.Mode.Start);
             });
 
             FloatMenuOption tuple2 = new FloatMenuOption(quickConnectTuples[1].Item1, 
-                delegate { DialogManager.PushNewDialog(new RT_Dialog_ServerListing()); });
+                delegate { RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListing()); });
 
             Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>() { tuple1, tuple2 }));
         }

@@ -41,7 +41,7 @@ namespace GameClient.Managers
             Action toDoYes = delegate { AcceptAid(data); };
             Action toDoNo = delegate { RejectAid(data); };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("You are receiving aid, accept?", toDoYes, toDoNo));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("You are receiving aid, accept?", toDoYes, toDoNo));
         }
 
         public static void SendAidRequest()
@@ -51,18 +51,18 @@ namespace GameClient.Managers
             aidData._fromTile = Find.AnyPlayerHomeMap.Tile;
             aidData._toTile = SessionValues.ChosenSettlement.Tile;
 
-            Pawn toGet = RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)[DialogManager.dialogButtonListingResultInt];
+            Pawn toGet = RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)[RT_Dialog_ListingWithButton.dialogButtonListingResultInt];
             aidData._humanData = ScribeManager.HumanToString(toGet);
             RimworldManager.RemovePawnFromGame(toGet);
 
             Network.listener.EnqueuePacket(PacketHeader.AidManager, aidData);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
 
         private static void OnAidAccept()
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             RimworldManager.GenerateLetter("Sent aid",
                 "You have sent aid towards a settlement! The owner will receive the news soon",
@@ -73,7 +73,7 @@ namespace GameClient.Managers
 
         private static void OnAidReject(AidData data)
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             Map map = Find.World.worldObjects.SettlementAt(data._fromTile).Map;
 
@@ -82,7 +82,7 @@ namespace GameClient.Managers
 
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
         }
 
         private static void AcceptAid(AidData data)

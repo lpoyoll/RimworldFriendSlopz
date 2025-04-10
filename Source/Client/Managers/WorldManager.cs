@@ -53,21 +53,21 @@ namespace GameClient.Managers
 
         public static void OnAskForWorld()
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             ClientValues.ToggleGenerateWorld(true);
 
             RT_Dialog_Message d1 = new RT_Dialog_Message("MESSAGE", new string[] { "You are the first person joining the server!",
                 "Configure the world that everyone will play on" }, delegate { ModManager.OpenModManagerMenu(true); });
 
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void OnExistingWorld()
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
-            DialogManager.PushNewDialog(new Page_SelectScenario());
+            RT_Dialog_Base.PushNewDialog(new Page_SelectScenario());
         }
 
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)

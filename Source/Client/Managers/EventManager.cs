@@ -42,44 +42,44 @@ namespace GameClient.Managers
 
             Action a1 = delegate
             {
-                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost} " +
+                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton].Cost} " +
                     $"silver, continue?", SendEvent, null);
 
-                DialogManager.PushNewDialog(d2);
+                RT_Dialog_Base.PushNewDialog(d2);
             };
 
             RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
                 eventNames.ToArray(), a1.Invoke, null);
 
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void SendEvent()
         {
-            DialogManager.PopDialog(DialogManager.dialogScrollButtons);
+            RT_Dialog_ScrollButtons.Instance.Close();
 
             //TODO
             //MAKE IT SO ALL MAPS ARE ACCOUNTED FOR
             Map toGetSilverFrom = Find.AnyPlayerHomeMap;
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost))
+            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton].Cost))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost);
+                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton].Cost);
 
                 EventData eventData = new EventData();
                 eventData._stepMode = EventStepMode.Send;
                 eventData._fromTile = toGetSilverFrom.Tile;
                 eventData._toTile = SessionValues.ChosenSettlement.Tile;
-                eventData._eventFile = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton];
+                eventData._eventFile = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton];
 
                 Network.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }
         }
 
@@ -110,7 +110,7 @@ namespace GameClient.Managers
 
         public static void OnEventSent()
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             RimworldManager.GenerateLetter("Event sent!", "Your event has been sent!",
                 LetterDefOf.PositiveEvent);
@@ -120,18 +120,18 @@ namespace GameClient.Managers
 
         private static void OnRecoverEventSilver()
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             //TODO
             //MAKE IT SO ALL MAPS ARE ACCOUNTED FOR
             Map toReturnTo = Find.AnyPlayerHomeMap;
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
-            silverToReturn.stackCount = EventManagerHelper.availableEvents[DialogManager.selectedScrollButton].Cost;
+            silverToReturn.stackCount = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton].Cost;
 
             RimworldManager.PlaceThingIntoMap(silverToReturn, toReturnTo, ThingPlaceMode.Near, true);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
         }
     }
 

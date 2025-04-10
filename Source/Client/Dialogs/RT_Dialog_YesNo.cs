@@ -3,32 +3,19 @@ using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using static GameClient.Managers.DialogManagerH;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_YesNo : Window
+    public class RT_Dialog_YesNo : RT_Dialog_Base
     {
         public override Vector2 InitialSize => new Vector2(400f, 150f);
 
-        private readonly string title = "OPTION";
-
-        private readonly string description;
-
-        private readonly Action actionYes;
-
-        private readonly Action actionNo;
-
         public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null)
         {
-            DialogManager.dialogYesNo = this;
-            this.description = description;
-            this.actionYes = actionYes;
-            this.actionNo = actionNo;
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
+            this.Title = "OPTION";
+            this.Description = description;
+            this.OnAccept = actionYes;
+            this.OnCancel = actionNo;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -37,26 +24,26 @@ namespace GameClient.Dialogs
         public override void DoWindowContents(Rect rect)
         {
             float centeredX = rect.width / 2;
-            float horizontalLineDif = Text.CalcSize(description).y + StandardMargin / 2;
-            float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;
+            float horizontalLineDif = Text.CalcSize(Description).y + StandardMargin / 2;
+            float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomLeft), "Yes"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, SmallerButtonSize, RectLocation.BottomLeft), "Yes"))
             {
-                actionYes?.Invoke();
+                OnAccept?.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomRight), "No"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, SmallerButtonSize, RectLocation.BottomRight), "No"))
             {
-                actionNo?.Invoke();
+                OnCancel?.Invoke();
                 Close();
             }
         }

@@ -42,14 +42,14 @@ namespace GameClient.Managers
         {
             ClientValues.IsAdmin = true;
             ClientValues.ManageDevOptions();
-            DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are now an admin!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are now an admin!" }));
         }
 
         private static void OnDeopCommand()
         {
             ClientValues.IsAdmin = false;
             ClientValues.ManageDevOptions();
-            DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are no longer an admin!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are no longer an admin!" }));
         }
 
         private static void OnBroadcastCommand(CommandData commandData)

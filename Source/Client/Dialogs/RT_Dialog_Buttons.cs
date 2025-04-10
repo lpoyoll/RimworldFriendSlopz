@@ -6,33 +6,19 @@ using Verse;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_Buttons : Window
+    public class RT_Dialog_Buttons : RT_Dialog_Base
     {
-        private readonly string title;
-
-        private readonly string description;
-
         private readonly string[] labels;
 
         private readonly Action[] actions;
 
-        private readonly Action onCancel;
-
-        private readonly Vector2 buttonSize = new(250f, 38f);
-
         public RT_Dialog_Buttons(string title, string description, string[] labels, Action[] actions, Action onCancel = null)
         {
-            DialogManager.dialogButtons = this;
-
-            this.title = title;
-            this.description = description;
+            this.Title = title;
+            this.Description = description;
             this.labels = labels;
             this.actions = actions;
-            this.onCancel = onCancel;
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
+            this.OnCancel = onCancel;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -43,22 +29,22 @@ namespace GameClient.Dialogs
         public override void DoWindowContents(Rect rect)
         {
             float centeredX = rect.width / 2;
-            float horizontalLineDif = Text.CalcSize(description).y + StandardMargin / 2;
-            float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;
+            float horizontalLineDif = Text.CalcSize(Description).y + StandardMargin / 2;
+            float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
             Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
             Text.Font = GameFont.Small;
 
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, 
-                Text.CalcSize(description).x, Text.CalcSize(description).y), description);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, 
+                Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
 
-            DrawCancelButton(centeredX, rect.yMax - buttonSize.y);
+            DrawCancelButton(centeredX, rect.yMax - DefaultButtonSize.y);
 
-            DrawButton(centeredX, rect.yMax - buttonSize.y * 2 - 10f, 0);
-            if (labels.Length > 1) DrawButton(centeredX, rect.yMax - buttonSize.y * 3 - 20f, 1);
-            if (labels.Length > 2) DrawButton(centeredX, rect.yMax - buttonSize.y * 4 - 30f, 2);
+            DrawButton(centeredX, rect.yMax - DefaultButtonSize.y * 2 - 10f, 0);
+            if (labels.Length > 1) DrawButton(centeredX, rect.yMax - DefaultButtonSize.y * 3 - 20f, 1);
+            if (labels.Length > 2) DrawButton(centeredX, rect.yMax - DefaultButtonSize.y * 4 - 30f, 2);
         }
 
         private void CalculateWindowSize()
@@ -86,7 +72,7 @@ namespace GameClient.Dialogs
 
         private void DrawButton(float centeredX, float height, int index)
         {
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonSize.x / 2, height), buttonSize), labels[index]))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - DefaultButtonSize.x / 2, height), DefaultButtonSize), labels[index]))
             {
                 actions[index]?.Invoke();
                 Close();
@@ -95,9 +81,9 @@ namespace GameClient.Dialogs
 
         private void DrawCancelButton(float centeredX, float height)
         {
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonSize.x / 2, height), buttonSize), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - DefaultButtonSize.x / 2, height), DefaultButtonSize), "Cancel"))
             {
-                onCancel?.Invoke();
+                OnCancel?.Invoke();
                 Close();
             }
         }

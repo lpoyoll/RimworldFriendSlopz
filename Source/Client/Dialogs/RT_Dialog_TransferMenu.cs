@@ -12,25 +12,11 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_TransferMenu : Window
+    public class RT_Dialog_TransferMenu : RT_Dialog_Base
     {
         //UI
 
         public override Vector2 InitialSize => new Vector2(600f, 512f);
-
-        private Vector2 scrollPosition = Vector2.zero;
-
-        public readonly string title = "Transfer Menu";
-
-        public readonly string description = "Select the items you wish to transfer";
-
-        private readonly float buttonX = 100f;
-
-        private readonly float buttonY = 37f;
-
-        private readonly int startAcceptingInputAtFrame;
-
-        private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
 
         //Variables
 
@@ -50,7 +36,8 @@ namespace GameClient.Dialogs
 
         public RT_Dialog_TransferMenu(TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false, bool allowFreeThings = true)
         {
-            DialogManager.dialogTransferMenu = this;
+            this.Title = "Transfer Menu";
+            this.Description = "Select the items you wish to transfer";
             this.transferLocation = transferLocation;
             this.allowItems = allowItems;
             this.allowAnimals = allowAnimals;
@@ -58,10 +45,6 @@ namespace GameClient.Dialogs
             this.allowFreeThings = allowFreeThings;
 
             ClientValues.ToggleTransfer(true);
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -82,21 +65,21 @@ namespace GameClient.Dialogs
 
         public override void DoWindowContents(Rect rect)
         {
-            float windowDescriptionDif = Text.CalcSize(description).y + 8;
+            float windowDescriptionDif = Text.CalcSize(Description).y + 8;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(title).x / 2, rect.y, rect.width, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(Title).x / 2, rect.y, rect.width, Text.CalcSize(Title).y), Title);
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(description).x / 2, windowDescriptionDif, rect.width, Text.CalcSize(description).y), description);
+            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(Description).x / 2, windowDescriptionDif, rect.width, Text.CalcSize(Description).y), Description);
             Text.Font = GameFont.Medium;
 
-            FillMainRect(new Rect(0f, 55f, rect.width, rect.height - buttonY - 65));
+            FillMainRect(new Rect(0f, 55f, rect.width, rect.height - SlimButtonSize.y - 65));
 
             Text.Font = GameFont.Small;
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept")) OnAccept();
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.width / 2 - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Reset")) OnReset();
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel")) OnCancel();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept")) OnAccept();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.width / 2 - SlimButtonSize.x / 2, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Reset")) OnReset();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel")) OnCancel();
         }
 
         private void FillMainRect(Rect mainRect)
@@ -106,10 +89,10 @@ namespace GameClient.Dialogs
 
             float height = 6f + cachedTradeables.Count * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
-            float num2 = scrollPosition.y - 30f;
-            float num3 = scrollPosition.y + mainRect.height;
+            float num2 = ScrollPosition.y - 30f;
+            float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
             for (int i = 0; i < cachedTradeables.Count; i++)
@@ -147,9 +130,9 @@ namespace GameClient.Dialogs
                     new string[] { "Gift", "Trade" }, new Action[] { r1, r2 }, null);
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
-                    delegate { DialogManager.PushNewDialog(d2); }, null);
+                    delegate { RT_Dialog_Base.PushNewDialog(d2); }, null);
 
-                DialogManager.PushNewDialog(d1);
+                RT_Dialog_Base.PushNewDialog(d1);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
@@ -157,14 +140,14 @@ namespace GameClient.Dialogs
                 Action r1 = delegate
                 {
                     SessionValues.OutgoingManifest._transferMode = TransferMode.Rebound;
-                    DialogManager.PopDialog(DialogManager.dialogItemListing);
+                    RT_Dialog_ItemListing.Instance.Close();
                     postChoosing();
                 };
 
                 RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to continue with the transfer?",
                     r1, null);
 
-                DialogManager.PushNewDialog(d1);
+                RT_Dialog_Base.PushNewDialog(d1);
             }
 
             void postChoosing()
@@ -191,7 +174,7 @@ namespace GameClient.Dialogs
 
             if (transferLocation == TransferLocation.Settlement)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
                     r1, null));
             }
             else r1.Invoke();

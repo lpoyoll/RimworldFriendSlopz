@@ -21,7 +21,7 @@ namespace GameClient.Managers
         {
             FactionGoodwillData factionGoodwillData = Serializer.ConvertBytesToObject<FactionGoodwillData>(bytes);
             ChangeStructureGoodwill(factionGoodwillData);
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
         }
 
         //Tries to request a goodwill change depending on the values given
@@ -41,7 +41,7 @@ namespace GameClient.Managers
                 if (factionToUse == ClientValues.enemyPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as enemy!" });
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Enemy);
             }
@@ -51,7 +51,7 @@ namespace GameClient.Managers
                 if (factionToUse == ClientValues.neutralPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as neutral!" });
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Neutral);
             }
@@ -61,7 +61,7 @@ namespace GameClient.Managers
                 if (factionToUse == ClientValues.allyPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as ally!" });
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 }
                 else RequestChangeStructureGoodwill(tileToUse, Goodwill.Ally);
             }
@@ -78,7 +78,7 @@ namespace GameClient.Managers
             Network.listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         //Changes a structure goodwill from a packet

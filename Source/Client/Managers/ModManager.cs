@@ -36,13 +36,13 @@ namespace GameClient.Managers
                 AskForSyncConfigs(isFirstEdit);
 
                 if (isFirstEdit) return;
-                else DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Mod configuration has been changed!" }));
+                else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Mod configuration has been changed!" }));
             };
 
             string[] keys = ModManagerH.GetRunningModList().UnsortedMods;
             string[] values = new string[] { "Required", "Optional", "Forbidden" };
             RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager", "Manage mods for the server", keys, values, toDo);
-            DialogManager.PushNewDialog(dialog);
+            RT_Dialog_Base.PushNewDialog(dialog);
         }
 
         public static void ReceiveMods(ServerGlobalData data)
@@ -69,8 +69,8 @@ namespace GameClient.Managers
         {
             ModConfigData data = new ModConfigData();
             data._stepMode = ModConfigStepMode.Send;
-            data._configFile = ModManagerH.SortModsIntoCategories(DialogManager.dialogTupleListingResultString, 
-                DialogManager.dialogTupleListingResultInt);
+            data._configFile = ModManagerH.SortModsIntoCategories(RT_Dialog_ListingWithTuple.dialogTupleListingResultString, 
+                RT_Dialog_ListingWithTuple.dialogTupleListingResultInt);
 
             Action toDoYes = delegate 
             { 
@@ -84,7 +84,7 @@ namespace GameClient.Managers
                 if (isFirstEdit) OnFirstEdit();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Do you want to enforce the mod settings?",
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Do you want to enforce the mod settings?",
                 toDoYes, toDoNo));
         }
 
@@ -108,7 +108,7 @@ namespace GameClient.Managers
         {
             Page toUse = new Page_SelectScenario();
             toUse.next = new Page_SelectStartingSite();
-            DialogManager.PushNewDialog(toUse);
+            RT_Dialog_Base.PushNewDialog(toUse);
         }
     }
 
@@ -136,7 +136,7 @@ namespace GameClient.Managers
         {
             LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
                 loginData._extraDetails.ToArray()));
         }
 

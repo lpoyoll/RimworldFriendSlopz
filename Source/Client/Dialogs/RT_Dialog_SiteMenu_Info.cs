@@ -9,7 +9,7 @@ using GameClient.Misc;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_SiteMenu_Info : Window
+    public class RT_Dialog_SiteMenu_Info : RT_Dialog_Base
     {
         public Vector2 initialSize = new Vector2(450f, 250f);
 
@@ -23,17 +23,16 @@ namespace GameClient.Dialogs
 
         public Dictionary<ThingDef, int> rewardThing = new Dictionary<ThingDef, int>();
 
-        public string title;
-
-        private Vector2 scrollPosition = Vector2.zero;
-
         private bool invalid;
+
+        public static RT_Dialog_SiteMenu_Info Instance { get; private set; }
 
         public RT_Dialog_SiteMenu_Info(SitePartDef thingChosen) //Send chosen site over
         {
             sitePartDef = thingChosen;
-            title = thingChosen.label;
+            this.Title = thingChosen.label;
             configFile = SiteManager.siteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();
+            Instance = this;
 
             for (int i = 0; i < configFile.DefNameCost.Length; i++)
             {
@@ -60,15 +59,13 @@ namespace GameClient.Dialogs
                 Printer.Error($"Could not load any cost for the sites. Please double check your configs to make sure they are valid");
                 invalid = true; // Apparently you can't "this.Close() in the constructor
             }
-
-            DialogManager.dialogSiteMenuInfo = this;
         }
 
         public override void DoWindowContents(Rect mainRect)
         {
             if (invalid)
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Site could not be loaded because of invalid configuration" }));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Site could not be loaded because of invalid configuration" }));
                 Close();
             }
 
@@ -78,7 +75,7 @@ namespace GameClient.Dialogs
             if (Widgets.CloseButtonFor(mainRect)) Close();
             float centeredX = mainRect.width / 2;
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, mainRect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, mainRect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Rect leftColumn = new Rect(mainRect.x, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 20f);
             Widgets.DrawTextureFitted(leftColumn, sitePartDef.ExpandingIconTexture, 1f); // Icon of the site
@@ -88,7 +85,7 @@ namespace GameClient.Dialogs
             float height = 40f + costThing.Count() * 25f + rewardThing.Count() * 25f + heightDesc;
             Rect viewRightColumn = new Rect(rightColumn.x, rightColumn.y, rightColumn.width - 16f, height);
 
-            Widgets.BeginScrollView(rightColumn, ref scrollPosition, viewRightColumn);
+            Widgets.BeginScrollView(rightColumn, ref ScrollPosition, viewRightColumn);
             Text.Font = GameFont.Small;
             float num = viewRightColumn.y;
 
@@ -117,8 +114,8 @@ namespace GameClient.Dialogs
             if (Widgets.ButtonText(new Rect(rightColumn.x + 5f, rightColumn.yMax, rightColumn.width - 10f, 40f), "Buy"))
             {
                 SiteManager.RequestSiteBuild(configFile);
-                DialogManager.dialogSiteMenu.Close();
-                DialogManager.dialogSiteMenuInfo.Close();
+                RT_Dialog_SiteMenu.Instance.Close();
+                RT_Dialog_SiteMenu_Info.Instance.Close();
             }
         }
     }

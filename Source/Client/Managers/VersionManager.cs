@@ -43,7 +43,7 @@ namespace GameClient.Managers
 
         public static void PromptChangeVersion()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Inputs("Version selection", 
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Version selection", 
                 new string[] { "Release number", "Password (optional)" }, 
                 new bool[] { false, true }, ChangeVersion));
         }
@@ -52,7 +52,7 @@ namespace GameClient.Managers
         {
             string downloadPath = Path.Combine(Master.appdataTempVersionPath, "3005289691.zip");
             string extractPath = Path.Combine(Master.appdataTempVersionPath, "3005289691");
-            string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{DialogManager.dialogInputResults[0]}/3005289691.zip";
+            string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{RT_Dialog_Inputs.dialogInputResults[0]}/3005289691.zip";
 
             bool freezeGame = true;
             Task.Run(delegate
@@ -69,7 +69,7 @@ namespace GameClient.Managers
             RT_Dialog_Message dialog2 = new RT_Dialog_Message("MESSAGE", new string[] { "The game will restart to apply the new version" }, 
                 GenCommandLine.Restart);
 
-            DialogManager.PushNewDialog(dialog2);
+            RT_Dialog_Base.PushNewDialog(dialog2);
         }
 
         private static bool DownloadVersion(string uri, string downloadPath)
@@ -93,7 +93,7 @@ namespace GameClient.Managers
                 if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
 
                 string appPath = Path.Combine(Master.modAddonsPath, "7z", "7z.exe");
-                CMDExecuter.StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{DialogManager.dialogInputResults[1]}\" -o\"{extractPath}\"");
+                CMDExecuter.StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{RT_Dialog_Inputs.dialogInputResults[1]}\" -o\"{extractPath}\"");
 
                 return true;
             }

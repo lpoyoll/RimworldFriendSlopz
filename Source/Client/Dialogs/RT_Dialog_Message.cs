@@ -3,15 +3,12 @@ using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using static GameClient.Managers.DialogManagerH;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_Message : Window
+    public class RT_Dialog_Message : RT_Dialog_Base
     {
         public override Vector2 InitialSize => new Vector2(500f, 150f);
-
-        private readonly string title = "MESSAGE";
 
         private string currentMessage;
 
@@ -19,20 +16,12 @@ namespace GameClient.Dialogs
 
         private int index = 0;
 
-        private readonly Action onConfirm;
-
         public RT_Dialog_Message(string title, string[] messages, Action onConfirm = null)
         {
-            DialogManager.dialogMessage = this;
-
-            this.title = title;
+            this.Title = title;
             this.messages = messages;
-            this.onConfirm = onConfirm;
+            this.OnAccept = onConfirm;
             currentMessage = messages[index];
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -45,14 +34,14 @@ namespace GameClient.Dialogs
             float windowDescriptionDif = Text.CalcSize(currentMessage).y + StandardMargin;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
             Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
             Text.Font = GameFont.Small;
 
             Widgets.Label(new Rect(centeredX - Text.CalcSize(currentMessage).x / 2, windowDescriptionDif, 
                 Text.CalcSize(currentMessage).x, Text.CalcSize(currentMessage).y), currentMessage);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomCenter), "OK"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomCenter), "OK"))
             {
                 if (index < messages.Length - 1)
                 {
@@ -62,7 +51,7 @@ namespace GameClient.Dialogs
 
                 else
                 {
-                    onConfirm?.Invoke();
+                    OnAccept?.Invoke();
                     Close();
                 }
             }

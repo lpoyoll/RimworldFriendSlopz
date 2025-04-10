@@ -48,7 +48,7 @@ namespace GameClient.Patches.Pages
 
             if (ClientValues.IsGeneratingFreshWorld)
             {
-                if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
+                if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomRight), ""))
                 {
                     Current.Game.storyteller = GameParameterManagerH.GetStorytellerReference(__instance);
 
@@ -56,7 +56,7 @@ namespace GameClient.Patches.Pages
                     {
                         GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty(__instance), true);
                         GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(__instance), true);
-                        DialogManager.PushNewDialog(__instance.next);
+                        RT_Dialog_Base.PushNewDialog(__instance.next);
                         __instance.Close();
                     };
 
@@ -64,7 +64,7 @@ namespace GameClient.Patches.Pages
                     {
                         GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty(__instance), true);
                         GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(__instance), false);
-                        DialogManager.PushNewDialog(__instance.next);
+                        RT_Dialog_Base.PushNewDialog(__instance.next);
                         __instance.Close();
                     };
 
@@ -74,19 +74,19 @@ namespace GameClient.Patches.Pages
                     {
                         GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance), true);
                         GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), true);
-                        DialogManager.PushNewDialog(d2);
+                        RT_Dialog_Base.PushNewDialog(d2);
                     };
 
                     Action storytellerNo = delegate
                     {
                         GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance), true);
                         GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), false);
-                        DialogManager.PushNewDialog(d2);
+                        RT_Dialog_Base.PushNewDialog(d2);
                     };
 
                     RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to ENFORCE the selected STORYTELLER?", storytellerYes, storytellerNo);
 
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 };
             }
 
@@ -101,12 +101,12 @@ namespace GameClient.Patches.Pages
                         {
                             GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
                             GameParameterManager.SetDifficulty(SessionValues.DifficultyFile, true);
-                            DialogManager.PushNewDialog(__instance.next);
+                            RT_Dialog_Base.PushNewDialog(__instance.next);
                             __instance.Close();
 
                             executedMessage = false;
                         };
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Storyteller will be forced by the server" }, toDo));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Storyteller will be forced by the server" }, toDo));
 
                         executedMessage = true;
                     }
@@ -146,7 +146,7 @@ namespace GameClient.Patches.Pages
                     GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
                 };
 
-                DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));
 
                 return false;
             }

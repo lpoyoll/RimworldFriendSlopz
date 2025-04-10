@@ -15,12 +15,12 @@ namespace GameClient.Managers
             RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons(dialogTitle, dialogDescription,
                 menuButtons, delegate { OpenSpecificMenu(); }, null);
 
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void OpenSpecificMenu()
         {
-            switch (DialogManager.selectedScrollButton)
+            switch (RT_Dialog_ScrollButtons.selectedScrollButton)
             {
                 case 0:
                     ModManager.OpenModManagerMenu(false);

@@ -82,7 +82,7 @@ namespace GameClient.Core.Configs
                 try
                 {
                     string path = Path.Combine(Master.appdataRTPath, "LoginData.json");
-                    string destination = Path.Combine(DialogManager.dialogInputResults[0], Path.GetFileName(path));
+                    string destination = Path.Combine(RT_Dialog_Inputs.dialogInputResults[0], Path.GetFileName(path));
                     File.Copy(path, destination);
 
                     string[] messages = new string[]
@@ -91,12 +91,12 @@ namespace GameClient.Core.Configs
                         "Put it inside the \"RimWorld Together\" AppData folder of the new machine"
                     };
 
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", messages));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", messages));
                 }
-                catch { DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Path couldn't be found!" })); }
+                catch { RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Path couldn't be found!" })); }
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_Inputs("Choose where to export the file at", new string[] { "Path" }, new bool[] { false }, toDo));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Choose where to export the file at", new string[] { "Path" }, new bool[] { false }, toDo));
         }
 
         private void ShowResetAccountQuestion()
@@ -105,10 +105,10 @@ namespace GameClient.Core.Configs
                 delegate
                 {
                     UserLoginHandler.DeleteLoginData();
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Account has been reset" }));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Account has been reset" }));
                 });
 
-            DialogManager.PushNewDialog(dialog);
+            RT_Dialog_Base.PushNewDialog(dialog);
         }
 
         private void StartProcess(string processPath)

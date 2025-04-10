@@ -4,48 +4,35 @@ using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using static GameClient.Managers.DialogManagerH;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_ListingWithTuple : Window
+    public class RT_Dialog_ListingWithTuple : RT_Dialog_Base
     {
         public override Vector2 InitialSize => new Vector2(500f, 400f);
-
-        public readonly string title;
-
-        public readonly string description;
 
         public readonly string[] keys;
 
         public string[] values;
 
-        private readonly Action actionAccept;
-
-        private readonly Vector2 selectButton = new Vector2(100f, 25f);
-
-        private readonly Vector2 smallButton = new Vector2(25f, 25f);
-
-        private Vector2 scrollPosition = Vector2.zero;
-
         public string[] valueString;
 
         public int[] valueInt;
 
+        public static string[] dialogTupleListingResultString;
+
+        public static int[] dialogTupleListingResultInt;
+
         public RT_Dialog_ListingWithTuple(string title, string description, string[] keys, string[] values, Action actionAccept = null)
         {
-            DialogManager.dialogTupleListing = this;
-            this.title = title;
-            this.description = description;
+            this.Title = title;
+            this.Description = description;
             this.keys = keys;
             this.values = values;
-            this.actionAccept = actionAccept;
+            this.OnAccept = actionAccept;
 
-            forcePause = true;
             closeOnAccept = false;
             closeOnCancel = false;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
 
             List<string> strings = new List<string>();
             for (int i = 0; i < keys.Length; i++) strings.Add(values[0]);
@@ -60,30 +47,30 @@ namespace GameClient.Dialogs
         {
             float centeredX = rect.width / 2;
 
-            float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;
-            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(description).y * 0.25f;
-            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(description).y * 1.1f;
+            float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
+            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
+            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(Description).y * 1.1f;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
             Text.Font = GameFont.Medium;
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
-            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - defaultButtonSize.y - 85f));
+            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - DefaultButtonSize.y - 85f));
 
             Text.Font = GameFont.Small;
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, smallButton, RectLocation.TopRight), "▶")) ShowFloatMenu(-1, true);
+            if (Widgets.ButtonText(GetRectForLocation(rect, TinyButtonSize, RectLocation.TopRight), "▶")) ShowFloatMenu(-1, true);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomCenter), "Accept"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomCenter), "Accept"))
             {
-                DialogManager.dialogTupleListingResultString = keys;
-                DialogManager.dialogTupleListingResultInt = valueInt;
-                actionAccept?.Invoke();
+                dialogTupleListingResultString = keys;
+                dialogTupleListingResultInt = valueInt;
+                OnAccept?.Invoke();
                 Close();
             }
         }
@@ -92,10 +79,10 @@ namespace GameClient.Dialogs
         {
             float height = 6f + keys.Length * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
-            float num2 = scrollPosition.y - 30f;
-            float num3 = scrollPosition.y + mainRect.height;
+            float num2 = ScrollPosition.y - 30f;
+            float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
             for (int i = 0; i < keys.Length; i++)
@@ -121,7 +108,7 @@ namespace GameClient.Dialogs
 
             Widgets.Label(fixedRect, element);
             string buttonLabel = valueString[index];
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButton.x, rect.yMax - selectButton.y), selectButton), buttonLabel))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - LongButtonSize.x, rect.yMax - LongButtonSize.y), LongButtonSize), buttonLabel))
             {
                 ShowFloatMenu(index, false);
             }

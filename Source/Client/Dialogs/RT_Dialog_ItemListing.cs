@@ -11,21 +11,9 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_ItemListing : Window
+    public class RT_Dialog_ItemListing : RT_Dialog_Base
     {
         public override Vector2 InitialSize => new Vector2(350f, 512f);
-
-        public readonly string title = "Item Listing";
-
-        private readonly int startAcceptingInputAtFrame;
-
-        private Vector2 scrollPosition = Vector2.zero;
-
-        private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
-
-        private readonly float buttonX = 100f;
-
-        private readonly float buttonY = 37f;
 
         private readonly Thing[] listedThings;
 
@@ -33,15 +21,11 @@ namespace GameClient.Dialogs
 
         public RT_Dialog_ItemListing(Thing[] listedThings, TransferMode transferMode)
         {
-            DialogManager.dialogItemListing = this;
             this.listedThings = listedThings;
             this.transferMode = transferMode;
+            this.Title = "Item Listing";
 
             ClientValues.ToggleTransfer(true);
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -50,18 +34,18 @@ namespace GameClient.Dialogs
         public override void DoWindowContents(Rect rect)
         {
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(title).x / 2, rect.y, rect.width, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(Title).x / 2, rect.y, rect.width, Text.CalcSize(Title).y), Title);
 
-            FillMainRect(new Rect(0f, 35f, rect.width, rect.height - buttonY - 45));
+            FillMainRect(new Rect(0f, 35f, rect.width, rect.height - SlimButtonSize.y - 45));
 
             Text.Font = GameFont.Small;
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Accept"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept"))
             {
                 OnAccept();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - buttonX, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel"))
             {
                 OnReject();
             }
@@ -73,10 +57,10 @@ namespace GameClient.Dialogs
 
             float height = 6f + listedThings.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
-            float num2 = scrollPosition.y - 30f;
-            float num3 = scrollPosition.y + mainRect.height;
+            float num2 = ScrollPosition.y - 30f;
+            float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
             for (int i = 0; i < listedThings.Count(); i++)
@@ -133,12 +117,12 @@ namespace GameClient.Dialogs
                 {
                     if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Settlement, true, true, true));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Settlement, true, true, true));
                     }
 
                     else
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
                         TransferManager.RejectRequest(transferMode);
                     }
                 }
@@ -160,7 +144,7 @@ namespace GameClient.Dialogs
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?", r1, null));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?", r1, null));
         }
 
         private void OnReject()
@@ -172,7 +156,7 @@ namespace GameClient.Dialogs
                 Close();
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?", r1, null));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?", r1, null));
         }
     }
 }

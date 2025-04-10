@@ -7,39 +7,21 @@ using Verse;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_ScrollButtons : Window
+    public class RT_Dialog_ScrollButtons : RT_Dialog_Base
     {
         public override Vector2 InitialSize => new Vector2(500f, 350f);
 
-        private Vector2 scrollPosition = Vector2.zero;
-
-        private readonly string title = "";
-
-        private readonly string description = "";
-
-        private readonly float buttonX = 250f;
-
-        private readonly float buttonY = 38f;
-
         private readonly string[] buttonNames;
 
-        private readonly Action actionSelect;
-
-        private readonly Action actionCancel;
+        public static int selectedScrollButton;
 
         public RT_Dialog_ScrollButtons(string title, string description, string[] buttonNames, Action actionSelect, Action actionCancel)
         {
-            DialogManager.dialogScrollButtons = this;
-            this.title = title;
-            this.description = description;
+            this.Title = title;
+            this.Description = description;
             this.buttonNames = buttonNames;
-            this.actionSelect = actionSelect;
-            this.actionCancel = actionCancel;
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-
-            soundAppear = SoundDefOf.CommsWindow_Open;
+            this.OnAccept = actionSelect;
+            this.OnCancel = actionCancel;
 
             closeOnAccept = false;
             closeOnCancel = true;
@@ -49,32 +31,32 @@ namespace GameClient.Dialogs
         {
             float centeredX = rect.width / 2;
 
-            float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;
-            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(description).y * 0.25f;
-            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(description).y * 1.1f;
+            float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
+            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
+            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(Description).y * 1.1f;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
             Text.Font = GameFont.Medium;
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
-            GenerateList(new Rect(rect.x, rect.yMax - buttonY * 5 - 40, rect.width, 175f), buttonNames);
+            GenerateList(new Rect(rect.x, rect.yMax - DefaultButtonSize.y * 5 - 40, rect.width, 175f), buttonNames);
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - buttonX / 2, rect.yMax - buttonY), new Vector2(buttonX, buttonY)), "Cancel"))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - DefaultButtonSize.x / 2, rect.yMax - DefaultButtonSize.y), DefaultButtonSize), "Cancel"))
             {
-                OnCancel();
+                OnBack();
             }
         }
 
-        private void OnCancel()
+        private void OnBack()
         {
-            if (actionCancel != null) actionCancel.Invoke();
+            if (OnCancel != null) OnCancel.Invoke();
 
             Close();
         }
@@ -83,24 +65,24 @@ namespace GameClient.Dialogs
         {
             float yPadding = 0;
             float extraLenght = 32f;
-            float num2 = scrollPosition.y - 30f;
-            float num3 = scrollPosition.y + mainRect.height;
-            float height = 6f + buttons.Count() * buttonY;
+            float num2 = ScrollPosition.y - 30f;
+            float num3 = ScrollPosition.y + mainRect.height;
+            float height = 6f + buttons.Count() * DefaultButtonSize.y;
 
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
 
             int index = 0;
             foreach (string str in buttons)
             {
                 if (yPadding > num2 && yPadding < num3)
                 {
-                    Rect rect = new Rect(0f, mainRect.y + yPadding, viewRect.width + extraLenght, buttonY);
+                    Rect rect = new Rect(0f, mainRect.y + yPadding, viewRect.width + extraLenght, DefaultButtonSize.y);
                     DrawCustomRow(rect, str);
                     index++;
                 }
 
-                yPadding += buttonY;
+                yPadding += DefaultButtonSize.y;
             }
 
             Widgets.EndScrollView();
@@ -117,8 +99,8 @@ namespace GameClient.Dialogs
                 {
                     if (buttonNames[i] == buttonName)
                     {
-                        DialogManager.selectedScrollButton = i;
-                        actionSelect?.Invoke();
+                        selectedScrollButton = i;
+                        OnAccept?.Invoke();
                         Close();
                     }
                 }

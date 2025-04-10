@@ -3,31 +3,18 @@ using GameClient.Managers;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using static GameClient.Managers.DialogManagerH;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_Inputs : Window
+    public class RT_Dialog_Inputs : RT_Dialog_Base
     {
-        // Essentials
-
-        private bool AcceptsInput => startAcceptingInputAtFrame <= Time.frameCount;
-
-        private readonly int startAcceptingInputAtFrame;
-
         // Parameters
-
-        private readonly string title;
 
         private readonly float inputWidth = 300f;
 
         private readonly float inputHeight = 30f;
 
         private readonly int maxChars = 512;
-
-        private readonly Action onConfirm;
-
-        private readonly Action onCancel;
 
         // Inputs
 
@@ -39,22 +26,18 @@ namespace GameClient.Dialogs
 
         private readonly string[] censorResult = new string[] { };
 
+        public static string[] dialogInputResults;
+
         public RT_Dialog_Inputs(string title, string[] labels, bool[] censors, Action onConfirm = null, Action onCancel = null)
         {
-            DialogManager.dialogInput = this;
-
-            this.title = title;
-            this.onConfirm = onConfirm;
-            this.onCancel = onCancel;
+            this.Title = title;
+            this.OnAccept = onConfirm;
+            this.OnCancel = onCancel;
 
             this.labels = labels;
             this.censors = censors;
             results = new string[] { "", "", "" };
             censorResult = new string[] { "", "", "" };
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -65,10 +48,10 @@ namespace GameClient.Dialogs
         public override void DoWindowContents(Rect rect)
         {
             float centeredX = rect.width / 2;
-            float titleSeparator = Text.CalcSize(title).y + StandardMargin / 2;
+            float titleSeparator = Text.CalcSize(Title).y + StandardMargin / 2;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
             Widgets.DrawLineHorizontal(rect.x, titleSeparator, rect.width);
             Text.Font = GameFont.Small;
 
@@ -90,16 +73,16 @@ namespace GameClient.Dialogs
                 }
             }
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomLeft), "Confirm"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomLeft), "Confirm"))
             {
-                DialogManager.dialogInputResults = new string[] { results[0], results[1], results[2] };
-                onConfirm?.Invoke();
+                RT_Dialog_Inputs.dialogInputResults = new string[] { results[0], results[1], results[2] };
+                OnAccept?.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomRight), "Cancel"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomRight), "Cancel"))
             {
-                onCancel?.Invoke();
+                OnCancel?.Invoke();
                 Close();
             }
         }

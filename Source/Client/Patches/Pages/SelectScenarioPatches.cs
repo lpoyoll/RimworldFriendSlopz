@@ -33,12 +33,12 @@ namespace GameClient.Patches.Pages
                         Page_SelectScenario.BeginScenarioConfiguration(GameParameterManagerH.GetScenarioReference(__instance), __instance);
                         GameParameterManager.SetScenario(SessionValues.ScenarioFile);
 
-                        DialogManager.PushNewDialog(__instance.next);
+                        RT_Dialog_Base.PushNewDialog(__instance.next);
                         __instance.Close();
 
                         executedMessage = false;
                     };
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Scenario will be forced by the server" }, toDo));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Scenario will be forced by the server" }, toDo));
 
                     executedMessage = true;
                 }
@@ -46,7 +46,7 @@ namespace GameClient.Patches.Pages
 
             else
             {
-                if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomLeft), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
+                if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomLeft), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                 {
                     __instance.Close();
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
@@ -55,25 +55,25 @@ namespace GameClient.Patches.Pages
 
                 if (ClientValues.IsGeneratingFreshWorld)
                 {
-                    if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomRight), ""))
+                    if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomRight), ""))
                     {
                         Page_SelectScenario.BeginScenarioConfiguration(GameParameterManagerH.GetScenarioReference(__instance), __instance);
 
                         Action a1 = delegate
                         {
                             GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), true);
-                            DialogManager.PushNewDialog(__instance.next);
+                            RT_Dialog_Base.PushNewDialog(__instance.next);
                             __instance.Close();
                         };
 
                         Action a2 = delegate
                         {
                             GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), false);
-                            DialogManager.PushNewDialog(__instance.next);
+                            RT_Dialog_Base.PushNewDialog(__instance.next);
                             __instance.Close();
                         };
 
-                        DialogManager.PushNewDialog(new RT_Dialog_YesNo("Do you want to ENFORCE the selected SCENARIO?", a1, a2));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Do you want to ENFORCE the selected SCENARIO?", a1, a2));
                     };
                 }
             }
@@ -86,7 +86,7 @@ namespace GameClient.Patches.Pages
         {
             if (Network.state == ClientNetworkState.Disconnected) return;
 
-            if (Widgets.ButtonText(DialogManagerH.GetRectForLocation(rect, DialogManagerH.defaultButtonSize, DialogManagerH.RectLocation.BottomLeft), "Disconnect")) { };
+            if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomLeft), "Disconnect")) { };
         }
     }
 
@@ -99,7 +99,7 @@ namespace GameClient.Patches.Pages
             if (Network.state == ClientNetworkState.Disconnected) return true;
             if (SessionValues.ActionValues.EnableCustomScenarios) return true;
 
-            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
             return false;
         }
     }

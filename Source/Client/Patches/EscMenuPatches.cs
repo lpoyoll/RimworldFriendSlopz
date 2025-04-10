@@ -23,7 +23,7 @@ namespace GameClient.Patches
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 2, buttonSize.x, buttonSize.y), ""))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
@@ -32,7 +32,7 @@ namespace GameClient.Patches
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 3, buttonSize.x, buttonSize.y), ""))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToOS);
@@ -93,12 +93,12 @@ namespace GameClient.Patches
 
                     Action r1 = delegate
                     {
-                        DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
                         SaveManager.RequestResetSave();
                     };
 
                     RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to delete your save?", r1, null);
-                    DialogManager.PushNewDialog(d1);
+                    RT_Dialog_Base.PushNewDialog(d1);
                 }
             }
 

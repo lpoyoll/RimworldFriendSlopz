@@ -56,7 +56,7 @@ namespace GameClient.Managers
         {
             Action r3 = delegate
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for member list"));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for member list"));
 
                 PlayerGuildData playerFactionData = new PlayerGuildData();
                 playerFactionData._stepMode = GuildStepMode.MemberList;
@@ -75,7 +75,7 @@ namespace GameClient.Managers
 
             Action r1 = delegate
             {
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for faction deletion"));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for faction deletion"));
 
                 PlayerGuildData playerFactionData = new PlayerGuildData();
                 playerFactionData._stepMode = GuildStepMode.Delete;
@@ -89,38 +89,38 @@ namespace GameClient.Managers
 
             RT_Dialog_Buttons d1 = new RT_Dialog_Buttons("Faction Management", "Manage your faction from here",
                 new string[] { "Members", "Delete", "Leave" },
-                new Action[] { delegate { r3(); }, delegate { DialogManager.PushNewDialog(d2); }, delegate { DialogManager.PushNewDialog(d3); } },
+                new Action[] { delegate { r3(); }, delegate { RT_Dialog_Base.PushNewDialog(d2); }, delegate { RT_Dialog_Base.PushNewDialog(d3); } },
                 null);
 
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void OnNoFactionOpen()
         {
             Action r2 = delegate
             {
-                if (string.IsNullOrWhiteSpace(DialogManager.dialogInputResults[0]) || DialogManager.dialogInputResults[0].Length > 32)
+                if (string.IsNullOrWhiteSpace(RT_Dialog_Inputs.dialogInputResults[0]) || RT_Dialog_Inputs.dialogInputResults[0].Length > 32)
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Faction name is invalid! Please try again!" }));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Faction name is invalid! Please try again!" }));
                 }
 
                 else
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for faction creation"));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for faction creation"));
 
                     PlayerGuildData playerFactionData = new PlayerGuildData();
                     playerFactionData._stepMode = GuildStepMode.Create;
-                    playerFactionData._file.Name = DialogManager.dialogInputResults[0];
+                    playerFactionData._file.Name = RT_Dialog_Inputs.dialogInputResults[0];
 
                     Network.listener.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
                 }
             };
             RT_Dialog_Inputs d2 = new RT_Dialog_Inputs("New Faction Name", new string[] { "Input the name of your new faction" }, new bool[] { false }, r2);
 
-            Action r1 = delegate { DialogManager.PushNewDialog(d2); };
+            Action r1 = delegate { RT_Dialog_Base.PushNewDialog(d2); };
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You are not a member of any faction! Create one?", r1, null);
 
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void OnFactionOpenOnMember()
@@ -160,14 +160,14 @@ namespace GameClient.Managers
 
             RT_Dialog_Buttons d2 = new RT_Dialog_Buttons("Power Management Menu", "Choose what you want to manage",
                 new string[] { "Promote", "Demote" },
-                new Action[] { delegate { DialogManager.PushNewDialog(d4); }, delegate { DialogManager.PushNewDialog(d5); } },
-                delegate { DialogManager.PushNewDialog(DialogManager.previousDialog); });
+                new Action[] { delegate { RT_Dialog_Base.PushNewDialog(d4); }, delegate { RT_Dialog_Base.PushNewDialog(d5); } },
+                delegate { RT_Dialog_Base.PushNewDialog(RT_Dialog_Base.PreviousDialog); });
 
             RT_Dialog_Buttons d1 = new RT_Dialog_Buttons("Management Menu", "Choose what you want to manage",
                 new string[] { "Powers", "Kick" },
-                new Action[] { delegate { DialogManager.PushNewDialog(d2); }, delegate { DialogManager.PushNewDialog(d3); } });
+                new Action[] { delegate { RT_Dialog_Base.PushNewDialog(d2); }, delegate { RT_Dialog_Base.PushNewDialog(d3); } });
 
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void OnFactionOpenOnNonMember()
@@ -182,7 +182,7 @@ namespace GameClient.Managers
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to invite this player to your faction?", r1, null);
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         private static void OnCreateFaction()
@@ -195,29 +195,29 @@ namespace GameClient.Managers
                 "You can now access its menu through the same button"
             };
 
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
             RT_Dialog_Message d1 = new RT_Dialog_Message("MESSAGE", messages);
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         private static void OnDeleteFaction()
         {
             ClientValues.HasFaction = false;
 
-            if (!ClientValues.IsInTransfer) DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your faction has been deleted!" }));
+            if (!ClientValues.IsInTransfer) RT_Dialog_Wait.Instance.Close();
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your faction has been deleted!" }));
         }
 
         private static void OnFactionNameInUse()
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "That faction name is already in use!" }));
+            RT_Dialog_Wait.Instance.Close();
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "That faction name is already in use!" }));
         }
 
         private static void OnFactionNoPower()
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You don't have enough power for this action!" }));
+            RT_Dialog_Wait.Instance.Close();
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You don't have enough power for this action!" }));
         }
 
         private static void OnFactionGetInvited(PlayerGuildData factionManifest)
@@ -232,24 +232,24 @@ namespace GameClient.Managers
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest._file.Name}, accept?", r1, null);
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         private static void OnFactionGetKicked()
         {
             ClientValues.HasFaction = false;
 
-            DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been kicked from your faction!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been kicked from your faction!" }));
         }
 
         private static void OnFactionAdminProtection()
         {
-            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You can't do this action as a faction admin!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You can't do this action as a faction admin!" }));
         }
 
         private static void OnFactionMemberList(PlayerGuildData factionManifest)
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             List<string> toDisplay = new List<string>();
             for (int i = 0; i < factionManifest._file.CurrentUids.Count; i++)
@@ -261,7 +261,7 @@ namespace GameClient.Managers
             RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members",
                 "All faction members are depicted here", toDisplay.ToArray());
 
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
     }
 }

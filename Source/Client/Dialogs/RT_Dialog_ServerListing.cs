@@ -10,31 +10,18 @@ using Verse;
 
 namespace GameClient.Dialogs
 {
-    public class RT_Dialog_ServerListing : Window
+    public class RT_Dialog_ServerListing : RT_Dialog_Base
     {
         public override Vector2 InitialSize => new Vector2(650f, 400f);
 
-        public readonly string title = "Recent servers";
-
-        public readonly string description = "This list shows the servers you last joined";
-
-        private Vector2 scrollPosition = Vector2.zero;
-
-        private readonly Vector2 button = new Vector2(150f, 38f);
-
-        private readonly Vector2 selectButton = new Vector2(47f, 25f);
-
-        private readonly Vector2 deleteButton = new Vector2(47f, 25f);
-
         public RecentServersFile recentServers => RecentServersHandler.LoadRecentServers();
+
+        public static int dialogServerListingIndex;
 
         public RT_Dialog_ServerListing()
         {
-            DialogManager.dialogServerListing = this;
-
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
+            this.Title = "Recent servers";
+            this.Description = "This list shows the servers you last joined";
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -44,33 +31,33 @@ namespace GameClient.Dialogs
         {
             float centeredX = rect.width / 2;
 
-            float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;
-            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(description).y * 0.25f;
-            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(description).y * 1.1f;
+            float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
+            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
+            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(Description).y * 1.1f;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(title).x / 2, rect.y, Text.CalcSize(title).x, Text.CalcSize(title).y), title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
             Text.Font = GameFont.Medium;
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
-            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - button.y - 85f));
+            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - DefaultButtonSize.y - 85f));
 
             Text.Font = GameFont.Small;
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - button.x / 2, rect.yMax - button.y), button), "Close")) Close();
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - DefaultButtonSize.x / 2, rect.yMax - DefaultButtonSize.y), DefaultButtonSize), "Close")) Close();
         }
 
         private void FillMainRect(Rect mainRect)
         {
             float height = 6f + recentServers.ServerAddresses.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
-            float num2 = scrollPosition.y - 30f;
-            float num3 = scrollPosition.y + mainRect.height;
+            float num2 = ScrollPosition.y - 30f;
+            float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
             for (int i = 0; i < recentServers.ServerAddresses.Count(); i++)
@@ -95,19 +82,19 @@ namespace GameClient.Dialogs
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, $"{serverName} - {serverAddress}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButton.x - deleteButton.x - 5f, rect.yMax - selectButton.y), selectButton), "Select"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x - TinyButtonSize.x - 5f, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Select"))
             {
                 Network.ip = serverAddress.Split(':')[0];
                 Network.port = serverAddress.Split(':')[1];
 
-                DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                 Threader.GenerateThread(Threader.Mode.Start);
                 Close();
             }
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - deleteButton.x, rect.yMax - deleteButton.y), deleteButton), "Delete"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Delete"))
             {
-                DialogManager.dialogServerListingIndex = index;
+                dialogServerListingIndex = index;
 
                 RecentServersHandler.RemoveServerFromList(serverName, serverAddress);
 
@@ -115,6 +102,6 @@ namespace GameClient.Dialogs
             }
         }
 
-        private void ResetWindow() { DialogManager.PushNewDialog(new RT_Dialog_ServerListing()); }
+        private void ResetWindow() { RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListing()); }
     }
 }

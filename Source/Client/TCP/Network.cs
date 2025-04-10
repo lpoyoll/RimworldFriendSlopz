@@ -41,9 +41,9 @@ namespace GameClient.TCP
 
             else
             {
-                DialogManager.PopWaitDialog();
+                RT_Dialog_Wait.Instance.Close();
                 RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "The server did not respond in time" });
-                DialogManager.PushNewDialog(d1);
+                RT_Dialog_Base.PushNewDialog(d1);
                 DisconnectFromServer();
             }
         }

@@ -70,7 +70,7 @@ namespace GameClient.Managers
 
             Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
 
         public static void RequestRaidSite()
@@ -81,7 +81,7 @@ namespace GameClient.Managers
 
             Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
 
         public static void RequestDestroySite()
@@ -96,7 +96,7 @@ namespace GameClient.Managers
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
-            DialogManager.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void RequestSiteBuild(SiteInfoFile configFile)
@@ -105,7 +105,7 @@ namespace GameClient.Managers
             {
                 if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.ChosenCaravan, configFile.DefNameCost[i], configFile.Cost[i]))
                 {
-                    DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver!" }));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver!" }));
                     return;
                 }
             }
@@ -123,7 +123,7 @@ namespace GameClient.Managers
 
             Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
-            DialogManager.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
         }
 
         public static void RequestSiteChangeConfig(SiteInfoFile config, string reward)
@@ -225,7 +225,7 @@ namespace GameClient.Managers
 
         private static void VisitSite(SiteData siteData)
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             Map toUse = null;
             if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
@@ -236,7 +236,7 @@ namespace GameClient.Managers
 
         private static void RaidSite(SiteData siteData)
         {
-            DialogManager.PopWaitDialog();
+            RT_Dialog_Wait.Instance.Close();
 
             Map toUse = null;
             if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
@@ -251,16 +251,16 @@ namespace GameClient.Managers
 
         private static void OnSiteAccept()
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "The desired site has been built!" }));
+            RT_Dialog_Wait.Instance.Close();
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "The desired site has been built!" }));
 
             SaveManager.ForceSave();
         }
 
         private static void OnSiteDeny()
         {
-            DialogManager.PopWaitDialog();
-            DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "The current action is not available!" }));
+            RT_Dialog_Wait.Instance.Close();
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "The current action is not available!" }));
         }
     }
 }

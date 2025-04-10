@@ -238,7 +238,7 @@ namespace GameClient.Managers
                     new Action[] { delegate { ShowRoadBuildDialog(neighborTiles); }, delegate { ShowRoadDestroyDialog(neighborTiles); } }, 
                     null);
 
-                DialogManager.PushNewDialog(d1);
+                RT_Dialog_Base.PushNewDialog(d1);
             }
             else ShowRoadBuildDialog(neighborTiles);
         }
@@ -263,13 +263,13 @@ namespace GameClient.Managers
 
             Action r1 = delegate
             {
-                int selectedTile = selectableTiles[DialogManager.dialogButtonListingResultInt];
+                int selectedTile = selectableTiles[RT_Dialog_ListingWithButton.dialogButtonListingResultInt];
 
                 RT_Dialog_ListingWithButton d1 = new RT_Dialog_ListingWithButton("Road builder", "Select road type to use",
                     GetAvailableRoadLabels(true),
                     delegate
                     {
-                        int selectedIndex = DialogManager.dialogButtonListingResultInt;
+                        int selectedIndex = RT_Dialog_ListingWithButton.dialogButtonListingResultInt;
 
                         if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionValues.ChosenCaravan, allowedRoadCosts[selectedIndex]))
                         {
@@ -277,13 +277,13 @@ namespace GameClient.Managers
                             RoadManager.SendRoadAddRequest(SessionValues.ChosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             SaveManager.ForceSave();
                         }
-                        else DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
+                        else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
                     });
 
-                DialogManager.PushNewDialog(d1);
+                RT_Dialog_Base.PushNewDialog(d1);
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road builder", "Select a tile to connect with",
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_ListingWithButton("Road builder", "Select a tile to connect with",
                 selectableTileLabels.ToArray(), r1));
         }
 
@@ -305,12 +305,12 @@ namespace GameClient.Managers
 
             Action r1 = delegate
             {
-                int selectedTile = selectableTiles[DialogManager.dialogButtonListingResultInt];
+                int selectedTile = selectableTiles[RT_Dialog_ListingWithButton.dialogButtonListingResultInt];
 
                 RoadManager.SendRoadRemoveRequest(SessionValues.ChosenCaravan.Tile, selectedTile);
             };
 
-            DialogManager.PushNewDialog(new RT_Dialog_ListingWithButton("Road destroyer", "Select a tile to disconnect from",
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_ListingWithButton("Road destroyer", "Select a tile to disconnect from",
                 selectableTilesLabels.ToArray(), r1));
         }
 
