@@ -30,9 +30,12 @@ namespace GameClient.Dialogs
         public RecentServersFile recentServers => RecentServersHandler.LoadRecentServers();
 
         public ServerInfo[] AllServers = new ServerInfo[0];
+
+        private bool failedToFetchServers = false;
         public RT_Dialog_ServerListing()
         {
-            GetServers();
+            if (!GetServers())
+                failedToFetchServers = true;
             DialogManager.dialogServerListing = this;
 
             forcePause = true;
@@ -43,14 +46,19 @@ namespace GameClient.Dialogs
             closeOnCancel = false;
         }
 
-        private void GetServers() 
+        private bool GetServers() 
         {
             ServerInfo[] servers = ServerBrowserManager.GetAllServersAvailable();
+            if (servers == null)
+                return false;
             AllServers = servers;
+            return true;
         }
 
         public override void DoWindowContents(Rect rect)
         {
+            if (failedToFetchServers)
+                Close();
             float centeredX = rect.width / 2;
 
             float windowDescriptionDif = Text.CalcSize(description).y + StandardMargin;

@@ -30,6 +30,7 @@ namespace GameClient.Managers
                 if (string.IsNullOrEmpty(response))
                 {
                     Printer.Warning($"response was null");
+                    return null;
                 }
                 return Serializer.SerializeFromString<AllServersPacket>(response)._serverInfos;
             }

@@ -168,11 +168,14 @@ namespace GameClient.Managers
                 var mod = ModLister.GetActiveModWithIdentifier(modNames[i]);
                 if (mod.OnSteamWorkshop) 
                 {
+                    Printer.Warning($"Mod {mod.PackageId} was on steam!");
                     var hook = mod.GetWorkshopItemHook();
                     steamIds.Add(hook.PublishedFileId.m_PublishedFileId);
+                    Printer.Warning($"{hook.PublishedFileId.m_PublishedFileId}");
                 }
                 else 
                 {
+                    Printer.Warning($"Mod {mod.PackageId} was not on steam!");
                     steamIds.Add(0);
                 }
             }
@@ -181,6 +184,7 @@ namespace GameClient.Managers
             configFile.RequiredMods = requiredMods.ToArray();
             configFile.OptionalMods = optionalMods.ToArray();
             configFile.ForbiddenMods = forbiddenMods.ToArray();
+            configFile.AllModIds = steamIds.ToArray();
 
             return configFile;
         }

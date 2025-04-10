@@ -48,31 +48,42 @@ namespace GameClient.Dialogs
 
             if (Widgets.ButtonText(connectRect, "Connect"))
             {
-                Dictionary<string, ulong> downloadableMods = new Dictionary<string, ulong>();
-                List<string> missingMods = new List<string>();
-                Dictionary<string, string> display = new Dictionary<string, string>();
+                var downloadableMods = new Dictionary<string, ulong>();
+                var missingMods = new List<string>();
+                var display = new List<string>();
+                var modsToEnable = new List<string>();
                 for (int i = 0; i < info._config.UnsortedMods.Length; i++)
                 {
                     string mod = info._config.UnsortedMods[i];
-                    if (ModLister.AllInstalledMods.Any(x => x.PackageId == mod))
+                    var foundMod = ModLister.AllInstalledMods.Where(x => x.PackageId == mod).FirstOrDefault();
+                    if (foundMod != null) 
+                    {
+                        if (!foundMod.Active)
+                        {
+                            display.Add($"[Enableable]> {foundMod.Name}");
+                            modsToEnable.Add(mod);
+                        }
                         continue;
+                    }
 
                     if (info._config.AllModIds[i] != 0)
                     {
                         downloadableMods.Add(mod, info._config.AllModIds[i]);
-                        display.Add($"Can be downloaded", mod);
+                        modsToEnable.Add(mod);
+                        display.Add($"[Downloadable]> {mod}");
                     }
                     else
                     {
                         missingMods.Add(mod);
-                        display.Add($"Cannot be downloaded", mod);
+                        modsToEnable.Add(mod);
+                        display.Add($"[Unavailable]> {mod}");
                     }
                 }
-                if (missingMods.Any() || downloadableMods.Any()) {
-                    DialogManager.PushNewDialog(new RT_Dialog_ListingWithTuple("Missing mods!",
-                        "Do you want to download the missing mods automatically?",
-                        display.Keys.ToArray(),
-                        display.Values.ToArray(),
+                if (missingMods.Any() || downloadableMods.Any() || modsToEnable.Any()) {
+                    Printer.Warning($"Found {downloadableMods.Count} mods to download and {missingMods} mods that cannot be downloaded.");
+                    DialogManager.PushNewDialog(new RT_Dialog_Listing("Missing mods!",
+                        "Do you want to download/enable the missing mods automatically?",
+                        display.ToArray(),
                         () =>
                         {
                             foreach (var value in downloadableMods)
@@ -90,18 +101,32 @@ namespace GameClient.Dialogs
                                     }
                                 }
                             }
-                            if (downloadableMods.Count + missingMods.Count > 0)
+                            if (downloadableMods.Count > 0)
                             {
                                 List<string> modsToReport = new List<string>();
                                 modsToReport.AddRange(downloadableMods.Keys);
-                                modsToReport.AddRange(missingMods);
                                 DialogManager.PushNewDialog(new RT_Dialog_Listing("Error",
                                     "Something went wrong while downloading the following mods:",
                                     modsToReport.ToArray()));
                             }
                             else
                             {
-                                DialogManager.PushNewDialog(new RT_Dialog_Message("Success.", new string[] { "Please restart your game." }));
+                                List<string> modsToEnable = new List<string>();
+                                modsToEnable.AddRange(info._config.RequiredMods);
+                                modsToEnable.AddRange(info._config.OptionalMods);
+                                foreach (string str in modsToEnable)
+                                {
+                                    if(!info._config.ForbiddenMods.Contains(str) && !missingMods.Contains(str))
+                                        ModsConfig.SetActive(str, true);
+                                }
+                                ModsConfig.TrySortMods();
+                                ModsConfig.Save();
+                                DialogManager.PushNewDialog(new RT_Dialog_Message("Success.", new string[] { "Game will now restart, give some time for steam to download the mods." }, 
+                                () => 
+                                {
+                                    GenCommandLine.Restart();
+                                }
+                                ));
                             }
                         }
                     ));

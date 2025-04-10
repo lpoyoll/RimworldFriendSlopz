@@ -16,47 +16,48 @@ namespace GameServer.Managers
     public static class ServerBrowserManager
     {
         private const string MasterServer = "https://rimworldtogether.eragon.dev";
+        private const int MaxDescriptionLength = 200;
+        private const int MaxNameLength = 40;
+        private const int DelayBetweenRequest = 5000; //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
+        private const int DelayBetweenErrors = 18000000;
         private static HttpClientHandler handler = new HttpClientHandler() { UseProxy = false };
         private static HttpClient Client = new HttpClient(handler) 
         {
             DefaultRequestVersion = HttpVersion.Version11
         };
-        private const int DelayBetweenRequest = 5000; //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
-        private const int DelayBetweenErrors = 18000000;
         public static void StartLoops()
         {
             Task.Run(async () =>
             {
-                if (Master.serverConfig.EnableServerBrowser) 
+                if (Master.serverConfig.EnableServerBrowser)
                 {
-                    Printer.Warning($"You have enabled the server browser feature. By doing so, you understand that:" +
-                        $"\n- Your server's information (name, description, player count, ect... will be shared to possibly all Rimworld Together's users." +
-                        $"\n- Your server's contact information (public ip adress and port) will be shared to possibly all Rimworld Together's users." +
-                        $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.configsPath, "ServerConfig.json")} "+ 
-                        "\nunder the `EnableServerBrowser` setting and then restart the server.");
-                    if (string.IsNullOrEmpty(Master.serverConfig.PublicEndPoint))
+                    if (ValidateServerInfos())
                     {
-                        Printer.Error($"Tried enabling Server Browser features without an PublicEndPoint. Add your public ip adress, DNS or domain and restart the server.");
-                        return;
-                    }
-                    while (true)
-                    {
-                        bool result = await SendServerInfo();
-                        if (result)
+                        Printer.Warning($"You have enabled the server browser feature. By doing so, you understand that:" +
+                            $"\n- Your server's information (name, description, player count, ect... will be shared to possibly all Rimworld Together's users." +
+                            $"\n- Your server's contact information (public ip adress and port) will be shared to possibly all Rimworld Together's users." +
+                            $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.configsPath, "ServerConfig.json")} " +
+                            "\nunder the `EnableServerBrowser` setting and then restart the server.");
+                        Console.CancelKeyPress += SendClosureSignalFromConsole;
+                        AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
+                        while (true)
                         {
-                            await Task.Delay(DelayBetweenRequest); 
-                        }
-                        else
-                        {
-                            await Task.Delay(DelayBetweenErrors);
+                            bool result = await SendServerInfo();
+                            if (result)
+                            {
+                                await Task.Delay(DelayBetweenRequest);
+                            }
+                            else
+                            {
+                                await Task.Delay(DelayBetweenErrors);
+                            }
                         }
                     }
-                    Console.CancelKeyPress += SendClosureSignalFromConsole;
-                    AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
                 }
-                else 
+                else
                 {
-                    Printer.Warning($"The server browser is currently disabled. If you want to advertise your server to all Rimworld Together's users, you can turn on the server browser");
+                    Printer.Warning($"The server browser is currently disabled. " +
+                        $"If you want to advertise your server to all Rimworld Together's users, you can turn on the server browser.");
                     while (true)
                     {
                         bool result = await SendServerPlayerCount();
@@ -71,6 +72,26 @@ namespace GameServer.Managers
                     }
                 }
             });
+        }
+        private static bool ValidateServerInfos() 
+        {
+            var serverInfo = Master.serverConfig;
+            if(serverInfo.Description.Length > MaxDescriptionLength) 
+            {
+                Printer.Error($"Server description is above {MaxDescriptionLength} characters, please shorten it. Server browser features have been turned off");
+                return false;
+            }
+            if (string.IsNullOrEmpty(serverInfo.PublicEndPoint)) 
+            {
+                Printer.Error($"Public endpoint is empty. Please set your public ip adress or domain. Server browser features have been turned off");
+                return false;
+            }
+            if (serverInfo.Name.Length > MaxNameLength)
+            {
+                Printer.Error($"Server name is above {MaxNameLength} characters, please shorten it. Server browser freatures have been turned off");
+                return false;
+            }
+            return true;
         }
 
         private static async Task<bool> SendServerInfo()
