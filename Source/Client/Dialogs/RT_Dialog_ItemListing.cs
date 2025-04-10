@@ -19,11 +19,14 @@ namespace GameClient.Dialogs
 
         private readonly TransferMode transferMode;
 
+        public static RT_Dialog_Base Instance { get; private set; } = null;
+
         public RT_Dialog_ItemListing(Thing[] listedThings, TransferMode transferMode)
         {
             this.listedThings = listedThings;
             this.transferMode = transferMode;
             this.Title = "Item Listing";
+            Instance = this;
 
             ClientValues.ToggleTransfer(true);
 

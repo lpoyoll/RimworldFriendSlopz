@@ -15,6 +15,8 @@ namespace GameClient.Dialogs
 
         public static int selectedScrollButton;
 
+        public static RT_Dialog_Base Instance { get; private set; } = null;
+
         public RT_Dialog_ScrollButtons(string title, string description, string[] buttonNames, Action actionSelect, Action actionCancel)
         {
             this.Title = title;
@@ -22,6 +24,7 @@ namespace GameClient.Dialogs
             this.buttonNames = buttonNames;
             this.OnAccept = actionSelect;
             this.OnCancel = actionCancel;
+            Instance = this;
 
             closeOnAccept = false;
             closeOnCancel = true;

@@ -24,8 +24,11 @@ namespace GameClient.Dialogs
 
         private bool invalid;
 
+        public static RT_Dialog_Base Instance { get; private set; } = null;
+
         public RT_Dialog_SiteMenu_Config(SitePartDef thingChosen) //Send chosen site over
         {
+            Instance = this;
             sitePartDef = thingChosen;
             this.Title = thingChosen.label;
             configFile = SiteManager.siteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();

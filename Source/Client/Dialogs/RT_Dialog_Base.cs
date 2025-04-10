@@ -42,12 +42,8 @@ namespace GameClient.Dialogs
 
         public Vector2 ScrollPosition = Vector2.zero;
 
-        public static RT_Dialog_Base Instance { get; private set; } = null;
-
         public RT_Dialog_Base() 
         { 
-            Instance = this;
-
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;

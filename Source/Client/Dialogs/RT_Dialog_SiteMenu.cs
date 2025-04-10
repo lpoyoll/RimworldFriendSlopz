@@ -18,8 +18,11 @@ namespace GameClient.Dialogs
 
         private bool IsInConfigMode;
 
+        public static RT_Dialog_Base Instance { get; private set; } = null;
+
         public RT_Dialog_SiteMenu(bool configMode)
         {
+            Instance = this;
             this.Title = "Choose a site";
             this.IsInConfigMode = configMode;
         }

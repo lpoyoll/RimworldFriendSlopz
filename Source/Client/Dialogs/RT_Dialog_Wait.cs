@@ -9,8 +9,11 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(300f, 100f);
 
+        public static RT_Dialog_Base Instance { get; private set; } = null;
+
         public RT_Dialog_Wait(string description)
         {
+            Instance = this;
             this.Title = "WAIT";
             this.Description = description;
 
