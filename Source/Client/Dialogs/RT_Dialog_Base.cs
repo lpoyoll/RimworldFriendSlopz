@@ -57,13 +57,9 @@ namespace GameClient.Dialogs
 
         public static void PushNewDialog(Window window)
         {
-            if (ClientValues.IsReadyToPlay || Current.ProgramState == ProgramState.Entry)
-            {
-                PreviousDialog = CurrentDialog;
-                CurrentDialog = window;
-
-                Find.WindowStack.Add(window);
-            }
+            PreviousDialog = CurrentDialog;
+            Find.WindowStack.Add(window);
+            CurrentDialog = window;
         }
 
         public enum RectLocation { TopLeft, TopCenter, TopRight, MiddleLeft, MiddleCenter, MiddleRight, BottomLeft, BottomCenter, BottomRight }
