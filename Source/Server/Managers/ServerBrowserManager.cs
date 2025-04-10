@@ -18,7 +18,7 @@ namespace GameServer.Managers
         private const string MasterServer = "https://rimworldtogether.eragon.dev";
         private const int MaxDescriptionLength = 200;
         private const int MaxNameLength = 40;
-        private const int DelayBetweenRequest = 5000; //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
+        private const int DelayBetweenRequest = 520000; //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
         private const int DelayBetweenErrors = 18000000;
         private static HttpClientHandler handler = new HttpClientHandler() { UseProxy = false };
         private static HttpClient Client = new HttpClient(handler) 
