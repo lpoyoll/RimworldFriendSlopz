@@ -39,7 +39,7 @@ namespace GameClient.Dialogs
 
         private readonly string[] censorResult = new string[] { };
 
-        public RT_Dialog_Inputs(string title, string[] labels, bool[] censors, Action onConfirm = null, Action onCancel = null)
+        public RT_Dialog_Inputs(string title, string[] labels, bool[] censors, Action onConfirm = null, Action onCancel = null, string onConfirmText = "Confirm", string OnCancel = "Cancel")
         {
             DialogManager.dialogInput = this;
 

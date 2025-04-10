@@ -19,13 +19,17 @@ namespace GameClient.Dialogs
 
         private readonly Action actionNo;
 
-        public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null)
+        private readonly string nText;
+
+        private readonly string yText;
+        public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null, string yText = "Yes", string nText = "No")
         {
             DialogManager.dialogYesNo = this;
             this.description = description;
             this.actionYes = actionYes;
             this.actionNo = actionNo;
-
+            this.yText = yText;
+            this.nText = nText;
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
@@ -48,13 +52,13 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(description).x / 2, windowDescriptionDif, Text.CalcSize(description).x, Text.CalcSize(description).y), description);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomLeft), "Yes"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomLeft), yText))
             {
                 actionYes?.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomRight), "No"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomRight), nText))
             {
                 actionNo?.Invoke();
                 Close();

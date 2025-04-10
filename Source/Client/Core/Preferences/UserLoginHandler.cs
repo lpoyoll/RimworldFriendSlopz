@@ -61,7 +61,7 @@ namespace GameClient.Core.Preferences
         {
             Action toDo = delegate
             {
-                if (!StringChecker.CheckIfStringIsValid(DialogManager.dialogInputResults[0]))
+                if (!StringChecker.CheckIfStringValid(DialogManager.dialogInputResults[0]))
                 {
                     DialogManager.PushNewDialog(new RT_Dialog_Message("ERROR",
                         new string[] { "Your username contains illegal characters", "Please choose another one and try again" }));
@@ -131,7 +131,6 @@ namespace GameClient.Core.Preferences
             List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
             {
                 Tuple.Create($"Join latest server > {Network.ip}:{Network.port}", 0),
-                Tuple.Create("Show recently joined servers", 1)
             };
 
             FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
@@ -140,10 +139,7 @@ namespace GameClient.Core.Preferences
                 Threader.GenerateThread(Threader.Mode.Start);
             });
 
-            FloatMenuOption tuple2 = new FloatMenuOption(quickConnectTuples[1].Item1, 
-                delegate { DialogManager.PushNewDialog(new RT_Dialog_ServerListing()); });
-
-            Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>() { tuple1, tuple2 }));
+            Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>() { tuple1 }));
         }
 
         public static bool CheckIfQuickConnectIsValid()
