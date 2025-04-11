@@ -7,6 +7,16 @@ namespace GameClient.Managers
 {
     public static class ConnectionManager
     {
+        public static void ShowWelcomeDialogs() 
+        {
+            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Choose a login method:",
+                delegate { DialogManager.PushNewDialog(new RT_Dialog_ServerListing()); },
+                delegate { ShowConnectDialogs(); },
+                "Server Browser",
+                "Login"
+                ));
+        }
+
         public static void ShowConnectDialogs()
         {
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Connection Details", new string[] { "IP", "Port" }, new bool[] { false, false },

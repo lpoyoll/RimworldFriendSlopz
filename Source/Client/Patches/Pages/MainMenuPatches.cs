@@ -44,7 +44,7 @@ namespace GameClient.Patches.Pages
                     {
                         if (Network.state != ClientNetworkState.Disconnected) return;
                         else if (!UserLoginManagerH.CheckIfLoginIsValid()) UserLoginHandler.PromptCreateAccount(false);
-                        else ConnectionManager.ShowConnectDialogs();
+                        else ConnectionManager.ShowWelcomeDialogs();
                     }));
                 }
 

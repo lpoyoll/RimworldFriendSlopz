@@ -5,11 +5,17 @@
     {
         public string Name = "RimWorld-Together-Server";
 
+        public string Description = "My new Rimworld Together Server!";
+
         public string IP = "0.0.0.0";
 
         public string Port = "25555";
 
         public string MaxPlayers = "100";
+
+        public bool EnableServerBrowser = false;
+
+        public string PublicEndPoint = "";
 
         public bool VerboseLogs = false;
 

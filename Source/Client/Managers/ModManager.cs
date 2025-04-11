@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Verse;
+using Verse.Steam;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
@@ -146,7 +147,7 @@ namespace GameClient.Managers
             List<string> requiredMods = new List<string>();
             List<string> optionalMods = new List<string>();
             List<string> forbiddenMods = new List<string>();
-
+            List<ulong> steamIds = new List<ulong>();
             for (int i = 0; i < modNames.Length; i++)
             {
                 switch ((ModType)categoryIndexes[i])
@@ -163,12 +164,26 @@ namespace GameClient.Managers
                         forbiddenMods.Add(modNames[i]);
                         break;
                 }
+                var mod = ModLister.GetActiveModWithIdentifier(modNames[i]);
+                if (mod.OnSteamWorkshop) 
+                {
+                    Printer.Warning($"Mod {mod.PackageId} was on steam!");
+                    var hook = mod.GetWorkshopItemHook();
+                    steamIds.Add(hook.PublishedFileId.m_PublishedFileId);
+                    Printer.Warning($"{hook.PublishedFileId.m_PublishedFileId}");
+                }
+                else 
+                {
+                    Printer.Warning($"Mod {mod.PackageId} was not on steam!");
+                    steamIds.Add(0);
+                }
             }
 
             configFile.UnsortedMods = modNames;
             configFile.RequiredMods = requiredMods.ToArray();
             configFile.OptionalMods = optionalMods.ToArray();
             configFile.ForbiddenMods = forbiddenMods.ToArray();
+            configFile.AllModIds = steamIds.ToArray();
 
             return configFile;
         }

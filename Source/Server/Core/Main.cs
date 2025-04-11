@@ -28,7 +28,7 @@ namespace GameServer.Core
             Threader.GenerateServerThread(Threader.ServerMode.Console);
             if (Master.actionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
             if (Master.backupConfig.AutomaticBackups) Threader.GenerateServerThread(Threader.ServerMode.Backup);
-
+            ServerBrowserManager.StartLoops();
             while (true) Thread.Sleep(1);
         }
 
@@ -337,10 +337,9 @@ namespace GameServer.Core
 
         private static void CheckForServerName()
         {
-            if (!StringChecker.CheckIfStringIsValid(Master.serverConfig.Name))
+            if (!StringChecker.CheckIfStringValid(Master.serverConfig.Name))
             {
-                Printer.Error("ILLEGAL characters detected on the server name");
-                Printer.Error("This will make your players UNABLE to save their games");
+                
             }
         }
     }

@@ -4,6 +4,8 @@ namespace Shared
     {
         public string[] UnsortedMods = new string[0];
 
+        public ulong[] AllModIds = new ulong[0];
+
         public string[] RequiredMods = new string[0];
 
         public string[] OptionalMods = new string[0];
