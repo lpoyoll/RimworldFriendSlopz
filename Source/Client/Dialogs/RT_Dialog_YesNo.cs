@@ -22,9 +22,6 @@ namespace GameClient.Dialogs
             this.OnCancel = actionNo;
             this.YesText = yText;
             this.NoText = nText;
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -44,13 +41,13 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomLeft), YesText))
+            if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomLeft), YesText))
             {
                 OnAccept?.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomRight), NoText))
+            if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomRight), NoText))
             {
                 OnCancel?.Invoke();
                 Close();
