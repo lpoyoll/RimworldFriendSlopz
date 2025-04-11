@@ -9,8 +9,8 @@ namespace GameClient.Managers
     {
         public static void ShowWelcomeDialogs() 
         {
-            DialogManager.PushNewDialog(new RT_Dialog_YesNo("Choose a login method:",
-                delegate { DialogManager.PushNewDialog(new RT_Dialog_ServerListing()); },
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Choose a login method:",
+                delegate { RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListing()); },
                 delegate { ShowConnectDialogs(); },
                 "Server Browser",
                 "Login"

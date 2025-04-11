@@ -10,25 +10,18 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(400f, 150f);
 
-        private readonly string title = "OPTION";
+        private string YesText { get; set; }
 
-        private readonly string description;
+        private string NoText { get; set; }
 
-        private readonly Action actionYes;
-
-        private readonly Action actionNo;
-
-        private readonly string nText;
-
-        private readonly string yText;
         public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null, string yText = "Yes", string nText = "No")
         {
-            DialogManager.dialogYesNo = this;
-            this.description = description;
-            this.actionYes = actionYes;
-            this.actionNo = actionNo;
-            this.yText = yText;
-            this.nText = nText;
+            this.Title = "OPTION";
+            this.Description = description;
+            this.OnAccept = actionYes;
+            this.OnCancel = actionNo;
+            this.YesText = yText;
+            this.NoText = nText;
             forcePause = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
@@ -51,13 +44,13 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomLeft), yText))
+            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomLeft), YesText))
             {
                 OnAccept?.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, defaultButtonSize, RectLocation.BottomRight), nText))
+            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomRight), NoText))
             {
                 OnCancel?.Invoke();
                 Close();

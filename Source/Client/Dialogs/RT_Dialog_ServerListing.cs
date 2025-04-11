@@ -31,17 +31,14 @@ namespace GameClient.Dialogs
 
         public ServerInfo[] AllServers = new ServerInfo[0];
 
+        public static RT_Dialog_Base Instance { get; private set; }
+
         private bool failedToFetchServers = false;
         public RT_Dialog_ServerListing()
         {
-            if (!GetServers())
-                failedToFetchServers = true;
-            DialogManager.dialogServerListing = this;
+            if (!GetServers()) failedToFetchServers = true;
 
-            forcePause = true;
-            absorbInputAroundWindow = true;
-            soundAppear = SoundDefOf.CommsWindow_Open;
-
+            Instance = this;
             closeOnAccept = false;
             closeOnCancel = false;
         }
@@ -114,7 +111,7 @@ namespace GameClient.Dialogs
             Widgets.Label(fixedRect, $"{server._name} - {server._ip}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButton.x - deleteButton.x - 5f, rect.yMax - selectButton.y), selectButton), "Select"))
             {
-                DialogManager.PushNewDialog(new RT_Dialog_ServerListingInfo(server));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListingInfo(server));
             }
         }
 

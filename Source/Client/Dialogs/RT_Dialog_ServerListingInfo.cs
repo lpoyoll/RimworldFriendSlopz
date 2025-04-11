@@ -81,7 +81,7 @@ namespace GameClient.Dialogs
                 }
                 if (missingMods.Any() || downloadableMods.Any() || modsToEnable.Any()) {
                     Printer.Warning($"Found {downloadableMods.Count} mods to download and {missingMods} mods that cannot be downloaded.");
-                    DialogManager.PushNewDialog(new RT_Dialog_Listing("Missing mods!",
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Listing("Missing mods!",
                         "Do you want to download/enable the missing mods automatically?",
                         display.ToArray(),
                         () =>
@@ -105,7 +105,7 @@ namespace GameClient.Dialogs
                             {
                                 List<string> modsToReport = new List<string>();
                                 modsToReport.AddRange(downloadableMods.Keys);
-                                DialogManager.PushNewDialog(new RT_Dialog_Listing("Error",
+                                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Listing("Error",
                                     "Something went wrong while downloading the following mods:",
                                     modsToReport.ToArray()));
                             }
@@ -121,7 +121,7 @@ namespace GameClient.Dialogs
                                 }
                                 ModsConfig.TrySortMods();
                                 ModsConfig.Save();
-                                DialogManager.PushNewDialog(new RT_Dialog_Message("Success.", new string[] { "Game will now restart, give some time for steam to download the mods." }, 
+                                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("Success.", new string[] { "Game will now restart, give some time for steam to download the mods." }, 
                                 () => 
                                 {
                                     GenCommandLine.Restart();
@@ -134,7 +134,7 @@ namespace GameClient.Dialogs
                 {
                     Network.ip = info._ip;
                     Network.port = info._port.ToString();
-                    DialogManager.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                     Threader.GenerateThread(Threader.Mode.Start);
                     Close();
                 }
