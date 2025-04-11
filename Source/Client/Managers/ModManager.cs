@@ -164,17 +164,20 @@ namespace GameClient.Managers
                         forbiddenMods.Add(modNames[i]);
                         break;
                 }
+
                 var mod = ModLister.GetActiveModWithIdentifier(modNames[i]);
+
                 if (mod.OnSteamWorkshop) 
                 {
-                    Printer.Warning($"Mod {mod.PackageId} was on steam!");
+                    Printer.Warning($"Mod {mod.PackageId} was on steam!", LogImportanceMode.Verbose);
                     var hook = mod.GetWorkshopItemHook();
                     steamIds.Add(hook.PublishedFileId.m_PublishedFileId);
                     Printer.Warning($"{hook.PublishedFileId.m_PublishedFileId}");
                 }
+
                 else 
                 {
-                    Printer.Warning($"Mod {mod.PackageId} was not on steam!");
+                    Printer.Warning($"Mod {mod.PackageId} was not on steam!", LogImportanceMode.Verbose);
                     steamIds.Add(0);
                 }
             }
