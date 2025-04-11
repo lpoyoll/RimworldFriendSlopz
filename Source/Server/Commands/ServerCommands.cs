@@ -265,6 +265,7 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.Op;
 
+                client.userFile.UpdateAdmin(true);
                 client.listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
             UserManagerH.SaveUserFile(toFind);
@@ -301,6 +302,7 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.Deop;
 
+                client.userFile.UpdateAdmin(false);
                 client.listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
             UserManagerH.SaveUserFile(toFind);
