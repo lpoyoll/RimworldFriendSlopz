@@ -5,8 +5,8 @@ namespace Shared
 
     public class PlayerRecountData
     {
-        public int _currentPlayerCount;
+        public int _currentPlayerCount { get; set; }
 
-        public List<string> _currentPlayerNames = new List<string>();
+        public List<string> _currentPlayerNames { get; set; } = new List<string>();
     }
 }

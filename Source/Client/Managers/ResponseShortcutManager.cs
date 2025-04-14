@@ -11,7 +11,7 @@ namespace GameClient.Managers
         {
             ResponseShortcutData data = Serializer.ConvertBytesToObject<ResponseShortcutData>(bytes);
 
-            switch (data.stepMode)
+            switch (data._stepMode)
             {
                 case CommonEnumerators.ResponseStepMode.IllegalAction:
                     RT_Dialog_Wait.Instance.Close();

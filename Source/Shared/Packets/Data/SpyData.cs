@@ -5,12 +5,12 @@ namespace Shared
 
     public class SpyData
     {
-        public SpyStepMode _stepMode;
+        public SpyStepMode _stepMode { get; set; }
 
-        public WorldObjectMode _worldObjectMode;
+        public WorldObjectMode _worldObjectMode { get; set; }
 
-        public int _mapTile;
+        public int _mapTile { get; set; }
 
-        public MapFile _mapFile;
+        public MapFile _mapFile { get; set; }
     }
 }

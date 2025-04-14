@@ -5,12 +5,12 @@ namespace Shared
 
     public class EventData
     {
-        public EventStepMode _stepMode;
-        
-        public int _fromTile;
+        public EventStepMode _stepMode { get; set; }
 
-        public int _toTile;
+        public int _fromTile { get; set; }
 
-        public EventFile _eventFile;
+        public int _toTile { get; set; }
+
+        public EventFile _eventFile { get; set; }
     }
 }

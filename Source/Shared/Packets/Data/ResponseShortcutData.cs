@@ -5,6 +5,6 @@ namespace Shared
 
     public class ResponseShortcutData
     {
-        public ResponseStepMode stepMode;
+        public ResponseStepMode _stepMode { get; set; }
     }
 }

@@ -5,8 +5,8 @@ namespace Shared
 
     public class PlayerSettlementData
     {
-        public SettlementStepMode _stepMode;
+        public SettlementStepMode _stepMode { get; set; }
 
-        public SettlementFile _settlementFile = new SettlementFile();
+        public SettlementFile _settlementFile { get; set; } = new SettlementFile();
     }
 }

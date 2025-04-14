@@ -11,7 +11,7 @@ namespace GameServer.Managers
         public static void SendIllegalPacket(ServerClient client, string message, bool shouldBroadcast = true)
         {
             ResponseShortcutData data = new ResponseShortcutData();
-            data.stepMode = ResponseStepMode.IllegalAction;
+            data._stepMode = ResponseStepMode.IllegalAction;
 
             client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
             client.listener.DisconnectFlag = true;
@@ -26,7 +26,7 @@ namespace GameServer.Managers
         public static void SendUnavailablePacket(ServerClient client)
         {
             ResponseShortcutData data = new ResponseShortcutData();
-            data.stepMode = ResponseStepMode.UserUnavailable;
+            data._stepMode = ResponseStepMode.UserUnavailable;
 
             client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
@@ -34,7 +34,7 @@ namespace GameServer.Managers
         public static void SendBreakPacket(ServerClient client)
         {
             ResponseShortcutData data = new ResponseShortcutData();
-            data.stepMode = ResponseStepMode.Pop;
+            data._stepMode = ResponseStepMode.Pop;
 
             client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }

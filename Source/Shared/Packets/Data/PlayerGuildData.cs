@@ -5,10 +5,10 @@ namespace Shared
 
     public class PlayerGuildData
     {
-        public GuildStepMode _stepMode;
+        public GuildStepMode _stepMode { get; set; }
 
-        public GuildFile _file = new GuildFile();
+        public GuildFile _file { get; set; } = new GuildFile();
 
-        public int _dataInt;
+        public int _dataInt { get; set; }
     }
 }

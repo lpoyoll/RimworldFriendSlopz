@@ -4,6 +4,6 @@
 
     public class MapData
     {
-        public MapFile _mapFile = new MapFile();
+        public MapFile _mapFile { get; set; } = new MapFile();
     }
 }

@@ -5,10 +5,10 @@ namespace Shared
 
     public class SaveData
     {
-        public SaveStepMode _stepMode;
+        public SaveStepMode _stepMode { get; set; }
 
-        public byte[] _fileBytes;
-        
-        public int _instructions = -1;
+        public byte[] _fileBytes { get; set; }
+
+        public int _instructions { get; set; } = -1;
     }
 }

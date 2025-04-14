@@ -5,8 +5,8 @@ namespace Shared
 
     public class CaravanData
     {
-        public CaravanStepMode _stepMode;
+        public CaravanStepMode _stepMode { get; set; }
 
-        public CaravanFile _caravanFile;
+        public CaravanFile _caravanFile { get; set; }
     }
 }

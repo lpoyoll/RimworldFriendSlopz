@@ -5,8 +5,8 @@ namespace Shared
 
     public class ModConfigData
     {
-        public ModConfigStepMode _stepMode;
+        public ModConfigStepMode _stepMode { get; set; }
 
-        public ModConfigFile _configFile;
+        public ModConfigFile _configFile { get; set; }
     }
 }

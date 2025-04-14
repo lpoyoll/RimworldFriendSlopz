@@ -4,8 +4,8 @@ namespace Shared
     {
         public enum VersionStep { Ask, Pass }
 
-        public VersionStep _step;
+        public VersionStep _step { get; set; }
 
-        public string _version;
+        public string _version { get; set; }
     }
 }

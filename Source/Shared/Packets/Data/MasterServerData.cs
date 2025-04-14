@@ -1,18 +1,27 @@
 namespace Shared.MasterServer
 {
     //These classes should not be touched without notifying me first. The fields need to exactly match in both name and type to the master server.
+    // NOTIFY ERAGON UPON ANY CHANGES
+
     public class ServerInfo
     {
-        public string _ip;
-        public string _name;
-        public string _description;
-        public ModConfigFile _config;
-        public int _maximumPlayerCount;
-        public int _currentPlayerCount;
-        public int _port;
+        public string _ip { get; set; } = string.Empty;
+
+        public string _name { get; set; } = string.Empty;
+
+        public string _description { get; set; } = string.Empty;
+
+        public ModConfigFile _config { get; set; } = null;
+
+        public int _maximumPlayerCount { get; set; } = -1;
+
+        public int _currentPlayerCount { get; set; } = -1;
+
+        public int _port { get; set; } = -1;
     }
+
     public class AllServersPacket
     {
-        public ServerInfo[] _serverInfos;
+        public ServerInfo[] _serverInfos { get; set; } = null;
     }
 }
