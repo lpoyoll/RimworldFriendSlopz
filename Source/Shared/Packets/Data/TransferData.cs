@@ -6,13 +6,13 @@ namespace Shared
 
     public class TransferData
     {
-        public TransferStepMode _stepMode { get; set; }
+        public TransferStepMode _stepMode { get; set; } = TransferStepMode.TradeRequest;
 
-        public TransferMode _transferMode { get; set; }
+        public TransferMode _transferMode { get; set; } = TransferMode.Gift;
 
-        public int _fromTile { get; set; }
+        public int _fromTile { get; set; } = -1;
 
-        public int _toTile { get; set; }
+        public int _toTile { get; set; } = -1;
 
         public List<HumanFile> _humans { get; set; } = new List<HumanFile>();
 

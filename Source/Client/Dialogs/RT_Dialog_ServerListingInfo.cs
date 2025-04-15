@@ -9,7 +9,7 @@ using GameClient.Misc;
 using GameClient.TCP;
 using HarmonyLib;
 using RimWorld;
-using Shared.MasterServer;
+using Shared;
 using UnityEngine;
 using Verse;
 using static Mono.Security.X509.X520;

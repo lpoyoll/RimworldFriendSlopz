@@ -1,6 +1,6 @@
-namespace Shared.MasterServer
+namespace Shared
 {
-    //These classes should not be touched without notifying me first. The fields need to exactly match in both name and type to the master server.
+    // These classes should not be touched without notifying me first. The fields need to exactly match in both name and type to the master server.
     // NOTIFY ERAGON UPON ANY CHANGES
 
     public class ServerInfo

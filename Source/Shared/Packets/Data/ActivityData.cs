@@ -5,10 +5,10 @@ namespace Shared
 
     public class ActivityData
     {
-        public ActivityStepMode _stepMode { get; set; }
+        public ActivityStepMode _stepMode { get; set; } = ActivityStepMode.Request;
 
-        public int _targetTile { get; set; }
-        
-        public MapFile _mapFile { get; set; }
+        public int _targetTile { get; set; } = -1;
+
+        public MapFile _mapFile { get; set; } = null;
     }
 }

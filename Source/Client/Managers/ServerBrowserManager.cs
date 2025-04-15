@@ -9,7 +9,6 @@ using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using Shared;
-using Shared.MasterServer;
 using Steamworks;
 using Verse;
 

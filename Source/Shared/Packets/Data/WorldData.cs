@@ -5,8 +5,8 @@ namespace Shared
 
     public class WorldData
     {
-        public WorldStepMode _stepMode { get; set; }
+        public WorldStepMode _stepMode { get; set; } = WorldStepMode.AskFor;
 
-        public byte[] _fileBytes { get; set; }
+        public byte[] _fileBytes { get; set; } = null;
     }
 }

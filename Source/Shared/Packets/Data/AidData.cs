@@ -5,12 +5,12 @@ namespace Shared
 
     public class AidData
     {
-        public AidStepMode _stepMode { get; set; }
+        public AidStepMode _stepMode { get; set; } = AidStepMode.Send;
 
-        public int _fromTile { get; set; }
+        public int _fromTile { get; set; } = -1;
 
-        public int _toTile { get; set; }
+        public int _toTile { get; set; } = -1;
 
-        public HumanFile _humanData { get; set; }
+        public HumanFile _humanData { get; set; } = null;
     }
 }

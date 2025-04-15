@@ -8,7 +8,6 @@ using GameServer.Core;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
-using Shared.MasterServer;
 
 namespace GameServer.Managers
 {

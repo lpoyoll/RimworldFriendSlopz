@@ -3,36 +3,36 @@
 
     public class ServerGlobalData
     {
-        public bool _isClientAdmin { get; set; }
+        public bool _isClientAdmin { get; set; } = false;
 
-        public bool _isClientFactionMember { get; set; }
+        public bool _isClientFactionMember { get; set; } = false;
 
-        public ServerValuesFile _serverValues { get; set; }
+        public ServerValuesFile _serverValues { get; set; } = null;
 
-        public SiteValuesFile _siteValues { get; set; }
+        public SiteValuesFile _siteValues { get; set; } = null;
 
-        public EventFile[] _eventValues { get; set; }
+        public EventFile[] _eventValues { get; set; } = null;
 
-        public ActionValuesFile _actionValues { get; set; }
+        public ActionValuesFile _actionValues { get; set; } = null;
 
-        public RoadValuesFile _roadValues { get; set; }
+        public RoadValuesFile _roadValues { get; set; } = null;
 
-        public ScenarioValuesFile _scenarioValues { get; set; }
+        public ScenarioValuesFile _scenarioValues { get; set; } = null;
 
-        public StorytellerValuesFile _storytellerValues { get; set; }
+        public StorytellerValuesFile _storytellerValues { get; set; } = null;
 
-        public DifficultyValuesFile _difficultyValues { get; set; }
+        public DifficultyValuesFile _difficultyValues { get; set; } = null;
 
-        public PlanetNPCSettlementDetails[] _npcSettlements { get; set; }
+        public PlanetNPCSettlementDetails[] _npcSettlements { get; set; } = null;
 
-        public SettlementFile[] _playerSettlements { get; set; }
+        public SettlementFile[] _playerSettlements { get; set; } = null;
 
-        public SiteFile[] _playerSites { get; set; }
+        public SiteFile[] _playerSites { get; set; } = null;
 
-        public RoadDetails[] _roads { get; set; }
+        public RoadDetails[] _roads { get; set; } = null;
 
-        public PollutionDetails[] _pollutedTiles { get; set; }
+        public PollutionDetails[] _pollutedTiles { get; set; } = null;
 
-        public ModConfigFile _modConfigs { get; set; }
+        public ModConfigFile _modConfigs { get; set; } = null;
     }
 }
