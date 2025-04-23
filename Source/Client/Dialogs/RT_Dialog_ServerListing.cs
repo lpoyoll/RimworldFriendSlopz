@@ -39,6 +39,8 @@ namespace GameClient.Dialogs
             if (!GetServers()) failedToFetchServers = true;
 
             Instance = this;
+            this.Title = title;
+            this.Description = description;
             closeOnAccept = false;
             closeOnCancel = false;
         }
