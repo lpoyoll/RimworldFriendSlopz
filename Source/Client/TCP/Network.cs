@@ -1,9 +1,14 @@
-﻿using GameClient.Core.Preferences;
+﻿using System.IO;
+using System;
+using System.Net.Sockets;
+using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
 using static Shared.CommonEnumerators;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GameClient.TCP
 {
@@ -44,7 +49,7 @@ namespace GameClient.TCP
                 RT_Dialog_Wait.Instance.Close();
                 RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "The server did not respond in time" });
                 RT_Dialog_Base.PushNewDialog(d1);
-                DisconnectFromServer();
+                DisconnectFromServerInstant();
             }
         }
 
@@ -66,10 +71,36 @@ namespace GameClient.TCP
 
         //Disconnects client from the server
 
-        public static void DisconnectFromServer()
+        public static void DisconnectFromServerInstant()
         {
             CleanNetworkVariables();
             DisconnectionManager.HandleDisconnect();
+        }
+
+        //Disconnects client from the server, but empties the packet buffer first
+
+        public static void DisconnectFromServer()
+        {
+            Task.Run(() =>
+            {
+                Thread.Sleep(50);
+            state = ClientNetworkState.Disconnected;
+            listener.Connection.Client.Shutdown(SocketShutdown.Send); //This tells TCP to stop sending new packets, but send whatever is in the buffer
+            try
+            {
+                var stream = listener.Connection.GetStream();
+                var buffer = new byte[1024];
+                while (stream.Read(buffer, 0, buffer.Length) > 0)
+                {
+                    // keep reading until the server closes connection
+                }
+            }
+            catch { }
+            finally
+            {
+                DisconnectFromServerInstant();
+            }
+        });
         }
 
         public static void CleanNetworkVariables()

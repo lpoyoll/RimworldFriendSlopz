@@ -11,7 +11,7 @@ namespace GameClient.Managers
     {
         //Useful disconnection variables
 
-        public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost }
+        public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost, UploadSave }
 
         public static DCReason intentionalDisconnectReason;
 

@@ -13,6 +13,7 @@ using GameClient.Core;
 using GameClient.Misc;
 using GameClient.Values;
 using GameClient.TCP;
+using System.Collections.Generic;
 
 namespace GameClient.Managers
 {
@@ -68,6 +69,17 @@ namespace GameClient.Managers
                 return double.Parse(nav.SelectSingleNode("/savegame/game/info/realPlayTimeInteracting").Value);
             }
             catch { return 0; }
+        }
+
+        public static Dictionary<string, string> GetAllSaveFiles() 
+        {
+            var result = new Dictionary<string, string>();
+            foreach (string file in Directory.GetFiles(Master.savesFolderPath))
+            {
+                if(Path.GetExtension(file) == ".rws")
+                    result.Add(Path.GetFileNameWithoutExtension(file), file);
+            }
+            return result;
         }
     }
 
