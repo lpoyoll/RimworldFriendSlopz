@@ -14,10 +14,13 @@ namespace Shared
 
         public bool DisconnectFlag { get; set; }
 
+        public bool ClosingFlag { get; set; }
+
         public ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; private set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
 
         public void EnqueuePacket(PacketHeader header, object obj) 
         {
+            if(ClosingFlag) return;
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
 

@@ -16,6 +16,14 @@ namespace GameServer.Managers
             HandleUser(client, data);
         }
 
+        [HandlesPacket(PacketHeader.DisconnectSafe)]
+        private static void DisconnectClient(ServerClient client, byte[] bytes)
+        {
+            client.listener.EnqueuePacket(PacketHeader.DisconnectSafe, new KeepAliveData());
+            Thread.Sleep(200);
+            client.listener.DisconnectFlag = true;
+        }
+
         public static void HandleUser(ServerClient client, LoginData data)
         {
             if (!UserManagerH.CheckLoginData(client, data)) return;

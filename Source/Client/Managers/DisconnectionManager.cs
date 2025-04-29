@@ -3,6 +3,8 @@ using Verse;
 using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
+using Shared;
+using GameClient.TCP;
 
 namespace GameClient.Managers
 {
@@ -11,11 +13,18 @@ namespace GameClient.Managers
     {
         //Useful disconnection variables
 
-        public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost }
+        public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost, UploadSave }
 
         public static DCReason intentionalDisconnectReason;
 
         public static bool isIntentionalDisconnect;
+
+        [HandlesPacket(PacketHeader.DisconnectSafe)]
+        public static void HandleDisconnectFromServer() 
+        {
+            Network.listener.ClosingFlag = false;
+            Network.listener.DisconnectFlag = true;
+        }
 
         //Executes different actions depending on the disconnection mode
 

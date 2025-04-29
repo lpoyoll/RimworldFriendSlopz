@@ -13,6 +13,7 @@ using GameClient.Core;
 using GameClient.Misc;
 using GameClient.Values;
 using GameClient.TCP;
+using System.Collections.Generic;
 
 namespace GameClient.Managers
 {
@@ -69,6 +70,17 @@ namespace GameClient.Managers
             }
             catch { return 0; }
         }
+
+        public static Dictionary<string, string> GetAllSaveFiles() 
+        {
+            var result = new Dictionary<string, string>();
+            foreach (string file in Directory.GetFiles(Master.savesFolderPath))
+            {
+                if(Path.GetExtension(file) == ".rws")
+                    result.Add(Path.GetFileNameWithoutExtension(file), file);
+            }
+            return result;
+        }
     }
 
     public static class SaveSenderManager
@@ -77,7 +89,7 @@ namespace GameClient.Managers
         {
             byte[] saveBytes = File.ReadAllBytes(SaveManager.saveFilePath);
             saveBytes = GZip.CompressBytes(saveBytes);
-
+            Printer.Warning(saveBytes.Length / 1024);
             SaveData data = new SaveData();
             data._fileBytes = saveBytes;
             data._stepMode = SaveStepMode.Receive;
