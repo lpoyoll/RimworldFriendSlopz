@@ -23,7 +23,7 @@ namespace GameClient.TCP
             Task.Run(() => Read());
             Task.Run(() => Write());
             Task.Run(() => SendKAFlag());
-            Task.Run(() => CheckConnectionHealth(delegate { Network.DisconnectFromServerInstant(); }));
+            Task.Run(() => CheckConnectionHealth(delegate { Network.DisconnectFromServer(); }));
         }
 
         public void Read()
