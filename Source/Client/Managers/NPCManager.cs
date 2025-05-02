@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using GameClient.Misc;
 using GameClient.Values;
 using GameClient.TCP;
+using UnityEngine.Tilemaps;
 
 namespace GameClient.Managers
 {
@@ -72,6 +73,8 @@ namespace GameClient.Managers
                 }
 
                 Find.WorldObjects.Add(settlement);
+
+                NPCSettlementManagerHelper.TryRelinkQuest(settlement);
             }
         }
 
@@ -142,9 +145,111 @@ namespace GameClient.Managers
 
         public static Settlement lastRemovedSettlement;
 
+        private static Dictionary<int, List<QuestPart>> questToFixTemp = new Dictionary<int, List<QuestPart>>();
+
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
             tempNPCSettlements = serverGlobalData._npcSettlements;
+        }
+
+        public static void SaveAllQuests() 
+        {
+            foreach(var quest in Find.QuestManager.QuestsListForReading.Where(x => !x.Historical)) 
+            {
+                TrySaveQuest(quest);
+            }
+        }
+
+        public static void CleanupQuests() 
+        {
+            questToFixTemp.Clear();
+        }
+
+        private static void TrySaveQuest(Quest quest)
+        {
+            Printer.Warning($"Trying to save quest with id {quest.id}");
+            var questPart = quest.PartsListForReading.Where(x => x is QuestPart_SpawnWorldObject
+            || x is QuestPart_DisableTradeRequest
+            || x is QuestPart_TradeRequestInactive
+            || x is QuestPart_InitiateTradeRequest);
+            foreach (var part in questPart) 
+            {
+                int tile = -1;
+
+                if(part is QuestPart_SpawnWorldObject part2) 
+                {
+                    Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
+                    tile = part2.worldObject?.Tile ?? -1;
+                }
+                else if(part is QuestPart_DisableTradeRequest part3) 
+                {
+                    Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
+                    tile = part3.settlement?.Tile ?? -1;
+                }
+                else if(part is QuestPart_TradeRequestInactive part4) 
+                {
+                    Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
+                    tile = part4.settlement?.Tile ?? -1;
+                }
+                else if (part is QuestPart_InitiateTradeRequest part5)
+                {
+                    Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
+                    tile = part5.settlement?.Tile ?? -1;
+                }
+
+                if (tile != -1)
+                {
+                    Printer.Warning($"Saved quest {quest.id}", LogImportanceMode.Verbose);
+                    if (questToFixTemp.ContainsKey(tile))
+                    {
+                        questToFixTemp[tile].Add(part);
+                    }
+                    else
+                    {
+                        questToFixTemp[tile] = new List<QuestPart>() { part };
+                    }
+                }
+            }
+        }
+
+        public static void TryRelinkQuest(WorldObject obj) 
+        {
+            try
+            {
+                if (questToFixTemp.TryGetValue(obj.Tile, out var parts))
+                {
+                    Printer.Warning($"Found quest with id {parts.First().quest.id}");
+                    foreach (var part in parts)
+                    {
+                        if (part is QuestPart_SpawnWorldObject part2)
+                        {
+                            Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
+                            part2.worldObject = obj;
+                        }
+                        else if (part is QuestPart_DisableTradeRequest part3)
+                        {
+                            Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
+                            part3.settlement = (Settlement)obj;
+                        }
+                        else if (part is QuestPart_TradeRequestInactive part4)
+                        {
+                            Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
+                            part4.settlement = (Settlement)obj;
+                        }
+                        else if (part is QuestPart_InitiateTradeRequest part5)
+                        {
+                            Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
+                            part5.settlement = (Settlement)obj;
+                        }
+                        
+                    }
+                    Printer.Warning($"Loaded quest with id {parts.First().quest.id} on tile {obj.Tile}.", LogImportanceMode.Verbose);
+                }
+            }
+            catch (Exception ex)
+            {
+                Printer.Warning($"Error while trying to relink quests\n{ex}");
+            }
         }
     }
 }
