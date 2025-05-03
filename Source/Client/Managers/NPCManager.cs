@@ -167,7 +167,7 @@ namespace GameClient.Managers
 
         private static void TrySaveQuest(Quest quest)
         {
-            Printer.Warning($"Trying to save quest with id {quest.id}");
+            Printer.Warning($"Trying to save quest with id {quest.id}", LogImportanceMode.Verbose);
             var questPart = quest.PartsListForReading.Where(x => x is QuestPart_SpawnWorldObject
             || x is QuestPart_DisableTradeRequest
             || x is QuestPart_TradeRequestInactive
@@ -218,7 +218,7 @@ namespace GameClient.Managers
             {
                 if (questToFixTemp.TryGetValue(obj.Tile, out var parts))
                 {
-                    Printer.Warning($"Found quest with id {parts.First().quest.id}");
+                    Printer.Warning($"Found quest with id {parts.First().quest.id}", LogImportanceMode.Verbose);
                     foreach (var part in parts)
                     {
                         if (part is QuestPart_SpawnWorldObject part2)
@@ -241,14 +241,13 @@ namespace GameClient.Managers
                             Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
                             part5.settlement = (Settlement)obj;
                         }
-                        
                     }
                     Printer.Warning($"Loaded quest with id {parts.First().quest.id} on tile {obj.Tile}.", LogImportanceMode.Verbose);
                 }
             }
             catch (Exception ex)
             {
-                Printer.Warning($"Error while trying to relink quests\n{ex}");
+                Printer.Error($"Error while trying to relink quests\n{ex}");
             }
         }
     }
