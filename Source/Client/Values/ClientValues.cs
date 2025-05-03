@@ -87,7 +87,11 @@ namespace GameClient.Values
 
         public static void ToggleUsingScriber(bool mode) { IsUsingScriber = mode; }
 
-        public static void ToggleAdmin(bool mode) { IsAdmin = mode; }
+        public static void ToggleAdmin(bool mode) 
+        { 
+            IsAdmin = mode;
+            ClientValues.ManageDevOptions();
+        }
 
         public static void ToggleFaction(bool mode) { HasFaction = mode; }
 

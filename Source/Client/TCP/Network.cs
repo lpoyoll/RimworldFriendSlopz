@@ -31,7 +31,6 @@ namespace GameClient.TCP
         {
             if (TryConnectToServer())
             {
-                ClientValues.ManageDevOptions();
                 ConnectionDataHandler.SaveConnectionData(ip, port);
 
                 state = ClientNetworkState.Connected;
