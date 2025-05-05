@@ -113,12 +113,6 @@ namespace GameClient.Values
 
         public static void ToggleGenerateWorld(bool mode) { IsGeneratingFreshWorld = mode; }
 
-        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None)
-        {
-            DisconnectionManager.isIntentionalDisconnect = mode;
-            DisconnectionManager.intentionalDisconnectReason = reason;
-        }
-
         public static void ToggleReadyToPlay(bool mode) { IsReadyToPlay = mode; }
 
         public static void ToggleTransfer(bool mode) { IsInTransfer = mode; }
@@ -136,13 +130,14 @@ namespace GameClient.Values
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
-            SetIntentionalDisconnect(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleSavingGame(false);
             ToggleUsingScriber(false);
             ToggleAdmin(false);
             ToggleFaction(false);
+
+            DisconnectionManager.SetIntentionalDisconnect(false);
         }
     }
 }

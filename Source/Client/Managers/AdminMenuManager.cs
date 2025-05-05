@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.TCP;
+using GameClient.Values;
 
 namespace GameClient.Managers
 {
@@ -29,28 +31,30 @@ namespace GameClient.Managers
                 case 0:
                     ModManager.OpenModManagerMenu(false);
                     break;
+
                 case 1:
-                    var saves = SaveManager.GetAllSaveFiles();
-                    var dialog = new RT_Dialog_ListingWithButton(
-                        "Save menu",
+                    Dictionary<string, string> saves = SaveManager.GetAllSaveFiles();
+                    RT_Dialog_ListingWithButton dialog = new RT_Dialog_ListingWithButton("Save menu",
                         "Select a save to upload:",
                         saves.Keys.ToArray(),
                         delegate
                         {
-                            var D2 = new RT_Dialog_YesNo("This feature is in beta and might fail, are you sure?", delegate
+                            RT_Dialog_YesNo D2 = new RT_Dialog_YesNo("This feature is in beta and might fail, are you sure?", delegate
                             {
-                                if (saves.TryGetValue(RT_Dialog_ListingWithButton.dialogButtonListingResultString, out var file))
+                                if (saves.TryGetValue(RT_Dialog_ListingWithButton.dialogButtonListingResultString, out string file))
                                 {
-                                    var data = File.ReadAllBytes(file);
-                                    File.WriteAllBytes(SaveManager.saveFilePath, data);
+                                    byte[] data = File.ReadAllBytes(file);
+                                    File.WriteAllBytes(SaveManager.SaveFilePath, data);
+                                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for save upload"));
+
+                                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
                                     SaveSenderManager.SendSaveToServer();
-                                    DisconnectionManager.isIntentionalDisconnect = true;
-                                    DisconnectionManager.intentionalDisconnectReason = DisconnectionManager.DCReason.UploadSave;
-                                    Network.DisconnectFromServer();
                                 }
                             });
+
                             RT_Dialog_Base.PushNewDialog(D2);
                         });
+
                     RT_Dialog_Base.PushNewDialog(dialog);
                     break;
             }

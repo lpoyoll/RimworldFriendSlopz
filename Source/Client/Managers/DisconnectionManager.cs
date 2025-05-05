@@ -1,4 +1,3 @@
-
 using Verse;
 using GameClient.Dialogs;
 using GameClient.Misc;
@@ -9,15 +8,20 @@ using GameClient.TCP;
 namespace GameClient.Managers
 {
     //Class that contains all the disconnection functions that the mod uses
+
     public static class DisconnectionManager
     {
-        //Useful disconnection variables
+        public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost }
 
-        public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost, UploadSave }
+        public static DCReason IntentionalDisconnectReason { get; private set; }
 
-        public static DCReason intentionalDisconnectReason;
+        public static bool IsIntentionalDisconnect { get; private set; }
 
-        public static bool isIntentionalDisconnect;
+        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None)
+        {
+            IsIntentionalDisconnect = mode;
+            IntentionalDisconnectReason = reason;
+        }
 
         [HandlesPacket(PacketHeader.DisconnectSafe)]
         public static void HandleDisconnectFromServer() 
@@ -30,11 +34,11 @@ namespace GameClient.Managers
 
         public static void HandleDisconnect()
         {
-            if (isIntentionalDisconnect)
+            if (IsIntentionalDisconnect)
             {
                 string reason = "ERROR";
 
-                switch (intentionalDisconnectReason)
+                switch (IntentionalDisconnectReason)
                 {
                     case DCReason.None:
                         reason = "No reason given";
@@ -62,7 +66,7 @@ namespace GameClient.Managers
                         break;
 
                     default:
-                        reason = $"{intentionalDisconnectReason}";
+                        reason = $"{IntentionalDisconnectReason}";
                         DisconnectToMenu();
                         break;
                 }
@@ -99,11 +103,7 @@ namespace GameClient.Managers
             }
         }
 
-        //Kicks the client into closing the game
-
         public static void QuitGame() { Root.Shutdown(); }
-
-        //Kicks the client into restarting the game
 
         public static void RestartGame() { GenCommandLine.Restart(); }
     }

@@ -109,7 +109,7 @@ namespace GameServer.Managers
             SaveData data = new SaveData();
             data._fileBytes = File.ReadAllBytes(baseClientSavePath);
             data._stepMode = SaveStepMode.Receive;
-            if (!Master.serverConfig.SyncLocalSave) data._instructions = (int)SaveMode.Strict;
+            if (!Master.serverConfig.SyncLocalSave) data._instructions = SaveMode.Strict;
 
             client.listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }

@@ -77,16 +77,6 @@ namespace GameClient.TCP
             CleanNetworkVariables();
             DisconnectionManager.HandleDisconnect();
         }
-
-        //Disconnects client from the server, but empties the packet buffer first
-
-        public static void DisconnectFromServer()
-        {
-            DisconnectionManager.isIntentionalDisconnect = true;
-            DisconnectionManager.intentionalDisconnectReason = DisconnectionManager.DCReason.UploadSave;
-            listener.EnqueuePacket(PacketHeader.DisconnectSafe, new KeepAliveData());
-            listener.ClosingFlag = true;
-        }
         
         public static void CleanNetworkVariables()
         {
