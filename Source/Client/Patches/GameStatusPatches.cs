@@ -111,7 +111,7 @@ namespace GameClient.Patches
 
                     if (__instance.Faction == Faction.OfPlayer) return;
                     else if (ClientValues.playerFactions.Contains(__instance.Faction)) return;
-                    else if (NPCSettlementManagerHelper.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
+                    else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
                 }
             }
         }

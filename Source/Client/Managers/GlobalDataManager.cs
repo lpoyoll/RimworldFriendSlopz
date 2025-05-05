@@ -17,7 +17,7 @@ namespace GameClient.Managers
             EventManagerHelper.SetValues(serverGlobalData);
             GameParameterManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);
-            NPCSettlementManagerHelper.SetValues(serverGlobalData);
+            NPCManagerH.SetValues(serverGlobalData);
             SiteManagerH.SetValues(serverGlobalData);
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
