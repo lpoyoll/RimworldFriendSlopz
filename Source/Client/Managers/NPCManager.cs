@@ -13,7 +13,6 @@ using UnityEngine.Tilemaps;
 
 namespace GameClient.Managers
 {
-
     public static class NPCManager
     {
         [HandlesPacket(PacketHeader.NPCManager)]
@@ -74,7 +73,7 @@ namespace GameClient.Managers
 
                 Find.WorldObjects.Add(settlement);
 
-                NPCSettlementManagerHelper.TryRelinkQuest(settlement);
+                NPCManagerH.TryRelinkQuest(settlement);
             }
         }
 
@@ -107,7 +106,7 @@ namespace GameClient.Managers
                 {
                     if (!RimworldManager.CheckIfMapHasPlayerPawns(settlement.Map))
                     {
-                        NPCSettlementManagerHelper.lastRemovedSettlement = settlement;
+                        NPCManagerH.lastRemovedSettlement = settlement;
                         Find.WorldObjects.Remove(settlement);
                     }
                     else Printer.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
@@ -139,7 +138,7 @@ namespace GameClient.Managers
         }
     }
 
-    public static class NPCSettlementManagerHelper
+    public static class NPCManagerH
     {
         public static PlanetNPCSettlementDetails[] tempNPCSettlements;
 
@@ -154,7 +153,7 @@ namespace GameClient.Managers
 
         public static void SaveAllQuests() 
         {
-            foreach(var quest in Find.QuestManager.QuestsListForReading.Where(x => !x.Historical)) 
+            foreach (Quest quest in Find.QuestManager.QuestsListForReading.Where(x => !x.Historical)) 
             {
                 TrySaveQuest(quest);
             }
@@ -168,29 +167,32 @@ namespace GameClient.Managers
         private static void TrySaveQuest(Quest quest)
         {
             Printer.Warning($"Trying to save quest with id {quest.id}", LogImportanceMode.Verbose);
-            var questPart = quest.PartsListForReading.Where(x => x is QuestPart_SpawnWorldObject
-            || x is QuestPart_DisableTradeRequest
-            || x is QuestPart_TradeRequestInactive
-            || x is QuestPart_InitiateTradeRequest);
-            foreach (var part in questPart) 
+
+            IEnumerable<QuestPart> questPart = quest.PartsListForReading.Where(x => x is QuestPart_SpawnWorldObject || x is QuestPart_DisableTradeRequest
+                || x is QuestPart_TradeRequestInactive || x is QuestPart_InitiateTradeRequest);
+
+            foreach (QuestPart part in questPart) 
             {
                 int tile = -1;
 
-                if(part is QuestPart_SpawnWorldObject part2) 
+                if (part is QuestPart_SpawnWorldObject part2) 
                 {
                     Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
                     tile = part2.worldObject?.Tile ?? -1;
                 }
-                else if(part is QuestPart_DisableTradeRequest part3) 
+
+                else if (part is QuestPart_DisableTradeRequest part3) 
                 {
                     Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
                     tile = part3.settlement?.Tile ?? -1;
                 }
-                else if(part is QuestPart_TradeRequestInactive part4) 
+
+                else if (part is QuestPart_TradeRequestInactive part4) 
                 {
                     Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
                     tile = part4.settlement?.Tile ?? -1;
                 }
+
                 else if (part is QuestPart_InitiateTradeRequest part5)
                 {
                     Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
@@ -216,35 +218,41 @@ namespace GameClient.Managers
         {
             try
             {
-                if (questToFixTemp.TryGetValue(obj.Tile, out var parts))
+                if (questToFixTemp.TryGetValue(obj.Tile, out List<QuestPart> parts))
                 {
                     Printer.Warning($"Found quest with id {parts.First().quest.id}", LogImportanceMode.Verbose);
-                    foreach (var part in parts)
+
+                    foreach (QuestPart part in parts)
                     {
                         if (part is QuestPart_SpawnWorldObject part2)
                         {
                             Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
                             part2.worldObject = obj;
                         }
+
                         else if (part is QuestPart_DisableTradeRequest part3)
                         {
                             Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
                             part3.settlement = (Settlement)obj;
                         }
+
                         else if (part is QuestPart_TradeRequestInactive part4)
                         {
                             Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
                             part4.settlement = (Settlement)obj;
                         }
+
                         else if (part is QuestPart_InitiateTradeRequest part5)
                         {
                             Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
                             part5.settlement = (Settlement)obj;
                         }
                     }
+
                     Printer.Warning($"Loaded quest with id {parts.First().quest.id} on tile {obj.Tile}.", LogImportanceMode.Verbose);
                 }
             }
+
             catch (Exception ex)
             {
                 Printer.Error($"Error while trying to relink quests\n{ex}");

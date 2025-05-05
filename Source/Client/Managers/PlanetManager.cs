@@ -29,9 +29,9 @@ namespace GameClient.Managers
                 SiteManager.AddSites(SiteManagerH.tempSites);
 
                 NPCManager.ClearAllSettlements();
-                NPCSettlementManagerHelper.SaveAllQuests();
-                NPCManager.AddSettlements(NPCSettlementManagerHelper.tempNPCSettlements);
-                NPCSettlementManagerHelper.CleanupQuests();
+                NPCManagerH.SaveAllQuests();
+                NPCManager.AddSettlements(NPCManagerH.tempNPCSettlements);
+                NPCManagerH.CleanupQuests();
 
                 RoadManager.ClearAllRoads();
                 RoadManager.AddRoads(RoadManagerHelper.tempRoadDetails, false);
