@@ -28,7 +28,7 @@ namespace GameClient.Dialogs
         {
             this.info = info;
             ModsConfigdata = AccessTools.Field(typeof(ModsConfig), "data");
-            ModsConfigDataactiveMods = AccessTools.Field(AccessTools.TypeByName("Verse.ModsConfig.ModsConfigData"), "activeMods");
+            ModsConfigDataactiveMods = AccessTools.Field(AccessTools.TypeByName("Verse.ModsConfig+ModsConfigData"), "activeMods");
         }
         public override void DoWindowContents(Rect inRect)
         {
@@ -80,13 +80,13 @@ namespace GameClient.Dialogs
                     }
                 }
                 if (missingMods.Any() || downloadableMods.Any() || modsToEnable.Any()) {
-                    Printer.Warning($"Found {downloadableMods.Count} mods to download and {missingMods} mods that cannot be downloaded.");
+                    Printer.Warning($"Found {downloadableMods.Count} mods to download and {missingMods.Count} mods that cannot be downloaded.");
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Listing("Missing mods!",
                         "Do you want to download/enable the missing mods automatically?",
                         display.ToArray(),
                         () =>
                         {
-                            foreach (var value in downloadableMods)
+                            foreach (var value in downloadableMods.ToList())
                             {
                                 if (ServerBrowserManager.DownloadMod(value.Value))
                                 {
@@ -94,10 +94,11 @@ namespace GameClient.Dialogs
                                     {
                                         downloadableMods.Remove(value.Key);
                                         List<string> activeMods = (List<string>)ModsConfigDataactiveMods.GetValue(ModsConfigdata.GetValue(null));
+                                        activeMods.Add(value.Key);
                                     }
                                     catch (Exception ex)
                                     {
-                                        Printer.Error($"Error while trying to activate mod {value.Key}. You will need to manually enable / download this mod.");
+                                        Printer.Error($"Error while trying to activate mod {value.Key}. You will need to manually enable / download this mod.\n{ex}");
                                     }
                                 }
                             }
@@ -119,7 +120,6 @@ namespace GameClient.Dialogs
                                     if(!info._config.ForbiddenMods.Contains(str) && !missingMods.Contains(str))
                                         ModsConfig.SetActive(str, true);
                                 }
-                                ModsConfig.TrySortMods();
                                 ModsConfig.Save();
                                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("Success.", new string[] { "Game will now restart, give some time for steam to download the mods." }, 
                                 () => 
