@@ -32,13 +32,13 @@ namespace GameServer.Managers
 
         public static void AddSettlement(ServerClient client, PlayerSettlementData settlementData)
         {
-            if (CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Label} attempted to add a settlement at tile {settlementData._settlementFile.Tile}, but that tile already has a settlement");
+            if (CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Label} attempted to add a settlement at tile {settlementData._settlementFile.Tile}, but that tile already has a settlement");
             else
             {
                 SettlementFile settlementFile = new SettlementFile();
                 settlementFile.Tile = settlementData._settlementFile.Tile;
-                settlementFile.UID = client.userFile.Uid;
-                settlementFile.Label = client.userFile.Label;
+                settlementFile.UID = client.UserFile.Uid;
+                settlementFile.Label = client.UserFile.Label;
                 settlementData._settlementFile = settlementFile;
 
                 Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + fileExtension), settlementFile);
@@ -51,7 +51,7 @@ namespace GameServer.Managers
                     {
                         settlementData._settlementFile.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
 
-                        cClient.listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+                        cClient.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
                     }
                 }
 
@@ -67,10 +67,10 @@ namespace GameServer.Managers
 
             if (client != null)
             {
-                if (settlementFile.UID != client.userFile.Uid)
+                if (settlementFile.UID != client.UserFile.Uid)
                 {
                     ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementFile.Tile} attempted to be removed by " +
-                        $"{client.userFile.Uid}, but {settlementFile.UID} owns the settlement");
+                        $"{client.UserFile.Uid}, but {settlementFile.UID} owns the settlement");
                 }
 
                 else

@@ -106,7 +106,7 @@ namespace GameServer.Managers
                     _name = Master.ServerConfig.Name,
                     _description = Master.ServerConfig.Description,
                     _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
-                    _currentPlayerCount = Network.connectedClients.Count,
+                    _currentPlayerCount = Network.ConnectedClients.Count,
                     _config = Master.ModConfig
                 };
                 HttpResponseMessage response = await Client.PostAsync(MasterServer, 
@@ -131,7 +131,7 @@ namespace GameServer.Managers
                 Client.DefaultRequestHeaders.Add("action", "Player-Count");
 
                 HttpResponseMessage response = await Client.PostAsync(MasterServer,
-                    new StringContent(Network.connectedClients.Count.ToString()));
+                    new StringContent(Network.ConnectedClients.Count.ToString()));
 
                 response.EnsureSuccessStatusCode();
                 return true;
@@ -162,7 +162,7 @@ namespace GameServer.Managers
                 _name = Master.ServerConfig.Name,
                 _description = Master.ServerConfig.Description,
                 _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
-                _currentPlayerCount = Network.connectedClients.Count,
+                _currentPlayerCount = Network.ConnectedClients.Count,
                 _config = Master.ModConfig
             };
             HttpResponseMessage response = await Client.PostAsync(MasterServer,

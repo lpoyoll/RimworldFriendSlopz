@@ -28,7 +28,7 @@ namespace GameServer.Managers
         {
             if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return;
 
-            client.userFile.SetLoginDetails(data);
+            client.UserFile.SetLoginDetails(data);
 
             client.LoadUserFromFile();
 
@@ -49,9 +49,9 @@ namespace GameServer.Managers
         {
             try
             {
-                client.userFile.SetLoginDetails(data);
+                client.UserFile.SetLoginDetails(data);
 
-                UserManagerH.SaveUserFile(client.userFile);
+                UserManagerH.SaveUserFile(client.UserFile);
 
                 InformationDisplayer.DisplayRegister(client);
 
@@ -72,7 +72,7 @@ namespace GameServer.Managers
 
             if (Master.ChatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
 
-            if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Uid} has joined the server!");
+            if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Uid} has joined the server!");
 
             if (WorldManager.CheckIfWorldExists())
             {
@@ -92,7 +92,7 @@ namespace GameServer.Managers
                 if (toFind == client) continue;
                 else
                 {
-                    if (toFind.userFile.Uid == client.userFile.Uid)
+                    if (toFind.UserFile.Uid == client.UserFile.Uid)
                     {
                         DenyConnectionWithReason(toFind, LoginResponse.ExtraLogin);
                     }
@@ -108,8 +108,8 @@ namespace GameServer.Managers
             if (response == LoginResponse.WrongMods) loginData._extraDetails = (List<string>)extraDetails;
             else if (response == LoginResponse.WrongVersion) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
 
-            client.listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
-            client.listener.DisconnectFlag = true;
+            client.Listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
+            client.Listener.DisconnectFlag = true;
         }
     }
 }

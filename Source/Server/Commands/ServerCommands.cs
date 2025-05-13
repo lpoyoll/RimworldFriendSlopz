@@ -209,7 +209,7 @@ namespace GameServer.Commands
             Printer.Title("----------------------------------------");
             foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe())
             {
-                Printer.Warning($"{client.userFile.SavedIP} - {client.userFile.Label} - {client.userFile.Uid}");
+                Printer.Warning($"{client.UserFile.SavedIP} - {client.UserFile.Label} - {client.UserFile.Uid}");
             }
             Printer.Title("----------------------------------------");
         }
@@ -246,8 +246,8 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.Op;
 
-                client.userFile.UpdateAdmin(true);
-                client.listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                client.UserFile.UpdateAdmin(true);
+                client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
             UserManagerH.SaveUserFile(toFind);
 
@@ -283,8 +283,8 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.Deop;
 
-                client.userFile.UpdateAdmin(false);
-                client.listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                client.UserFile.UpdateAdmin(false);
+                client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
             UserManagerH.SaveUserFile(toFind);
 
@@ -311,9 +311,9 @@ namespace GameServer.Commands
                 ThrowUserNotFoundError();
                 return;
             }
-            toFind.listener.DisconnectFlag = true;
+            toFind.Listener.DisconnectFlag = true;
 
-            Printer.Warning($"User '{toFind.userFile.Label}' has been kicked from the server");
+            Printer.Warning($"User '{toFind.UserFile.Label}' has been kicked from the server");
         }
 
         public static void BanListCommandAction()
@@ -374,7 +374,7 @@ namespace GameServer.Commands
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                    client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                     Printer.Title($"Sent event '{ConsoleManager.commandParameters[1]}' to '{ConsoleManager.commandParameters[0]}'");
                 }
@@ -396,7 +396,7 @@ namespace GameServer.Commands
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                    client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                 }
 
                 Printer.Title($"Sent event '{ConsoleManager.commandParameters[0]}' to every connected player");
@@ -502,7 +502,7 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                toFind.listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                toFind.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
 
                 Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' has been forced to save");
             }
@@ -561,7 +561,7 @@ namespace GameServer.Commands
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                client.listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
 
             while (NetworkHelper.GetConnectedClientsSafe().Length > 0) Thread.Sleep(1);

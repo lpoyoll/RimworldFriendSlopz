@@ -46,39 +46,39 @@ namespace GameServer.Managers
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Uid} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Uid} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData._toTile);
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.UID))
                 {
                     eventData._stepMode = EventStepMode.Recover;
-                    client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                    client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                 }
 
                 else
                 {
                     ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlement.UID);
 
-                    if (!ValueChecker.CheckIfCanEvent(target.userFile))
+                    if (!ValueChecker.CheckIfCanEvent(target.UserFile))
                     {
                         eventData._stepMode = EventStepMode.Recover;
-                        client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                     }
 
                     else
                     {
                         //Back to player
 
-                        client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                         //To the person that should receive it
 
                         eventData._stepMode = EventStepMode.Receive;
 
-                        target.userFile.UpdateEventTime();
+                        target.UserFile.UpdateEventTime();
 
-                        target.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        target.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                     }
                 }
             }

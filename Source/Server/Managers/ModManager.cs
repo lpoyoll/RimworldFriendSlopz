@@ -24,10 +24,10 @@ namespace GameServer.Managers
 
         private static void SaveModConfig(ServerClient client, ModConfigFile file)
         {
-            if (Master.WorldValues != null && !client.userFile.IsAdmin)
+            if (Master.WorldValues != null && !client.UserFile.IsAdmin)
             {
-                UserManager.BanPlayerFromName(client.userFile.Uid);
-                Printer.Warning($"Player {client.userFile.Uid} tried to change mod config without being admin");
+                UserManager.BanPlayerFromName(client.UserFile.Uid);
+                Printer.Warning($"Player {client.UserFile.Uid} tried to change mod config without being admin");
             }
 
             else
@@ -91,22 +91,22 @@ namespace GameServer.Managers
 
             if (conflictingMods.Count == 0)
             {
-                client.userFile.UpdateMods(clientMods);
+                client.UserFile.UpdateMods(clientMods);
                 return false;
             }
 
             else
             {
-                if (client.userFile.IsAdmin)
+                if (client.UserFile.IsAdmin)
                 {
-                    InformationDisplayer.DisplayModBypass(client.userFile.Label);
-                    client.userFile.UpdateMods(clientMods);
+                    InformationDisplayer.DisplayModBypass(client.UserFile.Label);
+                    client.UserFile.UpdateMods(clientMods);
                     return false;
                 }
 
                 else
                 {
-                    InformationDisplayer.DisplayModMismatch(client.userFile.Label);
+                    InformationDisplayer.DisplayModMismatch(client.UserFile.Label);
                     LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }

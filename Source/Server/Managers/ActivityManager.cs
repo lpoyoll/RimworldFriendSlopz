@@ -32,7 +32,7 @@ namespace GameServer.Managers
             if (!MapManager.CheckIfMapExists(data._targetTile))
             {
                 data._stepMode = ActivityStepMode.Deny;
-                client.listener.EnqueuePacket(PacketHeader.ActivityManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }
 
             else
@@ -40,7 +40,7 @@ namespace GameServer.Managers
                 data._stepMode = ActivityStepMode.Request;
                 data._mapFile = MapManager.GetMapFromTile(data._targetTile);
 
-                client.listener.EnqueuePacket(PacketHeader.ActivityManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }
         }
     }

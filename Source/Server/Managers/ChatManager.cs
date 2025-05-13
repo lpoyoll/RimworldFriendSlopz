@@ -59,7 +59,7 @@ namespace GameServer.Managers
             string chatCommand = "";
             for (int i = 0; i < command.Length; i++) chatCommand += command[i] + "";
 
-            ChatManagerHelper.ShowChatInConsole(client.userFile.Label, chatCommand);
+            ChatManagerHelper.ShowChatInConsole(client.UserFile.Label, chatCommand);
 
             commandSemaphore.Release();
         }
@@ -69,15 +69,15 @@ namespace GameServer.Managers
             if (Master.ServerConfig == null) return;
 
             ChatData chatData = new ChatData();
-            chatData._username = client.userFile.Label;
+            chatData._username = client.UserFile.Label;
             chatData._message = message;
-            chatData._usernameColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
-            chatData._messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
+            chatData._usernameColor = client.UserFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
+            chatData._messageColor = client.UserFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
             NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
-            WriteToLogs(client.userFile.Label, message);
-            ChatManagerHelper.ShowChatInConsole(client.userFile.Label, message);
+            WriteToLogs(client.UserFile.Label, message);
+            ChatManagerHelper.ShowChatInConsole(client.UserFile.Label, message);
         }
 
         public static void BroadcastDiscordMessage(string client, string message)
@@ -130,7 +130,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
 
-            client.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         public static void SendServerMessage(ServerClient client, string message)
@@ -141,7 +141,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Server;
             chatData._messageColor = MessageColor.Server;
 
-            client.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         private static void WriteToLogs(string username, string message)

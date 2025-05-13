@@ -15,7 +15,7 @@ namespace GameServer.Managers
         {
             PlayerRecountData playerRecountData = new PlayerRecountData();
             playerRecountData._currentPlayerCount = NetworkHelper.GetConnectedClientsSafe().Count();
-            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.userFile.Label);
+            foreach (ServerClient client in NetworkHelper.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.UserFile.Label);
 
             NetworkHelper.SendPacketToAllClients(PacketHeader.RecountManager, playerRecountData);
         }
@@ -31,7 +31,7 @@ namespace GameServer.Managers
                 else
                 {
                     userFile.UpdateBan(true);
-                    client.listener.DisconnectFlag = true;
+                    client.Listener.DisconnectFlag = true;
                     Printer.Warning($"User '{userFile.Label}' has been banned from the server");
                 }
             }
@@ -68,7 +68,7 @@ namespace GameServer.Managers
                 if (!userFile.EndsWith(fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.Uid == client.userFile.Uid) return file;
+                if (file.Uid == client.UserFile.Uid) return file;
             }
 
             return null;
@@ -129,10 +129,10 @@ namespace GameServer.Managers
 
         public static bool CheckIfUserBanned(ServerClient client)
         {
-            if (!client.userFile.IsBanned) return false;
+            if (!client.UserFile.IsBanned) return false;
             else
             {
-                Printer.Message($"Banned user '{client.userFile.Uid}' tried to join the server");
+                Printer.Message($"Banned user '{client.UserFile.Uid}' tried to join the server");
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.BannedLogin);
                 return true;
             }
@@ -160,7 +160,7 @@ namespace GameServer.Managers
         public static bool CheckWhitelist(ServerClient client)
         {
             if (!Master.Whitelist.UseWhitelist) return true;
-            else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.userFile.Uid) != null) return true;
+            else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.UserFile.Uid) != null) return true;
             else
             {
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Whitelist);

@@ -78,7 +78,7 @@ namespace GameServer.Commands
         public static void DisconnectCommandAction()
         {
             if (TargetClient == null) return;
-            else TargetClient.listener.DisconnectFlag = true;
+            else TargetClient.Listener.DisconnectFlag = true;
         }
 
         public static void PrivateMessageCommandAction()
@@ -106,12 +106,12 @@ namespace GameServer.Commands
                             chatData._messageColor = MessageColor.Private;
 
                             //Send to sender
-                            chatData._username = $">> {toFind.userFile.Label}";
-                            TargetClient.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+                            chatData._username = $">> {toFind.UserFile.Label}";
+                            TargetClient.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
                             //Send to recipient
-                            chatData._username = $"<< {TargetClient.userFile.Label}";
-                            toFind.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+                            chatData._username = $"<< {TargetClient.UserFile.Label}";
+                            toFind.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
                             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
                         }

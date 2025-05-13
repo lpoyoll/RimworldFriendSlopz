@@ -5,21 +5,21 @@ namespace GameServer.Misc
 {
     public static class InformationDisplayer
     {
-        public static void DisplayConnect(ServerClient client) { Printer.Message($"[Connect] > {client.userFile.SavedIP}"); }
+        public static void DisplayConnect(ServerClient client) { Printer.Message($"[Connect] > {client.UserFile.SavedIP}"); }
 
-        public static void DisplayDisconnect(ServerClient client) { Printer.Message($"[Disconnect] > {client.userFile.SavedIP}"); }
+        public static void DisplayDisconnect(ServerClient client) { Printer.Message($"[Disconnect] > {client.UserFile.SavedIP}"); }
 
-        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.userFile.Uid}"); }
+        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.UserFile.Uid}"); }
 
-        public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.userFile.Uid}"); }
+        public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.UserFile.Uid}"); }
 
-        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.userFile.Uid}"); }
+        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.UserFile.Uid}"); }
 
-        public static void DisplayLoadGame(ServerClient client) { Printer.Message($"[Load game] > {client.userFile.Uid}"); }
+        public static void DisplayLoadGame(ServerClient client) { Printer.Message($"[Load game] > {client.UserFile.Uid}"); }
 
-        public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save map] > {client.userFile.Uid}"); }
+        public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save map] > {client.UserFile.Uid}"); }
 
-        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.userFile.Uid}"); }
+        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.UserFile.Uid}"); }
 
         public static void DisplayRemoveMap(string value) { Printer.Message($"[Remove map] > {value}"); }
 

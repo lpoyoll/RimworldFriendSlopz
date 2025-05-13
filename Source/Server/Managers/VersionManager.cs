@@ -15,7 +15,7 @@ namespace GameServer.Managers
             if (data._version == CommonValues.ExecutableVersion)
             {
                 data._step = VersionData.VersionStep.Pass;
-                client.listener.EnqueuePacket(PacketHeader.VersionManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
             }
             else LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongVersion);
         }
@@ -25,7 +25,7 @@ namespace GameServer.Managers
             VersionData data = new VersionData();
             data._step = VersionData.VersionStep.Ask;
 
-            client.listener.EnqueuePacket(PacketHeader.VersionManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace GameServer.Managers
 
             catch
             {
-                Printer.Warning($"Could not add pollution to tile {data._pollutionData.tile}. Coming from {client.userFile.Uid}");
+                Printer.Warning($"Could not add pollution to tile {data._pollutionData.tile}. Coming from {client.UserFile.Uid}");
                 Printer.Warning($"Additional debugging info here:\n{StringUtilities.ToString(data)}", LogImportanceMode.Verbose);
             }
         }

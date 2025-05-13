@@ -11,8 +11,8 @@ namespace GameServer.Managers
         {
             ServerGlobalData globalData = new ServerGlobalData();
 
-            globalData._isClientAdmin = client.userFile.IsAdmin;
-            globalData._isClientFactionMember = !string.IsNullOrEmpty(client.userFile.GuildName);
+            globalData._isClientAdmin = client.UserFile.IsAdmin;
+            globalData._isClientFactionMember = !string.IsNullOrEmpty(client.UserFile.GuildName);
 
             globalData._serverValues = new ServerValuesFile(Master.ServerConfig.Name);
             globalData._eventValues = EventManagerHelper.loadedEvents;
@@ -33,7 +33,7 @@ namespace GameServer.Managers
                 globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
             }
 
-            client.listener.EnqueuePacket(PacketHeader.GlobalDataManager, globalData);
+            client.Listener.EnqueuePacket(PacketHeader.GlobalDataManager, globalData);
         }
     }
 
@@ -46,7 +46,7 @@ namespace GameServer.Managers
             {
                 SettlementFile file = new SettlementFile();
 
-                if (settlement.UID == client.userFile.Uid) continue;
+                if (settlement.UID == client.UserFile.Uid) continue;
                 else
                 {
                     file.Tile = settlement.Tile;

@@ -21,7 +21,7 @@ namespace GameServer.Managers
 
         public static void SaveUserMap(ServerClient client, MapFile file)
         {
-            file.UID = client.userFile.Uid;
+            file.UID = client.UserFile.Uid;
             Serializer.ObjectBytesToFile(Path.Combine(Master.MapsPath, file.Tile + fileExtension), file);
 
             InformationDisplayer.DisplaySaveMap(client);

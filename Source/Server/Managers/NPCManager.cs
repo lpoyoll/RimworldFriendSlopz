@@ -45,7 +45,7 @@ namespace GameServer.Managers
 
                 BroadcastSettlementDeletion(settlement);
 
-                Printer.Warning($"[Delete NPC settlement] > {settlement.tile} > {client.userFile.Uid}");
+                Printer.Warning($"[Delete NPC settlement] > {settlement.tile} > {client.UserFile.Uid}");
             }
         }
 
