@@ -47,13 +47,13 @@ namespace GameServer.Managers
         {
             commandSemaphore.WaitOne();
 
-            BaseChatCommand toFind = ChatManagerHelper.GetCommandFromName(command[0]);
+            CommandBase toFind = ChatManagerHelper.GetCommandFromName(command[0]);
             if (toFind == null) SendConsoleMessage(client, "Command was not found.");
             else
             {
-                ChatCommandActions.targetClient = client;
-                ChatCommandActions.command = command;
-                toFind.commandAction.Invoke();
+                ChatCommandActions.TargetClient = client;
+                ChatCommandActions.Command = command;
+                toFind.CommandAction.Invoke();
             }
 
             string chatCommand = "";
@@ -170,9 +170,9 @@ namespace GameServer.Managers
             return NetworkHelper.GetConnectedClientFromUid(username);
         }
 
-        public static BaseChatCommand GetCommandFromName(string commandName)
+        public static CommandBase GetCommandFromName(string commandName)
         {
-            return ChatCommands.commands.ToArray().FirstOrDefault(x => x.prefix == commandName);
+            return ChatCommands.commands.ToArray().FirstOrDefault(x => x.Prefix == commandName);
         }
 
         public static string GetUsernameFromMention(string mention)

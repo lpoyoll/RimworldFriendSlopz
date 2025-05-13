@@ -32,21 +32,21 @@ namespace GameServer.Managers
 
             try
             {
-                BaseServerCommand commandToFetch = ConsoleCommands.commands.ToList().Find(x => x.prefix == parsedPrefix);
+                CommandBase commandToFetch = ConsoleCommands.Commands.ToList().Find(x => x.Prefix == parsedPrefix);
                 if (commandToFetch == null) Printer.Warning($"Command '{parsedPrefix}' was not found");
                 else
                 {
-                    if (commandToFetch.parameters != parsedParameters && commandToFetch.parameters != -1)
+                    if (commandToFetch.Parameters != parsedParameters && commandToFetch.Parameters != -1)
                     {
-                        Printer.Warning($"Command '{commandToFetch.prefix}' wanted [{commandToFetch.parameters}] parameters "
+                        Printer.Warning($"Command '{commandToFetch.Prefix}' wanted [{commandToFetch.Parameters}] parameters "
                             + $"but was passed [{parsedParameters}]");
                     }
 
                     else
                     {
-                        if (commandToFetch.commandAction != null) commandToFetch.commandAction.Invoke();
+                        if (commandToFetch.CommandAction != null) commandToFetch.CommandAction.Invoke();
 
-                        else Printer.Warning($"Command '{commandToFetch.prefix}' didn't have any action built in");
+                        else Printer.Warning($"Command '{commandToFetch.Prefix}' didn't have any action built in");
                     }
                 }
             }
