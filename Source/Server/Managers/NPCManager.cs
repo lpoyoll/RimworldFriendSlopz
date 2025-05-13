@@ -12,7 +12,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.NPCManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableNPCDestruction)
+            if (!Master.ActionConfigs.EnableNPCDestruction)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -51,9 +51,9 @@ namespace GameServer.Managers
 
         private static void DeleteSettlement(PlanetNPCSettlementDetails settlement)
         {
-            List<PlanetNPCSettlementDetails> finalSettlements = Master.worldValues.NPCSettlements.ToList();
+            List<PlanetNPCSettlementDetails> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
             finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.tile));
-            Master.worldValues.NPCSettlements = finalSettlements.ToArray();
+            Master.WorldValues.NPCSettlements = finalSettlements.ToArray();
             Main_.SaveValueFile(ServerFileMode.World);
         }
 
@@ -71,7 +71,7 @@ namespace GameServer.Managers
     {
         public static bool CheckIfSettlementFromTileExists(int tile)
         {
-            foreach (PlanetNPCSettlementDetails settlement in Master.worldValues.NPCSettlements.ToArray())
+            foreach (PlanetNPCSettlementDetails settlement in Master.WorldValues.NPCSettlements.ToArray())
             {
                 if (settlement.tile == tile) return true;
             }
@@ -81,7 +81,7 @@ namespace GameServer.Managers
 
         public static PlanetNPCSettlementDetails GetSettlementFromTile(int tile)
         {
-            return Master.worldValues.NPCSettlements.FirstOrDefault(fetch => fetch.tile == tile); ;
+            return Master.WorldValues.NPCSettlements.FirstOrDefault(fetch => fetch.tile == tile); ;
         }
     }
 }

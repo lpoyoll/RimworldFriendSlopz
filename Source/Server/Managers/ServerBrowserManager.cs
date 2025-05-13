@@ -28,14 +28,14 @@ namespace GameServer.Managers
         {
             Task.Run(async () =>
             {
-                if (Master.serverConfig.EnableServerBrowser)
+                if (Master.ServerConfig.EnableServerBrowser)
                 {
                     if (ValidateServerInfos())
                     {
                         Printer.Warning($"You have enabled the server browser feature. By doing so, you understand that:" +
                             $"\n- Your server's information (name, description, player count, ect... will be shared to possibly all Rimworld Together's users." +
                             $"\n- Your server's contact information (public ip adress and port) will be shared to possibly all Rimworld Together's users." +
-                            $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.configsPath, "ServerConfig.json")} " +
+                            $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.ConfigsPath, "ServerConfig.json")} " +
                             "\nunder the `EnableServerBrowser` setting and then restart the server.");
                         Console.CancelKeyPress += SendClosureSignalFromConsole;
                         AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
@@ -74,7 +74,7 @@ namespace GameServer.Managers
         }
         private static bool ValidateServerInfos() 
         {
-            var serverInfo = Master.serverConfig;
+            var serverInfo = Master.ServerConfig;
             if(serverInfo.Description.Length > MaxDescriptionLength) 
             {
                 Printer.Error($"Server description is above {MaxDescriptionLength} characters, please shorten it. Server browser features have been turned off");
@@ -101,13 +101,13 @@ namespace GameServer.Managers
                 Client.DefaultRequestHeaders.Add("action", "Add-Server-Browser");
                 ServerInfo info = new ServerInfo()
                 {
-                    _ip = Master.serverConfig.PublicEndPoint,
-                    _port = int.Parse(Master.serverConfig.Port),
-                    _name = Master.serverConfig.Name,
-                    _description = Master.serverConfig.Description,
-                    _maximumPlayerCount = int.Parse(Master.serverConfig.MaxPlayers),
+                    _ip = Master.ServerConfig.PublicEndPoint,
+                    _port = int.Parse(Master.ServerConfig.Port),
+                    _name = Master.ServerConfig.Name,
+                    _description = Master.ServerConfig.Description,
+                    _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
                     _currentPlayerCount = Network.connectedClients.Count,
-                    _config = Master.modConfig
+                    _config = Master.ModConfig
                 };
                 HttpResponseMessage response = await Client.PostAsync(MasterServer, 
                     new StringContent(Serializer.SerializeToString(info), Encoding.UTF8, "application/json"));
@@ -157,13 +157,13 @@ namespace GameServer.Managers
             Client.DefaultRequestHeaders.Add("action", "Remove-Server-Browser");
             ServerInfo info = new ServerInfo()
             {
-                _ip = Master.serverConfig.PublicEndPoint,
-                _port = int.Parse(Master.serverConfig.Port),
-                _name = Master.serverConfig.Name,
-                _description = Master.serverConfig.Description,
-                _maximumPlayerCount = int.Parse(Master.serverConfig.MaxPlayers),
+                _ip = Master.ServerConfig.PublicEndPoint,
+                _port = int.Parse(Master.ServerConfig.Port),
+                _name = Master.ServerConfig.Name,
+                _description = Master.ServerConfig.Description,
+                _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
                 _currentPlayerCount = Network.connectedClients.Count,
-                _config = Master.modConfig
+                _config = Master.ModConfig
             };
             HttpResponseMessage response = await Client.PostAsync(MasterServer,
                 new StringContent(Serializer.SerializeToString(info)));

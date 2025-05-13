@@ -10,9 +10,9 @@ namespace GameServer.TCP
 {
     public static class Network
     {
-        private static IPAddress localAddress = IPAddress.Parse(Master.serverConfig.IP);
+        private static IPAddress localAddress = IPAddress.Parse(Master.ServerConfig.IP);
 
-        public static int port = int.Parse(Master.serverConfig.Port);
+        public static int port = int.Parse(Master.ServerConfig.Port);
 
         private static TcpListener connection;
 
@@ -20,7 +20,7 @@ namespace GameServer.TCP
 
         public static void ReadyServer()
         {
-            if (Master.serverConfig.UseUPnP) { _ = new UPnP(); }
+            if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
 
             connection = new TcpListener(localAddress, port);
             connection.Start();
@@ -43,17 +43,17 @@ namespace GameServer.TCP
             Listener newListener = new Listener(newServerClient, newTCP);
             newServerClient.listener = newListener;
 
-            if (Master.isClosing)
+            if (Master.IsClosing)
             {
                 newServerClient.listener.DisconnectFlag = true;
             }
 
-            else if (NetworkHelper.GetConnectedClientsSafe().Length >= int.Parse(Master.serverConfig.MaxPlayers))
+            else if (NetworkHelper.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
             {
                 LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.ServerFull);
             }
 
-            else if (Master.worldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0)
+            else if (Master.WorldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0)
             {
                 LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.NoWorld);
             }
@@ -80,7 +80,7 @@ namespace GameServer.TCP
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
                 InformationDisplayer.DisplayDisconnect(client);
-                if (Master.chatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Uid} has left the server!");
+                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Uid} has left the server!");
             }
             catch { Printer.Warning($"Error disconnecting user {client.userFile.Uid}, this will cause memory overhead"); }
         }

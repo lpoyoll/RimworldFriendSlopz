@@ -20,16 +20,16 @@ namespace GameServer.Managers
             try
             {
                 string backupName = $"Server_{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}_{DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
-                string backupPath = $"{Master.backupServerPath + Path.DirectorySeparatorChar}{backupName}{fileExtension}";
+                string backupPath = $"{Master.BackupServerPath + Path.DirectorySeparatorChar}{backupName}{fileExtension}";
 
                 List<string> toArchive = new List<string>();
-                toArchive.AddRange(Directory.GetFiles(Master.assetsPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.configsPath, "*.*", SearchOption.AllDirectories));
-                toArchive.AddRange(Directory.GetFiles(Master.logsPath, "*.*", SearchOption.AllDirectories));
+                toArchive.AddRange(Directory.GetFiles(Master.AssetsPath, "*.*", SearchOption.AllDirectories));
+                toArchive.AddRange(Directory.GetFiles(Master.ConfigsPath, "*.*", SearchOption.AllDirectories));
+                toArchive.AddRange(Directory.GetFiles(Master.LogsPath, "*.*", SearchOption.AllDirectories));
 
                 CreateArchive(toArchive, backupPath);
 
-                if (Directory.GetFiles(Master.backupServerPath).Count() > Master.backupConfig.Amount && Master.backupConfig.AutomaticDeletion == true)
+                if (Directory.GetFiles(Master.BackupServerPath).Count() > Master.BackupConfig.Amount && Master.BackupConfig.AutomaticDeletion == true)
                 {
                     DeleteOldestArchive();
                 }
@@ -47,7 +47,7 @@ namespace GameServer.Managers
 
             try
             {
-                string playerArchivedSavePath = Path.Combine(Master.backupUsersPath, uid);
+                string playerArchivedSavePath = Path.Combine(Master.BackupUsersPath, uid);
                 if (persistent) playerArchivedSavePath += " - persistent";
                 playerArchivedSavePath += fileExtension;
 
@@ -69,17 +69,17 @@ namespace GameServer.Managers
 
                 List<string> toArchive = new List<string>();
 
-                string userFilePath = Path.Combine(Master.usersPath, uid + UserManagerH.fileExtension);
+                string userFilePath = Path.Combine(Master.UsersPath, uid + UserManagerH.fileExtension);
                 if (File.Exists(userFilePath)) toArchive.Add(userFilePath);
 
-                string userSavePath = Path.Combine(Master.savesPath, uid + SaveManager.fileExtension);
+                string userSavePath = Path.Combine(Master.SavesPath, uid + SaveManager.fileExtension);
                 if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
 
                 SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
-                foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.sitesPath, site.Tile + SiteManagerHelper.fileExtension));
+                foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + SiteManagerHelper.fileExtension));
 
                 SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(uid);
-                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.settlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
+                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
 
                 CreateArchive(toArchive, playerArchivedSavePath);
 
@@ -99,7 +99,7 @@ namespace GameServer.Managers
             {
                 if (File.Exists(file))
                 {
-                    string relativePath = Path.GetRelativePath(Master.mainPath, file);
+                    string relativePath = Path.GetRelativePath(Master.MainPath, file);
                     archive.CreateEntryFromFile(file, relativePath);
                 }
             }
@@ -107,10 +107,10 @@ namespace GameServer.Managers
 
         private static void DeleteOldestArchive()
         {
-            while (Directory.GetFiles(Master.backupServerPath).Length > Master.backupConfig.Amount)
+            while (Directory.GetFiles(Master.BackupServerPath).Length > Master.BackupConfig.Amount)
             {
-                FileSystemInfo fileInfo = new DirectoryInfo(Master.backupServerPath).GetFileSystemInfos().OrderBy(file => file.CreationTime).First();
-                Printer.Warning($"Deleting backup {fileInfo.Name} because we've reached the limit of {Master.backupConfig.Amount}", LogImportanceMode.Verbose);
+                FileSystemInfo fileInfo = new DirectoryInfo(Master.BackupServerPath).GetFileSystemInfos().OrderBy(file => file.CreationTime).First();
+                Printer.Warning($"Deleting backup {fileInfo.Name} because we've reached the limit of {Master.BackupConfig.Amount}", LogImportanceMode.Verbose);
                 fileInfo.Delete();
             }
         }
@@ -122,7 +122,7 @@ namespace GameServer.Managers
                 try { BackupServer(); }
                 catch (Exception e) { Printer.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
 
-                Thread.Sleep(TimeSpan.FromHours(Master.backupConfig.IntervalHours));
+                Thread.Sleep(TimeSpan.FromHours(Master.BackupConfig.IntervalHours));
             }
         }
     }

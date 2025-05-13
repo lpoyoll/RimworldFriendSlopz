@@ -13,7 +13,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.GuildManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableFactions)
+            if (!Master.ActionConfigs.EnableFactions)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -120,7 +120,7 @@ namespace GameServer.Managers
                         toUpdateConnected.listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
                         GoodwillManager.UpdateClientGoodwills(toUpdateConnected);
                     }
-                    File.Delete(Path.Combine(Master.factionsPath, factionFile.Name + GuildManagerH.fileExtension));
+                    File.Delete(Path.Combine(Master.FactionsPath, factionFile.Name + GuildManagerH.fileExtension));
 
                     InformationDisplayer.DisplayRemoveFaction(factionFile.Name);
                 }
@@ -340,7 +340,7 @@ namespace GameServer.Managers
 
             try
             {
-                string savePath = Path.Combine(Master.factionsPath, factionFile.Name + fileExtension);
+                string savePath = Path.Combine(Master.FactionsPath, factionFile.Name + fileExtension);
                 Serializer.SerializeToFile(savePath, factionFile);
 
                 foreach (string str in factionFile.CurrentUids)
@@ -371,7 +371,7 @@ namespace GameServer.Managers
         {
             List<GuildFile> factionFiles = new List<GuildFile>();
 
-            string[] factions = Directory.GetFiles(Master.factionsPath);
+            string[] factions = Directory.GetFiles(Master.FactionsPath);
             foreach (string faction in factions)
             {
                 if (!faction.EndsWith(fileExtension)) continue;
@@ -383,7 +383,7 @@ namespace GameServer.Managers
 
         public static GuildFile GetFactionFromFactionName(string factionName)
         {
-            string[] factions = Directory.GetFiles(Master.factionsPath);
+            string[] factions = Directory.GetFiles(Master.FactionsPath);
             foreach (string faction in factions)
             {
                 GuildFile factionFile = Serializer.SerializeFromFile<GuildFile>(faction);

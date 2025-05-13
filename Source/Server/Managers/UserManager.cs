@@ -61,7 +61,7 @@ namespace GameServer.Managers
 
         public static UserFile GetUserFile(ServerClient client)
         {
-            string[] userFiles = Directory.GetFiles(Master.usersPath);
+            string[] userFiles = Directory.GetFiles(Master.UsersPath);
 
             foreach (string userFile in userFiles)
             {
@@ -76,7 +76,7 @@ namespace GameServer.Managers
 
         public static UserFile GetUserFileFromName(string username)
         {
-            string[] userFiles = Directory.GetFiles(Master.usersPath);
+            string[] userFiles = Directory.GetFiles(Master.UsersPath);
 
             foreach (string userFile in userFiles)
             {
@@ -93,7 +93,7 @@ namespace GameServer.Managers
         {
             List<UserFile> userFiles = new List<UserFile>();
 
-            string[] existingUsers = Directory.GetFiles(Master.usersPath);
+            string[] existingUsers = Directory.GetFiles(Master.UsersPath);
             foreach (string user in existingUsers)
             {
                 if (!user.EndsWith(fileExtension)) continue;
@@ -159,8 +159,8 @@ namespace GameServer.Managers
 
         public static bool CheckWhitelist(ServerClient client)
         {
-            if (!Master.whitelist.UseWhitelist) return true;
-            else if (Master.whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.userFile.Uid) != null) return true;
+            if (!Master.Whitelist.UseWhitelist) return true;
+            else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.userFile.Uid) != null) return true;
             else
             {
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Whitelist);
@@ -184,7 +184,7 @@ namespace GameServer.Managers
         {
             userFile.SavingSemaphore.WaitOne();
 
-            try { Serializer.SerializeToFile(Path.Combine(Master.usersPath, userFile.Uid + fileExtension), userFile); }
+            try { Serializer.SerializeToFile(Path.Combine(Master.UsersPath, userFile.Uid + fileExtension), userFile); }
             catch (Exception e) { Printer.Error(e.ToString()); }
 
             userFile.SavingSemaphore.Release();

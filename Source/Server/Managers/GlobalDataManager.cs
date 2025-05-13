@@ -14,22 +14,22 @@ namespace GameServer.Managers
             globalData._isClientAdmin = client.userFile.IsAdmin;
             globalData._isClientFactionMember = !string.IsNullOrEmpty(client.userFile.GuildName);
 
-            globalData._serverValues = new ServerValuesFile(Master.serverConfig.Name);
+            globalData._serverValues = new ServerValuesFile(Master.ServerConfig.Name);
             globalData._eventValues = EventManagerHelper.loadedEvents;
-            globalData._siteValues = Master.siteValues;
-            globalData._difficultyValues = Master.difficultyValues;
-            globalData._scenarioValues = Master.scenarioValues;
-            globalData._storytellerValues = Master.storytellerValues;
-            globalData._actionValues = Master.actionConfigs;
-            globalData._roadValues = Master.roadValues;
-            globalData._modConfigs = Master.modConfig;
+            globalData._siteValues = Master.SiteValues;
+            globalData._difficultyValues = Master.DifficultyValues;
+            globalData._scenarioValues = Master.ScenarioValues;
+            globalData._storytellerValues = Master.StorytellerValues;
+            globalData._actionValues = Master.ActionConfigs;
+            globalData._roadValues = Master.RoadValues;
+            globalData._modConfigs = Master.ModConfig;
 
-            if (Master.worldValues != null)
+            if (Master.WorldValues != null)
             {
-                globalData._roads = Master.worldValues.Roads;
-                globalData._pollutedTiles = Master.worldValues.PollutedTiles;
+                globalData._roads = Master.WorldValues.Roads;
+                globalData._pollutedTiles = Master.WorldValues.PollutedTiles;
                 globalData._playerSettlements = GlobalDataManagerHelper.GetServerSettlements(client);
-                globalData._npcSettlements = Master.worldValues.NPCSettlements;
+                globalData._npcSettlements = Master.WorldValues.NPCSettlements;
                 globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
             }
 

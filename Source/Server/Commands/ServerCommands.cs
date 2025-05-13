@@ -334,19 +334,19 @@ namespace GameServer.Commands
 
         public static void ModListCommandAction()
         {
-            Printer.Title($"Required Mods: [{Master.modConfig.RequiredMods.Length}]");
+            Printer.Title($"Required Mods: [{Master.ModConfig.RequiredMods.Length}]");
             Printer.Title("----------------------------------------");
-            foreach (string str in Master.modConfig.RequiredMods) Printer.Warning($"{str}");
-            Printer.Title("----------------------------------------");
-
-            Printer.Title($"Optional Mods: [{Master.modConfig.OptionalMods.Length}]");
-            Printer.Title("----------------------------------------");
-            foreach (string str in Master.modConfig.OptionalMods) Printer.Warning($"{str}");
+            foreach (string str in Master.ModConfig.RequiredMods) Printer.Warning($"{str}");
             Printer.Title("----------------------------------------");
 
-            Printer.Title($"Forbidden Mods: [{Master.modConfig.ForbiddenMods.Length}]");
+            Printer.Title($"Optional Mods: [{Master.ModConfig.OptionalMods.Length}]");
             Printer.Title("----------------------------------------");
-            foreach (string str in Master.modConfig.ForbiddenMods) Printer.Warning($"{str}");
+            foreach (string str in Master.ModConfig.OptionalMods) Printer.Warning($"{str}");
+            Printer.Title("----------------------------------------");
+
+            Printer.Title($"Forbidden Mods: [{Master.ModConfig.ForbiddenMods.Length}]");
+            Printer.Title("----------------------------------------");
+            foreach (string str in Master.ModConfig.ForbiddenMods) Printer.Warning($"{str}");
             Printer.Title("----------------------------------------");
         }
 
@@ -442,9 +442,9 @@ namespace GameServer.Commands
 
         public static void WhitelistCommandAction()
         {
-            Printer.Title($"Whitelisted usernames: [{Master.whitelist.WhitelistedUsers.Count()}]");
+            Printer.Title($"Whitelisted usernames: [{Master.Whitelist.WhitelistedUsers.Count()}]");
             Printer.Title("----------------------------------------");
-            foreach (string str in Master.whitelist.WhitelistedUsers) Printer.Warning($"{str}");
+            foreach (string str in Master.Whitelist.WhitelistedUsers) Printer.Warning($"{str}");
             Printer.Title("----------------------------------------");
         }
 
@@ -460,7 +460,7 @@ namespace GameServer.Commands
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (Master.whitelist.WhitelistedUsers.Contains(userFile.Uid))
+                if (Master.Whitelist.WhitelistedUsers.Contains(userFile.Uid))
                 {
                     Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was already whitelisted");
                     return true;
@@ -483,7 +483,7 @@ namespace GameServer.Commands
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (!Master.whitelist.WhitelistedUsers.Contains(userFile.Uid))
+                if (!Master.Whitelist.WhitelistedUsers.Contains(userFile.Uid))
                 {
                     Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not whitelisted");
                     return true;
@@ -521,7 +521,7 @@ namespace GameServer.Commands
 
         public static void PortForwardCommandAction()
         {
-            if (!Master.serverConfig.UseUPnP) Printer.Error("Cannot portforward because UPnP is disabled on the server");
+            if (!Master.ServerConfig.UseUPnP) Printer.Error("Cannot portforward because UPnP is disabled on the server");
             else _ = new UPnP();
         }
 
@@ -543,16 +543,16 @@ namespace GameServer.Commands
 
             BackupManager.BackupServer();
 
-            Directory.Delete(Master.assetsPath, true);
-            Directory.Delete(Master.configsPath, true);
-            Directory.Delete(Master.tempPath, true);
+            Directory.Delete(Master.AssetsPath, true);
+            Directory.Delete(Master.ConfigsPath, true);
+            Directory.Delete(Master.TempPath, true);
 
             Environment.Exit(0);
         }
 
         public static void QuitCommandAction()
         {
-            Master.isClosing = true;
+            Master.IsClosing = true;
 
             Printer.Warning($"Waiting for all saves to quit");
 

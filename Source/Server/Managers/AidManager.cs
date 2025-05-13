@@ -12,7 +12,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.AidManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableAids)
+            if (!Master.ActionConfigs.EnableAids)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;

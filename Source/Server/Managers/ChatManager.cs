@@ -66,7 +66,7 @@ namespace GameServer.Managers
 
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
-            if (Master.serverConfig == null) return;
+            if (Master.ServerConfig == null) return;
 
             ChatData chatData = new ChatData();
             chatData._username = client.userFile.Label;
@@ -154,7 +154,7 @@ namespace GameServer.Managers
 
             DateTime dateTime = DateTime.Now.Date;
             string nowFileName = (dateTime.Year + "-" + dateTime.Month.ToString("D2") + "-" + dateTime.Day.ToString("D2")).ToString();
-            string nowFullPath = Master.chatLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+            string nowFullPath = Master.ChatLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
@@ -182,7 +182,7 @@ namespace GameServer.Managers
 
         public static void ShowChatInConsole(string username, string message, bool fromDiscord = false)
         {
-            if (!Master.serverConfig.DisplayChatInConsole) return;
+            if (!Master.ServerConfig.DisplayChatInConsole) return;
             else
             {
                 if (fromDiscord) Printer.Message($"[Discord] > {username} > {message}");

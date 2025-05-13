@@ -63,7 +63,7 @@ namespace GameServer.Misc
 
             DateTime dateTime = DateTime.Now.Date;
             string nowFileName = $"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}";
-            string nowFullPath = Master.systemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+            string nowFullPath = Master.SystemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
@@ -74,8 +74,8 @@ namespace GameServer.Misc
         private static bool CheckIfShouldPrint(LogImportanceMode importance)
         {
             if (importance == LogImportanceMode.Normal) return true;
-            else if (importance == LogImportanceMode.Verbose && Master.serverConfig.VerboseLogs) return true;
-            else if (importance == LogImportanceMode.Extreme && Master.serverConfig.ExtremeVerboseLogs) return true;
+            else if (importance == LogImportanceMode.Verbose && Master.ServerConfig.VerboseLogs) return true;
+            else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.ExtremeVerboseLogs) return true;
             else return false;
         }
     }

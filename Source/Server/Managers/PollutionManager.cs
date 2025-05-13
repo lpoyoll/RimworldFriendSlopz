@@ -12,7 +12,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.PollutionManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnablePollutionSpread)
+            if (!Master.ActionConfigs.EnablePollutionSpread)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -28,7 +28,7 @@ namespace GameServer.Managers
             {
                 bool isNewPollutedTile = false;
 
-                PollutionDetails toSearch = Master.worldValues.PollutedTiles.FirstOrDefault(T => T.tile == data._pollutionData.tile);
+                PollutionDetails toSearch = Master.WorldValues.PollutedTiles.FirstOrDefault(T => T.tile == data._pollutionData.tile);
                 if (toSearch == null)
                 {
                     toSearch = new PollutionDetails();
@@ -40,9 +40,9 @@ namespace GameServer.Managers
 
                 if (isNewPollutedTile)
                 {
-                    List<PollutionDetails> existingPollutedTiles = Master.worldValues.PollutedTiles.ToList();
+                    List<PollutionDetails> existingPollutedTiles = Master.WorldValues.PollutedTiles.ToList();
                     existingPollutedTiles.Add(toSearch);
-                    Master.worldValues.PollutedTiles = existingPollutedTiles.ToArray();
+                    Master.WorldValues.PollutedTiles = existingPollutedTiles.ToArray();
                 }
 
                 if (shouldBroadcast) NetworkHelper.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);

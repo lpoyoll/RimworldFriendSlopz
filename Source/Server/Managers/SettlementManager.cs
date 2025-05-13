@@ -41,7 +41,7 @@ namespace GameServer.Managers
                 settlementFile.Label = client.userFile.Label;
                 settlementData._settlementFile = settlementFile;
 
-                Serializer.SerializeToFile(Path.Combine(Master.settlementsPath, settlementFile.Tile + fileExtension), settlementFile);
+                Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + fileExtension), settlementFile);
 
                 settlementData._stepMode = SettlementStepMode.Add;
                 foreach (ServerClient cClient in NetworkHelper.GetConnectedClientsSafe())
@@ -88,7 +88,7 @@ namespace GameServer.Managers
 
             void Delete()
             {
-                File.Delete(Path.Combine(Master.settlementsPath, settlementFile.Tile + fileExtension));
+                File.Delete(Path.Combine(Master.SettlementsPath, settlementFile.Tile + fileExtension));
 
                 InformationDisplayer.DisplayRemoveSettlement(settlementFile.Tile.ToString());
             }
@@ -103,7 +103,7 @@ namespace GameServer.Managers
 
         public static bool CheckIfTileIsInUse(int tileToCheck)
         {
-            string[] settlements = Directory.GetFiles(Master.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
                 if (!settlement.EndsWith(fileExtension)) continue;
@@ -117,7 +117,7 @@ namespace GameServer.Managers
 
         public static SettlementFile GetSettlementFileFromTile(int tileToGet)
         {
-            string[] settlements = Directory.GetFiles(Master.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
                 if (!settlement.EndsWith(fileExtension)) continue;
@@ -131,7 +131,7 @@ namespace GameServer.Managers
 
         public static SettlementFile GetSettlementFileFromUsername(string usernameToGet)
         {
-            string[] settlements = Directory.GetFiles(Master.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
                 if (!settlement.EndsWith(fileExtension)) continue;
@@ -147,7 +147,7 @@ namespace GameServer.Managers
         {
             List<SettlementFile> settlementList = new List<SettlementFile>();
 
-            string[] settlements = Directory.GetFiles(Master.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
                 if (!settlement.EndsWith(fileExtension)) continue;
@@ -161,7 +161,7 @@ namespace GameServer.Managers
         {
             List<SettlementFile> settlementList = new List<SettlementFile>();
 
-            string[] settlements = Directory.GetFiles(Master.settlementsPath);
+            string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
                 if (!settlement.EndsWith(fileExtension)) continue;

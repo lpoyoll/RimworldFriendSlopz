@@ -70,9 +70,9 @@ namespace GameServer.Managers
 
             foreach (string str in ChatManager.defaultJoinMessages) ChatManager.SendConsoleMessage(client, str);
 
-            if (Master.chatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.chatConfig.MessageOfTheDay}");
+            if (Master.ChatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
 
-            if (Master.chatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Uid} has joined the server!");
+            if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Uid} has joined the server!");
 
             if (WorldManager.CheckIfWorldExists())
             {

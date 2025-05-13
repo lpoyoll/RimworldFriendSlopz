@@ -11,7 +11,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.TransferManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableTrading)
+            if (!Master.ActionConfigs.EnableTrading)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;

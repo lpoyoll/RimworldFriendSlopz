@@ -8,7 +8,7 @@ namespace GameServer.Managers
 
     public static class WorldManager
     {
-        public static string baseWorldPath = Path.Combine(Master.configsPath, "WorldConfig.json");
+        public static string baseWorldPath = Path.Combine(Master.ConfigsPath, "WorldConfig.json");
 
         [HandlesPacket(PacketHeader.WorldManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)

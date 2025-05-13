@@ -12,7 +12,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.EventManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableEvents)
+            if (!Master.ActionConfigs.EnableEvents)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -41,7 +41,7 @@ namespace GameServer.Managers
             EventManagerHelper.CheckForEventFiles();
             EventManagerHelper.LoadAllEvents();
 
-            InformationDisplayer.DisplayLoadEvents(Master.eventsPath);
+            InformationDisplayer.DisplayLoadEvents(Master.EventsPath);
         }
 
         public static void SendEvent(ServerClient client, EventData eventData)
@@ -220,7 +220,7 @@ namespace GameServer.Managers
         {
             List<string> foundEvents = new List<string>();
 
-            foreach (string str in Directory.GetFiles(Master.eventsPath))
+            foreach (string str in Directory.GetFiles(Master.EventsPath))
             {
                 foundEvents.Add(Path.GetFileNameWithoutExtension(str));
             }
@@ -237,7 +237,7 @@ namespace GameServer.Managers
         public static void LoadAllEvents()
         {
             List<EventFile> toLoad = new List<EventFile>();
-            foreach (string str in Directory.GetFiles(Master.eventsPath))
+            foreach (string str in Directory.GetFiles(Master.EventsPath))
             {
                 EventFile eventFile = Serializer.SerializeFromFile<EventFile>(str);
                 if (eventFile.IsEnabled) toLoad.Add(eventFile);
@@ -254,7 +254,7 @@ namespace GameServer.Managers
             newEvent.Cost = 500;
             newEvent.IsEnabled = true;
 
-            Serializer.SerializeToFile(Path.Combine(Master.eventsPath, defName + fileExtension), newEvent);
+            Serializer.SerializeToFile(Path.Combine(Master.EventsPath, defName + fileExtension), newEvent);
         }
     }
 }

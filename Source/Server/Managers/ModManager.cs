@@ -24,7 +24,7 @@ namespace GameServer.Managers
 
         private static void SaveModConfig(ServerClient client, ModConfigFile file)
         {
-            if (Master.worldValues != null && !client.userFile.IsAdmin)
+            if (Master.WorldValues != null && !client.userFile.IsAdmin)
             {
                 UserManager.BanPlayerFromName(client.userFile.Uid);
                 Printer.Warning($"Player {client.userFile.Uid} tried to change mod config without being admin");
@@ -32,7 +32,7 @@ namespace GameServer.Managers
 
             else
             {
-                Master.modConfig = file;
+                Master.ModConfig = file;
                 Main_.SaveValueFile(ServerFileMode.Mods, true);
                 InformationDisplayer.DisplaySetMods(client);
             }
@@ -46,9 +46,9 @@ namespace GameServer.Managers
 
             //Check for required mods
 
-            if (Master.modConfig.RequiredMods.Length > 0)
+            if (Master.ModConfig.RequiredMods.Length > 0)
             {
-                foreach (string mod in Master.modConfig.RequiredMods)
+                foreach (string mod in Master.ModConfig.RequiredMods)
                 {
                     if (!clientMods.Contains(mod))
                     {
@@ -63,7 +63,7 @@ namespace GameServer.Managers
                 foreach (string mod in clientMods)
                 {
                     if (conflictingNames.Contains(mod)) continue;
-                    else if (!Master.modConfig.RequiredMods.Contains(mod) && !Master.modConfig.OptionalMods.Contains(mod))
+                    else if (!Master.ModConfig.RequiredMods.Contains(mod) && !Master.ModConfig.OptionalMods.Contains(mod))
                     {
                         conflictingMods.Add($"[Disallowed] > {mod}");
                         conflictingNames.Add(mod);
@@ -74,9 +74,9 @@ namespace GameServer.Managers
 
             //Check for forbidden mods
 
-            if (Master.modConfig.ForbiddenMods.Length > 0)
+            if (Master.ModConfig.ForbiddenMods.Length > 0)
             {
-                foreach (string mod in Master.modConfig.ForbiddenMods)
+                foreach (string mod in Master.ModConfig.ForbiddenMods)
                 {
                     if (conflictingNames.Contains(mod)) continue;
                     else if (clientMods.Contains(mod))

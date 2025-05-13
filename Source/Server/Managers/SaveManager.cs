@@ -35,7 +35,7 @@ namespace GameServer.Managers
 
         public static bool CheckIfUserHasSave(ServerClient client)
         {
-            string[] saves = Directory.GetFiles(Master.savesPath);
+            string[] saves = Directory.GetFiles(Master.SavesPath);
             foreach (string save in saves)
             {
                 if (!save.EndsWith(fileExtension)) continue;
@@ -47,7 +47,7 @@ namespace GameServer.Managers
 
         public static byte[] GetUserSaveFromUsername(string username)
         {
-            string[] saves = Directory.GetFiles(Master.savesPath);
+            string[] saves = Directory.GetFiles(Master.SavesPath);
             foreach (string save in saves)
             {
                 if (!save.EndsWith(fileExtension)) continue;
@@ -76,7 +76,7 @@ namespace GameServer.Managers
             if (client != null) client.listener.DisconnectFlag = true;
 
             // Delete save file
-            try { File.Delete(Path.Combine(Master.savesPath, uid + fileExtension)); }
+            try { File.Delete(Path.Combine(Master.SavesPath, uid + fileExtension)); }
             catch { Printer.Warning($"Failed to find {client.userFile.Label}'s save"); }
 
             // Delete site files
@@ -102,14 +102,14 @@ namespace GameServer.Managers
     {
         public static void SendSaveToClient(ServerClient client)
         {
-            string baseClientSavePath = Path.Combine(Master.savesPath, client.userFile.Uid + SaveManager.fileExtension);
+            string baseClientSavePath = Path.Combine(Master.SavesPath, client.userFile.Uid + SaveManager.fileExtension);
 
             InformationDisplayer.DisplayLoadGame(client);
 
             SaveData data = new SaveData();
             data._fileBytes = File.ReadAllBytes(baseClientSavePath);
             data._stepMode = SaveStepMode.Receive;
-            if (!Master.serverConfig.SyncLocalSave) data._instructions = (int)SaveMode.Strict;
+            if (!Master.ServerConfig.SyncLocalSave) data._instructions = (int)SaveMode.Strict;
 
             client.listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
@@ -119,8 +119,8 @@ namespace GameServer.Managers
     {
         public static void ReceiveSaveFromClient(ServerClient client, SaveData data)
         {
-            string baseClientSavePath = Path.Combine(Master.savesPath, client.userFile.Uid + SaveManager.fileExtension);
-            string tempClientSavePath = Path.Combine(Master.tempPath, client.userFile.Uid + SaveManager.tempFileExtension);
+            string baseClientSavePath = Path.Combine(Master.SavesPath, client.userFile.Uid + SaveManager.fileExtension);
+            string tempClientSavePath = Path.Combine(Master.TempPath, client.userFile.Uid + SaveManager.tempFileExtension);
 
             File.WriteAllBytes(tempClientSavePath, data._fileBytes);
 
