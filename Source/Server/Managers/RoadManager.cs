@@ -57,14 +57,14 @@ namespace GameServer.Managers
 
             foreach (RoadDetails existingRoad in Master.WorldValues.Roads)
             {
-                if (existingRoad.fromTile == data._details.fromTile && existingRoad.toTile == data._details.toTile)
+                if (existingRoad.FromTile == data._details.FromTile && existingRoad.ToTile == data._details.ToTile)
                 {
                     DeleteRoad(existingRoad, client);
                     BroadcastDeletion(existingRoad);
                     return;
                 }
 
-                else if (existingRoad.fromTile == data._details.toTile && existingRoad.toTile == data._details.fromTile)
+                else if (existingRoad.FromTile == data._details.ToTile && existingRoad.ToTile == data._details.FromTile)
                 {
                     DeleteRoad(existingRoad, client);
                     BroadcastDeletion(existingRoad);
@@ -88,7 +88,7 @@ namespace GameServer.Managers
             Master.WorldValues.Roads = currentRoads.ToArray();
             Main_.SaveValueFile(ServerFileMode.World, false);
 
-            InformationDisplayer.DisplayAddRoad(details.fromTile.ToString(), details.toTile.ToString());
+            InformationDisplayer.DisplayAddRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
 
         private static void DeleteRoad(RoadDetails details, ServerClient client = null)
@@ -99,7 +99,7 @@ namespace GameServer.Managers
             Master.WorldValues.Roads = currentRoads.ToArray();
             Main_.SaveValueFile(ServerFileMode.World, false);
 
-            InformationDisplayer.DisplayRemoveRoad(details.fromTile.ToString(), details.toTile.ToString());
+            InformationDisplayer.DisplayRemoveRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
     }
 
@@ -109,8 +109,8 @@ namespace GameServer.Managers
         {
             foreach (RoadDetails existingRoad in Master.WorldValues.Roads)
             {
-                if (existingRoad.fromTile == details.fromTile && existingRoad.toTile == details.toTile) return true;
-                else if (existingRoad.fromTile == details.toTile && existingRoad.toTile == details.fromTile) return true;
+                if (existingRoad.FromTile == details.FromTile && existingRoad.ToTile == details.ToTile) return true;
+                else if (existingRoad.FromTile == details.ToTile && existingRoad.ToTile == details.FromTile) return true;
             }
 
             return false;

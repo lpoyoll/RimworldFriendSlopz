@@ -34,7 +34,7 @@ namespace GameServer.Managers
 
         public static void RemoveNPCSettlement(ServerClient client, PlanetNPCSettlementDetails settlement)
         {
-            if (!NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.tile))
+            if (!NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.Tile))
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried removing a non-existing NPC settlement");
             }
@@ -45,14 +45,14 @@ namespace GameServer.Managers
 
                 BroadcastSettlementDeletion(settlement);
 
-                Printer.Warning($"[Delete NPC settlement] > {settlement.tile} > {client.UserFile.Uid}");
+                Printer.Warning($"[Delete NPC settlement] > {settlement.Tile} > {client.UserFile.Uid}");
             }
         }
 
         private static void DeleteSettlement(PlanetNPCSettlementDetails settlement)
         {
             List<PlanetNPCSettlementDetails> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
-            finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.tile));
+            finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.Tile));
             Master.WorldValues.NPCSettlements = finalSettlements.ToArray();
             Main_.SaveValueFile(ServerFileMode.World);
         }
@@ -73,7 +73,7 @@ namespace GameServer.Managers
         {
             foreach (PlanetNPCSettlementDetails settlement in Master.WorldValues.NPCSettlements.ToArray())
             {
-                if (settlement.tile == tile) return true;
+                if (settlement.Tile == tile) return true;
             }
 
             return false;
@@ -81,7 +81,7 @@ namespace GameServer.Managers
 
         public static PlanetNPCSettlementDetails GetSettlementFromTile(int tile)
         {
-            return Master.WorldValues.NPCSettlements.FirstOrDefault(fetch => fetch.tile == tile); ;
+            return Master.WorldValues.NPCSettlements.FirstOrDefault(fetch => fetch.Tile == tile); ;
         }
     }
 }

@@ -25,11 +25,11 @@ namespace GameClient.Managers
             switch (data._stepMode)
             {
                 case RoadStepMode.Add:
-                    AddRoadSimple(data._details.fromTile, data._details.toTile, RoadManagerHelper.GetRoadDefFromDefName(data._details.roadDefName), true);
+                    AddRoadSimple(data._details.FromTile, data._details.ToTile, RoadManagerHelper.GetRoadDefFromDefName(data._details.RoadDefName), true);
                     break;
 
                 case RoadStepMode.Remove:
-                    RemoveRoadSimple(data._details.fromTile, data._details.toTile, true);
+                    RemoveRoadSimple(data._details.FromTile, data._details.ToTile, true);
                     break;
             }
         }
@@ -40,9 +40,9 @@ namespace GameClient.Managers
             data._stepMode = RoadStepMode.Add;
 
             data._details = new RoadDetails();
-            data._details.fromTile = tileAID;
-            data._details.toTile = tileBID;
-            data._details.roadDefName = roadDef.defName;
+            data._details.FromTile = tileAID;
+            data._details.ToTile = tileBID;
+            data._details.RoadDefName = roadDef.defName;
 
             Network.listener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
@@ -53,8 +53,8 @@ namespace GameClient.Managers
             data._stepMode = RoadStepMode.Remove;
 
             data._details = new RoadDetails();
-            data._details.fromTile = tileAID;
-            data._details.toTile = tileBID;
+            data._details.FromTile = tileAID;
+            data._details.ToTile = tileBID;
 
             Network.listener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
@@ -65,7 +65,7 @@ namespace GameClient.Managers
 
             foreach (RoadDetails detail in details)
             {
-                AddRoadSimple(detail.fromTile, detail.toTile, RoadManagerHelper.GetRoadDefFromDefName(detail.roadDefName), forceRefresh);
+                AddRoadSimple(detail.FromTile, detail.ToTile, RoadManagerHelper.GetRoadDefFromDefName(detail.RoadDefName), forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
@@ -324,11 +324,11 @@ namespace GameClient.Managers
                     foreach (Tile.RoadLink link in tile.Roads)
                     {
                         RoadDetails details = new RoadDetails();
-                        details.fromTile = Find.WorldGrid.tiles.IndexOf(tile);
-                        details.toTile = link.neighbor;
-                        details.roadDefName = link.road.defName;
+                        details.FromTile = Find.WorldGrid.tiles.IndexOf(tile);
+                        details.ToTile = link.neighbor;
+                        details.RoadDefName = link.road.defName;
 
-                        if (!CheckIfExists(details.fromTile, details.toTile)) toGet.Add(details);
+                        if (!CheckIfExists(details.FromTile, details.ToTile)) toGet.Add(details);
                     }
                 }
             }
@@ -338,8 +338,8 @@ namespace GameClient.Managers
             {
                 foreach (RoadDetails details in toGet)
                 {
-                    if (details.fromTile == tileA && details.toTile == tileB) return true;
-                    else if (details.fromTile == tileB && details.toTile == tileA) return true;
+                    if (details.FromTile == tileA && details.ToTile == tileB) return true;
+                    else if (details.FromTile == tileB && details.ToTile == tileA) return true;
                 }
 
                 return false;

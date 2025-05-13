@@ -28,15 +28,15 @@ namespace GameServer.Managers
             {
                 bool isNewPollutedTile = false;
 
-                PollutionDetails toSearch = Master.WorldValues.PollutedTiles.FirstOrDefault(T => T.tile == data._pollutionData.tile);
+                PollutionDetails toSearch = Master.WorldValues.PollutedTiles.FirstOrDefault(T => T.Tile == data._pollutionData.Tile);
                 if (toSearch == null)
                 {
                     toSearch = new PollutionDetails();
                     isNewPollutedTile = true;
                 }
 
-                toSearch.tile = data._pollutionData.tile;
-                toSearch.quantity += data._pollutionData.quantity;
+                toSearch.Tile = data._pollutionData.Tile;
+                toSearch.Quantity += data._pollutionData.Quantity;
 
                 if (isNewPollutedTile)
                 {
@@ -52,7 +52,7 @@ namespace GameServer.Managers
 
             catch
             {
-                Printer.Warning($"Could not add pollution to tile {data._pollutionData.tile}. Coming from {client.UserFile.Uid}");
+                Printer.Warning($"Could not add pollution to tile {data._pollutionData.Tile}. Coming from {client.UserFile.Uid}");
                 Printer.Warning($"Additional debugging info here:\n{StringUtilities.ToString(data)}", LogImportanceMode.Verbose);
             }
         }

@@ -52,8 +52,8 @@ namespace GameClient.Patches
                 else
                 {
                     PollutionDetails pollution = new PollutionDetails();
-                    pollution.tile = lastPollutedTile;
-                    pollution.quantity = pollutionAmount;
+                    pollution.Tile = lastPollutedTile;
+                    pollution.Quantity = pollutionAmount;
 
                     PollutionData data = new PollutionData();
                     data._pollutionData = pollution;

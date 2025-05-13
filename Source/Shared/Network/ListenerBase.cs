@@ -8,9 +8,9 @@ namespace Shared
 {
     public class ListenerBase
     {
-        public TcpClient Connection { get; set; }
+        public TcpClient? Connection { get; set; }
 
-        public NetworkStream Stream { get; set; }
+        public NetworkStream? Stream { get; set; }
 
         public bool DisconnectFlag { get; set; }
 
@@ -21,11 +21,11 @@ namespace Shared
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
 
-        public Action PrintVerboseAction { get; set; }
+        public Action? PrintVerboseAction { get; set; }
 
-        public Action PrintExtremeAction { get; set; }
+        public Action? PrintExtremeAction { get; set; }
 
-        public string LatestException { get; private set; }
+        public string? LatestException { get; private set; }
 
         public void Write()
         {
