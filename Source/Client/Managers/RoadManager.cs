@@ -203,11 +203,15 @@ namespace GameClient.Managers
 
         public static bool CheckIfCanBuildRoadOnTile(int tileID)
         {
-            Tile tile = Find.WorldGrid[tileID];
+            try
+            {
+                Tile tile = Find.WorldGrid[tileID];
 
-            if (tile.WaterCovered) return false;
-            else if (!Find.WorldPathGrid.Passable(tileID)) return false;
-            else return true;
+                if (tile.WaterCovered) return false;
+                else if (!Find.WorldPathGrid.Passable(tileID)) return false;
+                else return true;
+            }
+            catch { return false; }
         }
 
         public static string[] GetAvailableRoadLabels(bool includePrices)

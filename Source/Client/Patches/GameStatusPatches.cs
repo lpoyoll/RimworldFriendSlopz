@@ -25,6 +25,7 @@ namespace GameClient.Patches
                     if (ClientValues.IsGeneratingFreshWorld) WorldManagerSender.SendWorld();
                     else SaveManager.ForceSave();
 
+                    ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
                 }
             }
@@ -44,6 +45,7 @@ namespace GameClient.Patches
                     GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
                     GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
 
+                    ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
                 }
             }

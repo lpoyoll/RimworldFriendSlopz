@@ -14,7 +14,7 @@ namespace GameClient.Managers
 
         private static readonly string dialogDescription = "Choose which action to execute";
 
-        private static readonly string[] menuButtons = new string[] { "Mod Manager", "Upload save"};
+        private static readonly string[] menuButtons = new string[] { "Mod Manager", "Save Uploader (BETA)"};
 
         public static void ShowAdminMenu()
         {
@@ -34,7 +34,7 @@ namespace GameClient.Managers
 
                 case 1:
                     Dictionary<string, string> saves = SaveManager.GetAllSaveFiles();
-                    RT_Dialog_ListingWithButton dialog = new RT_Dialog_ListingWithButton("Save menu",
+                    RT_Dialog_ListingWithButton dialog = new RT_Dialog_ListingWithButton("Save uploader",
                         "Select a save to upload:",
                         saves.Keys.ToArray(),
                         delegate
