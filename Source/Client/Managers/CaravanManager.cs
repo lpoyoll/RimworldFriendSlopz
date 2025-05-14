@@ -63,7 +63,7 @@ namespace GameClient.Managers
 
                     OnlineCaravan onlineCaravan = (OnlineCaravan)WorldObjectMaker.MakeWorldObject(onlineCaravanDef);
                     onlineCaravan.Tile = file.Tile;
-                    onlineCaravan.SetFaction(ClientValues.neutralPlayer);
+                    onlineCaravan.SetFaction(ClientValues.NeutralPlayer);
                     Find.World.worldObjects.AllWorldObjects.Add(onlineCaravan);
                 }
             }
@@ -129,7 +129,7 @@ namespace GameClient.Managers
             data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
-            Network.listener.EnqueuePacket(PacketHeader.CaravanManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void RequestCaravanRemove(Caravan caravan)
@@ -143,7 +143,7 @@ namespace GameClient.Managers
 
             playerCaravans.Remove(caravan);
 
-            Network.listener.EnqueuePacket(PacketHeader.CaravanManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void RequestCaravanUpdate(Caravan caravan)
@@ -155,7 +155,7 @@ namespace GameClient.Managers
             data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
-            Network.listener.EnqueuePacket(PacketHeader.CaravanManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void ClearAllCaravans()

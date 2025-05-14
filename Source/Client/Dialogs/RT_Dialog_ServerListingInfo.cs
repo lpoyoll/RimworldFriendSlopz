@@ -140,8 +140,8 @@ namespace GameClient.Dialogs
 
                 else 
                 {
-                    Network.ip = ServerInfo._ip;
-                    Network.port = ServerInfo._port.ToString();
+                    Network.Ip = ServerInfo._ip;
+                    Network.Port = ServerInfo._port.ToString();
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                     Threader.GenerateThread(Threader.Mode.Start);
                     Close();

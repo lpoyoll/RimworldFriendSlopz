@@ -354,7 +354,7 @@ namespace GameClient.Managers
 
         public static PlanetNPCSettlementDetails[] GetPlanetNPCSettlements()
         {
-            Faction[] worldNPCFactions = Find.FactionManager.AllFactions.Where(fetch => !ClientValues.playerFactions.Contains(fetch) &&
+            Faction[] worldNPCFactions = Find.FactionManager.AllFactions.Where(fetch => !ClientValues.PlayerFactions.Contains(fetch) &&
                 fetch != Faction.OfPlayer).ToArray();
 
             List<FactionDef> worldNPCFactionDefs = new List<FactionDef>();
@@ -410,7 +410,7 @@ namespace GameClient.Managers
             data._stepMode = WorldStepMode.Sent;
             data._fileBytes = Serializer.ConvertObjectToBytes(SessionValues.WorldFile);
 
-            Network.listener.EnqueuePacket(PacketHeader.WorldManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
 
             OnWorldSent();
         }

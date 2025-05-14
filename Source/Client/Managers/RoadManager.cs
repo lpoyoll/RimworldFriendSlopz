@@ -44,7 +44,7 @@ namespace GameClient.Managers
             data._details.ToTile = tileBID;
             data._details.RoadDefName = roadDef.defName;
 
-            Network.listener.EnqueuePacket(PacketHeader.RoadManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
 
         public static void SendRoadRemoveRequest(int tileAID, int tileBID)
@@ -56,7 +56,7 @@ namespace GameClient.Managers
             data._details.FromTile = tileAID;
             data._details.ToTile = tileBID;
 
-            Network.listener.EnqueuePacket(PacketHeader.RoadManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
 
         public static void AddRoads(RoadDetails[] details, bool forceRefresh)

@@ -22,7 +22,7 @@ namespace GameClient.Managers
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
             ModManager.ReceiveMods(serverGlobalData);
-            RecentServersHandler.AddServerToList(serverGlobalData._serverValues.ServerName, $"{Network.ip}:{Network.port}");
+            RecentServersHandler.AddServerToList(serverGlobalData._serverValues.ServerName, $"{Network.Ip}:{Network.Port}");
         }
     }
 }

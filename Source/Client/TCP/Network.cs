@@ -13,17 +13,17 @@ namespace GameClient.TCP
     {
         //Variables that points what the state of the network might be for the client
 
-        public static ClientNetworkState state;
+        public static ClientNetworkState State;
 
         //IP and Port that the connection will be bound to
 
-        public static string ip = "";
+        public static string Ip { get; set; } = "";
 
-        public static string port = "";
+        public static string Port { get; set; } = "";
 
         //TCP listener that will handle the connection with the server
 
-        public static Listener listener;
+        public static Listener Listener { get; private set; }
 
         //Entry point function of the network class
 
@@ -31,9 +31,9 @@ namespace GameClient.TCP
         {
             if (TryConnectToServer())
             {
-                ConnectionDataHandler.SaveConnectionData(ip, port);
+                ConnectionDataHandler.SaveConnectionData(Ip, Port);
 
-                state = ClientNetworkState.Connected;
+                State = ClientNetworkState.Connected;
 
                 Printer.Message($"Connected to server");
             }
@@ -51,12 +51,12 @@ namespace GameClient.TCP
 
         public static bool TryConnectToServer()
         {
-            if (state != ClientNetworkState.Disconnected) return false;
+            if (State != ClientNetworkState.Disconnected) return false;
 
             try
             {
-                state = ClientNetworkState.Connecting;
-                listener = new Listener(new(ip, int.Parse(port)));
+                State = ClientNetworkState.Connecting;
+                Listener = new Listener(new(Ip, int.Parse(Port)));
             }
             catch { return false; }
 
@@ -73,12 +73,12 @@ namespace GameClient.TCP
 
         public static void CleanNetworkVariables()
         {
-            state = ClientNetworkState.Disconnected;
+            State = ClientNetworkState.Disconnected;
 
-            if (listener != null)
+            if (Listener != null)
             {
-                listener.DestroyConnection();
-                listener = null;
+                Listener.DestroyConnection();
+                Listener = null;
             }
         }
     }

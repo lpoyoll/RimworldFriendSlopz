@@ -61,19 +61,19 @@ namespace GameClient.Managers
             switch (goodwill)
             {
                 case Goodwill.Enemy:
-                    factionToUse = ClientValues.enemyPlayer;
+                    factionToUse = ClientValues.EnemyPlayer;
                     break;
 
                 case Goodwill.Neutral:
-                    factionToUse = ClientValues.neutralPlayer;
+                    factionToUse = ClientValues.NeutralPlayer;
                     break;
 
                 case Goodwill.Ally:
-                    factionToUse = ClientValues.allyPlayer;
+                    factionToUse = ClientValues.AllyPlayer;
                     break;
 
                 case Goodwill.Faction:
-                    factionToUse = ClientValues.yourOnlineFaction;
+                    factionToUse = ClientValues.YourOnlineFaction;
                     break;
 
                 case Goodwill.Personal:

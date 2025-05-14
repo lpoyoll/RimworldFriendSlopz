@@ -139,7 +139,7 @@ namespace GameClient.Dialogs
                 {
                     SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                    Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                    Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
 
                     TransferManager.GetTransferedItemsToCaravan(ListedThings);
                 }

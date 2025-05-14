@@ -10,7 +10,7 @@ namespace GameClient.Misc
     {
         public static MainThreadHandler Instance { get; private set; }
 
-        private static readonly Queue<Action> ActionQueue = new Queue<Action>();
+        private static Queue<Action> ActionQueue { get; set; } = new Queue<Action>();
 
         public MainThreadHandler() { Instance = this; }
 

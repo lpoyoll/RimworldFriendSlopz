@@ -51,7 +51,7 @@ namespace GameClient.Managers
             data._stepMode = ActivityStepMode.Request;
             data._targetTile = targetTile;
 
-            Network.listener.EnqueuePacket(PacketHeader.ActivityManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
         }
 
         private static void OnAccept(ActivityData offlineVisitData) 
@@ -88,9 +88,9 @@ namespace GameClient.Managers
             }
 
             Faction faction;
-            if (SessionValues.latestActivity == ActivityType.Visit) faction = ClientValues.allyPlayer;
-            else if (SessionValues.latestActivity == ActivityType.Raid) faction = ClientValues.enemyPlayer;
-            else faction = ClientValues.enemyPlayer;
+            if (SessionValues.latestActivity == ActivityType.Visit) faction = ClientValues.AllyPlayer;
+            else if (SessionValues.latestActivity == ActivityType.Raid) faction = ClientValues.EnemyPlayer;
+            else faction = ClientValues.EnemyPlayer;
 
             RimworldManager.HandleMapFactions(map, faction);
 

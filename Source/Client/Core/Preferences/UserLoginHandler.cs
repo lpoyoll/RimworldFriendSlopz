@@ -33,7 +33,7 @@ namespace GameClient.Core.Preferences
 
         public static void UseLoginData()
         {
-            if (Network.state != CommonEnumerators.ClientNetworkState.Connected) return;
+            if (Network.State != CommonEnumerators.ClientNetworkState.Connected) return;
             else
             {
                 LoginDataFile file = LoadLoginData();
@@ -45,7 +45,7 @@ namespace GameClient.Core.Preferences
                 data._username = file.Username;
                 data._runningMods = ModManagerH.GetRunningModList();
 
-                Network.listener.EnqueuePacket(PacketHeader.LoginManager, data);
+                Network.Listener.EnqueuePacket(PacketHeader.LoginManager, data);
             }
         }
 
@@ -122,15 +122,15 @@ namespace GameClient.Core.Preferences
         public static void SetupQuickConnectVariables()
         {
             ConnectionDataFile connectionData = ConnectionDataHandler.LoadConnectionData();
-            Network.ip = connectionData.IP;
-            Network.port = connectionData.Port;
+            Network.Ip = connectionData.IP;
+            Network.Port = connectionData.Port;
         }
 
         public static void ShowQuickConnectFloatMenu()
         {
             List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
             {
-                Tuple.Create($"Join latest server > {Network.ip}:{Network.port}", 0),
+                Tuple.Create($"Join latest server > {Network.Ip}:{Network.Port}", 0),
             };
 
             FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
@@ -144,8 +144,8 @@ namespace GameClient.Core.Preferences
 
         public static bool CheckIfQuickConnectIsValid()
         {
-            if (string.IsNullOrWhiteSpace(Network.ip)) return false;
-            else if (string.IsNullOrWhiteSpace(Network.port)) return false;
+            if (string.IsNullOrWhiteSpace(Network.Ip)) return false;
+            else if (string.IsNullOrWhiteSpace(Network.Port)) return false;
             else return true;
         }
     }

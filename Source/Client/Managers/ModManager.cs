@@ -81,7 +81,7 @@ namespace GameClient.Managers
 
             Action toDoNo = delegate
             {
-                Network.listener.EnqueuePacket(PacketHeader.ModManager, data);
+                Network.Listener.EnqueuePacket(PacketHeader.ModManager, data);
                 if (isFirstEdit) OnFirstEdit();
             };
 
@@ -102,7 +102,7 @@ namespace GameClient.Managers
             data._configFile.ModConfigs = modConfigs.ToArray();
             data._configFile.EnforcedConfigs = true;
 
-            Network.listener.EnqueuePacket(PacketHeader.ModManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.ModManager, data);
         }
 
         public static void OnFirstEdit()

@@ -77,7 +77,7 @@ namespace GameClient.Managers
                 eventData._toTile = SessionValues.ChosenSettlement.Tile;
                 eventData._eventFile = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton];
 
-                Network.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                Network.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }
@@ -87,7 +87,7 @@ namespace GameClient.Managers
         {
             IncidentParms parms = StorytellerUtility.DefaultParmsNow(eventToTrigger.category, targetMap);
             parms.customLetterLabel = $"Event - {eventToTrigger.LabelCap}";
-            parms.faction = ClientValues.neutralPlayer;
+            parms.faction = ClientValues.NeutralPlayer;
             parms.target = targetMap;
 
             eventToTrigger.Worker.TryExecute(parms);

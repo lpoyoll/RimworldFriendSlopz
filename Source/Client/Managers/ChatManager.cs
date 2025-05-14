@@ -70,7 +70,7 @@ namespace GameClient.Managers
             chatData._username = ClientValues.Username;
             chatData._message = messageToSend;
 
-            Network.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            Network.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)

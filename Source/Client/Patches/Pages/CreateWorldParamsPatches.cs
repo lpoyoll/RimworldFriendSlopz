@@ -20,7 +20,7 @@ namespace GameClient.Patches.Pages
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, Page_CreateWorldParams __instance, string ___seedString, float ___planetCoverage, OverallRainfall ___rainfall, OverallTemperature ___temperature, OverallPopulation ___population, List<FactionDef> ___factions, float ___pollution)
             {
-                if (Network.state == ClientNetworkState.Disconnected) return true;
+                if (Network.State == ClientNetworkState.Disconnected) return true;
                 if (!ClientValues.IsGeneratingFreshWorld) return true;
 
                 Vector2 buttonSize = new Vector2(150f, 38f);
@@ -50,7 +50,7 @@ namespace GameClient.Patches.Pages
             [HarmonyPrefix]
             public static bool DoPre(Page_CreateWorldParams __instance)
             {
-                if (Network.state == ClientNetworkState.Disconnected) return true;
+                if (Network.State == ClientNetworkState.Disconnected) return true;
                 if (ClientValues.IsGeneratingFreshWorld) return true;
 
                 __instance.Close();

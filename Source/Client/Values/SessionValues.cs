@@ -11,35 +11,35 @@ namespace GameClient.Values
     {
         public static ActivityType latestActivity = ActivityType.None;
 
-        public static bool IsActivityHost = false;
+        public static bool IsActivityHost { get; set; } = false;
 
-        public static bool IsActivityReady = false;
+        public static bool IsActivityReady { get; set; } = false;
 
-        public static Settlement ChosenSettlement = null;
+        public static Settlement ChosenSettlement { get; set; } = null;
 
-        public static Caravan ChosenCaravan = null;
+        public static Caravan ChosenCaravan { get; set; } = null;
 
-        public static Site ChosenSite = null;
+        public static Site ChosenSite { get; set; } = null;
 
-        public static CompLaunchable ChosendPods = null;
+        public static CompLaunchable ChosendPods { get; set; } = null;
 
-        public static TransferData OutgoingManifest = new TransferData();
+        public static TransferData OutgoingManifest { get; set; } = new TransferData();
 
-        public static TransferData IncomingManifest = new TransferData();
+        public static TransferData IncomingManifest { get; set; } = new TransferData();
 
-        public static List<Tradeable> ListToShowInTradesMenu = new List<Tradeable>();
+        public static List<Tradeable> ListToShowInTradesMenu { get; set; } = new List<Tradeable>();
 
-        public static ActionValuesFile ActionValues = null;
+        public static ActionValuesFile ActionValues { get; set; } = null;
 
-        public static ModConfigFile ConfigFile = null;
+        public static ModConfigFile ConfigFile { get; set; } = null;
 
-        public static ScenarioValuesFile ScenarioFile = null;
+        public static ScenarioValuesFile ScenarioFile { get; set; } = null;
 
-        public static StorytellerValuesFile StorytellerFile = null;
+        public static StorytellerValuesFile StorytellerFile { get; set; } = null;
 
-        public static DifficultyValuesFile DifficultyFile = null;
+        public static DifficultyValuesFile DifficultyFile { get; set; } = null;
 
-        public static WorldValuesFile WorldFile = null;
+        public static WorldValuesFile WorldFile { get; set; } = null;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {

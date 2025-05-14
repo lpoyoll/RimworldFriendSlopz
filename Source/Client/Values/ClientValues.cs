@@ -10,33 +10,33 @@ namespace GameClient.Values
 {
     public static class ClientValues
     {
-        public static bool IsGeneratingFreshWorld = false;
+        public static bool IsGeneratingFreshWorld { get; private set; } = false;
 
-        public static bool IsReadyToPlay = false;
+        public static bool IsReadyToPlay { get; private set; } = false;
 
-        public static bool IsSavingGame = false;
+        public static bool IsSavingGame { get; private set; } = false;
 
-        public static bool IsInTransfer = false;
+        public static bool IsInTransfer { get; private set; } = false;
 
-        public static bool IsUsingScriber = false;
+        public static bool IsUsingScriber { get; private set; } = false;
 
-        public static string Username = string.Empty;
+        public static string Username { get; set; } = string.Empty;
 
-        public static string Uid = string.Empty;
+        public static string Uid { get; set; } = string.Empty;
 
-        public static bool IsAdmin = false;
+        public static bool IsAdmin { get; set; } = false;
 
-        public static bool HasFaction = false;
+        public static bool HasFaction { get; set; } = false;
 
-        public static List<Faction> playerFactions = new List<Faction>();
+        public static List<Faction> PlayerFactions { get; set; } = new List<Faction>();
 
-        public static Faction neutralPlayer = null;
+        public static Faction NeutralPlayer { get; set; } = null;
 
-        public static Faction allyPlayer = null;
+        public static Faction AllyPlayer { get; set; } = null;
 
-        public static Faction enemyPlayer = null;
+        public static Faction EnemyPlayer { get; set; } = null;
 
-        public static Faction yourOnlineFaction = null;
+        public static Faction YourOnlineFaction { get; set; } = null;
 
         public enum VerboseMode { None, Verbose, Extreme }
 
@@ -49,16 +49,16 @@ namespace GameClient.Values
         public static void FindPlayerFactionsInWorld()
         {
             Faction[] factions = Find.FactionManager.AllFactions.ToArray();
-            neutralPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTNeutral.defName);
-            allyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTAlly.defName);
-            enemyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTEnemy.defName);
-            yourOnlineFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTFaction.defName);
+            NeutralPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTNeutral.defName);
+            AllyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTAlly.defName);
+            EnemyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTEnemy.defName);
+            YourOnlineFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTFaction.defName);
 
-            playerFactions.Clear();
-            playerFactions.Add(neutralPlayer);
-            playerFactions.Add(allyPlayer);
-            playerFactions.Add(enemyPlayer);
-            playerFactions.Add(yourOnlineFaction);
+            PlayerFactions.Clear();
+            PlayerFactions.Add(NeutralPlayer);
+            PlayerFactions.Add(AllyPlayer);
+            PlayerFactions.Add(EnemyPlayer);
+            PlayerFactions.Add(YourOnlineFaction);
         }
 
         public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }

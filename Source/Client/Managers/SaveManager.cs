@@ -21,7 +21,7 @@ namespace GameClient.Managers
     {
         // Variables
 
-        public static string customSaveName => $"Server - {Network.ip} - {Network.port} - {ClientValues.Username}";
+        public static string customSaveName => $"Server - {Network.Ip} - {Network.Port} - {ClientValues.Username}";
 
         public static string saveFilePath => Path.Combine(Master.SavesFolderPath, customSaveName + ".rws");
 
@@ -52,7 +52,7 @@ namespace GameClient.Managers
             SaveData data = new SaveData();
             data._stepMode = SaveStepMode.Reset;
 
-            Network.listener.EnqueuePacket(PacketHeader.SaveManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
         public static double GetRealPlayTimeInteractingFromSave(string filePath)
@@ -89,7 +89,7 @@ namespace GameClient.Managers
             }
             else data._instructions = (int)SaveMode.Autosave;
 
-            Network.listener.EnqueuePacket(PacketHeader.SaveManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
     }
 

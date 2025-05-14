@@ -230,7 +230,7 @@ namespace GameClient.Managers
         {
             foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
             {
-                if (pawn.Faction == ClientValues.neutralPlayer)
+                if (pawn.Faction == ClientValues.NeutralPlayer)
                 {
                     pawn.SetFaction(targetFaction);
                 }
@@ -238,7 +238,7 @@ namespace GameClient.Managers
 
             foreach (Thing thing in map.listerThings.AllThings.ToArray())
             {
-                if (thing.Faction == ClientValues.neutralPlayer)
+                if (thing.Faction == ClientValues.NeutralPlayer)
                 {
                     if (thing.def.CanHaveFaction) thing.SetFaction(targetFaction);
                 }

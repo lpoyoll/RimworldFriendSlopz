@@ -68,7 +68,7 @@ namespace GameClient.Managers
             siteData._file.Tile = SessionValues.ChosenSite.Tile;
             siteData._stepMode = SiteStepMode.Visit;
 
-            Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            Network.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
@@ -79,7 +79,7 @@ namespace GameClient.Managers
             siteData._file.Tile = SessionValues.ChosenSite.Tile;
             siteData._stepMode = SiteStepMode.Raid;
 
-            Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            Network.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
@@ -92,7 +92,7 @@ namespace GameClient.Managers
                 siteData._file.Tile = SessionValues.ChosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
-                Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+                Network.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
@@ -121,7 +121,7 @@ namespace GameClient.Managers
             siteData._file.Tile = SessionValues.ChosenCaravan.Tile;
             siteData._file.Type.DefName = configFile.DefName;
 
-            Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            Network.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
         }
@@ -136,7 +136,7 @@ namespace GameClient.Managers
             siteData._stepMode = SiteStepMode.Config;
             siteData._rewardConfig = rewardConfig;
 
-            Network.listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            Network.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
 
         private static void ReceiveSiteRewards(SiteRewardFile[] files)
@@ -177,7 +177,7 @@ namespace GameClient.Managers
         {
             playerSites.Clear();
 
-            Site[] sites = Find.WorldObjects.Sites.Where(fetch => ClientValues.playerFactions.Contains(fetch.Faction) ||
+            Site[] sites = Find.WorldObjects.Sites.Where(fetch => ClientValues.PlayerFactions.Contains(fetch.Faction) ||
                 fetch.Faction == Faction.OfPlayer).ToArray();
 
             foreach (Site toRemove in sites)
@@ -242,9 +242,9 @@ namespace GameClient.Managers
             if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
             else toUse = MapSaveLoader.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
 
-            RimworldManager.HandleMapFactions(toUse, ClientValues.enemyPlayer);
+            RimworldManager.HandleMapFactions(toUse, ClientValues.EnemyPlayer);
 
-            RimworldManager.PrepareMapLord(toUse, ClientValues.enemyPlayer);
+            RimworldManager.PrepareMapLord(toUse, ClientValues.EnemyPlayer);
 
             CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, toUse, CaravanEnterMode.Edge);
         }

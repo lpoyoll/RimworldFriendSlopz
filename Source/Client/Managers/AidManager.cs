@@ -55,7 +55,7 @@ namespace GameClient.Managers
             aidData._humanData = ScribeManager.HumanToString(toGet);
             RimworldManager.RemovePawnFromGame(toGet);
 
-            Network.listener.EnqueuePacket(PacketHeader.AidManager, aidData);
+            Network.Listener.EnqueuePacket(PacketHeader.AidManager, aidData);
 
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
@@ -95,7 +95,7 @@ namespace GameClient.Managers
             RimworldManager.PlaceThingIntoMap(pawn, map, ThingPlaceMode.Near, true, true);
 
             data._stepMode = AidStepMode.Accept;
-            Network.listener.EnqueuePacket(PacketHeader.AidManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.AidManager, data);
 
             RimworldManager.GenerateLetter("Received aid",
                 "You have received aid from a player! The pawn should come to help soon",
@@ -107,7 +107,7 @@ namespace GameClient.Managers
         private static void RejectAid(AidData data)
         {
             data._stepMode = AidStepMode.Reject;
-            Network.listener.EnqueuePacket(PacketHeader.AidManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.AidManager, data);
         }
     }
 }

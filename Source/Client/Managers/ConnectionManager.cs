@@ -35,8 +35,8 @@ namespace GameClient.Managers
             if (isInvalid) RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server details are invalid! Please try again!" }));
             else
             {
-                Network.ip = RT_Dialog_Inputs.DialogInputResults[0];
-                Network.port = RT_Dialog_Inputs.DialogInputResults[1];
+                Network.Ip = RT_Dialog_Inputs.DialogInputResults[0];
+                Network.Port = RT_Dialog_Inputs.DialogInputResults[1];
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                 Threader.GenerateThread(Threader.Mode.Start);

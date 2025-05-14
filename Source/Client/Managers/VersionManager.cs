@@ -38,7 +38,7 @@ namespace GameClient.Managers
             VersionData data = new VersionData();
             data._version = CommonValues.ExecutableVersion;
 
-            Network.listener.EnqueuePacket(PacketHeader.VersionManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
         }
 
         public static void PromptChangeVersion()

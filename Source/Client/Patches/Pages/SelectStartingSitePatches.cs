@@ -19,7 +19,7 @@ namespace GameClient.Patches.Pages
             [HarmonyPrefix]
             public static bool DoPre()
             {
-                if (Network.state == ClientNetworkState.Disconnected) return true;
+                if (Network.State == ClientNetworkState.Disconnected) return true;
 
                 int num = TutorSystem.TutorialMode ? 4 : 5;
                 int num2 = num < 4 || !(UI.screenWidth < 540f + num * (150f + 10f)) ? 1 : 2;
@@ -42,7 +42,7 @@ namespace GameClient.Patches.Pages
                 {
                     SceneManager.LoadScene(0);
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.listener.DisconnectFlag = true;
+                    Network.Listener.DisconnectFlag = true;
                 }
                 return true;
             }
@@ -50,7 +50,7 @@ namespace GameClient.Patches.Pages
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == ClientNetworkState.Disconnected) return;
+                if (Network.State == ClientNetworkState.Disconnected) return;
 
                 int num = TutorSystem.TutorialMode ? 4 : 5;
                 int num2 = num < 4 || !(UI.screenWidth < 540f + num * (150f + 10f)) ? 1 : 2;
@@ -77,7 +77,7 @@ namespace GameClient.Patches.Pages
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == ClientNetworkState.Disconnected) return;
+                if (Network.State == ClientNetworkState.Disconnected) return;
 
                 if (!ClientValues.IsGeneratingFreshWorld)
                 {
