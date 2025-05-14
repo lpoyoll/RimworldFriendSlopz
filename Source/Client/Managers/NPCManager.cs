@@ -1,15 +1,15 @@
-﻿using RimWorld.Planet;
-using RimWorld;
-using System;
-using System.Linq;
-using Verse;
-using Shared;
-using static Shared.CommonEnumerators;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GameClient.Misc;
-using GameClient.Values;
 using GameClient.TCP;
-using UnityEngine.Tilemaps;
+using GameClient.Values;
+using GameClient.WorldObjects;
+using RimWorld;
+using RimWorld.Planet;
+using Shared;
+using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {

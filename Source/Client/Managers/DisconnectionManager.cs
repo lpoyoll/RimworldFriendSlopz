@@ -1,21 +1,34 @@
-
 using Verse;
 using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
+using Shared;
+using GameClient.TCP;
 
 namespace GameClient.Managers
 {
     //Class that contains all the disconnection functions that the mod uses
+
     public static class DisconnectionManager
     {
-        //Useful disconnection variables
-
         public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost }
 
-        public static DCReason IntentionalDisconnectReason;
+        public static DCReason IntentionalDisconnectReason { get; private set; }
 
-        public static bool IsIntentionalDisconnect { get; set; }
+        public static bool IsIntentionalDisconnect { get; private set; }
+
+        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None)
+        {
+            IsIntentionalDisconnect = mode;
+            IntentionalDisconnectReason = reason;
+        }
+
+        [HandlesPacket(PacketHeader.DisconnectSafe)]
+        public static void HandleDisconnectFromServer() 
+        {
+            Network.listener.ClosingFlag = false;
+            Network.listener.DisconnectFlag = true;
+        }
 
         //Executes different actions depending on the disconnection mode
 
@@ -90,11 +103,7 @@ namespace GameClient.Managers
             }
         }
 
-        //Kicks the client into closing the game
-
         public static void QuitGame() { Root.Shutdown(); }
-
-        //Kicks the client into restarting the game
 
         public static void RestartGame() { GenCommandLine.Restart(); }
     }

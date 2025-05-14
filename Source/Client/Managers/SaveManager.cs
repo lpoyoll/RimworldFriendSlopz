@@ -13,6 +13,7 @@ using GameClient.Core;
 using GameClient.Misc;
 using GameClient.Values;
 using GameClient.TCP;
+using System.Collections.Generic;
 
 namespace GameClient.Managers
 {
@@ -20,9 +21,9 @@ namespace GameClient.Managers
     {
         // Variables
 
-        public static string CustomSaveName => $"Server - {Network.Ip} - {Network.Port} - {ClientValues.Username}";
+        public static string CustomSaveName => $"Server - {Network.ip} - {Network.port} - {ClientValues.Username}";
 
-        public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
+        public static string SaveFilePath => Path.Combine(Master.savesFolderPath, CustomSaveName + ".rws");
 
         public static string TempSaveFilePath => SaveFilePath + ".mpsave";
 
@@ -68,6 +69,17 @@ namespace GameClient.Managers
             }
             catch { return 0; }
         }
+
+        public static Dictionary<string, string> GetAllSaveFiles() 
+        {
+            var result = new Dictionary<string, string>();
+            foreach (string file in Directory.GetFiles(Master.savesFolderPath))
+            {
+                if(Path.GetExtension(file) == ".rws")
+                    result.Add(Path.GetFileNameWithoutExtension(file), file);
+            }
+            return result;
+        }
     }
 
     public static class SaveSenderManager
@@ -86,7 +98,7 @@ namespace GameClient.Managers
             {
                 data._instructions = (int)SaveMode.Disconnect;
             }
-            else data._instructions = (int)SaveMode.Autosave;
+            else data._instructions = SaveMode.Autosave;
 
             Network.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
@@ -96,7 +108,7 @@ namespace GameClient.Managers
     {
         public static void ReceiveSaveFromServer(SaveData data)
         {
-            Printer.Message($"Receiving save from server");
+            Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
 
             File.WriteAllBytes(SaveManager.TempSaveFilePath, data._fileBytes);
 
@@ -111,18 +123,19 @@ namespace GameClient.Managers
             File.WriteAllBytes(SaveManager.ServerSaveFilePath, fileBytes);
             File.Delete(SaveManager.TempSaveFilePath);
 
-            if (data._instructions != (int)SaveMode.Strict && File.Exists(SaveManager.SaveFilePath))
+            if (data._instructions != SaveMode.Strict && File.Exists(SaveManager.SaveFilePath))
             {
-                if (SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.ServerSaveFilePath) >= SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.SaveFilePath))
+                if (SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.ServerSaveFilePath) >= 
+                    SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.SaveFilePath))
                 {
-                    Printer.Message("Loading remote save");
+                    Printer.Message("Loading remote save", LogImportanceMode.Verbose);
                     File.Delete(SaveManager.SaveFilePath);
                     File.Move(SaveManager.ServerSaveFilePath, SaveManager.SaveFilePath);
                 }
 
                 else
                 {
-                    Printer.Message("Loading local save");
+                    Printer.Message("Loading local save", LogImportanceMode.Verbose);
                     File.Delete(SaveManager.ServerSaveFilePath);
                 }
             }

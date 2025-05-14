@@ -41,8 +41,8 @@ namespace GameClient.Patches.Pages
                 if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                 {
                     SceneManager.LoadScene(0);
-                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.Listener.DisconnectFlag = true;
+                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
+                    Network.listener.DisconnectFlag = true;
                 }
                 return true;
             }

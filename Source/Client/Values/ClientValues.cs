@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.WorldObjects;
 using RimWorld;
 using Shared;
@@ -46,19 +48,59 @@ namespace GameClient.Values
             ToggleFaction(serverGlobalData._isClientFactionMember);
         }
 
-        public static void FindPlayerFactionsInWorld()
+        public static void FindPlayerFactionsInWorld(bool shouldFix = true)
         {
             Faction[] factions = Find.FactionManager.AllFactions.ToArray();
-            NeutralPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTNeutral.defName);
-            AllyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTAlly.defName);
-            EnemyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTEnemy.defName);
-            YourOnlineFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTFaction.defName);
+            try
+            {
+                neutralPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTNeutral.defName);
+                allyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTAlly.defName);
+                enemyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTEnemy.defName);
+                yourOnlineFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTFaction.defName);
+            }
+            catch(Exception ex)
+            {
+                if (shouldFix)
+                {
+                    Printer.Warning($"Tried loading RT factions, but failed to do so. Trying to add them to the world...\n{ex}");
+                    AddRTFactionToPlayerWorld();
+                    FindPlayerFactionsInWorld(false);
+                }
+                return;
+            }
+            playerFactions.Clear();
+            playerFactions.Add(neutralPlayer);
+            playerFactions.Add(allyPlayer);
+            playerFactions.Add(enemyPlayer);
+            playerFactions.Add(yourOnlineFaction);
+        }
 
-            PlayerFactions.Clear();
-            PlayerFactions.Add(NeutralPlayer);
-            PlayerFactions.Add(AllyPlayer);
-            PlayerFactions.Add(EnemyPlayer);
-            PlayerFactions.Add(YourOnlineFaction);
+        public static void AddRTFactionToPlayerWorld()
+        {
+            if (Find.World.factionManager.AllFactions.Any(x => x.def == RTFactionDefOf.RTAlly))
+            {
+                FactionGeneratorParms parms = new FactionGeneratorParms(RTFactionDefOf.RTAlly);
+                Faction faction = FactionGenerator.NewGeneratedFaction(parms);
+                Find.World.factionManager.Add(faction);
+            }
+            if (Find.World.factionManager.AllFactions.Any(x => x.def == RTFactionDefOf.RTNeutral))
+            {
+                FactionGeneratorParms parms = new FactionGeneratorParms(RTFactionDefOf.RTNeutral);
+                Faction faction = FactionGenerator.NewGeneratedFaction(parms);
+                Find.World.factionManager.Add(faction);
+            }
+            if (Find.World.factionManager.AllFactions.Any(x => x.def == RTFactionDefOf.RTEnemy))
+            {
+                FactionGeneratorParms parms = new FactionGeneratorParms(RTFactionDefOf.RTEnemy);
+                Faction faction = FactionGenerator.NewGeneratedFaction(parms);
+                Find.World.factionManager.Add(faction);
+            }
+            if (Find.World.factionManager.AllFactions.Any(x => x.def == RTFactionDefOf.RTFaction))
+            {
+                FactionGeneratorParms parms = new FactionGeneratorParms(RTFactionDefOf.RTFaction);
+                Faction faction = FactionGenerator.NewGeneratedFaction(parms);
+                Find.World.factionManager.Add(faction);
+            }
         }
 
         public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }
@@ -70,12 +112,6 @@ namespace GameClient.Values
         }
 
         public static void ToggleGenerateWorld(bool mode) { IsGeneratingFreshWorld = mode; }
-
-        public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None)
-        {
-            DisconnectionManager.IsIntentionalDisconnect = mode;
-            DisconnectionManager.IntentionalDisconnectReason = reason;
-        }
 
         public static void ToggleReadyToPlay(bool mode) { IsReadyToPlay = mode; }
 
@@ -98,13 +134,14 @@ namespace GameClient.Values
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);
-            SetIntentionalDisconnect(false);
             ToggleReadyToPlay(false);
             ToggleTransfer(false);
             ToggleSavingGame(false);
             ToggleUsingScriber(false);
             ToggleAdmin(false);
             ToggleFaction(false);
+
+            DisconnectionManager.SetIntentionalDisconnect(false);
         }
     }
 }

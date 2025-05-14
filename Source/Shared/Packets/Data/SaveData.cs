@@ -7,8 +7,8 @@ namespace Shared
     {
         public SaveStepMode _stepMode { get; set; } = SaveStepMode.Send;
 
-        public byte[] _fileBytes { get; set; } = null;
+        public SaveMode _instructions { get; set; } = SaveMode.Disconnect;
 
-        public int _instructions { get; set; } = -1;
+        public byte[] _fileBytes { get; set; } = null;
     }
 }

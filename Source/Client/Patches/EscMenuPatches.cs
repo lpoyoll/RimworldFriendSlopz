@@ -26,7 +26,7 @@ namespace GameClient.Patches
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
-                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
+                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
                     SaveManager.ForceSave();
                 }
 
@@ -35,7 +35,7 @@ namespace GameClient.Patches
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Syncing save with the server"));
 
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
-                    ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToOS);
+                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToOS);
                     SaveManager.ForceSave();
                 }
             }

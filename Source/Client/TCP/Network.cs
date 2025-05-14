@@ -1,9 +1,15 @@
-﻿using GameClient.Core.Preferences;
+﻿using System.IO;
+using System;
+using System.Net.Sockets;
+using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
 using static Shared.CommonEnumerators;
+using System.Threading;
+using System.Threading.Tasks;
+using Shared;
 
 namespace GameClient.TCP
 {
@@ -31,7 +37,8 @@ namespace GameClient.TCP
         {
             if (TryConnectToServer())
             {
-                ConnectionDataHandler.SaveConnectionData(Ip, Port);
+                ConnectionDataHandler.SaveConnectionData(ip, port);
+                ClientValues.ManageDevOptions();
 
                 State = ClientNetworkState.Connected;
 
@@ -43,7 +50,7 @@ namespace GameClient.TCP
                 RT_Dialog_Wait.Instance.Close();
                 RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "The server did not respond in time" });
                 RT_Dialog_Base.PushNewDialog(d1);
-                DisconnectFromServer();
+                DisconnectFromServerInstant();
             }
         }
 
@@ -65,12 +72,12 @@ namespace GameClient.TCP
 
         //Disconnects client from the server
 
-        public static void DisconnectFromServer()
+        public static void DisconnectFromServerInstant()
         {
             CleanNetworkVariables();
             DisconnectionManager.HandleDisconnect();
         }
-
+        
         public static void CleanNetworkVariables()
         {
             State = ClientNetworkState.Disconnected;
