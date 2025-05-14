@@ -6,40 +6,40 @@ namespace GameClient.Core
     {
         // Instances
 
-        public static ModConfigGetter modConfigs = new ModConfigGetter();
+        public static ModConfigGetter ModConfigs { get; private set; } = new ModConfigGetter();
 
         // Paths
 
-        public static string appdataPath;
+        public static string AppdataPath { get; set; }
 
-        public static string appdataRTPath;
+        public static string AppdataRTPath { get; set; }
 
-        public static string appdataTempPath;
+        public static string AppdataTempPath { get; set; }
 
-        public static string appdataTempVersionPath;
+        public static string AppdataTempVersionPath { get; set; }
 
-        public static string appdataTempModsPath;
+        public static string AppdataTempModsPath { get; set; }
 
-        public static string modMainPath;
+        public static string ModMainPath { get; set; }
 
-        public static string modAssemblyPath;
+        public static string ModAssemblyPath { get; set; }
 
-        public static string modAddonsPath;
+        public static string ModAddonsPath { get; set; }
 
-        public static string connectionDataPath;
+        public static string ConnectionDataPath { get; set; }
 
-        public static string loginDataPath;
+        public static string LoginDataPath { get; set; }
 
-        public static string clientPreferencesPath;
+        public static string ClientPreferencesPath { get; set; }
 
-        public static string recentServersPath;
+        public static string RecentServersPath { get; set; }
 
-        public static string savesFolderPath;
+        public static string SavesFolderPath { get; set; }
 
         // Values
 
-        public static readonly string modPackageID = "nova.rimworldtogether";
+        public static string ModPackageID { get; private set; } = "nova.rimworldtogether";
 
-        public static readonly string modID = "RimWorld Together";
+        public static string ModID { get; private set; } = "RimWorld Together";
     }
 }

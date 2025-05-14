@@ -14,11 +14,11 @@ namespace GameClient.Core.Configs
 {
     public class ModConfigSetter : Mod
     {
-        private readonly ModConfigGetter modConfigs;
+        private ModConfigGetter ModConfigs { get; set; }
 
         public ModConfigSetter(ModContentPack content) : base(content)
         {
-            modConfigs = GetSettings<ModConfigGetter>();
+            ModConfigs = GetSettings<ModConfigGetter>();
         }
 
         public override string SettingsCategory() { return "RimWorld Together"; }
@@ -37,7 +37,7 @@ namespace GameClient.Core.Configs
             listingStandard.GapLine();
             listingStandard.Label("Debugging");
             if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ModConfigGetter.CurrentVerboseMode}")) ShowVerboseFloatMenu();
-            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.appdataPath);
+            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.AppdataPath);
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
@@ -81,7 +81,7 @@ namespace GameClient.Core.Configs
             {
                 try
                 {
-                    string path = Path.Combine(Master.appdataRTPath, "LoginData.json");
+                    string path = Path.Combine(Master.AppdataRTPath, "LoginData.json");
                     string destination = Path.Combine(RT_Dialog_Inputs.dialogInputResults[0], Path.GetFileName(path));
                     File.Copy(path, destination);
 

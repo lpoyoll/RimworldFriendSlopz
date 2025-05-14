@@ -23,7 +23,7 @@ namespace GameClient.Managers
 
         public static string customSaveName => $"Server - {Network.ip} - {Network.port} - {ClientValues.Username}";
 
-        public static string saveFilePath => Path.Combine(Master.savesFolderPath, customSaveName + ".rws");
+        public static string saveFilePath => Path.Combine(Master.SavesFolderPath, customSaveName + ".rws");
 
         public static string tempSaveFilePath => saveFilePath + ".mpsave";
 

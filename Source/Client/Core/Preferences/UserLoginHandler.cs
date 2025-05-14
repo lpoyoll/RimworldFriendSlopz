@@ -15,7 +15,7 @@ namespace GameClient.Core.Preferences
 {
     public static class UserLoginHandler
     {
-        public static void SaveLoginData(LoginDataFile file) { Serializer.SerializeToFile(Master.loginDataPath, file); }
+        public static void SaveLoginData(LoginDataFile file) { Serializer.SerializeToFile(Master.LoginDataPath, file); }
 
         public static LoginDataFile LoadLoginData()
         {
@@ -24,12 +24,12 @@ namespace GameClient.Core.Preferences
             if (Input.GetKey(KeyCode.LeftShift)) return GetTestingLoginFile();
             else
             {
-                if (File.Exists(Master.loginDataPath)) return Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
+                if (File.Exists(Master.LoginDataPath)) return Serializer.SerializeFromFile<LoginDataFile>(Master.LoginDataPath);
                 else return new LoginDataFile();
             }
         }
 
-        public static void DeleteLoginData() { File.Delete(Master.loginDataPath); }
+        public static void DeleteLoginData() { File.Delete(Master.LoginDataPath); }
 
         public static void UseLoginData()
         {

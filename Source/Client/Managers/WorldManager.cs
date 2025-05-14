@@ -20,7 +20,7 @@ namespace GameClient.Managers
 
     public static class WorldManager
     {
-        public static string tempWorldPath => Path.Combine(Master.appdataTempPath, "World.temp");
+        public static string tempWorldPath => Path.Combine(Master.AppdataTempPath, "World.temp");
 
         private static IEnumerable<WorldGenStepDef> GenStepsInOrder => from x in DefDatabase<WorldGenStepDef>.AllDefs
                                                                        orderby x.order, x.index

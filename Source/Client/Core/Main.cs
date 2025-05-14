@@ -33,7 +33,7 @@ namespace GameClient.Core
 
         private static void ApplyHarmonyPathches()
         {
-            Harmony harmony = new Harmony(Master.modID);
+            Harmony harmony = new Harmony(Master.ModID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
@@ -47,28 +47,28 @@ namespace GameClient.Core
 
         private static void PreparePaths()
         {
-            Master.savesFolderPath = GenFilePaths.SavedGamesFolderPath;
+            Master.SavesFolderPath = GenFilePaths.SavedGamesFolderPath;
 
-            Master.appdataPath = GenFilePaths.SaveDataFolderPath;
-            Master.appdataRTPath = Path.Combine(Master.appdataPath, "RimWorld Together");
-            Master.appdataTempPath = Path.Combine(Master.appdataRTPath, "Temp");
-            Master.appdataTempVersionPath = Path.Combine(Master.appdataTempPath, "Version");
-            Master.appdataTempModsPath = Path.Combine(Master.appdataTempPath, "Mods");
+            Master.AppdataPath = GenFilePaths.SaveDataFolderPath;
+            Master.AppdataRTPath = Path.Combine(Master.AppdataPath, "RimWorld Together");
+            Master.AppdataTempPath = Path.Combine(Master.AppdataRTPath, "Temp");
+            Master.AppdataTempVersionPath = Path.Combine(Master.AppdataTempPath, "Version");
+            Master.AppdataTempModsPath = Path.Combine(Master.AppdataTempPath, "Mods");
 
-            Master.modMainPath = LoadedModManager.RunningMods.First(m => m.PackageId == Master.modPackageID).RootDir;
-            Master.modAddonsPath = Path.Combine(Master.modMainPath, "Addons");
-            Master.modAssemblyPath = Path.Combine(Master.modMainPath, "Current", "Assemblies");
+            Master.ModMainPath = LoadedModManager.RunningMods.First(m => m.PackageId == Master.ModPackageID).RootDir;
+            Master.ModAddonsPath = Path.Combine(Master.ModMainPath, "Addons");
+            Master.ModAssemblyPath = Path.Combine(Master.ModMainPath, "Current", "Assemblies");
 
-            Master.connectionDataPath = Path.Combine(Master.appdataRTPath, "ConnectionData.json");
-            Master.clientPreferencesPath = Path.Combine(Master.appdataRTPath, "Preferences.json");
-            Master.recentServersPath = Path.Combine(Master.appdataRTPath, "RecentServers.json");
-            Master.loginDataPath = Path.Combine(Master.appdataRTPath, "LoginData.json");
+            Master.ConnectionDataPath = Path.Combine(Master.AppdataRTPath, "ConnectionData.json");
+            Master.ClientPreferencesPath = Path.Combine(Master.AppdataRTPath, "Preferences.json");
+            Master.RecentServersPath = Path.Combine(Master.AppdataRTPath, "RecentServers.json");
+            Master.LoginDataPath = Path.Combine(Master.AppdataRTPath, "LoginData.json");
 
-            if (!Directory.Exists(Master.appdataRTPath)) Directory.CreateDirectory(Master.appdataRTPath);
-            if (!Directory.Exists(Master.appdataTempPath)) Directory.CreateDirectory(Master.appdataTempPath);
-            if (!Directory.Exists(Master.appdataTempVersionPath)) Directory.CreateDirectory(Master.appdataTempVersionPath);
-            if (!Directory.Exists(Master.appdataTempModsPath)) Directory.CreateDirectory(Master.appdataTempModsPath);
-            if (!Directory.Exists(Master.modAddonsPath)) Directory.CreateDirectory(Master.modAddonsPath);        
+            if (!Directory.Exists(Master.AppdataRTPath)) Directory.CreateDirectory(Master.AppdataRTPath);
+            if (!Directory.Exists(Master.AppdataTempPath)) Directory.CreateDirectory(Master.AppdataTempPath);
+            if (!Directory.Exists(Master.AppdataTempVersionPath)) Directory.CreateDirectory(Master.AppdataTempVersionPath);
+            if (!Directory.Exists(Master.AppdataTempModsPath)) Directory.CreateDirectory(Master.AppdataTempModsPath);
+            if (!Directory.Exists(Master.ModAddonsPath)) Directory.CreateDirectory(Master.ModAddonsPath);        
         }
 
         private static void CreateUnityDispatcher()
