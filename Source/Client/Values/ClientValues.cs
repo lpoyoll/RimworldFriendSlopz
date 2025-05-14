@@ -73,15 +73,15 @@ namespace GameClient.Values
 
         public static void SetIntentionalDisconnect(bool mode, DisconnectionManager.DCReason reason = DisconnectionManager.DCReason.None)
         {
-            DisconnectionManager.isIntentionalDisconnect = mode;
-            DisconnectionManager.intentionalDisconnectReason = reason;
+            DisconnectionManager.IsIntentionalDisconnect = mode;
+            DisconnectionManager.IntentionalDisconnectReason = reason;
         }
 
         public static void ToggleReadyToPlay(bool mode) { IsReadyToPlay = mode; }
 
         public static void ToggleTransfer(bool mode) { IsInTransfer = mode; }
 
-        public static void ToggleChatScroll(bool mode) { ChatManager.shouldScrollChat = mode; }
+        public static void ToggleChatScroll(bool mode) { ChatManager.ShouldScrollChat = mode; }
 
         public static void ToggleSavingGame(bool mode) { IsSavingGame = mode; }
 

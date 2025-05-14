@@ -42,15 +42,15 @@ namespace GameClient.Patches.Tabs
         {
             base.PreOpen();
 
-            windowRect.x = ChatManager.chatBoxPosition.x;
-            windowRect.y = ChatManager.chatBoxPosition.y;
+            windowRect.x = ChatManager.ChatBoxPosition.x;
+            windowRect.y = ChatManager.ChatBoxPosition.y;
         }
 
         public override void PostOpen()
         {
             base.PostOpen();
 
-            ChatManager.isChatTabOpen = true;
+            ChatManager.IsChatTabOpen = true;
             ChatManager.ToggleChatIcon(false);
         }
 
@@ -58,13 +58,13 @@ namespace GameClient.Patches.Tabs
         {
             base.PostClose();
 
-            ChatManager.isChatTabOpen = false;
+            ChatManager.IsChatTabOpen = false;
         }
 
         public override void DoWindowContents(Rect rect)
         {
-            ChatManager.chatBoxPosition.x = windowRect.x;
-            ChatManager.chatBoxPosition.y = windowRect.y;
+            ChatManager.ChatBoxPosition.x = windowRect.x;
+            ChatManager.ChatBoxPosition.y = windowRect.y;
 
             Widgets.DrawLineHorizontal(rect.x, rect.y + 25f, rect.width);
             Widgets.DrawLineVertical(rect.x + 160f, rect.y + 25f, rect.height);
@@ -77,7 +77,7 @@ namespace GameClient.Patches.Tabs
             DrawInput(rect);
 
             CheckForEnterKey();
-            if (ChatManager.shouldScrollChat) ScrollToLastMessage();
+            if (ChatManager.ShouldScrollChat) ScrollToLastMessage();
         }
 
         private void DrawPlayerCount(Rect rect)
@@ -122,7 +122,7 @@ namespace GameClient.Patches.Tabs
             float heightCalcWidthOffset = 160f;
             float chatScrollbarSafezone = 30f;
 
-            foreach (string str in ChatManager.chatMessageCache.ToArray()) height += Text.CalcHeight(str, mainRect.width - chatScrollbarSafezone);
+            foreach (string str in ChatManager.ChatMessageCache.ToArray()) height += Text.CalcHeight(str, mainRect.width - chatScrollbarSafezone);
 
             Rect viewRect = new(mainRect.x, mainRect.y, mainRect.width - chatScrollbarSafezone, height);
 
@@ -132,7 +132,7 @@ namespace GameClient.Patches.Tabs
             float num2 = scrollPositionChat.y - chatScrollbarSafezone;
             float num3 = scrollPositionChat.y + mainRect.height;
 
-            foreach (string str in ChatManager.chatMessageCache.ToArray())
+            foreach (string str in ChatManager.ChatMessageCache.ToArray())
             {
                 if (num > num2 && num < num3)
                 {
@@ -149,8 +149,8 @@ namespace GameClient.Patches.Tabs
         private void DrawInput(Rect rect)
         {
             Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new(rect.xMin + 165f, rect.yMax - 25f, rect.width - 165f, 25f), ChatManager.currentChatInput);
-            if (AcceptsInput && inputOne.Length <= 512) ChatManager.currentChatInput = inputOne;
+            string inputOne = Widgets.TextField(new(rect.xMin + 165f, rect.yMax - 25f, rect.width - 165f, 25f), ChatManager.CurrentChatInput);
+            if (AcceptsInput && inputOne.Length <= 512) ChatManager.CurrentChatInput = inputOne;
         }
 
         private void DrawPinCheckbox(Rect rect)
@@ -159,18 +159,18 @@ namespace GameClient.Patches.Tabs
 
             Text.Font = GameFont.Small;
             Widgets.CheckboxLabeled(new Rect(rect.xMax - Text.CalcSize(pinText).x * 1.5f, rect.y, Text.CalcSize(pinText).x * 2,
-                Text.CalcSize(pinText).y), pinText, ref ChatManager.chatAutoscroll, placeCheckboxNearText: true);
+                Text.CalcSize(pinText).y), pinText, ref ChatManager.ChatAutoscroll, placeCheckboxNearText: true);
         }
 
         private void CheckForEnterKey()
         {
-            bool keyPressed = !string.IsNullOrWhiteSpace(ChatManager.currentChatInput) && (Event.current.keyCode == KeyCode.Return ||
+            bool keyPressed = !string.IsNullOrWhiteSpace(ChatManager.CurrentChatInput) && (Event.current.keyCode == KeyCode.Return ||
                 Event.current.keyCode == KeyCode.KeypadEnter);
 
             if (keyPressed)
             {
-                ChatManager.SendMessage(ChatManager.currentChatInput);
-                ChatManager.currentChatInput = "";
+                ChatManager.SendMessage(ChatManager.CurrentChatInput);
+                ChatManager.CurrentChatInput = "";
             }
         }
 
@@ -194,7 +194,7 @@ namespace GameClient.Patches.Tabs
             Rect fixedRect = new(rect.x + 10f, rect.y + 5f, rect.width - 10f, rect.height);
             Widgets.Label(fixedRect, str);
 
-            if (Widgets.ButtonInvisible(fixedRect, false)) ChatManager.currentChatInput += $"@{str}";
+            if (Widgets.ButtonInvisible(fixedRect, false)) ChatManager.CurrentChatInput += $"@{str}";
             Widgets.DrawHighlightIfMouseover(fixedRect);
         }
     }

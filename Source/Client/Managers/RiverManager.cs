@@ -8,7 +8,6 @@ using Verse;
 
 namespace GameClient.Managers
 {
-
     public static class RiverManager
     {
         public static void SetPlanetRivers()

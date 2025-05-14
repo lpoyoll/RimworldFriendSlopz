@@ -8,7 +8,6 @@ using static Shared.CommonEnumerators;
 namespace GameClient.Managers
 {
     //Class that handles all the planet functions for the mod
-
     public static class PlanetManager
     {
         //Regenerates the planet of player objects

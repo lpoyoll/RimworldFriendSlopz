@@ -14,7 +14,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-
     public static class RoadManager
     {
         [HandlesPacket(PacketHeader.RoadManager)]

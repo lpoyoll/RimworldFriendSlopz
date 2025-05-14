@@ -17,7 +17,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-
     public static class WorldManager
     {
         public static string tempWorldPath => Path.Combine(Master.AppdataTempPath, "World.temp");

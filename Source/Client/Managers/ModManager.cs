@@ -14,7 +14,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-
     public static class ModManager
     {
         [HandlesPacket(PacketHeader.ModManager)]

@@ -13,19 +13,19 @@ namespace GameClient.Managers
 
         public enum DCReason { None, SaveQuitToMenu, SaveQuitToOS, QuitToMenu, ConnectionLost }
 
-        public static DCReason intentionalDisconnectReason;
+        public static DCReason IntentionalDisconnectReason;
 
-        public static bool isIntentionalDisconnect;
+        public static bool IsIntentionalDisconnect { get; set; }
 
         //Executes different actions depending on the disconnection mode
 
         public static void HandleDisconnect()
         {
-            if (isIntentionalDisconnect)
+            if (IsIntentionalDisconnect)
             {
                 string reason = "ERROR";
 
-                switch (intentionalDisconnectReason)
+                switch (IntentionalDisconnectReason)
                 {
                     case DCReason.None:
                         reason = "No reason given";
@@ -53,7 +53,7 @@ namespace GameClient.Managers
                         break;
 
                     default:
-                        reason = $"{intentionalDisconnectReason}";
+                        reason = $"{IntentionalDisconnectReason}";
                         DisconnectToMenu();
                         break;
                 }

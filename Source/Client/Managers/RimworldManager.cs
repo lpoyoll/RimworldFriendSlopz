@@ -11,7 +11,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-
     public static class RimworldManager
     {
         public static bool CheckIfPlayerHasMap()

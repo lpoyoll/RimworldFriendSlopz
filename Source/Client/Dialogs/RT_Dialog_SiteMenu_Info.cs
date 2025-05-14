@@ -29,7 +29,7 @@ namespace GameClient.Dialogs
         {
             SitePartDef = thingChosen;
             this.Title = thingChosen.label;
-            ConfigFile = SiteManager.siteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();
+            ConfigFile = SiteManager.SiteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();
             Instance = this;
 
             for (int i = 0; i < ConfigFile.DefNameCost.Length; i++)
@@ -99,7 +99,7 @@ namespace GameClient.Dialogs
             }
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces every {SiteManager.siteValues.TimeIntervalMinutes} minutes:");
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces every {SiteManager.SiteValues.TimeIntervalMinutes} minutes:");
             num += 20f;
 
             foreach (ThingDef thing in RewardThing.Keys)

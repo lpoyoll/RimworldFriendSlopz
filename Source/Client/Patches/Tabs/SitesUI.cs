@@ -28,7 +28,7 @@ namespace GameClient.Patches.Tabs
         {
             if (Network.State == ClientNetworkState.Connected)
             {
-                tabTitle = $"Player Sites [{SiteManager.playerSites.Count()}]";
+                tabTitle = $"Player Sites [{SiteManager.PlayerSites.Count()}]";
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -44,7 +44,7 @@ namespace GameClient.Patches.Tabs
 
         private void GenerateList(Rect mainRect)
         {
-            var orderedDictionary = SiteManager.playerSites.OrderBy(x => x.Label);
+            var orderedDictionary = SiteManager.PlayerSites.OrderBy(x => x.Label);
 
             float height = 6f + orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);

@@ -5,7 +5,6 @@ using Verse;
 
 namespace GameClient.Managers
 {
-
     public static class MapManager
     {
         public static void SendPlayerMapsToServer()
