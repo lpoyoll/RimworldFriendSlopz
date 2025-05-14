@@ -42,7 +42,7 @@ namespace GameClient.Patches.Pages
                 {
                     SceneManager.LoadScene(0);
                     DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.listener.DisconnectFlag = true;
+                    Network.Listener.DisconnectFlag = true;
                 }
                 return true;
             }

@@ -21,9 +21,9 @@ namespace GameClient.Managers
     {
         // Variables
 
-        public static string CustomSaveName => $"Server - {Network.ip} - {Network.port} - {ClientValues.Username}";
+        public static string CustomSaveName => $"Server - {Network.Ip} - {Network.Port} - {ClientValues.Username}";
 
-        public static string SaveFilePath => Path.Combine(Master.savesFolderPath, CustomSaveName + ".rws");
+        public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
         public static string TempSaveFilePath => SaveFilePath + ".mpsave";
 
@@ -73,7 +73,7 @@ namespace GameClient.Managers
         public static Dictionary<string, string> GetAllSaveFiles() 
         {
             var result = new Dictionary<string, string>();
-            foreach (string file in Directory.GetFiles(Master.savesFolderPath))
+            foreach (string file in Directory.GetFiles(Master.SavesFolderPath))
             {
                 if(Path.GetExtension(file) == ".rws")
                     result.Add(Path.GetFileNameWithoutExtension(file), file);

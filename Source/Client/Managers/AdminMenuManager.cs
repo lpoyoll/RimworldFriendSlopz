@@ -16,7 +16,7 @@ namespace GameClient.Managers
 
         private static readonly string dialogDescription = "Choose which action to execute";
 
-        private static readonly string[] menuButtons = new string[] { "Mod Manager", "Save Uploader (BETA)"};
+        private static readonly string[] MenuButtons = new string[] { "Mod Manager", "Save Uploader (BETA)"};
 
         public static void ShowAdminMenu()
         {
@@ -43,7 +43,7 @@ namespace GameClient.Managers
                         {
                             RT_Dialog_YesNo D2 = new RT_Dialog_YesNo("This feature is in beta and might fail, are you sure?", delegate
                             {
-                                if (saves.TryGetValue(RT_Dialog_ListingWithButton.dialogButtonListingResultString, out string file))
+                                if (saves.TryGetValue(RT_Dialog_ListingWithButton.DialogButtonListingResultString, out string file))
                                 {
                                     byte[] data = File.ReadAllBytes(file);
                                     File.WriteAllBytes(SaveManager.SaveFilePath, data);

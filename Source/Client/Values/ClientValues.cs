@@ -51,13 +51,15 @@ namespace GameClient.Values
         public static void FindPlayerFactionsInWorld(bool shouldFix = true)
         {
             Faction[] factions = Find.FactionManager.AllFactions.ToArray();
+
             try
             {
-                neutralPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTNeutral.defName);
-                allyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTAlly.defName);
-                enemyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTEnemy.defName);
-                yourOnlineFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTFaction.defName);
+                NeutralPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTNeutral.defName);
+                AllyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTAlly.defName);
+                EnemyPlayer = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTEnemy.defName);
+                YourOnlineFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTFaction.defName);
             }
+
             catch(Exception ex)
             {
                 if (shouldFix)
@@ -68,11 +70,12 @@ namespace GameClient.Values
                 }
                 return;
             }
-            playerFactions.Clear();
-            playerFactions.Add(neutralPlayer);
-            playerFactions.Add(allyPlayer);
-            playerFactions.Add(enemyPlayer);
-            playerFactions.Add(yourOnlineFaction);
+
+            PlayerFactions.Clear();
+            PlayerFactions.Add(NeutralPlayer);
+            PlayerFactions.Add(AllyPlayer);
+            PlayerFactions.Add(EnemyPlayer);
+            PlayerFactions.Add(YourOnlineFaction);
         }
 
         public static void AddRTFactionToPlayerWorld()
@@ -83,18 +86,21 @@ namespace GameClient.Values
                 Faction faction = FactionGenerator.NewGeneratedFaction(parms);
                 Find.World.factionManager.Add(faction);
             }
+
             if (Find.World.factionManager.AllFactions.Any(x => x.def == RTFactionDefOf.RTNeutral))
             {
                 FactionGeneratorParms parms = new FactionGeneratorParms(RTFactionDefOf.RTNeutral);
                 Faction faction = FactionGenerator.NewGeneratedFaction(parms);
                 Find.World.factionManager.Add(faction);
             }
+
             if (Find.World.factionManager.AllFactions.Any(x => x.def == RTFactionDefOf.RTEnemy))
             {
                 FactionGeneratorParms parms = new FactionGeneratorParms(RTFactionDefOf.RTEnemy);
                 Faction faction = FactionGenerator.NewGeneratedFaction(parms);
                 Find.World.factionManager.Add(faction);
             }
+
             if (Find.World.factionManager.AllFactions.Any(x => x.def == RTFactionDefOf.RTFaction))
             {
                 FactionGeneratorParms parms = new FactionGeneratorParms(RTFactionDefOf.RTFaction);

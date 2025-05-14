@@ -50,7 +50,7 @@ namespace GameClient.Patches.Pages
                 {
                     __instance.Close();
                     DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.listener.DisconnectFlag = true;
+                    Network.Listener.DisconnectFlag = true;
                 }
 
                 if (ClientValues.IsGeneratingFreshWorld)

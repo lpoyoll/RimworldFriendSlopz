@@ -48,7 +48,6 @@ namespace Shared
         ConsoleManager,
         GlobalDataManager,
         ResponseShortcutManager,
-        RecountManager,
-        DisconnectSafe
+        RecountManager
     }
 }

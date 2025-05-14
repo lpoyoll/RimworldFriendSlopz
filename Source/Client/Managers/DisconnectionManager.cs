@@ -23,13 +23,6 @@ namespace GameClient.Managers
             IntentionalDisconnectReason = reason;
         }
 
-        [HandlesPacket(PacketHeader.DisconnectSafe)]
-        public static void HandleDisconnectFromServer() 
-        {
-            Network.listener.ClosingFlag = false;
-            Network.listener.DisconnectFlag = true;
-        }
-
         //Executes different actions depending on the disconnection mode
 
         public static void HandleDisconnect()
