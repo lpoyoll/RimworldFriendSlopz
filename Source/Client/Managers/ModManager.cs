@@ -70,8 +70,8 @@ namespace GameClient.Managers
         {
             ModConfigData data = new ModConfigData();
             data._stepMode = ModConfigStepMode.Send;
-            data._configFile = ModManagerH.SortModsIntoCategories(RT_Dialog_ListingWithTuple.dialogTupleListingResultString, 
-                RT_Dialog_ListingWithTuple.dialogTupleListingResultInt);
+            data._configFile = ModManagerH.SortModsIntoCategories(RT_Dialog_ListingWithTuple.DialogTupleListingResultString, 
+                RT_Dialog_ListingWithTuple.DialogTupleListingResultInt);
 
             Action toDoYes = delegate 
             { 

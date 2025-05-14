@@ -99,7 +99,7 @@ namespace GameClient.Managers
         {
             Action r2 = delegate
             {
-                if (string.IsNullOrWhiteSpace(RT_Dialog_Inputs.dialogInputResults[0]) || RT_Dialog_Inputs.dialogInputResults[0].Length > 32)
+                if (string.IsNullOrWhiteSpace(RT_Dialog_Inputs.DialogInputResults[0]) || RT_Dialog_Inputs.DialogInputResults[0].Length > 32)
                 {
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Faction name is invalid! Please try again!" }));
                 }
@@ -110,7 +110,7 @@ namespace GameClient.Managers
 
                     PlayerGuildData playerFactionData = new PlayerGuildData();
                     playerFactionData._stepMode = GuildStepMode.Create;
-                    playerFactionData._file.Name = RT_Dialog_Inputs.dialogInputResults[0];
+                    playerFactionData._file.Name = RT_Dialog_Inputs.DialogInputResults[0];
 
                     Network.listener.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
                 }

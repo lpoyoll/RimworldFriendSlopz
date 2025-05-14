@@ -10,13 +10,9 @@ namespace GameClient.Dialogs
 {
     public class RT_Dialog_SiteMenu : RT_Dialog_Base
     {
-        public List<SiteInfoFile> SiteInfoFileList = new List<SiteInfoFile>();
+        public override Vector2 InitialSize => new Vector2(700f, 450);
 
-        public Vector2 initialSize = new Vector2(700f, 450);
-
-        public override Vector2 InitialSize => initialSize;
-
-        private bool IsInConfigMode;
+        private bool IsInConfigMode { get; set; }
 
         public static RT_Dialog_Base Instance { get; private set; } = null;
 

@@ -52,7 +52,7 @@ namespace GameClient.Managers
         {
             string downloadPath = Path.Combine(Master.AppdataTempVersionPath, "3005289691.zip");
             string extractPath = Path.Combine(Master.AppdataTempVersionPath, "3005289691");
-            string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{RT_Dialog_Inputs.dialogInputResults[0]}/3005289691.zip";
+            string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{RT_Dialog_Inputs.DialogInputResults[0]}/3005289691.zip";
 
             bool freezeGame = true;
             Task.Run(delegate
@@ -93,7 +93,7 @@ namespace GameClient.Managers
                 if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
 
                 string appPath = Path.Combine(Master.ModAddonsPath, "7z", "7z.exe");
-                CMDExecuter.StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{RT_Dialog_Inputs.dialogInputResults[1]}\" -o\"{extractPath}\"");
+                CMDExecuter.StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{RT_Dialog_Inputs.DialogInputResults[1]}\" -o\"{extractPath}\"");
 
                 return true;
             }

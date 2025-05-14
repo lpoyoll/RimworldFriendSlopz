@@ -8,16 +8,16 @@ namespace GameClient.Dialogs
 {
     public class RT_Dialog_Buttons : RT_Dialog_Base
     {
-        private readonly string[] labels;
+        private string[] Labels { get; set; }
 
-        private readonly Action[] actions;
+        private Action[] Actions { get; set; }
 
         public RT_Dialog_Buttons(string title, string description, string[] labels, Action[] actions, Action onCancel = null)
         {
             this.Title = title;
             this.Description = description;
-            this.labels = labels;
-            this.actions = actions;
+            this.Labels = labels;
+            this.Actions = actions;
             this.OnCancel = onCancel;
 
             closeOnAccept = false;
@@ -43,15 +43,15 @@ namespace GameClient.Dialogs
             DrawCancelButton(centeredX, rect.yMax - DefaultButtonSize.y);
 
             DrawButton(centeredX, rect.yMax - DefaultButtonSize.y * 2 - 10f, 0);
-            if (labels.Length > 1) DrawButton(centeredX, rect.yMax - DefaultButtonSize.y * 3 - 20f, 1);
-            if (labels.Length > 2) DrawButton(centeredX, rect.yMax - DefaultButtonSize.y * 4 - 30f, 2);
+            if (Labels.Length > 1) DrawButton(centeredX, rect.yMax - DefaultButtonSize.y * 3 - 20f, 1);
+            if (Labels.Length > 2) DrawButton(centeredX, rect.yMax - DefaultButtonSize.y * 4 - 30f, 2);
         }
 
         private void CalculateWindowSize()
         {
             Vector2 sizeVector;
 
-            switch (labels.Length)
+            switch (Labels.Length)
             {
                 case 2:
                     sizeVector = new Vector2(350f, 250f);
@@ -72,9 +72,9 @@ namespace GameClient.Dialogs
 
         private void DrawButton(float centeredX, float height, int index)
         {
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - DefaultButtonSize.x / 2, height), DefaultButtonSize), labels[index]))
+            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - DefaultButtonSize.x / 2, height), DefaultButtonSize), Labels[index]))
             {
-                actions[index]?.Invoke();
+                Actions[index]?.Invoke();
                 Close();
             }
         }

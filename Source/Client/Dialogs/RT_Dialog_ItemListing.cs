@@ -15,16 +15,16 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(350f, 512f);
 
-        private readonly Thing[] listedThings;
+        private Thing[] ListedThings { get; set; }
 
-        private readonly TransferMode transferMode;
+        private TransferMode TransferMode { get; set; }
 
         public static RT_Dialog_Base Instance { get; private set; } = null;
 
         public RT_Dialog_ItemListing(Thing[] listedThings, TransferMode transferMode)
         {
-            this.listedThings = listedThings;
-            this.transferMode = transferMode;
+            this.ListedThings = listedThings;
+            this.TransferMode = transferMode;
             this.Title = "Item Listing";
             Instance = this;
 
@@ -58,7 +58,7 @@ namespace GameClient.Dialogs
         {
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
 
-            float height = 6f + listedThings.Count() * 30f;
+            float height = 6f + ListedThings.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
@@ -66,12 +66,12 @@ namespace GameClient.Dialogs
             float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < listedThings.Count(); i++)
+            for (int i = 0; i < ListedThings.Count(); i++)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, listedThings[i], num4);
+                    DrawCustomRow(rect, ListedThings[i], num4);
                 }
 
                 num += 30f;
@@ -111,12 +111,12 @@ namespace GameClient.Dialogs
         {
             Action r1 = delegate
             {
-                if (transferMode == TransferMode.Gift)
+                if (TransferMode == TransferMode.Gift)
                 {
-                    TransferManager.GetTransferedItemsToSettlement(listedThings);
+                    TransferManager.GetTransferedItemsToSettlement(ListedThings);
                 }
 
-                else if (transferMode == TransferMode.Trade)
+                else if (TransferMode == TransferMode.Trade)
                 {
                     if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
                     {
@@ -126,22 +126,22 @@ namespace GameClient.Dialogs
                     else
                     {
                         RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
-                        TransferManager.RejectRequest(transferMode);
+                        TransferManager.RejectRequest(TransferMode);
                     }
                 }
 
-                else if (transferMode == TransferMode.Pod)
+                else if (TransferMode == TransferMode.Pod)
                 {
-                    TransferManager.GetTransferedItemsToSettlement(listedThings);
+                    TransferManager.GetTransferedItemsToSettlement(ListedThings);
                 }
 
-                else if (transferMode == TransferMode.Rebound)
+                else if (TransferMode == TransferMode.Rebound)
                 {
                     SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
                     Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
 
-                    TransferManager.GetTransferedItemsToCaravan(listedThings);
+                    TransferManager.GetTransferedItemsToCaravan(ListedThings);
                 }
 
                 Close();
@@ -154,7 +154,7 @@ namespace GameClient.Dialogs
         {
             Action r1 = delegate
             {
-                TransferManager.RejectRequest(transferMode);
+                TransferManager.RejectRequest(TransferMode);
 
                 Close();
             };

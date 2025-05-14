@@ -11,9 +11,9 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(500f, 350f);
 
-        private readonly string[] buttonNames;
+        private string[] ButtonNames { get; set; }
 
-        public static int selectedScrollButton;
+        public static int SelectedScrollButton { get; private set; }
 
         public static RT_Dialog_Base Instance { get; private set; } = null;
 
@@ -21,7 +21,7 @@ namespace GameClient.Dialogs
         {
             this.Title = title;
             this.Description = description;
-            this.buttonNames = buttonNames;
+            this.ButtonNames = buttonNames;
             this.OnAccept = actionSelect;
             this.OnCancel = actionCancel;
             Instance = this;
@@ -49,7 +49,7 @@ namespace GameClient.Dialogs
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
-            GenerateList(new Rect(rect.x, rect.yMax - DefaultButtonSize.y * 5 - 40, rect.width, 175f), buttonNames);
+            GenerateList(new Rect(rect.x, rect.yMax - DefaultButtonSize.y * 5 - 40, rect.width, 175f), ButtonNames);
 
             if (Widgets.ButtonText(new Rect(new Vector2(centeredX - DefaultButtonSize.x / 2, rect.yMax - DefaultButtonSize.y), DefaultButtonSize), "Cancel"))
             {
@@ -98,11 +98,11 @@ namespace GameClient.Dialogs
 
             if (Widgets.ButtonText(fixedRect, buttonName))
             {
-                for (int i = 0; i < buttonNames.Count(); i++)
+                for (int i = 0; i < ButtonNames.Count(); i++)
                 {
-                    if (buttonNames[i] == buttonName)
+                    if (ButtonNames[i] == buttonName)
                     {
-                        selectedScrollButton = i;
+                        SelectedScrollButton = i;
                         OnAccept?.Invoke();
                         Close();
                     }

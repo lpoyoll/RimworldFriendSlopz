@@ -11,59 +11,57 @@ namespace GameClient.Dialogs
 {
     public class RT_Dialog_SiteMenu_Info : RT_Dialog_Base
     {
-        public Vector2 initialSize = new Vector2(450f, 250f);
+        public override Vector2 InitialSize => new Vector2(450f, 250f);
 
-        public override Vector2 InitialSize => initialSize;
+        public SitePartDef SitePartDef { get; private set; }
 
-        public SitePartDef sitePartDef;
+        public SiteInfoFile ConfigFile { get; private set; }
 
-        public SiteInfoFile configFile;
+        public Dictionary<ThingDef, int> CostThing { get; private set; } = new Dictionary<ThingDef, int>();
 
-        public Dictionary<ThingDef, int> costThing = new Dictionary<ThingDef, int>();
+        public Dictionary<ThingDef, int> RewardThing { get; private set; } = new Dictionary<ThingDef, int>();
 
-        public Dictionary<ThingDef, int> rewardThing = new Dictionary<ThingDef, int>();
-
-        private bool invalid;
+        private bool IsInvalid { get; set; }
 
         public static RT_Dialog_SiteMenu_Info Instance { get; private set; }
 
         public RT_Dialog_SiteMenu_Info(SitePartDef thingChosen) //Send chosen site over
         {
-            sitePartDef = thingChosen;
+            SitePartDef = thingChosen;
             this.Title = thingChosen.label;
-            configFile = SiteManager.siteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();
+            ConfigFile = SiteManager.siteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();
             Instance = this;
 
-            for (int i = 0; i < configFile.DefNameCost.Length; i++)
+            for (int i = 0; i < ConfigFile.DefNameCost.Length; i++)
             {
-                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(configFile.DefNameCost[i]);
-                if (toAdd != null) costThing.Add(toAdd, configFile.Cost[i]);
-                else Printer.Warning($"{configFile.DefNameCost[i]} could not be found and won't be added to the list. Double check the def exists.");
+                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(ConfigFile.DefNameCost[i]);
+                if (toAdd != null) CostThing.Add(toAdd, ConfigFile.Cost[i]);
+                else Printer.Warning($"{ConfigFile.DefNameCost[i]} could not be found and won't be added to the list. Double check the def exists.");
             }
 
-            for (int i = 0; i < configFile.Rewards.Length; i++)
+            for (int i = 0; i < ConfigFile.Rewards.Length; i++)
             {
-                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(configFile.Rewards[i].RewardDef);
-                if (toAdd != null) rewardThing.Add(toAdd, configFile.Rewards[i].RewardAmount);
-                else Printer.Warning($"{configFile.Rewards[i].RewardDef} could not be found and won't be added to the list. Double check the def exists.");
+                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(ConfigFile.Rewards[i].RewardDef);
+                if (toAdd != null) RewardThing.Add(toAdd, ConfigFile.Rewards[i].RewardAmount);
+                else Printer.Warning($"{ConfigFile.Rewards[i].RewardDef} could not be found and won't be added to the list. Double check the def exists.");
             }
 
-            if (rewardThing.Keys.Count == 0)
+            if (RewardThing.Keys.Count == 0)
             {
                 Printer.Error($"Could not load any rewards for the sites. Please double check your configs to make sure they are valid");
-                invalid = true; // Apparently you can't "this.Close() in the constructor
+                IsInvalid = true; // Apparently you can't "this.Close() in the constructor
             }
 
-            if (costThing.Keys.Count == 0)
+            if (CostThing.Keys.Count == 0)
             {
                 Printer.Error($"Could not load any cost for the sites. Please double check your configs to make sure they are valid");
-                invalid = true; // Apparently you can't "this.Close() in the constructor
+                IsInvalid = true; // Apparently you can't "this.Close() in the constructor
             }
         }
 
         public override void DoWindowContents(Rect mainRect)
         {
-            if (invalid)
+            if (IsInvalid)
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Site could not be loaded because of invalid configuration" }));
                 Close();
@@ -78,25 +76,25 @@ namespace GameClient.Dialogs
             Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, mainRect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Rect leftColumn = new Rect(mainRect.x, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 20f);
-            Widgets.DrawTextureFitted(leftColumn, sitePartDef.ExpandingIconTexture, 1f); // Icon of the site
+            Widgets.DrawTextureFitted(leftColumn, SitePartDef.ExpandingIconTexture, 1f); // Icon of the site
 
             Rect rightColumn = new Rect(mainRect.width / 2, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 70f);
-            float heightDesc = Text.CalcHeight(sitePartDef.description, rightColumn.width - 16f) / 2 + 9f;
-            float height = 40f + costThing.Count() * 25f + rewardThing.Count() * 25f + heightDesc;
+            float heightDesc = Text.CalcHeight(SitePartDef.description, rightColumn.width - 16f) / 2 + 9f;
+            float height = 40f + CostThing.Count() * 25f + RewardThing.Count() * 25f + heightDesc;
             Rect viewRightColumn = new Rect(rightColumn.x, rightColumn.y, rightColumn.width - 16f, height);
 
             Widgets.BeginScrollView(rightColumn, ref ScrollPosition, viewRightColumn);
             Text.Font = GameFont.Small;
             float num = viewRightColumn.y;
 
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), sitePartDef.description); // Description of site
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), SitePartDef.description); // Description of site
             num += heightDesc;
             Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), "Cost:");
             num += 20f;
 
-            foreach (ThingDef thing in costThing.Keys)
+            foreach (ThingDef thing in CostThing.Keys)
             {
-                Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25), $"- {thing.label} {costThing[thing].ToString()}");
+                Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25), $"- {thing.label} {CostThing[thing].ToString()}");
                 num += 25;
             }
 
@@ -104,16 +102,16 @@ namespace GameClient.Dialogs
             Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces every {SiteManager.siteValues.TimeIntervalMinutes} minutes:");
             num += 20f;
 
-            foreach (ThingDef thing in rewardThing.Keys)
+            foreach (ThingDef thing in RewardThing.Keys)
             {
-                Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25), $"- {thing.label} {rewardThing[thing].ToString()} ");
+                Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25), $"- {thing.label} {RewardThing[thing].ToString()} ");
                 num += 25;
             }
 
             Widgets.EndScrollView();
             if (Widgets.ButtonText(new Rect(rightColumn.x + 5f, rightColumn.yMax, rightColumn.width - 10f, 40f), "Buy"))
             {
-                SiteManager.RequestSiteBuild(configFile);
+                SiteManager.RequestSiteBuild(ConfigFile);
                 RT_Dialog_SiteMenu.Instance.Close();
                 RT_Dialog_SiteMenu_Info.Instance.Close();
             }

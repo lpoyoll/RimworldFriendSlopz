@@ -11,13 +11,13 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(500f, 400f);
 
-        public readonly string[] elements;
+        public string[] Elements { get; private set; }
 
         public RT_Dialog_Listing(string title, string description, string[] elements, Action actionOK = null)
         {
             this.Title = title;
             this.Description = description;
-            this.elements = elements;
+            this.Elements = elements;
             this.OnAccept = actionOK;
 
             closeOnAccept = false;
@@ -54,7 +54,7 @@ namespace GameClient.Dialogs
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + elements.Count() * 30f;
+            float height = 6f + Elements.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
@@ -62,12 +62,12 @@ namespace GameClient.Dialogs
             float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < elements.Count(); i++)
+            for (int i = 0; i < Elements.Count(); i++)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, elements[i], num4);
+                    DrawCustomRow(rect, Elements[i], num4);
                 }
 
                 num += 30f;

@@ -20,7 +20,7 @@ namespace GameClient.Managers
 
         public static void OpenSpecificMenu()
         {
-            switch (RT_Dialog_ScrollButtons.selectedScrollButton)
+            switch (RT_Dialog_ScrollButtons.SelectedScrollButton)
             {
                 case 0:
                     ModManager.OpenModManagerMenu(false);

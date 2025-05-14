@@ -11,17 +11,17 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(400f, 400f);
 
-        public readonly string[] elements;
+        public string[] Elements { get; private set; }
 
-        public static string dialogButtonListingResultString;
+        public static string? DialogButtonListingResultString { get; private set; }
 
-        public static int dialogButtonListingResultInt;
+        public static int DialogButtonListingResultInt { get; private set; }
 
         public RT_Dialog_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
         {
             this.Title = title;
             this.Description = description;
-            this.elements = elements;
+            this.Elements = elements;
             this.OnAccept = actionClick;
             this.OnCancel = actionCancel;
 
@@ -58,7 +58,7 @@ namespace GameClient.Dialogs
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + elements.Count() * 30f;
+            float height = 6f + Elements.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
@@ -66,12 +66,12 @@ namespace GameClient.Dialogs
             float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < elements.Count(); i++)
+            for (int i = 0; i < Elements.Count(); i++)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, elements[i], num4);
+                    DrawCustomRow(rect, Elements[i], num4);
                 }
 
                 num += 30f;
@@ -90,8 +90,8 @@ namespace GameClient.Dialogs
             Widgets.Label(fixedRect, $"{element}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Select"))
             {
-                dialogButtonListingResultInt = index;
-                dialogButtonListingResultString = element;
+                DialogButtonListingResultInt = index;
+                DialogButtonListingResultString = element;
                 if (OnAccept != null) OnAccept.Invoke();
                 Close();
             }

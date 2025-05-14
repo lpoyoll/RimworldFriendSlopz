@@ -12,37 +12,39 @@ using RimWorld;
 using Shared;
 using UnityEngine;
 using Verse;
-using static Mono.Security.X509.X520;
 
 namespace GameClient.Dialogs
 {
     public class RT_Dialog_ServerListingInfo : Window
     {
-        private static FieldInfo ModsConfigdata;
-        private static FieldInfo ModsConfigDataactiveMods;
+        public override Vector2 InitialSize => new Vector2(600f, 250f);
 
-        private Vector2 initialSize = new Vector2(600f, 250f);
-        public override Vector2 InitialSize => initialSize;
-        private ServerInfo info;
+        private static FieldInfo ModsConfigData;
+
+        private static FieldInfo ModsConfigDataActiveMods;
+
+        private ServerInfo ServerInfo { get; set; }
+
         public RT_Dialog_ServerListingInfo(ServerInfo info) 
         {
-            this.info = info;
-            ModsConfigdata = AccessTools.Field(typeof(ModsConfig), "data");
-            ModsConfigDataactiveMods = AccessTools.Field(AccessTools.TypeByName("Verse.ModsConfig+ModsConfigData"), "activeMods");
+            this.ServerInfo = info;
+            ModsConfigData = AccessTools.Field(typeof(ModsConfig), "data");
+            ModsConfigDataActiveMods = AccessTools.Field(AccessTools.TypeByName("Verse.ModsConfig+ModsConfigData"), "activeMods");
         }
+
         public override void DoWindowContents(Rect inRect)
         {
             Text.Font = GameFont.Medium;
-            Vector2 titleSize = Text.CalcSize(info._name);
+            Vector2 titleSize = Text.CalcSize(ServerInfo._name);
             float centeredx = inRect.width / 2;
             Rect titleRect = new Rect(centeredx - titleSize.x / 2, inRect.y, titleSize.x, titleSize.y);
-            Widgets.Label(titleRect, info._name);
+            Widgets.Label(titleRect, ServerInfo._name);
 
             Widgets.DrawLineHorizontal(0, titleSize.y + 3f, inRect.width);
 
             Text.Font = GameFont.Small;
             Rect descriptionRect = new Rect(inRect.x, titleSize.y + 6f, inRect.width / 3 * 2, inRect.height - 55f);
-            Widgets.Label(descriptionRect, info._description);
+            Widgets.Label(descriptionRect, ServerInfo._description);
 
             Rect connectRect = new Rect(inRect.width - 110f, inRect.height - 55f, 100f, 45f);
 
@@ -52,9 +54,9 @@ namespace GameClient.Dialogs
                 var missingMods = new List<string>();
                 var display = new List<string>();
                 var modsToEnable = new List<string>();
-                for (int i = 0; i < info._config.UnsortedMods.Length; i++)
+                for (int i = 0; i < ServerInfo._config.UnsortedMods.Length; i++)
                 {
-                    string mod = info._config.UnsortedMods[i];
+                    string mod = ServerInfo._config.UnsortedMods[i];
                     var foundMod = ModLister.AllInstalledMods.Where(x => x.PackageId == mod).FirstOrDefault();
                     if (foundMod != null) 
                     {
@@ -66,9 +68,9 @@ namespace GameClient.Dialogs
                         continue;
                     }
 
-                    if (info._config.AllModIds[i] != 0)
+                    if (ServerInfo._config.AllModIds[i] != 0)
                     {
-                        downloadableMods.Add(mod, info._config.AllModIds[i]);
+                        downloadableMods.Add(mod, ServerInfo._config.AllModIds[i]);
                         modsToEnable.Add(mod);
                         display.Add($"[Downloadable]> {mod}");
                     }
@@ -79,6 +81,7 @@ namespace GameClient.Dialogs
                         display.Add($"[Unavailable]> {mod}");
                     }
                 }
+
                 if (missingMods.Any() || downloadableMods.Any() || modsToEnable.Any()) {
                     Printer.Warning($"Found {downloadableMods.Count} mods to download and {missingMods.Count} mods that cannot be downloaded.");
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Listing("Missing mods!",
@@ -93,7 +96,7 @@ namespace GameClient.Dialogs
                                     try
                                     {
                                         downloadableMods.Remove(value.Key);
-                                        List<string> activeMods = (List<string>)ModsConfigDataactiveMods.GetValue(ModsConfigdata.GetValue(null));
+                                        List<string> activeMods = (List<string>)ModsConfigDataActiveMods.GetValue(ModsConfigData.GetValue(null));
                                         activeMods.Add(value.Key);
                                     }
                                     catch (Exception ex)
@@ -102,6 +105,7 @@ namespace GameClient.Dialogs
                                     }
                                 }
                             }
+
                             if (downloadableMods.Count > 0)
                             {
                                 List<string> modsToReport = new List<string>();
@@ -110,14 +114,15 @@ namespace GameClient.Dialogs
                                     "Something went wrong while downloading the following mods:",
                                     modsToReport.ToArray()));
                             }
+
                             else
                             {
                                 List<string> modsToEnable = new List<string>();
-                                modsToEnable.AddRange(info._config.RequiredMods);
-                                modsToEnable.AddRange(info._config.OptionalMods);
+                                modsToEnable.AddRange(ServerInfo._config.RequiredMods);
+                                modsToEnable.AddRange(ServerInfo._config.OptionalMods);
                                 foreach (string str in modsToEnable)
                                 {
-                                    if(!info._config.ForbiddenMods.Contains(str) && !missingMods.Contains(str))
+                                    if(!ServerInfo._config.ForbiddenMods.Contains(str) && !missingMods.Contains(str))
                                         ModsConfig.SetActive(str, true);
                                 }
                                 ModsConfig.Save();
@@ -130,10 +135,13 @@ namespace GameClient.Dialogs
                             }
                         }
                     ));
-                } else 
+
+                } 
+
+                else 
                 {
-                    Network.ip = info._ip;
-                    Network.port = info._port.ToString();
+                    Network.ip = ServerInfo._ip;
+                    Network.port = ServerInfo._port.ToString();
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
                     Threader.GenerateThread(Threader.Mode.Start);
                     Close();

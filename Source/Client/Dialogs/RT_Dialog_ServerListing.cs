@@ -15,32 +15,22 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(650f, 400f);
 
-        public readonly string title = "Server Browser";
-
-        public readonly string description = "This is a list of all publicly available servers!";
-
-        private Vector2 scrollPosition = Vector2.zero;
-
-        private readonly Vector2 button = new Vector2(150f, 38f);
-
-        private readonly Vector2 selectButton = new Vector2(47f, 25f);
-
-        private readonly Vector2 deleteButton = new Vector2(47f, 25f);
-
-        public RecentServersFile recentServers => RecentServersHandler.LoadRecentServers();
+        public RecentServersFile RecentServers => RecentServersHandler.LoadRecentServers();
 
         public ServerInfo[] AllServers = new ServerInfo[0];
 
         public static RT_Dialog_Base Instance { get; private set; }
 
-        private bool failedToFetchServers = false;
+        private bool FailedToFetchServers { get; set; } = false;
+
         public RT_Dialog_ServerListing()
         {
-            if (!GetServers()) failedToFetchServers = true;
+            if (!GetServers()) FailedToFetchServers = true;
 
             Instance = this;
-            this.Title = title;
-            this.Description = description;
+            this.Title = "Server Browser";
+            this.Description = "This is a list of all publicly available servers!";
+
             closeOnAccept = false;
             closeOnCancel = false;
         }
@@ -48,28 +38,27 @@ namespace GameClient.Dialogs
         private bool GetServers() 
         {
             ServerInfo[] servers = ServerBrowserManager.GetAllServersAvailable();
-            if (servers == null)
-                return false;
+            if (servers == null) return false;
             AllServers = servers;
             return true;
         }
 
         public override void DoWindowContents(Rect rect)
         {
-            if (failedToFetchServers)
+            if (FailedToFetchServers)
                 Close();
             float centeredX = rect.width / 2;
 
-            float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
-            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
-            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(Description).y * 1.1f;
+            float windowDescriptionDif = Text.CalcSize(base.Description).y + StandardMargin;
+            float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(base.Description).y * 0.25f;
+            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(base.Description).y * 1.1f;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(base.Title).x / 2, rect.y, Text.CalcSize(base.Title).x, Text.CalcSize(base.Title).y), base.Title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(base.Description).x / 2, windowDescriptionDif, Text.CalcSize(base.Description).x, Text.CalcSize(base.Description).y), base.Description);
             Text.Font = GameFont.Medium;
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
@@ -81,12 +70,12 @@ namespace GameClient.Dialogs
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + recentServers.ServerAddresses.Count() * 30f;
+            float height = 6f + RecentServers.ServerAddresses.Count() * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
+            Widgets.BeginScrollView(mainRect, ref base.ScrollPosition, viewRect);
             float num = 0;
-            float num2 = ScrollPosition.y - 30f;
-            float num3 = ScrollPosition.y + mainRect.height;
+            float num2 = base.ScrollPosition.y - 30f;
+            float num3 = base.ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
             for (int i = 0; i < AllServers.Length; i++)
@@ -111,7 +100,7 @@ namespace GameClient.Dialogs
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, $"{server._name} - {server._ip}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - selectButton.x - deleteButton.x - 5f, rect.yMax - selectButton.y), selectButton), "Select"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x - TinyButtonSize.x - 5f, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Select"))
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListingInfo(server));
             }

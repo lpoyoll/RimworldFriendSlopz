@@ -14,35 +14,31 @@ namespace GameClient.Dialogs
 {
     public class RT_Dialog_TransferMenu : RT_Dialog_Base
     {
-        //UI
-
         public override Vector2 InitialSize => new Vector2(600f, 512f);
 
-        //Variables
+        private TransferLocation TransferLocation { get; set; }
 
-        private readonly TransferLocation transferLocation;
+        private List<Tradeable> CachedTradeables { get; set; }
 
-        private List<Tradeable> cachedTradeables;
+        private Pawn PlayerNegotiator { get; set; }
 
-        private Pawn playerNegotiator;
+        private bool AllowItems { get; set; }
 
-        private readonly bool allowItems;
+        private bool AllowAnimals { get; set; }
 
-        private readonly bool allowAnimals;
+        private bool AllowHumans { get; set; }
 
-        private readonly bool allowHumans;
-
-        private readonly bool allowFreeThings;
+        private bool AllowFreeThings { get; set; }
 
         public RT_Dialog_TransferMenu(TransferLocation transferLocation, bool allowItems = false, bool allowAnimals = false, bool allowHumans = false, bool allowFreeThings = true)
         {
             this.Title = "Transfer Menu";
             this.Description = "Select the items you wish to transfer";
-            this.transferLocation = transferLocation;
-            this.allowItems = allowItems;
-            this.allowAnimals = allowAnimals;
-            this.allowHumans = allowHumans;
-            this.allowFreeThings = allowFreeThings;
+            this.TransferLocation = transferLocation;
+            this.AllowItems = allowItems;
+            this.AllowAnimals = allowAnimals;
+            this.AllowHumans = allowHumans;
+            this.AllowFreeThings = allowFreeThings;
 
             ClientValues.ToggleTransfer(true);
 
@@ -87,7 +83,7 @@ namespace GameClient.Dialogs
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.yMax + 1, mainRect.width);
 
-            float height = 6f + cachedTradeables.Count * 30f;
+            float height = 6f + CachedTradeables.Count * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
@@ -95,12 +91,12 @@ namespace GameClient.Dialogs
             float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < cachedTradeables.Count; i++)
+            for (int i = 0; i < CachedTradeables.Count; i++)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, cachedTradeables[i], num4);
+                    DrawCustomRow(rect, CachedTradeables[i], num4);
                 }
 
                 num += 30f;
@@ -112,7 +108,7 @@ namespace GameClient.Dialogs
 
         private void OnAccept()
         {
-            if (transferLocation == TransferLocation.Caravan)
+            if (TransferLocation == TransferLocation.Caravan)
             {
                 Action r1 = delegate
                 {
@@ -135,7 +131,7 @@ namespace GameClient.Dialogs
                 RT_Dialog_Base.PushNewDialog(d1);
             }
 
-            else if (transferLocation == TransferLocation.Settlement)
+            else if (TransferLocation == TransferLocation.Settlement)
             {
                 Action r1 = delegate
                 {
@@ -152,8 +148,8 @@ namespace GameClient.Dialogs
 
             void postChoosing()
             {
-                TransferManager.TakeTransferItems(transferLocation);
-                TransferManager.SendTransferRequestToServer(transferLocation);
+                TransferManager.TakeTransferItems(TransferLocation);
+                TransferManager.SendTransferRequestToServer(TransferLocation);
                 Close();
             }
         }
@@ -162,7 +158,7 @@ namespace GameClient.Dialogs
         {
             Action r1 = delegate
             {
-                if (transferLocation == TransferLocation.Settlement)
+                if (TransferLocation == TransferLocation.Settlement)
                 {
                     TransferManager.RejectRequest(TransferMode.Trade);
                 }
@@ -172,7 +168,7 @@ namespace GameClient.Dialogs
                 Close();
             };
 
-            if (transferLocation == TransferLocation.Settlement)
+            if (TransferLocation == TransferLocation.Settlement)
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?",
                     r1, null));
@@ -190,28 +186,28 @@ namespace GameClient.Dialogs
 
         private void GetNegotiator()
         {
-            if (transferLocation == TransferLocation.Caravan)
+            if (TransferLocation == TransferLocation.Caravan)
             {
-                playerNegotiator = SessionValues.ChosenCaravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+                PlayerNegotiator = SessionValues.ChosenCaravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
 
-            else if (transferLocation == TransferLocation.Settlement)
+            else if (TransferLocation == TransferLocation.Settlement)
             {
-                playerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+                PlayerNegotiator = Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             }
         }
 
         private void SetupTrade()
         {
-            if (transferLocation == TransferLocation.Caravan)
+            if (TransferLocation == TransferLocation.Caravan)
             {
-                TradeSession.SetupWith(SessionValues.ChosenSettlement, playerNegotiator, true);
+                TradeSession.SetupWith(SessionValues.ChosenSettlement, PlayerNegotiator, true);
             }
 
-            else if (transferLocation == TransferLocation.Settlement)
+            else if (TransferLocation == TransferLocation.Settlement)
             {
                 TradeSession.SetupWith(Find.WorldObjects.SettlementAt(SessionValues.IncomingManifest._fromTile),
-                    playerNegotiator, true);
+                    PlayerNegotiator, true);
             }
         }
 
@@ -258,15 +254,15 @@ namespace GameClient.Dialogs
         {
             SessionValues.ListToShowInTradesMenu = new List<Tradeable>();
 
-            if (transferLocation == TransferLocation.Caravan)
+            if (TransferLocation == TransferLocation.Caravan)
             {
                 List<Thing> caravanItems = CaravanInventoryUtility.AllInventoryItems(SessionValues.ChosenCaravan);
 
-                if (allowItems)
+                if (AllowItems)
                 {
                     foreach (Thing thing in caravanItems)
                     {
-                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
+                        if (thing.MarketValue == 0 && !AllowFreeThings) continue;
                         else
                         {
                             Tradeable tradeable = new Tradeable();
@@ -276,15 +272,15 @@ namespace GameClient.Dialogs
                     }
                 }
 
-                if (allowHumans || allowAnimals)
+                if (AllowHumans || AllowAnimals)
                 {
                     foreach (Pawn pawn in SessionValues.ChosenCaravan.pawns)
                     {
                         if (ScriberH.CheckIfThingIsHuman(pawn))
                         {
-                            if (allowHumans)
+                            if (AllowHumans)
                             {
-                                if (pawn == playerNegotiator) continue;
+                                if (pawn == PlayerNegotiator) continue;
                                 else
                                 {
                                     Tradeable tradeable = new Tradeable();
@@ -296,7 +292,7 @@ namespace GameClient.Dialogs
 
                         else if (ScriberH.CheckIfThingIsAnimal(pawn))
                         {
-                            if (allowAnimals)
+                            if (AllowAnimals)
                             {
                                 Tradeable tradeable = new Tradeable();
                                 tradeable.AddThing(pawn, Transactor.Colony);
@@ -307,7 +303,7 @@ namespace GameClient.Dialogs
                 }
             }
 
-            else if (transferLocation == TransferLocation.Settlement)
+            else if (TransferLocation == TransferLocation.Settlement)
             {
                 Map map = Find.Maps.Find(x => x.Tile == SessionValues.IncomingManifest._toTile);
 
@@ -316,11 +312,11 @@ namespace GameClient.Dialogs
 
                 Thing[] thingsInMap = RimworldManager.GetAllThingsInMap(map);
 
-                if (allowItems)
+                if (AllowItems)
                 {
                     foreach (Thing thing in thingsInMap)
                     {
-                        if (thing.MarketValue == 0 && !allowFreeThings) continue;
+                        if (thing.MarketValue == 0 && !AllowFreeThings) continue;
                         {
                             Tradeable tradeable = new Tradeable();
                             tradeable.AddThing(thing, Transactor.Colony);
@@ -329,13 +325,13 @@ namespace GameClient.Dialogs
                     }
                 }
 
-                if (allowHumans || allowAnimals)
+                if (AllowHumans || AllowAnimals)
                 {
                     foreach (Pawn pawn in pawnsInMap)
                     {
                         if (ScriberH.CheckIfThingIsAnimal(pawn))
                         {
-                            if (allowAnimals)
+                            if (AllowAnimals)
                             {
                                 Tradeable tradeable = new Tradeable();
                                 tradeable.AddThing(pawn, Transactor.Colony);
@@ -345,9 +341,9 @@ namespace GameClient.Dialogs
 
                         else
                         {
-                            if (allowHumans)
+                            if (AllowHumans)
                             {
-                                if (pawn == playerNegotiator) continue;
+                                if (pawn == PlayerNegotiator) continue;
                                 else
                                 {
                                     Tradeable tradeable = new Tradeable();
@@ -363,7 +359,7 @@ namespace GameClient.Dialogs
 
         public void LoadAllAvailableTradeables()
         {
-            cachedTradeables = (from tr in SessionValues.ListToShowInTradesMenu
+            CachedTradeables = (from tr in SessionValues.ListToShowInTradesMenu
                                 orderby 0 descending
                                 select tr)
                 .ThenBy((tr) => tr.ThingDef.label)

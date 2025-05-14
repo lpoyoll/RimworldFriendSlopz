@@ -82,7 +82,7 @@ namespace GameClient.Core.Configs
                 try
                 {
                     string path = Path.Combine(Master.AppdataRTPath, "LoginData.json");
-                    string destination = Path.Combine(RT_Dialog_Inputs.dialogInputResults[0], Path.GetFileName(path));
+                    string destination = Path.Combine(RT_Dialog_Inputs.DialogInputResults[0], Path.GetFileName(path));
                     File.Copy(path, destination);
 
                     string[] messages = new string[]

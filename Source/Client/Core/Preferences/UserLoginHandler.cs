@@ -61,7 +61,7 @@ namespace GameClient.Core.Preferences
         {
             Action toDo = delegate
             {
-                if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.dialogInputResults[0]))
+                if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[0]))
                 {
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
                         new string[] { "Your username contains illegal characters", "Please choose another one and try again" }));
@@ -69,7 +69,7 @@ namespace GameClient.Core.Preferences
 
                 else
                 {
-                    AssignPlayerUsername(RT_Dialog_Inputs.dialogInputResults[0]);
+                    AssignPlayerUsername(RT_Dialog_Inputs.DialogInputResults[0]);
                     AssignPlayerHash();
 
                     if (isQuickConnect) QuickConnectUser();

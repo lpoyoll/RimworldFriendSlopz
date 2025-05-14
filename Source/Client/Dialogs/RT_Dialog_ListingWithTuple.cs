@@ -11,24 +11,24 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(500f, 400f);
 
-        public readonly string[] keys;
+        public string[] Keys { get; private set; }
 
-        public string[] values;
+        public string[] Values { get; private set; }
 
-        public string[] valueString;
+        public string[] ValueString { get; private set; }
 
-        public int[] valueInt;
+        public int[] ValueInt { get; private set; }
 
-        public static string[] dialogTupleListingResultString;
+        public static string[]? DialogTupleListingResultString { get; private set; }
 
-        public static int[] dialogTupleListingResultInt;
+        public static int[]? DialogTupleListingResultInt { get; private set; }
 
         public RT_Dialog_ListingWithTuple(string title, string description, string[] keys, string[] values, Action actionAccept = null)
         {
             this.Title = title;
             this.Description = description;
-            this.keys = keys;
-            this.values = values;
+            this.Keys = keys;
+            this.Values = values;
             this.OnAccept = actionAccept;
 
             closeOnAccept = false;
@@ -36,11 +36,11 @@ namespace GameClient.Dialogs
 
             List<string> strings = new List<string>();
             for (int i = 0; i < keys.Length; i++) strings.Add(values[0]);
-            valueString = strings.ToArray();
+            ValueString = strings.ToArray();
 
             List<int> ints = new List<int>();
             for (int i = 0; i < keys.Length; i++) ints.Add(0);
-            valueInt = ints.ToArray();
+            ValueInt = ints.ToArray();
         }
 
         public override void DoWindowContents(Rect rect)
@@ -68,8 +68,8 @@ namespace GameClient.Dialogs
 
             if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomCenter), "Accept"))
             {
-                dialogTupleListingResultString = keys;
-                dialogTupleListingResultInt = valueInt;
+                DialogTupleListingResultString = Keys;
+                DialogTupleListingResultInt = ValueInt;
                 OnAccept?.Invoke();
                 Close();
             }
@@ -77,7 +77,7 @@ namespace GameClient.Dialogs
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + keys.Length * 30f;
+            float height = 6f + Keys.Length * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
             float num = 0;
@@ -85,12 +85,12 @@ namespace GameClient.Dialogs
             float num3 = ScrollPosition.y + mainRect.height;
             int num4 = 0;
 
-            for (int i = 0; i < keys.Length; i++)
+            for (int i = 0; i < Keys.Length; i++)
             {
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, keys[i], num4);
+                    DrawCustomRow(rect, Keys[i], num4);
                 }
 
                 num += 30f;
@@ -107,7 +107,7 @@ namespace GameClient.Dialogs
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, element);
-            string buttonLabel = valueString[index];
+            string buttonLabel = ValueString[index];
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - LongButtonSize.x, rect.yMax - LongButtonSize.y), LongButtonSize), buttonLabel))
             {
                 ShowFloatMenu(index, false);
@@ -118,20 +118,20 @@ namespace GameClient.Dialogs
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
-            foreach (string str in values)
+            foreach (string str in Values)
             {
                 Action changeSingleValue = delegate
                 {
-                    valueString[index] = str;
-                    valueInt[index] = GetValueFromString(str);
+                    ValueString[index] = str;
+                    ValueInt[index] = GetValueFromString(str);
                 };
 
                 Action changeAllValues = delegate
                 {
-                    for (int i = 0; i < valueString.Length; i++)
+                    for (int i = 0; i < ValueString.Length; i++)
                     {
-                        valueString[i] = str;
-                        valueInt[i] = GetValueFromString(valueString[i]);
+                        ValueString[i] = str;
+                        ValueInt[i] = GetValueFromString(ValueString[i]);
                     }
                 };
 
@@ -145,6 +145,6 @@ namespace GameClient.Dialogs
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private int GetValueFromString(string str) { return values.FirstIndexOf(fetch => fetch == str); }
+        private int GetValueFromString(string str) { return Values.FirstIndexOf(fetch => fetch == str); }
     }
 }
