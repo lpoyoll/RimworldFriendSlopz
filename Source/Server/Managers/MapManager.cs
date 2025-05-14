@@ -21,21 +21,21 @@ namespace GameServer.Managers
 
         public static void SaveUserMap(ServerClient client, MapFile file)
         {
-            file.UID = client.userFile.Uid;
-            Serializer.ObjectBytesToFile(Path.Combine(Master.mapsPath, file.Tile + fileExtension), file);
+            file.UID = client.UserFile.Uid;
+            Serializer.ObjectBytesToFile(Path.Combine(Master.MapsPath, file.Tile + fileExtension), file);
 
             InformationDisplayer.DisplaySaveMap(client);
         }
 
         public static void DeleteMap(MapFile mapFile)
         {
-            File.Delete(Path.Combine(Master.mapsPath, mapFile.Tile + fileExtension));
+            File.Delete(Path.Combine(Master.MapsPath, mapFile.Tile + fileExtension));
             InformationDisplayer.DisplayRemoveMap(mapFile.Tile.ToString());
         }
 
         public static string[] GetAllMaps()
         {
-            return Directory.GetFiles(Master.mapsPath);
+            return Directory.GetFiles(Master.MapsPath);
         }
 
         public static bool CheckIfMapExists(int mapTileToCheck)
@@ -47,7 +47,7 @@ namespace GameServer.Managers
 
         public static MapFile GetMapFromTile(int mapTileToGet)
         {
-            string path = Path.Combine(Master.mapsPath, mapTileToGet + fileExtension);
+            string path = Path.Combine(Master.MapsPath, mapTileToGet + fileExtension);
             return Serializer.FileBytesToObject<MapFile>(path);
         }
     }

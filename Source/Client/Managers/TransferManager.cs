@@ -126,21 +126,21 @@ namespace GameClient.Managers
             {
                 SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
 
-                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
             {
                 SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeReRequest;
 
-                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Pod)
             {
                 SessionValues.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
 
-                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
         }
 
@@ -333,7 +333,7 @@ namespace GameClient.Managers
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReject;
 
-                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
             }
 
             else if (transferMode == TransferMode.Pod)
@@ -345,7 +345,7 @@ namespace GameClient.Managers
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReReject;
 
-                Network.listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
 
                 RecoverTradeItems(TransferLocation.Caravan);
             }

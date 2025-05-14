@@ -27,9 +27,9 @@ namespace GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            if (Network.state == ClientNetworkState.Connected)
+            if (Network.State == ClientNetworkState.Connected)
             {
-                tabTitle = $"Player Bases [{SettlementManager.playerSettlements.Count()}]";
+                tabTitle = $"Player Bases [{SettlementManager.PlayerSettlements.Count()}]";
 
                 float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -45,7 +45,7 @@ namespace GameClient.Patches.Tabs
 
         private void GenerateList(Rect mainRect)
         {
-            var orderedDictionary = SettlementManager.playerSettlements.OrderBy(x => x.Name);
+            var orderedDictionary = SettlementManager.PlayerSettlements.OrderBy(x => x.Name);
 
             float height = 6f + orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);

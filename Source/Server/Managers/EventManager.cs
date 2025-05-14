@@ -12,7 +12,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.EventManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableEvents)
+            if (!Master.ActionConfigs.EnableEvents)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -41,44 +41,44 @@ namespace GameServer.Managers
             EventManagerHelper.CheckForEventFiles();
             EventManagerHelper.LoadAllEvents();
 
-            InformationDisplayer.DisplayLoadEvents(Master.eventsPath);
+            InformationDisplayer.DisplayLoadEvents(Master.EventsPath);
         }
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Uid} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Uid} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData._toTile);
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.UID))
                 {
                     eventData._stepMode = EventStepMode.Recover;
-                    client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                    client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                 }
 
                 else
                 {
                     ServerClient target = NetworkHelper.GetConnectedClientFromUid(settlement.UID);
 
-                    if (!ValueChecker.CheckIfCanEvent(target.userFile))
+                    if (!ValueChecker.CheckIfCanEvent(target.UserFile))
                     {
                         eventData._stepMode = EventStepMode.Recover;
-                        client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                     }
 
                     else
                     {
                         //Back to player
 
-                        client.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                         //To the person that should receive it
 
                         eventData._stepMode = EventStepMode.Receive;
 
-                        target.userFile.UpdateEventTime();
+                        target.UserFile.UpdateEventTime();
 
-                        target.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        target.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                     }
                 }
             }
@@ -220,7 +220,7 @@ namespace GameServer.Managers
         {
             List<string> foundEvents = new List<string>();
 
-            foreach (string str in Directory.GetFiles(Master.eventsPath))
+            foreach (string str in Directory.GetFiles(Master.EventsPath))
             {
                 foundEvents.Add(Path.GetFileNameWithoutExtension(str));
             }
@@ -237,7 +237,7 @@ namespace GameServer.Managers
         public static void LoadAllEvents()
         {
             List<EventFile> toLoad = new List<EventFile>();
-            foreach (string str in Directory.GetFiles(Master.eventsPath))
+            foreach (string str in Directory.GetFiles(Master.EventsPath))
             {
                 EventFile eventFile = Serializer.SerializeFromFile<EventFile>(str);
                 if (eventFile.IsEnabled) toLoad.Add(eventFile);
@@ -254,7 +254,7 @@ namespace GameServer.Managers
             newEvent.Cost = 500;
             newEvent.IsEnabled = true;
 
-            Serializer.SerializeToFile(Path.Combine(Master.eventsPath, defName + fileExtension), newEvent);
+            Serializer.SerializeToFile(Path.Combine(Master.EventsPath, defName + fileExtension), newEvent);
         }
     }
 }

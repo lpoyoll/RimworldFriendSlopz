@@ -8,7 +8,6 @@ using Verse;
 
 namespace GameClient.Managers
 {
-
     public static class RiverManager
     {
         public static void SetPlanetRivers()
@@ -23,9 +22,9 @@ namespace GameClient.Managers
 
             foreach (RiverDetails details in rivers)
             {
-                RiverDef riverDef = DefDatabase<RiverDef>.AllDefs.First(fetch => fetch.defName == details.riverDefName);
+                RiverDef riverDef = DefDatabase<RiverDef>.AllDefs.First(fetch => fetch.defName == details.RiverDefName);
 
-                AddRiverSimple(details.fromTile, details.toTile, riverDef, forceRefresh);
+                AddRiverSimple(details.FromTile, details.ToTile, riverDef, forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
@@ -78,11 +77,11 @@ namespace GameClient.Managers
                     foreach (Tile.RiverLink link in tile.Rivers)
                     {
                         RiverDetails details = new RiverDetails();
-                        details.fromTile = Find.WorldGrid.tiles.IndexOf(tile);
-                        details.toTile = link.neighbor;
-                        details.riverDefName = link.river.defName;
+                        details.FromTile = Find.WorldGrid.tiles.IndexOf(tile);
+                        details.ToTile = link.neighbor;
+                        details.RiverDefName = link.river.defName;
 
-                        if (!CheckIfExists(details.fromTile, details.toTile)) toGet.Add(details);
+                        if (!CheckIfExists(details.FromTile, details.ToTile)) toGet.Add(details);
                     }
                 }
             }
@@ -92,8 +91,8 @@ namespace GameClient.Managers
             {
                 foreach (RiverDetails details in toGet)
                 {
-                    if (details.fromTile == tileA && details.toTile == tileB) return true;
-                    else if (details.fromTile == tileB && details.toTile == tileA) return true;
+                    if (details.FromTile == tileA && details.ToTile == tileB) return true;
+                    else if (details.FromTile == tileB && details.ToTile == tileA) return true;
                 }
 
                 return false;

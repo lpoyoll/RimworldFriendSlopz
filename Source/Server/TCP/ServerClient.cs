@@ -12,18 +12,18 @@ namespace GameServer.TCP
     {
         //Contains a reference to the user file of the client
 
-        public UserFile userFile = new UserFile();
+        public UserFile UserFile { get; private set; } = new UserFile();
 
         //Variables
 
-        [NonSerialized] public Listener listener;
+        [NonSerialized] public Listener Listener;
 
         public ServerClient(TcpClient tcp)
         {
             if (tcp == null) return;
-            else userFile.SavedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
+            else UserFile.SavedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
         }
 
-        public void LoadUserFromFile() { userFile = UserManagerH.GetUserFile(this); }
+        public void LoadUserFromFile() { UserFile = UserManagerH.GetUserFile(this); }
     }
 }

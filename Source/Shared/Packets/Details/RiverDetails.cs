@@ -5,10 +5,10 @@ namespace Shared
     [Serializable]
     public class RiverDetails
     {
-        public string riverDefName;
+        public string? RiverDefName { get; set; }
 
-        public int fromTile;
-        
-        public int toTile;
+        public int FromTile { get; set; }
+
+        public int ToTile { get; set; }
     }
 }

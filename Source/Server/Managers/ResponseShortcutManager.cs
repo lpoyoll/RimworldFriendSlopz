@@ -13,12 +13,12 @@ namespace GameServer.Managers
             ResponseShortcutData data = new ResponseShortcutData();
             data._stepMode = ResponseStepMode.IllegalAction;
 
-            client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
-            client.listener.DisconnectFlag = true;
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.DisconnectFlag = true;
 
             if (shouldBroadcast)
             {
-                Printer.Warning($"[Illegal action] > {client.userFile.Uid} > {client.userFile.SavedIP}");
+                Printer.Warning($"[Illegal action] > {client.UserFile.Uid} > {client.UserFile.SavedIP}");
                 Printer.Warning($"[Illegal reason] > {message}");
             }
         }
@@ -28,7 +28,7 @@ namespace GameServer.Managers
             ResponseShortcutData data = new ResponseShortcutData();
             data._stepMode = ResponseStepMode.UserUnavailable;
 
-            client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
 
         public static void SendBreakPacket(ServerClient client)
@@ -36,14 +36,14 @@ namespace GameServer.Managers
             ResponseShortcutData data = new ResponseShortcutData();
             data._stepMode = ResponseStepMode.Pop;
 
-            client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
 
         public static void SendNoPowerPacket(ServerClient client, PlayerGuildData data)
         {
             data._stepMode = GuildStepMode.NoPower;
 
-            client.listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
     }
 }

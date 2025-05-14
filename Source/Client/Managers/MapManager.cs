@@ -5,7 +5,6 @@ using Verse;
 
 namespace GameClient.Managers
 {
-
     public static class MapManager
     {
         public static void SendPlayerMapsToServer()
@@ -24,7 +23,7 @@ namespace GameClient.Managers
             MapData mapData = new MapData();
             mapData._mapFile = MapSaveLoader.MapToString(map, true, true, true, true, true, true);
 
-            Network.listener.EnqueuePacket(PacketHeader.MapManager, mapData);
+            Network.Listener.EnqueuePacket(PacketHeader.MapManager, mapData);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectScenario __instance)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
 
             if (!ClientValues.IsGeneratingFreshWorld && SessionValues.ScenarioFile.EnforceScenario)
             {
@@ -50,7 +50,7 @@ namespace GameClient.Patches.Pages
                 {
                     __instance.Close();
                     ClientValues.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.listener.DisconnectFlag = true;
+                    Network.Listener.DisconnectFlag = true;
                 }
 
                 if (ClientValues.IsGeneratingFreshWorld)
@@ -84,7 +84,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return;
+            if (Network.State == ClientNetworkState.Disconnected) return;
 
             if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomLeft), "Disconnect")) { };
         }
@@ -96,7 +96,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
             if (SessionValues.ActionValues.EnableCustomScenarios) return true;
 
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
@@ -114,7 +114,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref Scenario ___curScen)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
             if (SessionValues.ActionValues.EnableCustomScenarios) return true;
 
             if (curScen != null) ___curScen = curScen;

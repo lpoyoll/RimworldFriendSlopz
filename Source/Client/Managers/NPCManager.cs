@@ -41,18 +41,18 @@ namespace GameClient.Managers
 
         public static void SpawnSingleSettlement(PlanetNPCSettlementDetails toAdd)
         {
-            if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.tile) != null) return;
+            if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
             else
             {
                 Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                settlement.Tile = toAdd.tile;
-                settlement.Name = toAdd.name;
+                settlement.Tile = toAdd.Tile;
+                settlement.Name = toAdd.Name;
 
-                List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.defName);
+                List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.DefName);
 
                 if (factions.Count == 0)
                 {
-                    Printer.Warning($"Could not find faction for settlement at tile {toAdd.tile} with faction {toAdd.defName}");
+                    Printer.Warning($"Could not find faction for settlement at tile {toAdd.Tile} with faction {toAdd.DefName}");
                     return;
                 }
 
@@ -65,7 +65,7 @@ namespace GameClient.Managers
                 {
                     foreach (Faction faction in factions)
                     {
-                        if (faction.Name == toAdd.factionName) settlement.SetFaction(faction);
+                        if (faction.Name == toAdd.FactionName) settlement.SetFaction(faction);
                     }
 
                     if (settlement.Faction == null) settlement.SetFaction(factions.First());
@@ -79,12 +79,12 @@ namespace GameClient.Managers
 
         public static void ClearAllSettlements()
         {
-            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !ClientValues.playerFactions.Contains(fetch.Faction) &&
+            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !ClientValues.PlayerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
             foreach (Settlement settlement in settlements) RemoveSingleSettlement(settlement, null);
 
-            DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !ClientValues.playerFactions.Contains(fetch.Faction) &&
+            DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !ClientValues.PlayerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
             foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
@@ -92,7 +92,7 @@ namespace GameClient.Managers
 
         public static void RemoveNPCSettlementFromPacket(PlanetNPCSettlementDetails data)
         {
-            Settlement toRemove = Find.World.worldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data.tile &&
+            Settlement toRemove = Find.World.worldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data.Tile &&
                 fetch.Faction != Faction.OfPlayer);
 
             if (toRemove != null) RemoveSingleSettlement(toRemove, null);
@@ -132,9 +132,9 @@ namespace GameClient.Managers
         {
             NPCSettlementData data = new NPCSettlementData();
             data._stepMode = SettlementStepMode.Remove;
-            data._settlementData.tile = settlement.Tile;
+            data._settlementData.Tile = settlement.Tile;
 
-            Network.listener.EnqueuePacket(PacketHeader.NPCManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.NPCManager, data);
         }
     }
 

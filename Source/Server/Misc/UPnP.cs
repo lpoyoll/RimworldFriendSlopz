@@ -9,11 +9,11 @@ namespace GameServer.Misc
     {
         //Useful variables
 
-        public bool autoPortForwardSuccessful;
+        public bool AutoPortForwardSuccessful;
 
         public UPnP()
         {
-            Printer.Warning($"[UPnP] > Attempting to forward port '{Network.port}'");
+            Printer.Warning($"[UPnP] > Attempting to forward port '{Network.Port}'");
 
             NatUtility.DeviceFound += DeviceFound;
 
@@ -29,10 +29,10 @@ namespace GameServer.Misc
             for (int i = 0; i < 20; i++)
             {
                 Thread.Sleep(250);
-                if (autoPortForwardSuccessful) break;
+                if (AutoPortForwardSuccessful) break;
             }
 
-            if (!autoPortForwardSuccessful)
+            if (!AutoPortForwardSuccessful)
             {
                 Printer.Error("Could not enable UPnP - Possible causes:\n" +
                     "- the port is being used\n" +
@@ -48,11 +48,11 @@ namespace GameServer.Misc
             try
             {
                 INatDevice device = args.Device;
-                device.CreatePortMap(new Mapping(Protocol.Tcp, Network.port, Network.port));
+                device.CreatePortMap(new Mapping(Protocol.Tcp, Network.Port, Network.Port));
 
                 //This line can run multiple times if you are connected to multiple devices (Theres no reason for that, so only print it once)
-                if (!autoPortForwardSuccessful) Printer.Warning("successfully portforwarded the server");
-                autoPortForwardSuccessful = true;
+                if (!AutoPortForwardSuccessful) Printer.Warning("successfully portforwarded the server");
+                AutoPortForwardSuccessful = true;
 
                 Printer.Warning("UPnP forward successful");
             }

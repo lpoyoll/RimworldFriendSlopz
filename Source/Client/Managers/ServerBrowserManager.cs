@@ -17,15 +17,17 @@ namespace GameClient.Managers
     [RTManager]
     public class ServerBrowserManager
     {
-        private static WebClient client = new WebClient(); //For some reason Rimworld doesn't have HttpClient #fuck my life
-        private const string MasterServer = "https://rimworldtogether.eragon.dev";
+        private static WebClient Client { get; set; } = new WebClient();
+
+        private static string MasterServer { get; set; } = "https://rimworldtogether.eragon.dev";
+
         public static ServerInfo[] GetAllServersAvailable()
         {
             try
             {
-                client.Headers.Clear();
-                client.Headers.Add("action", "Server-Infos");
-                string response = client.DownloadString(MasterServer);
+                Client.Headers.Clear();
+                Client.Headers.Add("action", "Server-Infos");
+                string response = Client.DownloadString(MasterServer);
                 if (string.IsNullOrEmpty(response))
                 {
                     Printer.Warning($"response was null");

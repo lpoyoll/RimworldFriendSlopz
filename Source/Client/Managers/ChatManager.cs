@@ -20,26 +20,26 @@ namespace GameClient.Managers
     [StaticConstructorOnStartup]
     public static class ChatManager
     {
-        public static Vector2 chatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
-        private static readonly MainButtonDef chatButtonDef = DefDatabase<MainButtonDef>.GetNamed("Chat");
+        public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
+        private static MainButtonDef ChatButtonDef { get; set; } = DefDatabase<MainButtonDef>.GetNamed("Chat");
 
         //Data
-        public static string currentChatInput = "";
-        public static List<string> chatMessageCache = new List<string>();
+        public static string CurrentChatInput { get; set; } = "";
+        public static List<string> ChatMessageCache { get; set; } = new List<string>();
 
         //Booleans
-        public static bool isChatTabOpen;
-        public static bool isChatIconActive;
-        public static bool shouldScrollChat;
-        public static bool chatAutoscroll = true;
+        public static bool IsChatTabOpen { get; set; }
+        public static bool IsChatIconActive { get; set; }
+        public static bool ShouldScrollChat { get; set; }
+        public static bool ChatAutoscroll = true;
 
         //Chat clock
-        private static Task? chatClockTask;
-        private static readonly Semaphore semaphore = new Semaphore(1, 1);
+        private static Task? ChatClockTask { get; set; }
+        private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
         //Icons
-        public static int chatIconIndex;
-        public static List<Texture2D> chatIcons = new List<Texture2D>();
+        public static int ChatIconIndex { get; set; }
+        public static List<Texture2D> ChatIcons { get; set; } = new List<Texture2D>();
 
         [HandlesPacket(PacketHeader.ChatManager)]
         private static void ParsePacket(byte[] bytes)
@@ -57,7 +57,7 @@ namespace GameClient.Managers
 
             if (!ClientValues.IsReadyToPlay) return;
 
-            if (!isChatTabOpen) ToggleChatIcon(true);
+            if (!IsChatTabOpen) ToggleChatIcon(true);
 
             if (hasBeenTagged) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
         }
@@ -70,68 +70,68 @@ namespace GameClient.Managers
             chatData._username = ClientValues.Username;
             chatData._message = messageToSend;
 
-            Network.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            Network.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
         {
-            if (chatMessageCache.Count() > 100) chatMessageCache.RemoveAt(0);
+            if (ChatMessageCache.Count() > 100) ChatMessageCache.RemoveAt(0);
 
-            chatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerHelper.userColorDictionary[userColor]}{username}</color>: " +
+            ChatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerHelper.userColorDictionary[userColor]}{username}</color>: " +
                 $"{ChatManagerHelper.messageColorDictionary[messageColor]}{ChatManagerHelper.ParseMessage(message)}</color>");
 
-            if (chatAutoscroll) ClientValues.ToggleChatScroll(true);
+            if (ChatAutoscroll) ClientValues.ToggleChatScroll(true);
         }
 
         public static void CleanChat()
         {
-            currentChatInput = "";
-            chatMessageCache = new List<string>();
+            CurrentChatInput = "";
+            ChatMessageCache = new List<string>();
 
-            isChatTabOpen = false;
-            isChatIconActive = false;
-            chatAutoscroll = true;
+            IsChatTabOpen = false;
+            IsChatIconActive = false;
+            ChatAutoscroll = true;
         }
 
         public static void ToggleChatIcon(bool mode)
         {
             if (!ClientValues.IsReadyToPlay) return;
 
-            isChatIconActive = mode;
+            IsChatIconActive = mode;
 
             if (mode)
             {
-                semaphore.WaitOne();
+                Semaphore.WaitOne();
 
-                chatClockTask ??= Threader.GenerateThread(Threader.Mode.Chat);
+                ChatClockTask ??= Threader.GenerateThread(Threader.Mode.Chat);
 
-                semaphore.Release();
+                Semaphore.Release();
             }
         }
 
         public static void UpdateChatIcon()
         {
-            chatIconIndex++;
-            if (chatIconIndex > chatIcons.Count) chatIconIndex = 0;
-            AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[chatIconIndex]);
+            ChatIconIndex++;
+            if (ChatIconIndex > ChatIcons.Count) ChatIconIndex = 0;
+            AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(ChatButtonDef, ChatIcons[ChatIconIndex]);
         }
 
-        private static void TurnOffChatIcon() { AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(chatButtonDef, chatIcons[0]); }
+        private static void TurnOffChatIcon() { AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(ChatButtonDef, ChatIcons[0]); }
 
         public static void ChatClock()
         {
-            while (isChatIconActive)
+            while (IsChatIconActive)
             {
                 MainThreadHandler.Instance.Enqueue(UpdateChatIcon);
 
                 Thread.Sleep(250);
             }
 
-            chatIconIndex = 0;
+            ChatIconIndex = 0;
 
             MainThreadHandler.Instance.Enqueue(TurnOffChatIcon);
 
-            chatClockTask = null;
+            ChatClockTask = null;
         }
     }
 
@@ -246,10 +246,10 @@ namespace GameClient.Managers
     {
         static ChatIcons()
         {
-            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
-            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOn"));
-            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconMid"));
-            ChatManager.chatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
+            ChatManager.ChatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
+            ChatManager.ChatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOn"));
+            ChatManager.ChatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconMid"));
+            ChatManager.ChatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
         }
     }
 

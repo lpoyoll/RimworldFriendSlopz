@@ -7,11 +7,11 @@ namespace GameClient.Core.Preferences
 {
     public static class RecentServersHandler
     {
-        public static void SaveRecentServers(RecentServersFile toSave) { Serializer.SerializeToFile(Master.recentServersPath, toSave); }
+        public static void SaveRecentServers(RecentServersFile toSave) { Serializer.SerializeToFile(Master.RecentServersPath, toSave); }
 
         public static RecentServersFile LoadRecentServers()
         {
-            if (File.Exists(Master.recentServersPath)) return Serializer.SerializeFromFile<RecentServersFile>(Master.recentServersPath);
+            if (File.Exists(Master.RecentServersPath)) return Serializer.SerializeFromFile<RecentServersFile>(Master.RecentServersPath);
             else
             {
                 RecentServersFile file = new RecentServersFile();

@@ -5,10 +5,10 @@ namespace Shared
     [Serializable]
     public class RoadDetails
     {
-        public string roadDefName;
+        public string? RoadDefName { get; set; }
 
-        public int fromTile;
+        public int FromTile { get; set; }
 
-        public int toTile;
+        public int ToTile { get; set; }
     }
 }

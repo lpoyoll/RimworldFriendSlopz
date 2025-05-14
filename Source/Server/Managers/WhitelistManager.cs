@@ -9,7 +9,7 @@ namespace GameServer.Managers
     {
         public static void AddUserToWhitelist(string username)
         {
-            Master.whitelist.WhitelistedUsers.Add(username);
+            Master.Whitelist.WhitelistedUsers.Add(username);
 
             Main_.SaveValueFile(ServerFileMode.Whitelist);
 
@@ -18,7 +18,7 @@ namespace GameServer.Managers
 
         public static void RemoveUserFromWhitelist(string username)
         {
-            Master.whitelist.WhitelistedUsers.Remove(username);
+            Master.Whitelist.WhitelistedUsers.Remove(username);
 
             Main_.SaveValueFile(ServerFileMode.Whitelist);
 

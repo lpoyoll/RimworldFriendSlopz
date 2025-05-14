@@ -46,19 +46,19 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void DoPost(float pollutionAmount)
             {
-                if (Network.state == ClientNetworkState.Disconnected) return;
+                if (Network.State == ClientNetworkState.Disconnected) return;
                 else if (!SessionValues.ActionValues.EnablePollutionSpread) return;
                 else if (addedByServer) addedByServer = false;
                 else
                 {
                     PollutionDetails pollution = new PollutionDetails();
-                    pollution.tile = lastPollutedTile;
-                    pollution.quantity = pollutionAmount;
+                    pollution.Tile = lastPollutedTile;
+                    pollution.Quantity = pollutionAmount;
 
                     PollutionData data = new PollutionData();
                     data._pollutionData = pollution;
 
-                    Network.listener.EnqueuePacket(PacketHeader.PollutionManager, data);
+                    Network.Listener.EnqueuePacket(PacketHeader.PollutionManager, data);
                 }
             }
         }

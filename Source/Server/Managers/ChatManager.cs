@@ -47,37 +47,37 @@ namespace GameServer.Managers
         {
             commandSemaphore.WaitOne();
 
-            BaseChatCommand toFind = ChatManagerHelper.GetCommandFromName(command[0]);
+            CommandBase toFind = ChatManagerHelper.GetCommandFromName(command[0]);
             if (toFind == null) SendConsoleMessage(client, "Command was not found.");
             else
             {
-                ChatCommandActions.targetClient = client;
-                ChatCommandActions.command = command;
-                toFind.commandAction.Invoke();
+                ChatCommandActions.TargetClient = client;
+                ChatCommandActions.Command = command;
+                toFind.CommandAction.Invoke();
             }
 
             string chatCommand = "";
             for (int i = 0; i < command.Length; i++) chatCommand += command[i] + "";
 
-            ChatManagerHelper.ShowChatInConsole(client.userFile.Label, chatCommand);
+            ChatManagerHelper.ShowChatInConsole(client.UserFile.Label, chatCommand);
 
             commandSemaphore.Release();
         }
 
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
-            if (Master.serverConfig == null) return;
+            if (Master.ServerConfig == null) return;
 
             ChatData chatData = new ChatData();
-            chatData._username = client.userFile.Label;
+            chatData._username = client.UserFile.Label;
             chatData._message = message;
-            chatData._usernameColor = client.userFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
-            chatData._messageColor = client.userFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
+            chatData._usernameColor = client.UserFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
+            chatData._messageColor = client.UserFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
             NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
-            WriteToLogs(client.userFile.Label, message);
-            ChatManagerHelper.ShowChatInConsole(client.userFile.Label, message);
+            WriteToLogs(client.UserFile.Label, message);
+            ChatManagerHelper.ShowChatInConsole(client.UserFile.Label, message);
         }
 
         public static void BroadcastDiscordMessage(string client, string message)
@@ -130,7 +130,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
 
-            client.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         public static void SendServerMessage(ServerClient client, string message)
@@ -141,7 +141,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Server;
             chatData._messageColor = MessageColor.Server;
 
-            client.listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         private static void WriteToLogs(string username, string message)
@@ -154,7 +154,7 @@ namespace GameServer.Managers
 
             DateTime dateTime = DateTime.Now.Date;
             string nowFileName = (dateTime.Year + "-" + dateTime.Month.ToString("D2") + "-" + dateTime.Day.ToString("D2")).ToString();
-            string nowFullPath = Master.chatLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+            string nowFullPath = Master.ChatLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
@@ -170,9 +170,9 @@ namespace GameServer.Managers
             return NetworkHelper.GetConnectedClientFromUid(username);
         }
 
-        public static BaseChatCommand GetCommandFromName(string commandName)
+        public static CommandBase GetCommandFromName(string commandName)
         {
-            return ChatCommands.commands.ToArray().FirstOrDefault(x => x.prefix == commandName);
+            return ChatCommands.commands.ToArray().FirstOrDefault(x => x.Prefix == commandName);
         }
 
         public static string GetUsernameFromMention(string mention)
@@ -182,7 +182,7 @@ namespace GameServer.Managers
 
         public static void ShowChatInConsole(string username, string message, bool fromDiscord = false)
         {
-            if (!Master.serverConfig.DisplayChatInConsole) return;
+            if (!Master.ServerConfig.DisplayChatInConsole) return;
             else
             {
                 if (fromDiscord) Printer.Message($"[Discord] > {username} > {message}");

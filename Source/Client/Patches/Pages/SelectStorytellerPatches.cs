@@ -19,7 +19,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
             else
             {
                 Find.GameInitData.permadeathChosen = true;
@@ -44,7 +44,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStoryteller __instance)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
 
             if (ClientValues.IsGeneratingFreshWorld)
             {
@@ -119,7 +119,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return;
+            if (Network.State == ClientNetworkState.Disconnected) return;
             if (ClientValues.IsGeneratingFreshWorld) return;
 
             Text.Font = GameFont.Small;
@@ -135,7 +135,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
 
             if (SessionValues.DifficultyFile.EnforceDifficulty || SessionValues.StorytellerFile.EnforceStoryteller)
             {
@@ -186,7 +186,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref StorytellerDef chosenStoryteller, ref DifficultyDef difficulty, ref Difficulty difficultyValues, Listing_Standard infoListing)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
             if (Current.ProgramState != ProgramState.Entry) return true;
 
             Widgets.BeginGroup(rect);

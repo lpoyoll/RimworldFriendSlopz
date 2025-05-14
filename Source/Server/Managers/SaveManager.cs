@@ -28,18 +28,18 @@ namespace GameServer.Managers
 
         public static void OnUserSave(ServerClient client, SaveData fileTransferData)
         {
-            if (fileTransferData._instructions == (int)SaveMode.Disconnect) client.listener.DisconnectFlag = true;
+            if (fileTransferData._instructions == (int)SaveMode.Disconnect) client.Listener.DisconnectFlag = true;
 
             InformationDisplayer.DisplaySaveGame(client);
         }
 
         public static bool CheckIfUserHasSave(ServerClient client)
         {
-            string[] saves = Directory.GetFiles(Master.savesPath);
+            string[] saves = Directory.GetFiles(Master.SavesPath);
             foreach (string save in saves)
             {
                 if (!save.EndsWith(fileExtension)) continue;
-                if (Path.GetFileNameWithoutExtension(save) == client.userFile.Uid) return true;
+                if (Path.GetFileNameWithoutExtension(save) == client.UserFile.Uid) return true;
             }
 
             return false;
@@ -47,7 +47,7 @@ namespace GameServer.Managers
 
         public static byte[] GetUserSaveFromUsername(string username)
         {
-            string[] saves = Directory.GetFiles(Master.savesPath);
+            string[] saves = Directory.GetFiles(Master.SavesPath);
             foreach (string save in saves)
             {
                 if (!save.EndsWith(fileExtension)) continue;
@@ -61,23 +61,23 @@ namespace GameServer.Managers
         {
             if (!CheckIfUserHasSave(client))
             {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.userFile.Uid}'s save was attempted to be reset while the player doesn't have a save");
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Uid}'s save was attempted to be reset while the player doesn't have a save");
                 return;
             }
-            client.listener.DisconnectFlag = true;
+            client.Listener.DisconnectFlag = true;
 
-            ResetPlayerData(client, client.userFile.Uid);
+            ResetPlayerData(client, client.UserFile.Uid);
         }
 
         public static void ResetPlayerData(ServerClient client, string uid)
         {
             BackupManager.BackupUser(uid);
 
-            if (client != null) client.listener.DisconnectFlag = true;
+            if (client != null) client.Listener.DisconnectFlag = true;
 
             // Delete save file
-            try { File.Delete(Path.Combine(Master.savesPath, uid + fileExtension)); }
-            catch { Printer.Warning($"Failed to find {client.userFile.Label}'s save"); }
+            try { File.Delete(Path.Combine(Master.SavesPath, uid + fileExtension)); }
+            catch { Printer.Warning($"Failed to find {client.UserFile.Label}'s save"); }
 
             // Delete site files
             SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
@@ -102,16 +102,16 @@ namespace GameServer.Managers
     {
         public static void SendSaveToClient(ServerClient client)
         {
-            string baseClientSavePath = Path.Combine(Master.savesPath, client.userFile.Uid + SaveManager.fileExtension);
+            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Uid + SaveManager.fileExtension);
 
             InformationDisplayer.DisplayLoadGame(client);
 
             SaveData data = new SaveData();
             data._fileBytes = File.ReadAllBytes(baseClientSavePath);
             data._stepMode = SaveStepMode.Receive;
-            if (!Master.serverConfig.SyncLocalSave) data._instructions = (int)SaveMode.Strict;
+            if (!Master.ServerConfig.SyncLocalSave) data._instructions = (int)SaveMode.Strict;
 
-            client.listener.EnqueuePacket(PacketHeader.SaveManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
     }
 
@@ -119,8 +119,8 @@ namespace GameServer.Managers
     {
         public static void ReceiveSaveFromClient(ServerClient client, SaveData data)
         {
-            string baseClientSavePath = Path.Combine(Master.savesPath, client.userFile.Uid + SaveManager.fileExtension);
-            string tempClientSavePath = Path.Combine(Master.tempPath, client.userFile.Uid + SaveManager.tempFileExtension);
+            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Uid + SaveManager.fileExtension);
+            string tempClientSavePath = Path.Combine(Master.TempPath, client.UserFile.Uid + SaveManager.tempFileExtension);
 
             File.WriteAllBytes(tempClientSavePath, data._fileBytes);
 

@@ -18,7 +18,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.state == ClientNetworkState.Connected)
+                if (Network.State == ClientNetworkState.Connected)
                 {
                     SettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
 
@@ -36,7 +36,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.state == ClientNetworkState.Connected)
+                if (Network.State == ClientNetworkState.Connected)
                 {
                     PlanetManager.BuildPlanet();
 
@@ -55,7 +55,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Caravan caravan)
             {
-                if (Network.state == ClientNetworkState.Connected)
+                if (Network.State == ClientNetworkState.Connected)
                 {
                     SettlementManager.SendNewPlayerSettlement(caravan.Tile);
 
@@ -70,7 +70,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Map map)
             {
-                if (Network.state == ClientNetworkState.Connected)
+                if (Network.State == ClientNetworkState.Connected)
                 {
                     SettlementManager.SendNewPlayerSettlement(map.Tile);
 
@@ -85,13 +85,13 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.state == ClientNetworkState.Connected)
+                if (Network.State == ClientNetworkState.Connected)
                 {
                     PlayerSettlementData settlementData = new PlayerSettlementData();
                     settlementData._settlementFile.Tile = settlement.Tile;
                     settlementData._stepMode = SettlementStepMode.Remove;
 
-                    Network.listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+                    Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
 
                     SaveManager.ForceSave();
                 }
@@ -104,13 +104,13 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Settlement __instance)
             {
-                if (Network.state == ClientNetworkState.Connected)
+                if (Network.State == ClientNetworkState.Connected)
                 {
                     if (!ClientValues.IsReadyToPlay) return;
                     if (!SessionValues.ActionValues.EnableNPCDestruction) return;
 
                     if (__instance.Faction == Faction.OfPlayer) return;
-                    else if (ClientValues.playerFactions.Contains(__instance.Faction)) return;
+                    else if (ClientValues.PlayerFactions.Contains(__instance.Faction)) return;
                     else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
                 }
             }
@@ -122,7 +122,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.state == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
+                if (Network.State == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
                 else return;
             }
         }

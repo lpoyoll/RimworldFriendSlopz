@@ -38,7 +38,7 @@ namespace GameClient.Managers
             VersionData data = new VersionData();
             data._version = CommonValues.ExecutableVersion;
 
-            Network.listener.EnqueuePacket(PacketHeader.VersionManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
         }
 
         public static void PromptChangeVersion()
@@ -50,9 +50,9 @@ namespace GameClient.Managers
 
         private static void ChangeVersion()
         {
-            string downloadPath = Path.Combine(Master.appdataTempVersionPath, "3005289691.zip");
-            string extractPath = Path.Combine(Master.appdataTempVersionPath, "3005289691");
-            string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{RT_Dialog_Inputs.dialogInputResults[0]}/3005289691.zip";
+            string downloadPath = Path.Combine(Master.AppdataTempVersionPath, "3005289691.zip");
+            string extractPath = Path.Combine(Master.AppdataTempVersionPath, "3005289691");
+            string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{RT_Dialog_Inputs.DialogInputResults[0]}/3005289691.zip";
 
             bool freezeGame = true;
             Task.Run(delegate
@@ -92,8 +92,8 @@ namespace GameClient.Managers
             {
                 if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
 
-                string appPath = Path.Combine(Master.modAddonsPath, "7z", "7z.exe");
-                CMDExecuter.StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{RT_Dialog_Inputs.dialogInputResults[1]}\" -o\"{extractPath}\"");
+                string appPath = Path.Combine(Master.ModAddonsPath, "7z", "7z.exe");
+                CMDExecuter.StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{RT_Dialog_Inputs.DialogInputResults[1]}\" -o\"{extractPath}\"");
 
                 return true;
             }
@@ -104,7 +104,7 @@ namespace GameClient.Managers
         {
             try
             {
-                string modsDirectory = Directory.GetParent(Master.modMainPath).ToString();
+                string modsDirectory = Directory.GetParent(Master.ModMainPath).ToString();
                 string installDirectory = Path.Combine(modsDirectory, "3005289691");
 
                 CMDExecuter.StartCMDWindow($"rmdir \"{installDirectory}\" /s /q");

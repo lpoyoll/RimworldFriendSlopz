@@ -9,18 +9,18 @@ namespace GameClient.Core.Preferences
         public static void SaveConnectionData(string ip, string port)
         {
             ConnectionDataFile newConnectionData;
-            if (File.Exists(Master.connectionDataPath)) newConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
+            if (File.Exists(Master.ConnectionDataPath)) newConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.ConnectionDataPath);
             else newConnectionData = new ConnectionDataFile();
 
             newConnectionData.IP = ip;
             newConnectionData.Port = port;
 
-            Serializer.SerializeToFile(Master.connectionDataPath, newConnectionData);
+            Serializer.SerializeToFile(Master.ConnectionDataPath, newConnectionData);
         }
 
         public static ConnectionDataFile LoadConnectionData()
         {
-            if (File.Exists(Master.connectionDataPath)) return Serializer.SerializeFromFile<ConnectionDataFile>(Master.connectionDataPath);
+            if (File.Exists(Master.ConnectionDataPath)) return Serializer.SerializeFromFile<ConnectionDataFile>(Master.ConnectionDataPath);
             else return new ConnectionDataFile();
         }
     }

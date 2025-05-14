@@ -5,10 +5,10 @@ namespace Shared
     [Serializable]
     public class PlanetNPCFactionDetails
     {   
-        public float[] color;
+        public float[]? Color;
 
-        public string name;
+        public string? Name;
 
-        public string defName;
+        public string? DefName;
     }
 }

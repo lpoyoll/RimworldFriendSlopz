@@ -8,7 +8,7 @@ namespace GameServer.Managers
 
     public static class WorldManager
     {
-        public static string baseWorldPath = Path.Combine(Master.configsPath, "WorldConfig.json");
+        public static string baseWorldPath = Path.Combine(Master.ConfigsPath, "WorldConfig.json");
 
         [HandlesPacket(PacketHeader.WorldManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
@@ -30,7 +30,7 @@ namespace GameServer.Managers
             WorldData worldData = new WorldData();
             worldData._stepMode = WorldStepMode.AskFor;
 
-            client.listener.EnqueuePacket(PacketHeader.WorldManager, worldData);
+            client.Listener.EnqueuePacket(PacketHeader.WorldManager, worldData);
         }
     }
 
@@ -42,7 +42,7 @@ namespace GameServer.Managers
             data._fileBytes = GZip.DecompressBytes(File.ReadAllBytes(WorldManager.baseWorldPath));
             data._stepMode = WorldStepMode.Sent;
 
-            client.listener.EnqueuePacket(PacketHeader.WorldManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
         }
     }
 

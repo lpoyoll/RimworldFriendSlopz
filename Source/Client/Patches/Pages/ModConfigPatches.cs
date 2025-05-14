@@ -16,7 +16,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Dialog_Options __instance)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
             else if (!SessionValues.ConfigFile.EnforcedConfigs) return true;
             else if (ClientValues.IsAdmin) return true;
             else

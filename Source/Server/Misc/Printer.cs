@@ -8,9 +8,9 @@ namespace GameServer.Misc
     {
         //Variables
 
-        private static readonly Semaphore semaphore = new Semaphore(1, 1);
+        private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
-        private static readonly Dictionary<LogMode, ConsoleColor> colorDictionary = new Dictionary<LogMode, ConsoleColor>
+        private static Dictionary<LogMode, ConsoleColor> ColorDictionary { get; set; } = new Dictionary<LogMode, ConsoleColor>
         {
             { LogMode.Message, ConsoleColor.White },
             { LogMode.Warning, ConsoleColor.Yellow },
@@ -35,7 +35,7 @@ namespace GameServer.Misc
 
         private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
         {
-            semaphore.WaitOne();
+            Semaphore.WaitOne();
 
             try
             {
@@ -43,14 +43,14 @@ namespace GameServer.Misc
                 {
                     if (writeToLogs) WriteToLogs(text);
 
-                    Console.ForegroundColor = colorDictionary[mode];
+                    Console.ForegroundColor = ColorDictionary[mode];
                     Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
                     Console.ForegroundColor = ConsoleColor.White;
                 }
             }
             catch { throw new Exception($"Logger encountered an error. This should never happen"); }
 
-            semaphore.Release();
+            Semaphore.Release();
         }
 
         //Function that writes contents to log file
@@ -63,7 +63,7 @@ namespace GameServer.Misc
 
             DateTime dateTime = DateTime.Now.Date;
             string nowFileName = $"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}";
-            string nowFullPath = Master.systemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+            string nowFullPath = Master.SystemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
@@ -74,8 +74,8 @@ namespace GameServer.Misc
         private static bool CheckIfShouldPrint(LogImportanceMode importance)
         {
             if (importance == LogImportanceMode.Normal) return true;
-            else if (importance == LogImportanceMode.Verbose && Master.serverConfig.VerboseLogs) return true;
-            else if (importance == LogImportanceMode.Extreme && Master.serverConfig.ExtremeVerboseLogs) return true;
+            else if (importance == LogImportanceMode.Verbose && Master.ServerConfig.VerboseLogs) return true;
+            else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.ExtremeVerboseLogs) return true;
             else return false;
         }
     }

@@ -285,7 +285,7 @@ namespace GameClient.Misc
                 {
                     try
                     {
-                        if (thing.def.CanHaveFaction) thing.SetFaction(ClientValues.neutralPlayer);
+                        if (thing.def.CanHaveFaction) thing.SetFaction(ClientValues.NeutralPlayer);
                         GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation);
                     }
                     catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
@@ -305,7 +305,7 @@ namespace GameClient.Misc
                         try
                         {
                             Pawn human = ScribeManager.StringtoHuman(pawn);
-                            human.SetFaction(ClientValues.neutralPlayer);
+                            human.SetFaction(ClientValues.NeutralPlayer);
 
                             GenSpawn.Spawn(human, human.Position, map, human.Rotation);
                         }
@@ -340,7 +340,7 @@ namespace GameClient.Misc
                         try
                         {
                             Pawn animal = ScribeManager.StringToAnimal(pawn);
-                            animal.SetFaction(ClientValues.neutralPlayer);
+                            animal.SetFaction(ClientValues.NeutralPlayer);
 
                             GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
                         }

@@ -42,7 +42,7 @@ namespace GameClient.Managers
 
             Action a1 = delegate
             {
-                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton].Cost} " +
+                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost} " +
                     $"silver, continue?", SendEvent, null);
 
                 RT_Dialog_Base.PushNewDialog(d2);
@@ -62,22 +62,22 @@ namespace GameClient.Managers
             //MAKE IT SO ALL MAPS ARE ACCOUNTED FOR
             Map toGetSilverFrom = Find.AnyPlayerHomeMap;
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton].Cost))
+            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost))
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton].Cost);
+                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost);
 
                 EventData eventData = new EventData();
                 eventData._stepMode = EventStepMode.Send;
                 eventData._fromTile = toGetSilverFrom.Tile;
                 eventData._toTile = SessionValues.ChosenSettlement.Tile;
-                eventData._eventFile = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton];
+                eventData._eventFile = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton];
 
-                Network.listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                Network.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }
@@ -87,7 +87,7 @@ namespace GameClient.Managers
         {
             IncidentParms parms = StorytellerUtility.DefaultParmsNow(eventToTrigger.category, targetMap);
             parms.customLetterLabel = $"Event - {eventToTrigger.LabelCap}";
-            parms.faction = ClientValues.neutralPlayer;
+            parms.faction = ClientValues.NeutralPlayer;
             parms.target = targetMap;
 
             eventToTrigger.Worker.TryExecute(parms);
@@ -127,7 +127,7 @@ namespace GameClient.Managers
             Map toReturnTo = Find.AnyPlayerHomeMap;
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
-            silverToReturn.stackCount = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.selectedScrollButton].Cost;
+            silverToReturn.stackCount = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost;
 
             RimworldManager.PlaceThingIntoMap(silverToReturn, toReturnTo, ThingPlaceMode.Near, true);
 

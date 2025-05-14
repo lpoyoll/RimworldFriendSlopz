@@ -14,9 +14,9 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Quest quest)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
 
-            foreach (Faction faction in ClientValues.playerFactions)
+            foreach (Faction faction in ClientValues.PlayerFactions)
             {
                 if (quest.InvolvedFactions.Contains(faction))
                 {

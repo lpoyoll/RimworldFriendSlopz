@@ -17,7 +17,7 @@ namespace GameClient.Patches
         {
             try
             {
-                if (Network.state == ClientNetworkState.Disconnected) return true;
+                if (Network.State == ClientNetworkState.Disconnected) return true;
                 if (ClientValues.IsSavingGame) return false;
 
                 ClientValues.ToggleSavingGame(true);
@@ -42,7 +42,7 @@ namespace GameClient.Patches
                 }
                 catch (Exception e) { Printer.Error("Exception while saving game: " + e); }
 
-                if (Network.state.Equals(ClientNetworkState.Connected))
+                if (Network.State.Equals(ClientNetworkState.Connected))
                 {
                     Printer.Message("Sending maps to server");
                     MapManager.SendPlayerMapsToServer();

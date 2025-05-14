@@ -38,7 +38,7 @@ namespace GameClient.Managers
 
             if (type == Goodwill.Enemy)
             {
-                if (factionToUse == ClientValues.enemyPlayer)
+                if (factionToUse == ClientValues.EnemyPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as enemy!" });
                     RT_Dialog_Base.PushNewDialog(d1);
@@ -48,7 +48,7 @@ namespace GameClient.Managers
 
             else if (type == Goodwill.Neutral)
             {
-                if (factionToUse == ClientValues.neutralPlayer)
+                if (factionToUse == ClientValues.NeutralPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as neutral!" });
                     RT_Dialog_Base.PushNewDialog(d1);
@@ -58,7 +58,7 @@ namespace GameClient.Managers
 
             else if (type == Goodwill.Ally)
             {
-                if (factionToUse == ClientValues.allyPlayer)
+                if (factionToUse == ClientValues.AllyPlayer)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as ally!" });
                     RT_Dialog_Base.PushNewDialog(d1);
@@ -75,7 +75,7 @@ namespace GameClient.Managers
             factionGoodwillData._tile = structureTile;
             factionGoodwillData._goodwill = goodwill;
 
-            Network.listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
+            Network.Listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
             RT_Dialog_Base.PushNewDialog(d1);
@@ -103,7 +103,7 @@ namespace GameClient.Managers
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                SettlementManager.playerSettlements.Remove(toChange[i]);
+                SettlementManager.PlayerSettlements.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Settlement newSettlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
@@ -111,7 +111,7 @@ namespace GameClient.Managers
                 newSettlement.Name = toChange[i].Name;
                 newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._settlementGoodwills[i]));
 
-                SettlementManager.playerSettlements.Add(newSettlement);
+                SettlementManager.PlayerSettlements.Add(newSettlement);
                 Find.WorldObjects.Add(newSettlement);
             }
         }
@@ -125,7 +125,7 @@ namespace GameClient.Managers
 
             for (int i = 0; i < toChange.Count(); i++)
             {
-                SiteManager.playerSites.Remove(toChange[i]);
+                SiteManager.PlayerSites.Remove(toChange[i]);
                 Find.WorldObjects.Remove(toChange[i]);
 
                 Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
@@ -133,7 +133,7 @@ namespace GameClient.Managers
                             threatPoints: 1000,
                             faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._siteGoodwills[i]));
 
-                SiteManager.playerSites.Add(newSite);
+                SiteManager.PlayerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);
             }
         }

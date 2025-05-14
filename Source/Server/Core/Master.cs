@@ -7,70 +7,70 @@ namespace GameServer.Core
 
     public static class Master
     {
-        public static string mainPath;
+        public static string? MainPath { get; set; }
 
-        public static string assetsPath;
+        public static string? AssetsPath { get; set; }
 
-        public static string backupsPath;
+        public static string? BackupsPath { get; set; }
 
-        public static string configsPath;
+        public static string? ConfigsPath { get; set; }
 
-        public static string logsPath;
+        public static string? LogsPath { get; set; }
 
-        public static string tempPath;
+        public static string? TempPath { get; set; }
 
-        public static string mapsPath;
+        public static string? MapsPath { get; set; }
 
-        public static string systemLogsPath;
+        public static string? SystemLogsPath { get; set; }
 
-        public static string chatLogsPath;
+        public static string? ChatLogsPath { get; set; }
 
-        public static string usersPath;
+        public static string? UsersPath { get; set; }
 
-        public static string savesPath;
+        public static string? SavesPath { get; set; }
 
-        public static string sitesPath;
+        public static string? SitesPath { get; set; }
 
-        public static string factionsPath;
+        public static string? FactionsPath { get; set; }
 
-        public static string settlementsPath;
+        public static string? SettlementsPath { get; set; }
 
-        public static string eventsPath;
+        public static string? EventsPath { get; set; }
 
-        public static string backupServerPath;
+        public static string? BackupServerPath { get; set; }
 
-        public static string backupUsersPath;
+        public static string? BackupUsersPath { get; set; }
 
-        public static string compatibilityPatchesPath;
+        public static string? CompatibilityPatchesPath { get; set; }
 
         //References
 
-        public static WhitelistConfigFile whitelist;
+        public static WhitelistConfigFile? Whitelist { get; set; }
 
-        public static SiteValuesFile siteValues;
+        public static SiteValuesFile? SiteValues { get; set; }
 
-        public static WorldValuesFile worldValues;
+        public static WorldValuesFile? WorldValues { get; set; }
 
-        public static ServerConfigFile serverConfig;
+        public static ServerConfigFile? ServerConfig { get; set; }
 
-        public static ActionValuesFile actionConfigs;
+        public static ActionValuesFile? ActionConfigs { get; set; }
 
-        public static DifficultyValuesFile difficultyValues;
+        public static DifficultyValuesFile? DifficultyValues { get; set; }
 
-        public static StorytellerValuesFile storytellerValues;
+        public static StorytellerValuesFile? StorytellerValues { get; set; }
 
-        public static ScenarioValuesFile scenarioValues;
+        public static ScenarioValuesFile? ScenarioValues { get; set; }
 
-        public static RoadValuesFile roadValues;
+        public static RoadValuesFile? RoadValues { get; set; }
 
-        public static BackupConfigFile backupConfig;
+        public static BackupConfigFile? BackupConfig { get; set; }
 
-        public static ModConfigFile modConfig;
+        public static ModConfigFile? ModConfig { get; set; }
 
-        public static ChatConfigFile chatConfig;
+        public static ChatConfigFile? ChatConfig { get; set; }
 
         //Booleans
 
-        public static bool isClosing;
+        public static bool IsClosing { get; set; }
     }
 }

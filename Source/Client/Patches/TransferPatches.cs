@@ -16,8 +16,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref List<Tradeable> ___tradeables)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
-            if (!ClientValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (!ClientValues.PlayerFactions.Contains(TradeSession.trader.Faction)) return true;
 
             ___tradeables = new List<Tradeable>();
             ___tradeables.AddRange(SessionValues.ListToShowInTradesMenu);
@@ -31,8 +31,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
-            if (!ClientValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (!ClientValues.PlayerFactions.Contains(TradeSession.trader.Faction)) return true;
             else TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], ___countToTransfer);
 
             return true;
@@ -45,8 +45,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Thing toGive, int countToGive)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.playerFactions.Contains(TradeSession.trader.Faction)) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
+            else if (!ClientValues.PlayerFactions.Contains(TradeSession.trader.Faction)) return true;
             else
             {
                 Thing thing = toGive.SplitOff(countToGive);

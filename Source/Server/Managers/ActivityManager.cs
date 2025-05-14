@@ -11,7 +11,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.ActivityManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableActivities)
+            if (!Master.ActionConfigs.EnableActivities)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -32,7 +32,7 @@ namespace GameServer.Managers
             if (!MapManager.CheckIfMapExists(data._targetTile))
             {
                 data._stepMode = ActivityStepMode.Deny;
-                client.listener.EnqueuePacket(PacketHeader.ActivityManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }
 
             else
@@ -40,7 +40,7 @@ namespace GameServer.Managers
                 data._stepMode = ActivityStepMode.Request;
                 data._mapFile = MapManager.GetMapFromTile(data._targetTile);
 
-                client.listener.EnqueuePacket(PacketHeader.ActivityManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }
         }
     }

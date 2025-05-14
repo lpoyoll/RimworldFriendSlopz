@@ -12,7 +12,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.NPCManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableNPCDestruction)
+            if (!Master.ActionConfigs.EnableNPCDestruction)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -34,7 +34,7 @@ namespace GameServer.Managers
 
         public static void RemoveNPCSettlement(ServerClient client, PlanetNPCSettlementDetails settlement)
         {
-            if (!NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.tile))
+            if (!NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.Tile))
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried removing a non-existing NPC settlement");
             }
@@ -45,15 +45,15 @@ namespace GameServer.Managers
 
                 BroadcastSettlementDeletion(settlement);
 
-                Printer.Warning($"[Delete NPC settlement] > {settlement.tile} > {client.userFile.Uid}");
+                Printer.Warning($"[Delete NPC settlement] > {settlement.Tile} > {client.UserFile.Uid}");
             }
         }
 
         private static void DeleteSettlement(PlanetNPCSettlementDetails settlement)
         {
-            List<PlanetNPCSettlementDetails> finalSettlements = Master.worldValues.NPCSettlements.ToList();
-            finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.tile));
-            Master.worldValues.NPCSettlements = finalSettlements.ToArray();
+            List<PlanetNPCSettlementDetails> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
+            finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.Tile));
+            Master.WorldValues.NPCSettlements = finalSettlements.ToArray();
             Main_.SaveValueFile(ServerFileMode.World);
         }
 
@@ -71,9 +71,9 @@ namespace GameServer.Managers
     {
         public static bool CheckIfSettlementFromTileExists(int tile)
         {
-            foreach (PlanetNPCSettlementDetails settlement in Master.worldValues.NPCSettlements.ToArray())
+            foreach (PlanetNPCSettlementDetails settlement in Master.WorldValues.NPCSettlements.ToArray())
             {
-                if (settlement.tile == tile) return true;
+                if (settlement.Tile == tile) return true;
             }
 
             return false;
@@ -81,7 +81,7 @@ namespace GameServer.Managers
 
         public static PlanetNPCSettlementDetails GetSettlementFromTile(int tile)
         {
-            return Master.worldValues.NPCSettlements.FirstOrDefault(fetch => fetch.tile == tile); ;
+            return Master.WorldValues.NPCSettlements.FirstOrDefault(fetch => fetch.Tile == tile); ;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.PollutionManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnablePollutionSpread)
+            if (!Master.ActionConfigs.EnablePollutionSpread)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -28,21 +28,21 @@ namespace GameServer.Managers
             {
                 bool isNewPollutedTile = false;
 
-                PollutionDetails toSearch = Master.worldValues.PollutedTiles.FirstOrDefault(T => T.tile == data._pollutionData.tile);
+                PollutionDetails toSearch = Master.WorldValues.PollutedTiles.FirstOrDefault(T => T.Tile == data._pollutionData.Tile);
                 if (toSearch == null)
                 {
                     toSearch = new PollutionDetails();
                     isNewPollutedTile = true;
                 }
 
-                toSearch.tile = data._pollutionData.tile;
-                toSearch.quantity += data._pollutionData.quantity;
+                toSearch.Tile = data._pollutionData.Tile;
+                toSearch.Quantity += data._pollutionData.Quantity;
 
                 if (isNewPollutedTile)
                 {
-                    List<PollutionDetails> existingPollutedTiles = Master.worldValues.PollutedTiles.ToList();
+                    List<PollutionDetails> existingPollutedTiles = Master.WorldValues.PollutedTiles.ToList();
                     existingPollutedTiles.Add(toSearch);
-                    Master.worldValues.PollutedTiles = existingPollutedTiles.ToArray();
+                    Master.WorldValues.PollutedTiles = existingPollutedTiles.ToArray();
                 }
 
                 if (shouldBroadcast) NetworkHelper.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
@@ -52,7 +52,7 @@ namespace GameServer.Managers
 
             catch
             {
-                Printer.Warning($"Could not add pollution to tile {data._pollutionData.tile}. Coming from {client.userFile.Uid}");
+                Printer.Warning($"Could not add pollution to tile {data._pollutionData.Tile}. Coming from {client.UserFile.Uid}");
                 Printer.Warning($"Additional debugging info here:\n{StringUtilities.ToString(data)}", LogImportanceMode.Verbose);
             }
         }

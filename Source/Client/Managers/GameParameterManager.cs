@@ -42,7 +42,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Scenario;
             data._scenario = file;
 
-            Network.listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
 
         public static StorytellerValuesFile GetStoryteller(Page_SelectStoryteller __instance)
@@ -75,7 +75,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Storyteller;
             data._storyteller = file;
 
-            Network.listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
 
         public static DifficultyValuesFile GetDifficulty(Page_SelectStoryteller __instance)
@@ -274,7 +274,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Difficulty;
             data._difficulty = file;
 
-            Network.listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
     }
 

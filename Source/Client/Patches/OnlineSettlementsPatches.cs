@@ -15,8 +15,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Settlement factionBase)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
-            else if (ClientValues.playerFactions.Contains(factionBase.Faction)) return false;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
+            else if (ClientValues.PlayerFactions.Contains(factionBase.Faction)) return false;
             else return true;
         }
     }
@@ -27,8 +27,8 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return;
-            if (!ClientValues.playerFactions.Contains(map.Parent.Faction)) return;
+            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (!ClientValues.PlayerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
         }
@@ -40,8 +40,8 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return;
-            if (!ClientValues.playerFactions.Contains(map.Parent.Faction)) return;
+            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (!ClientValues.PlayerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
         }
@@ -53,9 +53,9 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Site site, ref int __result)
         {
-            if (Network.state == ClientNetworkState.Disconnected) return true;
+            if (Network.State == ClientNetworkState.Disconnected) return true;
 
-            if (ClientValues.playerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
+            if (ClientValues.PlayerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
             {
                 __result = 25;
                 return false;

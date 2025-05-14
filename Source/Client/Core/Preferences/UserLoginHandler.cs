@@ -15,7 +15,7 @@ namespace GameClient.Core.Preferences
 {
     public static class UserLoginHandler
     {
-        public static void SaveLoginData(LoginDataFile file) { Serializer.SerializeToFile(Master.loginDataPath, file); }
+        public static void SaveLoginData(LoginDataFile file) { Serializer.SerializeToFile(Master.LoginDataPath, file); }
 
         public static LoginDataFile LoadLoginData()
         {
@@ -24,16 +24,16 @@ namespace GameClient.Core.Preferences
             if (Input.GetKey(KeyCode.LeftShift)) return GetTestingLoginFile();
             else
             {
-                if (File.Exists(Master.loginDataPath)) return Serializer.SerializeFromFile<LoginDataFile>(Master.loginDataPath);
+                if (File.Exists(Master.LoginDataPath)) return Serializer.SerializeFromFile<LoginDataFile>(Master.LoginDataPath);
                 else return new LoginDataFile();
             }
         }
 
-        public static void DeleteLoginData() { File.Delete(Master.loginDataPath); }
+        public static void DeleteLoginData() { File.Delete(Master.LoginDataPath); }
 
         public static void UseLoginData()
         {
-            if (Network.state != CommonEnumerators.ClientNetworkState.Connected) return;
+            if (Network.State != CommonEnumerators.ClientNetworkState.Connected) return;
             else
             {
                 LoginDataFile file = LoadLoginData();
@@ -45,7 +45,7 @@ namespace GameClient.Core.Preferences
                 data._username = file.Username;
                 data._runningMods = ModManagerH.GetRunningModList();
 
-                Network.listener.EnqueuePacket(PacketHeader.LoginManager, data);
+                Network.Listener.EnqueuePacket(PacketHeader.LoginManager, data);
             }
         }
 
@@ -61,7 +61,7 @@ namespace GameClient.Core.Preferences
         {
             Action toDo = delegate
             {
-                if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.dialogInputResults[0]))
+                if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[0]))
                 {
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
                         new string[] { "Your username contains illegal characters", "Please choose another one and try again" }));
@@ -69,7 +69,7 @@ namespace GameClient.Core.Preferences
 
                 else
                 {
-                    AssignPlayerUsername(RT_Dialog_Inputs.dialogInputResults[0]);
+                    AssignPlayerUsername(RT_Dialog_Inputs.DialogInputResults[0]);
                     AssignPlayerHash();
 
                     if (isQuickConnect) QuickConnectUser();
@@ -122,15 +122,15 @@ namespace GameClient.Core.Preferences
         public static void SetupQuickConnectVariables()
         {
             ConnectionDataFile connectionData = ConnectionDataHandler.LoadConnectionData();
-            Network.ip = connectionData.IP;
-            Network.port = connectionData.Port;
+            Network.Ip = connectionData.IP;
+            Network.Port = connectionData.Port;
         }
 
         public static void ShowQuickConnectFloatMenu()
         {
             List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
             {
-                Tuple.Create($"Join latest server > {Network.ip}:{Network.port}", 0),
+                Tuple.Create($"Join latest server > {Network.Ip}:{Network.Port}", 0),
             };
 
             FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
@@ -144,8 +144,8 @@ namespace GameClient.Core.Preferences
 
         public static bool CheckIfQuickConnectIsValid()
         {
-            if (string.IsNullOrWhiteSpace(Network.ip)) return false;
-            else if (string.IsNullOrWhiteSpace(Network.port)) return false;
+            if (string.IsNullOrWhiteSpace(Network.Ip)) return false;
+            else if (string.IsNullOrWhiteSpace(Network.Port)) return false;
             else return true;
         }
     }

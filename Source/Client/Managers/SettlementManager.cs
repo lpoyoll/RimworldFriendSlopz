@@ -12,10 +12,9 @@ using GameClient.TCP;
 
 namespace GameClient.Managers
 {
-
     public static class SettlementManager
     {
-        public static List<Settlement> playerSettlements = new List<Settlement>();
+        public static List<Settlement> PlayerSettlements { get; set; } = new List<Settlement>();
 
         [HandlesPacket(PacketHeader.SettlementManager)]
         private static void ParsePacket(byte[] bytes)
@@ -44,9 +43,9 @@ namespace GameClient.Managers
 
         public static void ClearAllSettlements()
         {
-            playerSettlements.Clear();
+            PlayerSettlements.Clear();
 
-            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => ClientValues.playerFactions.Contains(fetch.Faction)).ToArray();
+            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => ClientValues.PlayerFactions.Contains(fetch.Faction)).ToArray();
             foreach (Settlement settlement in settlements)
             {
                 SettlementFile toRemove = new SettlementFile();
@@ -67,7 +66,7 @@ namespace GameClient.Managers
                     settlement.Name = $"{toAdd.Label}'s settlement";
                     settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
 
-                    playerSettlements.Add(settlement);
+                    PlayerSettlements.Add(settlement);
                     Find.WorldObjects.Add(settlement);
                 }
                 catch (Exception e) { Printer.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
@@ -78,10 +77,10 @@ namespace GameClient.Managers
         {
             try
             {
-                Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && ClientValues.playerFactions.Contains(fetch.Faction));
+                Settlement toGet = Find.WorldObjects.Settlements.Find(fetch => fetch.Tile == toRemove.Tile && ClientValues.PlayerFactions.Contains(fetch.Faction));
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
-                    if (playerSettlements.Contains(toGet)) playerSettlements.Remove(toGet);
+                    if (PlayerSettlements.Contains(toGet)) PlayerSettlements.Remove(toGet);
                     Find.WorldObjects.Remove(toGet);
                 }
                 else Printer.Warning($"Ignored removal of settlement at {toGet.Tile} because player was inside");
@@ -95,7 +94,7 @@ namespace GameClient.Managers
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Add;
 
-            Network.listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+            Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
         }
     }
 

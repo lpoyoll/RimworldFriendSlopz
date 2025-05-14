@@ -5,12 +5,12 @@ namespace Shared
     [Serializable]
     public class PlanetFeatureDetails
     {
-        public string name;
+        public string? Name { get; set; }
 
-        public string defName;
+        public string? DefName { get; set; }
 
-        public float[] drawCenter;
-        
-        public float maxDrawSizeInTiles;
+        public float[]? DrawCenter { get; set; }
+
+        public float MaxDrawSizeInTiles { get; set; }
     }
 }

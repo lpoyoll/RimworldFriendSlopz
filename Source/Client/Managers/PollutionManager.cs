@@ -34,13 +34,13 @@ namespace GameClient.Managers
         public static void AddPollutedTileOrganic(PollutionDetails details)
         {
             PollutionPatch.PatchAddPollution.addedByServer = true;
-            WorldPollutionUtility.PolluteWorldAtTile(details.tile, details.quantity);
+            WorldPollutionUtility.PolluteWorldAtTile(details.Tile, details.Quantity);
         }
 
         public static void AddPollutedTileSimple(PollutionDetails details, bool forceRefresh)
         {
-            Tile toPollute = Find.WorldGrid.tiles[details.tile];
-            toPollute.pollution = details.quantity;
+            Tile toPollute = Find.WorldGrid.tiles[details.Tile];
+            toPollute.pollution = details.Quantity;
 
             if (forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
         }
@@ -73,8 +73,8 @@ namespace GameClient.Managers
                 if (tile.pollution != 0)
                 {
                     PollutionDetails details = new PollutionDetails();
-                    details.tile = Find.WorldGrid.tiles.IndexOf(tile);
-                    details.quantity = tile.pollution;
+                    details.Tile = Find.WorldGrid.tiles.IndexOf(tile);
+                    details.Quantity = tile.pollution;
 
                     toGet.Add(details);
                 }

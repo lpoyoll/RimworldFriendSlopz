@@ -14,7 +14,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-
     public static class ModManager
     {
         [HandlesPacket(PacketHeader.ModManager)]
@@ -70,8 +69,8 @@ namespace GameClient.Managers
         {
             ModConfigData data = new ModConfigData();
             data._stepMode = ModConfigStepMode.Send;
-            data._configFile = ModManagerH.SortModsIntoCategories(RT_Dialog_ListingWithTuple.dialogTupleListingResultString, 
-                RT_Dialog_ListingWithTuple.dialogTupleListingResultInt);
+            data._configFile = ModManagerH.SortModsIntoCategories(RT_Dialog_ListingWithTuple.DialogTupleListingResultString, 
+                RT_Dialog_ListingWithTuple.DialogTupleListingResultInt);
 
             Action toDoYes = delegate 
             { 
@@ -81,7 +80,7 @@ namespace GameClient.Managers
 
             Action toDoNo = delegate
             {
-                Network.listener.EnqueuePacket(PacketHeader.ModManager, data);
+                Network.Listener.EnqueuePacket(PacketHeader.ModManager, data);
                 if (isFirstEdit) OnFirstEdit();
             };
 
@@ -102,7 +101,7 @@ namespace GameClient.Managers
             data._configFile.ModConfigs = modConfigs.ToArray();
             data._configFile.EnforcedConfigs = true;
 
-            Network.listener.EnqueuePacket(PacketHeader.ModManager, data);
+            Network.Listener.EnqueuePacket(PacketHeader.ModManager, data);
         }
 
         public static void OnFirstEdit()

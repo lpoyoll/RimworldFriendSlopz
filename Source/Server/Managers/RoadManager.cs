@@ -14,7 +14,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.RoadManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            if (!Master.actionConfigs.EnableRoads)
+            if (!Master.ActionConfigs.EnableRoads)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -55,16 +55,16 @@ namespace GameServer.Managers
                 return;
             }
 
-            foreach (RoadDetails existingRoad in Master.worldValues.Roads)
+            foreach (RoadDetails existingRoad in Master.WorldValues.Roads)
             {
-                if (existingRoad.fromTile == data._details.fromTile && existingRoad.toTile == data._details.toTile)
+                if (existingRoad.FromTile == data._details.FromTile && existingRoad.ToTile == data._details.ToTile)
                 {
                     DeleteRoad(existingRoad, client);
                     BroadcastDeletion(existingRoad);
                     return;
                 }
 
-                else if (existingRoad.fromTile == data._details.toTile && existingRoad.toTile == data._details.fromTile)
+                else if (existingRoad.FromTile == data._details.ToTile && existingRoad.ToTile == data._details.FromTile)
                 {
                     DeleteRoad(existingRoad, client);
                     BroadcastDeletion(existingRoad);
@@ -82,24 +82,24 @@ namespace GameServer.Managers
 
         private static void SaveRoad(RoadDetails details, ServerClient client = null)
         {
-            List<RoadDetails> currentRoads = Master.worldValues.Roads.ToList();
+            List<RoadDetails> currentRoads = Master.WorldValues.Roads.ToList();
             currentRoads.Add(details);
 
-            Master.worldValues.Roads = currentRoads.ToArray();
+            Master.WorldValues.Roads = currentRoads.ToArray();
             Main_.SaveValueFile(ServerFileMode.World, false);
 
-            InformationDisplayer.DisplayAddRoad(details.fromTile.ToString(), details.toTile.ToString());
+            InformationDisplayer.DisplayAddRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
 
         private static void DeleteRoad(RoadDetails details, ServerClient client = null)
         {
-            List<RoadDetails> currentRoads = Master.worldValues.Roads.ToList();
+            List<RoadDetails> currentRoads = Master.WorldValues.Roads.ToList();
             currentRoads.Remove(details);
 
-            Master.worldValues.Roads = currentRoads.ToArray();
+            Master.WorldValues.Roads = currentRoads.ToArray();
             Main_.SaveValueFile(ServerFileMode.World, false);
 
-            InformationDisplayer.DisplayRemoveRoad(details.fromTile.ToString(), details.toTile.ToString());
+            InformationDisplayer.DisplayRemoveRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
     }
 
@@ -107,10 +107,10 @@ namespace GameServer.Managers
     {
         public static bool CheckIfRoadExists(RoadDetails details)
         {
-            foreach (RoadDetails existingRoad in Master.worldValues.Roads)
+            foreach (RoadDetails existingRoad in Master.WorldValues.Roads)
             {
-                if (existingRoad.fromTile == details.fromTile && existingRoad.toTile == details.toTile) return true;
-                else if (existingRoad.fromTile == details.toTile && existingRoad.toTile == details.fromTile) return true;
+                if (existingRoad.FromTile == details.FromTile && existingRoad.ToTile == details.ToTile) return true;
+                else if (existingRoad.FromTile == details.ToTile && existingRoad.ToTile == details.FromTile) return true;
             }
 
             return false;

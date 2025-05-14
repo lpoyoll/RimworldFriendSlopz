@@ -10,23 +10,23 @@ namespace GameServer.TCP
 {
     public static class Network
     {
-        private static IPAddress localAddress = IPAddress.Parse(Master.serverConfig.IP);
+        private static IPAddress LocalAddress { get; set; } = IPAddress.Parse(Master.ServerConfig.IP);
 
-        public static int port = int.Parse(Master.serverConfig.Port);
+        public static int Port { get; private set; } = int.Parse(Master.ServerConfig.Port);
 
-        private static TcpListener connection;
+        private static TcpListener? Connection { get; set; }
 
-        public static List<ServerClient> connectedClients = new List<ServerClient>();
+        public static List<ServerClient> ConnectedClients { get; private set; } = new List<ServerClient>();
 
         public static void ReadyServer()
         {
-            if (Master.serverConfig.UseUPnP) { _ = new UPnP(); }
+            if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
 
-            connection = new TcpListener(localAddress, port);
-            connection.Start();
+            Connection = new TcpListener(LocalAddress, Port);
+            Connection.Start();
 
             Printer.Warning("Server launched");
-            Printer.Warning($"Listening for users at {localAddress}:{port}");
+            Printer.Warning($"Listening for users at {LocalAddress}:{Port}");
             Printer.Warning("Type 'help' to get a list of available commands");
 
             Threader.GenerateServerThread(Threader.ServerMode.Sites);
@@ -38,29 +38,29 @@ namespace GameServer.TCP
 
         private static void ListenForIncomingUsers()
         {
-            TcpClient newTCP = connection.AcceptTcpClient();
+            TcpClient newTCP = Connection.AcceptTcpClient();
             ServerClient newServerClient = new ServerClient(newTCP);
             Listener newListener = new Listener(newServerClient, newTCP);
-            newServerClient.listener = newListener;
+            newServerClient.Listener = newListener;
 
-            if (Master.isClosing)
+            if (Master.IsClosing)
             {
-                newServerClient.listener.DisconnectFlag = true;
+                newServerClient.Listener.DisconnectFlag = true;
             }
 
-            else if (NetworkHelper.GetConnectedClientsSafe().Length >= int.Parse(Master.serverConfig.MaxPlayers))
+            else if (NetworkHelper.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
             {
                 LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.ServerFull);
             }
 
-            else if (Master.worldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0)
+            else if (Master.WorldValues == null && NetworkHelper.GetConnectedClientsSafe().Length > 0)
             {
                 LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.NoWorld);
             }
 
             else
             {
-                connectedClients.Add(newServerClient);
+                ConnectedClients.Add(newServerClient);
 
                 Main_.ChangeTitle();
 
@@ -74,15 +74,15 @@ namespace GameServer.TCP
         {
             try
             {
-                connectedClients.Remove(client);
-                client.listener.DestroyConnection();
+                ConnectedClients.Remove(client);
+                client.Listener.DestroyConnection();
 
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
                 InformationDisplayer.DisplayDisconnect(client);
-                if (Master.chatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.userFile.Uid} has left the server!");
+                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Uid} has left the server!");
             }
-            catch { Printer.Warning($"Error disconnecting user {client.userFile.Uid}, this will cause memory overhead"); }
+            catch { Printer.Warning($"Error disconnecting user {client.UserFile.Uid}, this will cause memory overhead"); }
         }
     }
 
@@ -90,20 +90,20 @@ namespace GameServer.TCP
     {
         public static ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)
         {
-            if (toExclude != null) return Network.connectedClients.Where(fetch => fetch.userFile.Uid != toExclude.userFile.Uid).ToArray();
-            else return Network.connectedClients.ToArray();
+            if (toExclude != null) return Network.ConnectedClients.Where(fetch => fetch.UserFile.Uid != toExclude.UserFile.Uid).ToArray();
+            else return Network.ConnectedClients.ToArray();
         }
 
         public static ServerClient GetConnectedClientFromUid(string uid)
         {
-            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.userFile.Uid == uid);
+            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.UserFile.Uid == uid);
         }
 
         public static void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
         {
             foreach (ServerClient client in GetConnectedClientsSafe(toExclude))
             {
-                client.listener.EnqueuePacket(header, obj);
+                client.Listener.EnqueuePacket(header, obj);
             }
         }
     }

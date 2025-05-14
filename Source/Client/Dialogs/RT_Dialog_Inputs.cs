@@ -10,23 +10,23 @@ namespace GameClient.Dialogs
     {
         // Parameters
 
-        private readonly float inputWidth = 300f;
+        private float InputWidth { get; set; } = 300f;
 
-        private readonly float inputHeight = 30f;
+        private float InputHeight { get; set; } = 30f;
 
-        private readonly int maxChars = 512;
+        private int MaxChars { get; set; } = 512;
 
         // Inputs
 
-        private readonly string[] labels = new string[] { };
+        private string[] Labels { get; set; } = new string[] { };
 
-        private readonly bool[] censors = new bool[] { };
+        private bool[] Censors { get; set; } = new bool[] { };
 
-        private readonly string[] results = new string[] { };
+        private string[] Results { get; set; } = new string[] { };
 
-        private readonly string[] censorResult = new string[] { };
+        private string[] CensorResult { get; set; } = new string[] { };
 
-        public static string[] dialogInputResults;
+        public static string[]? DialogInputResults { get; set; }
 
         public RT_Dialog_Inputs(string title, string[] labels, bool[] censors, Action onConfirm = null, Action onCancel = null, string onConfirmText = "Confirm", string OnCancel = "Cancel")
         {
@@ -34,10 +34,10 @@ namespace GameClient.Dialogs
             this.OnAccept = onConfirm;
             this.OnCancel = onCancel;
 
-            this.labels = labels;
-            this.censors = censors;
-            results = new string[] { "", "", "" };
-            censorResult = new string[] { "", "", "" };
+            this.Labels = labels;
+            this.Censors = censors;
+            Results = new string[] { "", "", "" };
+            CensorResult = new string[] { "", "", "" };
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -55,19 +55,19 @@ namespace GameClient.Dialogs
             Widgets.DrawLineHorizontal(rect.x, titleSeparator, rect.width);
             Text.Font = GameFont.Small;
 
-            float inputOneLabelDif = Text.CalcSize(labels[0]).y + StandardMargin;
+            float inputOneLabelDif = Text.CalcSize(Labels[0]).y + StandardMargin;
             float inputOneDif = inputOneLabelDif + 30f;
             DrawInput(centeredX, inputOneLabelDif, inputOneDif, 0);
 
-            if (labels.Length > 1)
+            if (Labels.Length > 1)
             {
-                float inputTwoLabelDif = inputOneDif + Text.CalcSize(labels[1]).y + StandardMargin * 2;
+                float inputTwoLabelDif = inputOneDif + Text.CalcSize(Labels[1]).y + StandardMargin * 2;
                 float inputTwoDif = inputTwoLabelDif + 30f;
                 DrawInput(centeredX, inputTwoLabelDif, inputTwoDif, 1);
 
-                if (labels.Length == 3)
+                if (Labels.Length == 3)
                 {
-                    float inputThreeLabelDif = inputTwoDif + Text.CalcSize(labels[2]).y + StandardMargin * 2;
+                    float inputThreeLabelDif = inputTwoDif + Text.CalcSize(Labels[2]).y + StandardMargin * 2;
                     float inputThreeDif = inputThreeLabelDif + 30f;
                     DrawInput(centeredX, inputThreeLabelDif, inputThreeDif, 2);
                 }
@@ -75,7 +75,7 @@ namespace GameClient.Dialogs
 
             if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomLeft), "Confirm"))
             {
-                RT_Dialog_Inputs.dialogInputResults = new string[] { results[0], results[1], results[2] };
+                RT_Dialog_Inputs.DialogInputResults = new string[] { Results[0], Results[1], Results[2] };
                 OnAccept?.Invoke();
                 Close();
             }
@@ -91,7 +91,7 @@ namespace GameClient.Dialogs
         {
             Vector2 sizeVector;
 
-            switch (labels.Length)
+            switch (Labels.Length)
             {
                 case 1:
                     sizeVector = new Vector2(400f, 190f);
@@ -118,17 +118,17 @@ namespace GameClient.Dialogs
 
         private void DrawInput(float centeredX, float labelDif, float normalDif, int index)
         {
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(labels[index]).x / 2, labelDif, Text.CalcSize(labels[index]).x, Text.CalcSize(labels[index]).y), labels[index]);
-            string input = Widgets.TextField(new Rect(centeredX - inputWidth / 2, normalDif, inputWidth, inputHeight), results[index]);
-            if (AcceptsInput && input.Length <= maxChars) results[index] = input;
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Labels[index]).x / 2, labelDif, Text.CalcSize(Labels[index]).x, Text.CalcSize(Labels[index]).y), Labels[index]);
+            string input = Widgets.TextField(new Rect(centeredX - InputWidth / 2, normalDif, InputWidth, InputHeight), Results[index]);
+            if (AcceptsInput && input.Length <= MaxChars) Results[index] = input;
 
-            if (censors[index])
+            if (Censors[index])
             {
-                string censorOne = Widgets.TextField(new Rect(centeredX - inputWidth / 2, normalDif, inputWidth, inputHeight), censorResult[index]);
-                if (AcceptsInput && censorOne.Length <= maxChars)
+                string censorOne = Widgets.TextField(new Rect(centeredX - InputWidth / 2, normalDif, InputWidth, InputHeight), CensorResult[index]);
+                if (AcceptsInput && censorOne.Length <= MaxChars)
                 {
                     Text.Font = GameFont.Medium;
-                    censorResult[index] = new string('█', input.Length);
+                    CensorResult[index] = new string('█', input.Length);
                     Text.Font = GameFont.Small;
                 }
             }

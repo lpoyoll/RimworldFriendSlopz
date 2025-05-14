@@ -3,7 +3,6 @@ using Shared;
 
 namespace GameClient.Managers
 {
-
     public static class ResponseShortcutManager
     {
         [HandlesPacket(PacketHeader.ResponseShortcutManager)]

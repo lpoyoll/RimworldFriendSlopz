@@ -27,7 +27,7 @@ namespace GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            if (Network.state == ClientNetworkState.Connected)
+            if (Network.State == ClientNetworkState.Connected)
             {
                 tabTitle = $"Players Online [{RecountManager.CurrentPlayers}]";
 

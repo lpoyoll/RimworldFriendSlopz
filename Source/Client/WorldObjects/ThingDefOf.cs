@@ -3,6 +3,7 @@
 namespace GameClient.WorldObjects
 {
     // Add the EXACT defname of the thing you want to add to the "DefOfs". Make sure to put it in the proper category.
+
     [DefOf]
     public static class RTSitePartDefOf
     {

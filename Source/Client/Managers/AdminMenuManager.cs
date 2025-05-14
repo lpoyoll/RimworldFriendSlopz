@@ -4,23 +4,23 @@ namespace GameClient.Managers
 {
     public static class AdminMenuManager
     {
-        private static readonly string dialogTitle = "Admin menu";
+        private static string DialogTitle { get; set; } = "Admin menu";
+         
+        private static string DialogDescription { get; set; } = "Choose which action to execute";
 
-        private static readonly string dialogDescription = "Choose which action to execute";
-
-        private static readonly string[] menuButtons = new string[] { "Mod Manager" };
+        private static string[] MenuButtons { get; set; } = new string[] { "Mod Manager" };
 
         public static void ShowAdminMenu()
         {
-            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons(dialogTitle, dialogDescription,
-                menuButtons, delegate { OpenSpecificMenu(); }, null);
+            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons(DialogTitle, DialogDescription,
+                MenuButtons, delegate { OpenSpecificMenu(); }, null);
 
             RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void OpenSpecificMenu()
         {
-            switch (RT_Dialog_ScrollButtons.selectedScrollButton)
+            switch (RT_Dialog_ScrollButtons.SelectedScrollButton)
             {
                 case 0:
                     ModManager.OpenModManagerMenu(false);
