@@ -52,6 +52,7 @@ namespace GameClient.Dialogs
                 var missingMods = new List<string>();
                 var display = new List<string>();
                 var modsToEnable = new List<string>();
+                bool isAllMissingOptional = true;
                 for (int i = 0; i < info._config.UnsortedMods.Length; i++)
                 {
                     string mod = info._config.UnsortedMods[i];
@@ -62,6 +63,10 @@ namespace GameClient.Dialogs
                         {
                             display.Add($"[Enableable]> {foundMod.Name}");
                             modsToEnable.Add(mod);
+                            if (isAllMissingOptional && info._config.RequiredMods.Contains(mod))
+                            {
+                                isAllMissingOptional = false;
+                            }
                         }
                         continue;
                     }
@@ -71,15 +76,24 @@ namespace GameClient.Dialogs
                         downloadableMods.Add(mod, info._config.AllModIds[i]);
                         modsToEnable.Add(mod);
                         display.Add($"[Downloadable]> {mod}");
+                        if (isAllMissingOptional && info._config.RequiredMods.Contains(mod))
+                        {
+                            isAllMissingOptional = false;
+                        }
                     }
                     else
                     {
                         missingMods.Add(mod);
                         modsToEnable.Add(mod);
                         display.Add($"[Unavailable]> {mod}");
+                        if (isAllMissingOptional && info._config.RequiredMods.Contains(mod))
+                        {
+                            isAllMissingOptional = false;
+                        }
                     }
                 }
-                if (missingMods.Any() || downloadableMods.Any() || modsToEnable.Any()) {
+                Printer.Warning(isAllMissingOptional);
+                if (isAllMissingOptional == false && ( missingMods.Any() || downloadableMods.Any() || modsToEnable.Any())) {
                     Printer.Warning($"Found {downloadableMods.Count} mods to download and {missingMods.Count} mods that cannot be downloaded.");
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Listing("Missing mods!",
                         "Do you want to download/enable the missing mods automatically?",
