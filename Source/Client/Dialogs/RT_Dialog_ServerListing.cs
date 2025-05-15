@@ -40,6 +40,11 @@ namespace GameClient.Dialogs
             ServerInfo[] servers = ServerBrowserManager.GetAllServersAvailable();
             if (servers == null) return false;
             AllServers = servers;
+            Printer.Warning($"Found {servers.Count()} servers in the server browser");
+            foreach(var server in servers) 
+            {
+                Printer.Warning($"Server found! {server._name}", CommonEnumerators.LogImportanceMode.Verbose);
+            }
             return true;
         }
 
@@ -70,7 +75,7 @@ namespace GameClient.Dialogs
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + RecentServers.ServerAddresses.Count() * 30f;
+            float height = 6f + AllServers.Length * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref base.ScrollPosition, viewRect);
             float num = 0;
