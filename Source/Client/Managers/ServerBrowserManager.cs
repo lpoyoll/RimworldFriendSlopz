@@ -14,7 +14,6 @@ using Verse;
 
 namespace GameClient.Managers
 {
-    [RTManager]
     public class ServerBrowserManager
     {
         private static WebClient Client { get; set; } = new WebClient();

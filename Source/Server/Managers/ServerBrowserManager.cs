@@ -11,7 +11,6 @@ using Shared;
 
 namespace GameServer.Managers
 {
-    [RTManager]
     public static class ServerBrowserManager
     {
         private const string MasterServer = "https://rimworldtogether.eragon.dev";
