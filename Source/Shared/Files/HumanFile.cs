@@ -9,5 +9,7 @@ namespace Shared
         public string ID;
 
         public string ScribeData;
+
+        public IdeologyFile Ideology;
     }
 }

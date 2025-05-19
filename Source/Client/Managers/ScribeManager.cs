@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using GameClient.Misc;
 using GameClient.Values;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
@@ -91,13 +92,74 @@ namespace GameClient.Managers
             humanFile.ID = human.ThingID;
 
             humanFile.ScribeData = ScribeManager.SerializeFromThing(human);
+            if (ModsConfig.IdeologyActive)
+            {
+                humanFile.Ideology = SerializerIdeo(human.Ideo);
+            }
 
             return humanFile;
         }
 
         public static Pawn StringtoHuman(HumanFile file)
         {
-            return (Pawn)ScribeManager.SerializeToThing(file.ScribeData);
+            Pawn pawn = (Pawn)ScribeManager.SerializeToThing(file.ScribeData);
+            if (ModsConfig.IdeologyActive) 
+            {
+                Ideo ideo = StringToIdeo(file.Ideology.ScriberData);
+                Ideo match = Find.IdeoManager.IdeosListForReading.FirstOrDefault(
+                    i => i.id == ideo.id && i.name == ideo.name && i.description == ideo.description);
+                pawn.ideo.SetIdeo(match ?? ideo);
+            }
+            return (pawn);
+        }
+
+
+        public static IdeologyFile SerializerIdeo(Ideo ideology) 
+        {
+            IdeologyFile ideologyFile = new IdeologyFile();
+
+            ClientValues.ToggleUsingScriber(true);
+
+            string scribeData = "";
+            bool isPlayer = ideology.initialPlayerIdeo;
+            ideology.initialPlayerIdeo = false;
+
+            try
+            {
+                Scribe.saver.InitSaving("", ScribeTreeName);
+
+                Scribe_Deep.Look(ref ideology, ScribeNodeName);
+
+                Scribe.saver.FinalizeSaving();
+
+                scribeData = new Regex(@">\s*<").Replace(StringWriter.ToString(), "><");
+            }
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); };
+
+            ideology.initialPlayerIdeo = isPlayer;
+
+            ClientValues.ToggleUsingScriber(false);
+
+            ideologyFile.ScriberData = scribeData;
+            ideologyFile.Id = ideology.id;
+            return ideologyFile;
+        }
+
+        public static Ideo StringToIdeo(string str) 
+        {
+            Ideo toload = null;
+            ClientValues.ToggleUsingScriber(true);
+            try
+            {
+                Scribe.loader.InitLoading(str);
+
+                Scribe_Deep.Look(ref toload, ScribeManager.ScribeNodeName);
+
+                Scribe.loader.FinalizeLoading();
+            }
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
+            ClientValues.ToggleUsingScriber(false);
+            return toload;
         }
 
         public static AnimalFile AnimalToString(Pawn animal)
