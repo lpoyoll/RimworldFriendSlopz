@@ -89,7 +89,7 @@ namespace GameServer.Managers
                 Printer.Error($"Server name is above {MaxNameLength} characters, please shorten it. Server browser features have been turned off.");
                 return false;
             }
-            if(serverInfo.Name == "Rimworld-Together-Server") 
+            if(serverInfo.Name == "RimWorld-Together-Server") 
             {
                 Printer.Error($"Server name is the default name of {serverInfo.Name}. Please change the server name to something unique!. Server browser features have been turned off.")
             }
