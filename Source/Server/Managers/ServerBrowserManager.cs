@@ -76,18 +76,22 @@ namespace GameServer.Managers
             var serverInfo = Master.ServerConfig;
             if(serverInfo.Description.Length > MaxDescriptionLength) 
             {
-                Printer.Error($"Server description is above {MaxDescriptionLength} characters, please shorten it. Server browser features have been turned off");
+                Printer.Error($"Server description is above {MaxDescriptionLength} characters, please shorten it. Server browser features have been turned off.");
                 return false;
             }
             if (string.IsNullOrEmpty(serverInfo.PublicEndPoint)) 
             {
-                Printer.Error($"Public endpoint is empty. Please set your public ip adress or domain. Server browser features have been turned off");
+                Printer.Error($"Public endpoint is empty. Please set your public ip adress or domain. Server browser features have been turned off.");
                 return false;
             }
             if (serverInfo.Name.Length > MaxNameLength)
             {
-                Printer.Error($"Server name is above {MaxNameLength} characters, please shorten it. Server browser freatures have been turned off");
+                Printer.Error($"Server name is above {MaxNameLength} characters, please shorten it. Server browser features have been turned off.");
                 return false;
+            }
+            if(serverInfo.Name == "Rimworld-Together-Server") 
+            {
+                Printer.Error($"Server name is the default name of {serverInfo.Name}. Please change the server name to something unique!. Server browser features have been turned off.")
             }
             return true;
         }
