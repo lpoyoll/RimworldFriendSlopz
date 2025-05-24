@@ -5,6 +5,7 @@ using GameServer.TCP;
 using Shared;
 using System.Text;
 using static Shared.CommonEnumerators;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer.Managers
 {
@@ -37,10 +38,12 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.ChatManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
-            ChatData chatData = Serializer.ConvertBytesToObject<ChatData>(bytes);
+            ChatData data = Serializer.ConvertBytesToObject<ChatData>(bytes);
 
-            if (chatData._message.StartsWith("/")) ExecuteChatCommand(client, chatData._message.Split(' '));
-            else BroadcastChatMessage(client, chatData._message);
+            Printer.Warning(data, LogImportanceMode.Extreme);
+
+            if (data._message.StartsWith("/")) ExecuteChatCommand(client, data._message.Split(' '));
+            else BroadcastChatMessage(client, data._message);
         }
 
         private static void ExecuteChatCommand(ServerClient client, string[] command)
