@@ -19,6 +19,8 @@ namespace GameClient.Dialogs
     {
         private ServerInfo ServerInfo { get; set; }
 
+        private List<string> DownloadedMods = new List<string>();
+        public override Vector2 InitialSize => new Vector2(550f, 700f);
         public RT_Dialog_ServerListingModlist(string title, string description, ServerInfo serverInfo) 
         {
             this.Title = title;
@@ -80,31 +82,43 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (rowCount % 2 == 0) Widgets.DrawHighlight(fixedRect);
+            Widgets.Label(fixedRect, $"{GetModType(modID)}{foundMod?.Name ?? modID}");
+            if (foundMod == null || DownloadedMods.Contains(modID))
+            {
+                HandleSteamLinks(fixedRect, modID, index);
+            }
+            else 
+            {
+                HandleExistingMod(fixedRect, foundMod);
+            }
+        }
 
-            Widgets.Label(fixedRect, $"{foundMod?.Name ?? modID}");
+        private void HandleSteamLinks(Rect rect, string modID, int index) 
+        {
             Rect linkButtonRect = new Rect(new Vector2(rect.xMax - SlimButtonSize.x - TinyButtonSize.x - 5f, rect.yMax - TinyButtonSize.y), TinyButtonSize);
             ulong steamId = ServerInfo._config.AllModIds[index];
             if (steamId != 0)
             {
-                if (Widgets.ButtonText(linkButtonRect, "Link"))
-                {
-                    string url;
-                    if (IsSteamRunning())
-                    {
-                        url = $"steam://url/CommunityFilePage/{steamId}";
-                    }
-                    else
-                    {
-                        url = $"https://steamcommunity.com/sharedfiles/filedetails/?id={steamId}";
-                    }
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = url,
-                        UseShellExecute = true
-                    });
-                }
                 if (!modID.Contains("ludeon.rimworld"))
                 {
+                    if (Widgets.ButtonText(linkButtonRect, "Link"))
+                    {
+                        string url;
+                        if (IsSteamRunning())
+                        {
+                            url = $"steam://url/CommunityFilePage/{steamId}";
+                        }
+                        else
+                        {
+                            url = $"https://steamcommunity.com/sharedfiles/filedetails/?id={steamId}";
+                        }
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = url,
+                            UseShellExecute = true
+                        });
+                        DownloadedMods.Add(modID);
+                    }
                     Rect downloadButtonRect = new Rect(linkButtonRect);
                     downloadButtonRect.x = rect.xMax - SlimButtonSize.x;
                     downloadButtonRect.width = SlimButtonSize.x;
@@ -114,6 +128,12 @@ namespace GameClient.Dialogs
                     }
                 }
             }
+        }
+
+        private void HandleExistingMod(Rect rect, ModMetaData mod) 
+        {
+            Vector2 textSize = Text.CalcSize("Downloaded!");
+            Widgets.Label(new Rect(new Vector2(rect.xMax - textSize.x + 5f, rect.yMax - textSize.y), textSize), "Downloaded!");
         }
 
         private static bool IsSteamRunning()
@@ -148,6 +168,14 @@ namespace GameClient.Dialogs
                 
             }
             return false;
+        }
+
+        private string GetModType(string id) 
+        {
+            if (ServerInfo._config.RequiredMods.Contains(id))
+                return ("[Required]>");
+            else
+                return ("[Optional]>");
         }
     }
 }

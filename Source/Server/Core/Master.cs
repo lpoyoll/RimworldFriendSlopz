@@ -69,6 +69,8 @@ namespace GameServer.Core
 
         public static ChatConfigFile? ChatConfig { get; set; }
 
+        public static ServerBrowserConfig? ServerBrowserConfig { get; set; }
+
         //Booleans
 
         public static bool IsClosing { get; set; }

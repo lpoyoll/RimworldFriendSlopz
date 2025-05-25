@@ -13,10 +13,6 @@
 
         public string MaxPlayers = "100";
 
-        public bool EnableServerBrowser = false;
-
-        public string PublicEndPoint = "";
-
         public bool VerboseLogs = false;
 
         public bool ExtremeVerboseLogs = false;

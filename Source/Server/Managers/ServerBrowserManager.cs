@@ -28,14 +28,14 @@ namespace GameServer.Managers
         {
             Task.Run(async () =>
             {
-                if (Master.ServerConfig.EnableServerBrowser)
+                if (Master.ServerBrowserConfig.EnableServerBrowser)
                 {
                     if (ValidateServerInfos())
                     {
                         Printer.Warning($"You have enabled the server browser feature. By doing so, you understand that:" +
                             $"\n- Your server's information (name, description, player count, ect... will be shared to possibly all Rimworld Together's users." +
                             $"\n- Your server's contact information (public ip adress and port) will be shared to possibly all Rimworld Together's users." +
-                            $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.ConfigsPath, "ServerConfig.json")} " +
+                            $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json")} " +
                             "\nunder the `EnableServerBrowser` setting and then restart the server.");
                         Console.CancelKeyPress += SendClosureSignalFromConsole;
                         AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
@@ -76,12 +76,13 @@ namespace GameServer.Managers
         private static bool ValidateServerInfos() 
         {
             var serverInfo = Master.ServerConfig;
+            var serverBrowserInfo = Master.ServerBrowserConfig;
             if(serverInfo.Description.Length > MaxDescriptionLength) 
             {
                 Printer.Error($"Server description is above {MaxDescriptionLength} characters, please shorten it. Server browser features have been turned off.");
                 return false;
             }
-            if (string.IsNullOrEmpty(serverInfo.PublicEndPoint)) 
+            if (string.IsNullOrEmpty(serverBrowserInfo.PublicEndPoint)) 
             {
                 Printer.Error($"Public endpoint is empty. Please set your public ip adress or domain. Server browser features have been turned off.");
                 return false;
@@ -107,7 +108,7 @@ namespace GameServer.Managers
                 Client.DefaultRequestHeaders.Add("action", "Add-Server-Browser");
                 ServerInfo info = new ServerInfo()
                 {
-                    _ip = Master.ServerConfig.PublicEndPoint,
+                    _ip = Master.ServerBrowserConfig.PublicEndPoint,
                     _port = int.Parse(Master.ServerConfig.Port),
                     _name = Master.ServerConfig.Name,
                     _description = Master.ServerConfig.Description,
@@ -164,7 +165,7 @@ namespace GameServer.Managers
             Client.DefaultRequestHeaders.Add("action", "Remove-Server-Browser");
             ServerInfo info = new ServerInfo()
             {
-                _ip = Master.ServerConfig.PublicEndPoint,
+                _ip = Master.ServerBrowserConfig.PublicEndPoint,
                 _port = int.Parse(Master.ServerConfig.Port),
                 _name = Master.ServerConfig.Name
             };

@@ -105,7 +105,7 @@ namespace GameClient.Dialogs
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, $"{server._name} - {server._ip}");
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x - TinyButtonSize.x - 5f, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Select"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SmallerButtonSize.x - 5f, rect.yMax - TinyButtonSize.y), new Vector2(SmallerButtonSize.x, TinyButtonSize.y)), "Select"))
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListingInfo(server));
             }

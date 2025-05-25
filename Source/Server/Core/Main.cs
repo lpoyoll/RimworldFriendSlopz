@@ -195,6 +195,10 @@ namespace GameServer.Core
                     pathToSave = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
                     Serializer.SerializeToFile(pathToSave, Master.ChatConfig);
                     break;
+                case ServerFileMode.ServerBrowser:
+                    pathToSave = Path.Combine(Master.ConfigsPath, "ServerBrowserSetings.json");
+                    Serializer.SerializeToFile(pathToSave, Master.ServerBrowserConfig);
+                    break;
             }
 
             if (broadcast) InformationDisplayer.DisplaySaveFile(pathToSave);
@@ -320,6 +324,16 @@ namespace GameServer.Core
                     {
                         Master.ChatConfig = new ChatConfigFile();
                         Serializer.SerializeToFile(pathToLoad, Master.ChatConfig);
+                    }
+                    break;
+
+                case ServerFileMode.ServerBrowser:
+                    pathToLoad = Path.Combine(Master.ConfigsPath, "ServerBrowserSettings.json");
+                    if (File.Exists(pathToLoad)) Master.ServerBrowserConfig = Serializer.SerializeFromFile<ServerBrowserConfig>(pathToLoad);
+                    else
+                    {
+                        Master.ServerBrowserConfig = new ServerBrowserConfig();
+                        Serializer.SerializeToFile(pathToLoad, Master.ServerBrowserConfig);
                     }
                     break;
             }
