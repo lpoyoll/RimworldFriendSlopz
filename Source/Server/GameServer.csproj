@@ -11,10 +11,12 @@
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
+		<DefineConstants>$(DefineConstants);SERVER</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<DebugType>full</DebugType>
+		<DefineConstants>$(DefineConstants);SERVER</DefineConstants>
     </PropertyGroup>
 
 	<ItemGroup>

@@ -88,7 +88,7 @@ namespace GameServer.Managers
             currentRoads.Add(details);
 
             Master.WorldValues.Roads = currentRoads.ToArray();
-            Main_.SaveValueFile(ServerFileMode.World, false);
+            WorldValuesFile.Save();
 
             InformationDisplayer.DisplayAddRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
@@ -99,7 +99,7 @@ namespace GameServer.Managers
             currentRoads.Remove(details);
 
             Master.WorldValues.Roads = currentRoads.ToArray();
-            Main_.SaveValueFile(ServerFileMode.World, false);
+            WorldValuesFile.Save();
 
             InformationDisplayer.DisplayRemoveRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }

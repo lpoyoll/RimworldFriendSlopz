@@ -1,5 +1,7 @@
 ﻿using System;
-
+#if SERVER
+using GameServer.Core;
+#endif
 namespace Shared
 {
     [Serializable]
@@ -43,5 +45,35 @@ namespace Shared
         {
             return $"WorldValuesFile:|{PersistentRandomValue}|{SeedString}";
         }
+#if SERVER
+        private static string FilePath => Path.Combine(Master.ConfigsPath, "WorldConfig.json");
+
+        public static WorldValuesFile Load()
+        {
+            if (File.Exists(FilePath))
+            {
+                return Serializer.FileBytesToObject<WorldValuesFile>(FilePath);
+            }
+            else
+            {
+                var obj = new WorldValuesFile();
+                Serializer.ObjectBytesToFile(FilePath, obj);
+                return obj;
+            }
+        }
+
+        public static bool Save()
+        {
+            try
+            {
+                Serializer.ObjectBytesToFile(FilePath, Master.WorldValues);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+#endif
     }
 }

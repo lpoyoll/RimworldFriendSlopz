@@ -14,8 +14,6 @@ namespace Shared
 
         public enum SpyStepMode { Request, Accept, Deny }
 
-        public enum ServerFileMode { Configs, Actions, Sites, Roads, World, Whitelist, Difficulty, Scenario, Storyteller, Backup, Mods, Chat, ServerBrowser }
-
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
         public enum LogImportanceMode { Normal, Verbose, Extreme }

@@ -47,7 +47,7 @@ namespace GameServer.Managers
 
                 if (shouldBroadcast) NetworkHelper.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
 
-                Main_.SaveValueFile(ServerFileMode.World, false);
+                WorldValuesFile.Save();
             }
 
             catch
