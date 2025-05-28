@@ -50,13 +50,10 @@ namespace Shared
 
         public static WorldValuesFile Load()
         {
+            //We don't want to generate the world if it doesn't exist, this task is for the first player to do
+
             if (File.Exists(FilePath)) return Serializer.FileBytesToObject<WorldValuesFile>(FilePath);
-            else
-            {
-                WorldValuesFile obj = new WorldValuesFile();
-                Serializer.ObjectBytesToFile(FilePath, obj);
-                return obj;
-            }
+            else return null;
         }
 
         public static bool Save()
