@@ -43,7 +43,7 @@ namespace GameServer.Managers
             else
             {
                 Master.ScenarioValues = file;
-                Main_.SaveValueFile(ServerFileMode.Scenario, true);
+                ScenarioValuesFile.Save();
                 InformationDisplayer.DisplaySetScenario(client.UserFile.Uid);
             }
         }
@@ -59,7 +59,7 @@ namespace GameServer.Managers
             else
             {
                 Master.StorytellerValues = file;
-                Main_.SaveValueFile(ServerFileMode.Storyteller, true);
+                StorytellerValuesFile.Save();
                 InformationDisplayer.DisplaySetStoryteller(client.UserFile.Uid);
             }
         }
@@ -75,7 +75,7 @@ namespace GameServer.Managers
             else
             {
                 Master.DifficultyValues = file;
-                Main_.SaveValueFile(ServerFileMode.Difficulty, true);
+                DifficultyValuesFile.Save();
                 InformationDisplayer.DisplaySetDifficulty(client.UserFile.Uid);
             }
         }

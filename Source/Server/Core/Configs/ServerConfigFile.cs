@@ -1,4 +1,6 @@
-﻿namespace GameServer.Core.Configs
+﻿using Shared;
+
+namespace GameServer.Core.Configs
 {
     [Serializable]
     public class ServerConfigFile
@@ -38,5 +40,31 @@
         public bool TemporalSpyProtection = true;
 
         public int TemporalSpyProtectionTime = 3600;
+
+#if SERVER
+        private static string FilePath => Path.Combine(Master.ConfigsPath, "ServerConfig.json");
+
+        public static ServerConfigFile Load()
+        {
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ServerConfigFile>(FilePath);
+            else
+            {
+                ServerConfigFile obj = new ServerConfigFile();
+                Serializer.SerializeToFile(FilePath, obj);
+                return obj;
+            }
+        }
+
+        public static bool Save()
+        {
+            try
+            {
+                Serializer.SerializeToFile(FilePath, Master.ServerConfig);
+                return true;
+            }
+            catch { return false; }
+        }
+
+#endif
     }
 }

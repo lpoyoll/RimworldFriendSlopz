@@ -1,5 +1,7 @@
 ﻿using System;
-
+#if SERVER
+using GameServer.Core;
+#endif
 namespace Shared
 {
     [Serializable]
@@ -34,5 +36,30 @@ namespace Shared
             return $"RoadValuesFile:|{AllowDirtPath}|{AllowDirtRoad}|{AllowStoneRoad}|{AllowAsphaltPath}|{AllowAsphaltHighway}" +
                 $"|{DirtPathCost}|{DirtRoadCost}|{StoneRoadCost}|{AsphaltPathCost}|{AsphaltHighwayCost}";
         }
+        
+#if SERVER
+        private static string FilePath => Path.Combine(Master.ConfigsPath, "RoadConfig.json");
+
+        public static RoadValuesFile Load()
+        {
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<RoadValuesFile>(FilePath);
+            else
+            {
+                RoadValuesFile obj = new RoadValuesFile();
+                Serializer.SerializeToFile(FilePath, obj);
+                return obj;
+            }
+        }
+
+        public static bool Save()
+        {
+            try
+            {
+                Serializer.SerializeToFile(FilePath, Master.RoadValues);
+                return true;
+            }
+            catch { return false; }
+        }
+#endif
     }
 }

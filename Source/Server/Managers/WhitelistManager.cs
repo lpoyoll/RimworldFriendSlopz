@@ -1,4 +1,5 @@
 using GameServer.Core;
+using GameServer.Core.Configs;
 using GameServer.Misc;
 using static Shared.CommonEnumerators;
 
@@ -11,7 +12,7 @@ namespace GameServer.Managers
         {
             Master.Whitelist.WhitelistedUsers.Add(username);
 
-            Main_.SaveValueFile(ServerFileMode.Whitelist);
+            WhitelistConfigFile.Save();
 
             Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' has been whitelisted");
         }
@@ -20,7 +21,7 @@ namespace GameServer.Managers
         {
             Master.Whitelist.WhitelistedUsers.Remove(username);
 
-            Main_.SaveValueFile(ServerFileMode.Whitelist);
+            WhitelistConfigFile.Save();
 
             Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' is no longer whitelisted");
         }
