@@ -45,8 +45,8 @@ namespace GameServer.Managers
 
         public static void ReceiveWorld(ServerClient client, WorldData data)
         {
-            WorldValuesFile.Save();
-            WorldValuesFile.Load();
+            File.WriteAllBytes(WorldValuesFile.FilePath, GZip.CompressBytes(data._fileBytes));
+            Master.WorldValues = WorldValuesFile.Load();
         }
     }
 }
