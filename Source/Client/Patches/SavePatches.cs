@@ -44,10 +44,10 @@ namespace GameClient.Patches
 
                 if (Network.State.Equals(ClientNetworkState.Connected))
                 {
-                    Printer.Message("Sending maps to server");
+                    Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
                     MapManager.SendPlayerMapsToServer();
 
-                    Printer.Message("Sending save to server");
+                    Printer.Message("Sending save to server", LogImportanceMode.Verbose);
                     SaveSenderManager.SendSaveToServer();
                 }
             }

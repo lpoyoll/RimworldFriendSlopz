@@ -166,14 +166,14 @@ namespace GameClient.Managers
                         break;
                 }
 
-                var mod = ModLister.GetActiveModWithIdentifier(modNames[i]);
+                ModMetaData mod = ModLister.GetActiveModWithIdentifier(modNames[i]);
 
                 if (mod.OnSteamWorkshop) 
                 {
                     Printer.Warning($"Mod {mod.PackageId} was on steam!", LogImportanceMode.Verbose);
-                    var hook = mod.GetWorkshopItemHook();
+                    WorkshopItemHook hook = mod.GetWorkshopItemHook();
                     steamIds.Add(hook.PublishedFileId.m_PublishedFileId);
-                    Printer.Warning($"{hook.PublishedFileId.m_PublishedFileId}");
+                    Printer.Warning($"{hook.PublishedFileId.m_PublishedFileId}", LogImportanceMode.Verbose);
                 }
 
                 else 
