@@ -15,9 +15,7 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(650f, 400f);
 
-        public RecentServersFile RecentServers => RecentServersHandler.LoadRecentServers();
-
-        public ServerInfo[] AllServers = new ServerInfo[0];
+        public ServerInfo[] AllServers { get; private set; } = new ServerInfo[0];
 
         public static RT_Dialog_Base Instance { get; private set; }
 
@@ -32,28 +30,34 @@ namespace GameClient.Dialogs
             this.Description = "This is a list of all publicly available servers!";
 
             closeOnAccept = false;
-            closeOnCancel = false;
+            closeOnCancel = true;
         }
 
         private bool GetServers() 
         {
             ServerInfo[] servers = ServerBrowserManager.GetAllServersAvailable();
+
             if (servers == null) return false;
-            AllServers = servers;
-            Printer.Warning($"Found {servers.Count()} servers in the server browser");
-            foreach(var server in servers) 
+            else
             {
-                Printer.Warning($"Server found! {server._name}", CommonEnumerators.LogImportanceMode.Verbose);
+                AllServers = servers;
+
+                Printer.Warning($"Found {servers.Count()} servers in the server browser", CommonEnumerators.LogImportanceMode.Verbose);
+
+                foreach (var server in servers)
+                {
+                    Printer.Warning($"Server found! {server._name}", CommonEnumerators.LogImportanceMode.Verbose);
+                }
+
+                return true;
             }
-            return true;
         }
 
         public override void DoWindowContents(Rect rect)
         {
-            if (FailedToFetchServers)
-                Close();
-            float centeredX = rect.width / 2;
+            if (FailedToFetchServers) Close();
 
+            float centeredX = rect.width / 2;
             float windowDescriptionDif = Text.CalcSize(base.Description).y + StandardMargin;
             float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(base.Description).y * 0.25f;
             float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(base.Description).y * 1.1f;
@@ -62,8 +66,10 @@ namespace GameClient.Dialogs
             Widgets.Label(new Rect(centeredX - Text.CalcSize(base.Title).x / 2, rect.y, Text.CalcSize(base.Title).x, Text.CalcSize(base.Title).y), base.Title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
+
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(base.Description).x / 2, windowDescriptionDif, Text.CalcSize(base.Description).x, Text.CalcSize(base.Description).y), base.Description);
+
             Text.Font = GameFont.Medium;
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
