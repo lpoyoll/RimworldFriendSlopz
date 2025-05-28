@@ -50,6 +50,9 @@ namespace GameClient.Managers
                                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for save upload"));
 
                                     DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
+                                    
+                                    SaveManager.LatestSavePath = SaveManager.SaveFilePath;
+                                    
                                     SaveSenderManager.SendSaveToServer();
                                 }
                             });

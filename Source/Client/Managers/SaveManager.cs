@@ -38,7 +38,11 @@ namespace GameClient.Managers
             Printer.Warning(data, LogImportanceMode.Extreme);
 
             if (data._stepMode == SaveStepMode.Receive) SaveReceiverManager.ReceiveSaveFromServer(data);
-            else if (data._stepMode == SaveStepMode.Send) SaveSenderManager.SendSaveToServer();
+            else if (data._stepMode == SaveStepMode.Send)
+            {
+                LatestSavePath = SaveFilePath;
+                SaveSenderManager.SendSaveToServer();
+            }
             else throw new NotImplementedException();
         }
 
