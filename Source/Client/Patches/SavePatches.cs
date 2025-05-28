@@ -29,7 +29,7 @@ namespace GameClient.Patches
                 GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
-
+                SaveManager.LatestSavePath = filePath;
                 try
                 {
                     SafeSaver.Save(filePath, "savegame", delegate

@@ -22,7 +22,8 @@ namespace GameClient.Managers
         // Variables
 
         public static string CustomSaveName => $"Server - {Network.Ip} - {Network.Port} - {ClientValues.Username}";
-
+        
+        public static string LatestSavePath = string.Empty;
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
         public static string TempSaveFilePath => SaveFilePath + ".mpsave";
@@ -88,7 +89,16 @@ namespace GameClient.Managers
     {
         public static void SendSaveToServer()
         {
-            byte[] saveBytes = File.ReadAllBytes(SaveManager.SaveFilePath);
+            byte[] saveBytes;
+            if (string.IsNullOrEmpty(SaveManager.LatestSavePath))
+            {
+                saveBytes = File.ReadAllBytes(SaveManager.SaveFilePath);
+            }
+            else
+            {
+                saveBytes =  File.ReadAllBytes(SaveManager.LatestSavePath);
+            }
+            
             saveBytes = GZip.CompressBytes(saveBytes);
 
             SaveData data = new SaveData();
