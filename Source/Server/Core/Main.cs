@@ -119,6 +119,9 @@ namespace GameServer.Core
             LoadValueFile(ServerFileMode.Backup);
             SaveValueFile(ServerFileMode.Backup, false);
 
+            LoadValueFile(ServerFileMode.ServerBrowser);
+            SaveValueFile(ServerFileMode.ServerBrowser, false);
+
             LoadValueFile(ServerFileMode.Mods);
             SaveValueFile(ServerFileMode.Mods, false);
 

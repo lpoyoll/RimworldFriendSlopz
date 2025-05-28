@@ -24,6 +24,7 @@ namespace GameClient.Managers
         public static string CustomSaveName => $"Server - {Network.Ip} - {Network.Port} - {ClientValues.Username}";
         
         public static string LatestSavePath = string.Empty;
+
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
         public static string TempSaveFilePath => SaveFilePath + ".mpsave";
