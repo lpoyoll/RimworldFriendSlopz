@@ -80,7 +80,7 @@ namespace GameServer.Managers
             if (WorldManager.CheckIfWorldExists())
             {
                 if (SaveManager.CheckIfUserHasSave(client)) SaveSenderManager.SendSaveToClient(client);
-                else WorldManagerSender.SendWorld(client);
+                else WorldManager.SendWorld(client);
             }
             else WorldManager.RequireWorldFile(client);
         }

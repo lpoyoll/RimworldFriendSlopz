@@ -43,8 +43,6 @@ namespace GameServer.Managers
         {
             EventManagerHelper.CheckForEventFiles();
             EventManagerHelper.LoadAllEvents();
-
-            InformationDisplayer.DisplayLoadEvents(Master.EventsPath);
         }
 
         public static void SendEvent(ServerClient client, EventData eventData)

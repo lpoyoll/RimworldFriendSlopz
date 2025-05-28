@@ -9,8 +9,6 @@ namespace GameServer.Managers
 
     public static class WorldManager
     {
-        public static string baseWorldPath = Path.Combine(Master.ConfigsPath, "WorldConfig.json");
-
         [HandlesPacket(PacketHeader.WorldManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
@@ -21,12 +19,12 @@ namespace GameServer.Managers
             switch (data._stepMode)
             {
                 case WorldStepMode.Sent:
-                    WorldManagerReceiver.ReceiveWorld(client, data);
+                    ReceiveWorld(client, data);
                     break;
             }
         }
 
-        public static bool CheckIfWorldExists() { return File.Exists(baseWorldPath); }
+        public static bool CheckIfWorldExists() { return File.Exists(WorldValuesFile.FilePath); }
 
         public static void RequireWorldFile(ServerClient client)
         {
@@ -35,25 +33,19 @@ namespace GameServer.Managers
 
             client.Listener.EnqueuePacket(PacketHeader.WorldManager, worldData);
         }
-    }
 
-    public static class WorldManagerSender
-    {
         public static void SendWorld(ServerClient client)
         {
             WorldData data = new WorldData();
-            data._fileBytes = GZip.DecompressBytes(File.ReadAllBytes(WorldManager.baseWorldPath));
+            data._fileBytes = GZip.DecompressBytes(File.ReadAllBytes(WorldValuesFile.FilePath));
             data._stepMode = WorldStepMode.Sent;
 
             client.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
         }
-    }
 
-    public static class WorldManagerReceiver
-    {
         public static void ReceiveWorld(ServerClient client, WorldData data)
         {
-            File.WriteAllBytes(WorldManager.baseWorldPath, GZip.CompressBytes(data._fileBytes));
+            WorldValuesFile.Save();
             WorldValuesFile.Load();
         }
     }

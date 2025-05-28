@@ -46,7 +46,7 @@ namespace Shared
             return $"WorldValuesFile:|{PersistentRandomValue}|{SeedString}";
         }
 #if SERVER
-        private static string FilePath => Path.Combine(Master.ConfigsPath, "WorldConfig.json");
+        public static string FilePath => Path.Combine(Master.ConfigsPath, "WorldConfig.json");
 
         public static WorldValuesFile Load()
         {

@@ -20,13 +20,13 @@ namespace GameServer.Core
             ChangeTitle();
             MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
 
-            Printer.Title($"----------------------------------------");
+            if (Master.ActionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
 
             Threader.GenerateServerThread(Threader.ServerMode.Start);
             Threader.GenerateServerThread(Threader.ServerMode.Console);
-            if (Master.ActionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
             if (Master.BackupConfig.AutomaticBackups) Threader.GenerateServerThread(Threader.ServerMode.Backup);
             ServerBrowserManager.StartLoops();
+
             while (true) Thread.Sleep(1);
         }
 
