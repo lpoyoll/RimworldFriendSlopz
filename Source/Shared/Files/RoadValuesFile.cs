@@ -42,13 +42,10 @@ namespace Shared
 
         public static RoadValuesFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<RoadValuesFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<RoadValuesFile>(FilePath);
             else
             {
-                var obj = new RoadValuesFile();
+                RoadValuesFile obj = new RoadValuesFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
@@ -61,10 +58,7 @@ namespace Shared
                 Serializer.SerializeToFile(FilePath, Master.RoadValues);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 #endif
     }

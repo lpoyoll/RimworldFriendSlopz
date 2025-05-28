@@ -18,21 +18,23 @@ public class ChatConfigFile
 
     public static ChatConfigFile Load()
     {
-        if (File.Exists(FilePath))
-        {
-            return Serializer.SerializeFromFile<ChatConfigFile>(FilePath);
-        }
+        if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ChatConfigFile>(FilePath);
         else 
         {
-            var obj = new ChatConfigFile();
+            ChatConfigFile obj = new ChatConfigFile();
             Serializer.SerializeToFile(FilePath, obj);
             return obj;
         }
     }
 
-    public static void Save()
+    public static bool Save()
     {
-        Serializer.SerializeToFile(FilePath, Master.ChatConfig);
+        try
+        {
+            Serializer.SerializeToFile(FilePath, Master.ChatConfig);
+            return true;
+        }
+        catch { return false; }
     }
 #endif
 

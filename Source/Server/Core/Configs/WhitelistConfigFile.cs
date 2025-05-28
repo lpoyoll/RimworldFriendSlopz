@@ -13,21 +13,23 @@ namespace GameServer.Core.Configs
 
         public static WhitelistConfigFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<WhitelistConfigFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<WhitelistConfigFile>(FilePath);
             else
             {
-                var obj = new WhitelistConfigFile();
+                WhitelistConfigFile obj = new WhitelistConfigFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
         }
 
-        public static void Save()
+        public static bool Save()
         {
-            Serializer.SerializeToFile(FilePath, Master.Whitelist);
+            try
+            {
+                Serializer.SerializeToFile(FilePath, Master.Whitelist);
+                return true;
+            }
+            catch { return false; }
         }
 #endif
 

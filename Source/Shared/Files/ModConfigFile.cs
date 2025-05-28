@@ -30,13 +30,10 @@ namespace Shared
 
         public static ModConfigFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<ModConfigFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ModConfigFile>(FilePath);
             else
             {
-                var obj = new ModConfigFile();
+                ModConfigFile obj = new ModConfigFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
@@ -49,10 +46,7 @@ namespace Shared
                 Serializer.SerializeToFile(FilePath, Master.ModConfig);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 #endif
     }

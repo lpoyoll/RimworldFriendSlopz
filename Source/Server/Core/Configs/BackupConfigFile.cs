@@ -17,13 +17,10 @@ namespace GameServer.Core.Configs
 
         public static BackupConfigFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<BackupConfigFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<BackupConfigFile>(FilePath);
             else
             {
-                var obj = new BackupConfigFile();
+                BackupConfigFile obj = new BackupConfigFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
@@ -36,10 +33,7 @@ namespace GameServer.Core.Configs
                 Serializer.SerializeToFile(FilePath, Master.BackupConfig);
                 return true;
             }
-            catch 
-            { 
-                return false; 
-            }
+            catch { return false; }
         }
 #endif
     }

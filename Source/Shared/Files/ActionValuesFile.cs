@@ -45,13 +45,10 @@ namespace Shared
 
         public static ActionValuesFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<ActionValuesFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ActionValuesFile>(FilePath);
             else
             {
-                var obj = new ActionValuesFile();
+                ActionValuesFile obj = new ActionValuesFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
@@ -64,10 +61,7 @@ namespace Shared
                 Serializer.SerializeToFile(FilePath, Master.ActionConfigs);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 #endif
 

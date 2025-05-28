@@ -46,21 +46,23 @@ namespace GameServer.Core.Configs
 
         public static ServerConfigFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<ServerConfigFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ServerConfigFile>(FilePath);
             else
             {
-                var obj = new ServerConfigFile();
+                ServerConfigFile obj = new ServerConfigFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
         }
 
-        public static void Save()
+        public static bool Save()
         {
-            Serializer.SerializeToFile(FilePath, Master.ServerConfig);
+            try
+            {
+                Serializer.SerializeToFile(FilePath, Master.ServerConfig);
+                return true;
+            }
+            catch { return false; }
         }
 
 #endif

@@ -16,13 +16,10 @@ namespace Shared
 
         public static SiteValuesFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<SiteValuesFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<SiteValuesFile>(FilePath);
             else
             {
-                var obj = new SiteValuesFile();
+                SiteValuesFile obj = new SiteValuesFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
@@ -35,10 +32,7 @@ namespace Shared
                 Serializer.SerializeToFile(FilePath, Master.SiteValues);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 #endif
 

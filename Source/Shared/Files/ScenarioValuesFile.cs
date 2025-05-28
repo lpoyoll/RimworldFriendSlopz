@@ -18,13 +18,10 @@ namespace Shared
 
         public static ScenarioValuesFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<ScenarioValuesFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ScenarioValuesFile>(FilePath);
             else
             {
-                var obj = new ScenarioValuesFile();
+                ScenarioValuesFile obj = new ScenarioValuesFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
@@ -37,10 +34,7 @@ namespace Shared
                 Serializer.SerializeToFile(FilePath, Master.ScenarioValues);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 #endif
     }

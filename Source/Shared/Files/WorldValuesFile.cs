@@ -50,13 +50,10 @@ namespace Shared
 
         public static WorldValuesFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.FileBytesToObject<WorldValuesFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.FileBytesToObject<WorldValuesFile>(FilePath);
             else
             {
-                var obj = new WorldValuesFile();
+                WorldValuesFile obj = new WorldValuesFile();
                 Serializer.ObjectBytesToFile(FilePath, obj);
                 return obj;
             }
@@ -69,10 +66,7 @@ namespace Shared
                 Serializer.ObjectBytesToFile(FilePath, Master.WorldValues);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 #endif
     }

@@ -18,21 +18,23 @@ namespace GameServer.Core.Configs
 
         public static ServerBrowserConfig Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<ServerBrowserConfig>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<ServerBrowserConfig>(FilePath);
             else
             {
-                var obj = new ServerBrowserConfig();
+                ServerBrowserConfig obj = new ServerBrowserConfig();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
         }
 
-        public static void Save()
+        public static bool Save()
         {
-            Serializer.SerializeToFile(FilePath, Master.ServerBrowserConfig);
+            try
+            {
+                Serializer.SerializeToFile(FilePath, Master.ServerBrowserConfig);
+                return true;
+            }
+            catch { return false; }
         }
 #endif
 

@@ -110,13 +110,10 @@ namespace Shared
 
         public static DifficultyValuesFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<DifficultyValuesFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<DifficultyValuesFile>(FilePath);
             else
             {
-                var obj = new DifficultyValuesFile();
+                DifficultyValuesFile obj = new DifficultyValuesFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
@@ -129,10 +126,7 @@ namespace Shared
                 Serializer.SerializeToFile(FilePath, Master.DifficultyValues);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 #endif
     }

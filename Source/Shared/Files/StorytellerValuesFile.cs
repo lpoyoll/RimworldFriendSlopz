@@ -18,13 +18,10 @@ namespace Shared
 
         public static StorytellerValuesFile Load()
         {
-            if (File.Exists(FilePath))
-            {
-                return Serializer.SerializeFromFile<StorytellerValuesFile>(FilePath);
-            }
+            if (File.Exists(FilePath)) return Serializer.SerializeFromFile<StorytellerValuesFile>(FilePath);
             else
             {
-                var obj = new StorytellerValuesFile();
+                StorytellerValuesFile obj = new StorytellerValuesFile();
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }
@@ -37,10 +34,7 @@ namespace Shared
                 Serializer.SerializeToFile(FilePath, Master.StorytellerValues);
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+            catch { return false; }
         }
 #endif
     }
