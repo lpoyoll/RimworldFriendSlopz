@@ -80,7 +80,7 @@ namespace GameClient.Managers
 
         public static Dictionary<string, string> GetAllSaveFiles() 
         {
-            var result = new Dictionary<string, string>();
+            Dictionary<string, string> result = new Dictionary<string, string>();
             foreach (string file in Directory.GetFiles(Master.SavesFolderPath))
             {
                 if(Path.GetExtension(file) == ".rws")

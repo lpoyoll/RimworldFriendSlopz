@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using GameServer.Core;
+using GameServer.Core.Configs;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
@@ -75,28 +76,33 @@ namespace GameServer.Managers
 
         private static bool ValidateServerInfos() 
         {
-            var serverInfo = Master.ServerConfig;
-            var serverBrowserInfo = Master.ServerBrowserConfig;
-            if(serverInfo.Description.Length > MaxDescriptionLength) 
+            ServerConfigFile serverInfo = Master.ServerConfig;
+            ServerBrowserConfig serverBrowserInfo = Master.ServerBrowserConfig;
+
+            if (serverInfo.Description.Length > MaxDescriptionLength) 
             {
                 Printer.Error($"Server description is above {MaxDescriptionLength} characters, please shorten it. Server browser features have been turned off.");
                 return false;
             }
+
             if (string.IsNullOrEmpty(serverBrowserInfo.PublicEndPoint)) 
             {
                 Printer.Error($"Public endpoint is empty. Please set your public ip adress or domain. Server browser features have been turned off.");
                 return false;
             }
+
             if (serverInfo.Name.Length > MaxNameLength)
             {
                 Printer.Error($"Server name is above {MaxNameLength} characters, please shorten it. Server browser features have been turned off.");
                 return false;
             }
+
             if(serverInfo.Name == "RimWorld-Together-Server") 
             {
                 Printer.Error($"Server name is the default name of {serverInfo.Name}. Please change the server name to something unique!. Server browser features have been turned off.");
                 return false;
             }
+
             return true;
         }
 

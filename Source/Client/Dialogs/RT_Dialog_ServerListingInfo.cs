@@ -65,15 +65,13 @@ namespace GameClient.Dialogs
         }
         private void MatchModlists() 
         {
-            var data = CheckInstalledMods();
+            ModlistAnalyzer data = CheckInstalledMods();
+
             if (data.IsAllMissingOptional == false && (data.MissingMods.Any() || data.DownloadableMods.Any() || data.ModsToEnable.Any()))
             {
                 ShowMissingModsDialog(data);
             }
-            else
-            {
-                ConnectToServer();
-            }
+            else ConnectToServer();
         }
 
         private void ShowMissingModsDialog(ModlistAnalyzer data) 
@@ -88,7 +86,7 @@ namespace GameClient.Dialogs
 
         private void ProcessMissingMods(ModlistAnalyzer data) 
         {
-            foreach (var value in data.DownloadableMods.ToList())
+            foreach (KeyValuePair<string, ulong> value in data.DownloadableMods.ToList())
             {
                 if (ServerBrowserManager.DownloadMod(value.Value))
                 {
@@ -99,24 +97,21 @@ namespace GameClient.Dialogs
                         activeMods.Add(value.Key);
                         Printer.Warning($"Enabled mod {value.Key}", LogImportanceMode.Verbose);
                     }
+
                     catch (Exception ex)
                     {
                         Printer.Error($"Error while trying to activate mod {value.Key}. You will need to manually enable / download this mod.\n{ex}");
                     }
                 }
+
                 else 
                 {
                     Printer.Warning($"Failed to download mod {value.Key} with steam id {value.Value}", LogImportanceMode.Verbose);
                 }
             }
-            if (data.DownloadableMods.Count > 0) 
-            {
-                ShowDownloadErrorDialog(data);
-            }
-            else 
-            {
-                RestartGameWithNewModlist(data);
-            }
+
+            if (data.DownloadableMods.Count > 0) ShowDownloadErrorDialog(data);
+            else RestartGameWithNewModlist(data);
         }
 
         private void ShowDownloadErrorDialog(ModlistAnalyzer data) 
@@ -153,7 +148,7 @@ namespace GameClient.Dialogs
             for (int i = 0; i < ServerInfo._config.UnsortedMods.Length; i++)
             {
                 string mod = ServerInfo._config.UnsortedMods[i];
-                var foundMod = ModLister.AllInstalledMods.FirstOrDefault(x => x.PackageId == mod);
+                ModMetaData foundMod = ModLister.AllInstalledMods.FirstOrDefault(x => x.PackageId == mod);
                 if (foundMod != null)
                 {
                     if (!foundMod.Active)

@@ -142,14 +142,17 @@ namespace GameClient.Dialogs
             {
                 return IsProcessRunning("steam");
             }
+
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 return IsProcessRunning("steam_osx");
             }
+
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 return IsProcessRunning("steam");
             }
+
             return false;
         }
 
@@ -157,16 +160,13 @@ namespace GameClient.Dialogs
         {
             try
             {
-                foreach (var process in Process.GetProcesses())
+                foreach (Process process in Process.GetProcesses())
                 {
-                    if (process.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase))
-                        return true;
+                    if (process.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase)) return true;
                 }
             }
-            catch
-            {
-                
-            }
+            catch { }
+
             return false;
         }
 

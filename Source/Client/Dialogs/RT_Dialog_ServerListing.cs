@@ -44,7 +44,7 @@ namespace GameClient.Dialogs
 
                 Printer.Warning($"Found {servers.Count()} servers in the server browser", CommonEnumerators.LogImportanceMode.Verbose);
 
-                foreach (var server in servers)
+                foreach (ServerInfo server in servers)
                 {
                     Printer.Warning($"Server found! {server._name}", CommonEnumerators.LogImportanceMode.Verbose);
                 }
