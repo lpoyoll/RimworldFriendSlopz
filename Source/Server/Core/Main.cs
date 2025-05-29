@@ -145,9 +145,11 @@ namespace GameServer.Core
                 ChatConfigFile.Save();
                 WorldValuesFile.Save();
                 ServerBrowserConfig.Save();
-                GC.Collect();
                 Printer.Error("Successfully updated some files to a newer version, it is HEAVILY recommended to restart your server before continuing.");
             }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Printer.Warning($"{GC.GetTotalAllocatedBytes() / 1024 / 1024}MB after resource loading");
         }
 
         public static void ChangeTitle()

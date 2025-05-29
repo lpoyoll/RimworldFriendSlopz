@@ -6,23 +6,19 @@ using Shared.Misc;
 namespace Shared
 {
     [Serializable]
-    public class RiverDetails
+    public readonly struct RiverDetails
     {
-        [JsonIgnore] private string? CachedDefName = null;
-        public string? RiverDefName 
+        public string RiverDefName { get; }
+
+        public int FromTile { get; }
+
+        public int ToTile { get; }
+        [JsonConstructor]
+        public RiverDetails(int fromTile, int toTile, string defname)
         {
-            get
-            {
-                return CachedDefName;
-            }
-            set
-            {
-                CachedDefName = Pools.StringPool.GetOrAddString(value);
-            } 
+            FromTile = fromTile;
+            ToTile = toTile;
+            RiverDefName = Pools.StringPool.GetOrAddString(defname);
         }
-
-        public int FromTile { get; set; }
-
-        public int ToTile { get; set; }
     }
 }
