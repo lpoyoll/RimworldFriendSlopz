@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Newtonsoft.Json;
+using Shared.Misc;
 
 namespace Shared
 {

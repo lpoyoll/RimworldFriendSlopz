@@ -6,6 +6,7 @@ using GameServer.Managers;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
+using Shared.Misc;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Core
@@ -96,7 +97,7 @@ namespace GameServer.Core
             
             if (!Updater.ValidatePreviousVersion())
             {
-                Printer.Error($"You have updated from a previous version. It is recommended to regenerate all config files and check the change log for any changes.");
+                Printer.Error($"You have updated from a previous version. It is recommended to regenerate all config files and check the change-log for any changes.");
             }
             
             Master.ServerConfig = ServerConfigFile.Load();
@@ -125,12 +126,24 @@ namespace GameServer.Core
             
             Master.ServerBrowserConfig = ServerBrowserConfig.Load();
             
-            WorldValuesFile.Save();
-            
             EventManager.LoadEvents();
             
             if (Updater.HasUpdated)
             {
+                ServerConfigFile.Save();
+                ActionValuesFile.Save();
+                SiteValuesFile.Save();
+                RoadValuesFile.Save();
+                WhitelistConfigFile.Save();
+                DifficultyValuesFile.Save();
+                ScenarioValuesFile.Save();
+                StorytellerValuesFile.Save();
+                BackupConfigFile.Save();
+                ModConfigFile.Save();
+                ChatConfigFile.Save();
+                WorldValuesFile.Save();
+                ServerBrowserConfig.Save();
+                GC.Collect();
                 Printer.Error("Successfully updated some files to a newer version, it is HEAVILY recommended to restart your server before continuing.");
             }
         }

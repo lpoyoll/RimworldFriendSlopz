@@ -7,7 +7,7 @@ using GameServer.Files;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Shared
+namespace Shared.Misc
 {
     public static class Updater
     {
@@ -39,6 +39,10 @@ namespace Shared
             public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue,
                 JsonSerializer serializer)
             {
+                if (reader.TokenType == JsonToken.Null)
+                {
+                    return null;
+                }
                 if (reader.TokenType == JsonToken.String)
                 {
 #if SERVER
@@ -47,7 +51,7 @@ namespace Shared
                     return Encoding.UTF8.GetBytes(reader.Value as string);
                 }
 
-                if (reader.TokenType == JsonToken.StartArray)
+                if (reader.TokenType == JsonToken.Bytes)
                 {
                     return (byte[]?)reader.Value;
                 }
@@ -57,7 +61,7 @@ namespace Shared
 
             public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
             {
-                writer.WriteNull();
+                serializer.Serialize(writer, value as byte[]);
             }
         }
         // Converts string[] into byte[]

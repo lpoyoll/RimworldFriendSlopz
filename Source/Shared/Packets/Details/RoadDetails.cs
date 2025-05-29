@@ -1,13 +1,14 @@
 using System;
 using System.Text;
 using Newtonsoft.Json;
+using Shared.Misc;
 
 namespace Shared
 {
     [Serializable]
     public class RoadDetails
     {
-        [JsonProperty("Tiles")]
+        [JsonProperty("RoadDefName")]
         [JsonConverter(typeof(Updater.StringConverter))]
         public byte[]? RoadDefNameRaw { get; set; }
 

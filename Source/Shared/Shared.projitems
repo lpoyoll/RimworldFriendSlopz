@@ -19,10 +19,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\StringChecker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\Updater.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\ListenerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Data\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Details\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Updater.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
