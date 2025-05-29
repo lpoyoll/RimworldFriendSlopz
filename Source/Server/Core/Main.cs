@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Globalization;
+using System.Runtime;
 using GameServer.Core.Configs;
 using GameServer.Managers;
 using GameServer.Misc;
@@ -91,7 +93,12 @@ namespace GameServer.Core
             Printer.Title($"Server version {CommonValues.ExecutableVersion}");
             Printer.Title($"Loading all necessary resources");
             Printer.Title($"----------------------------------------");
-
+            
+            if (!Updater.ValidatePreviousVersion())
+            {
+                Printer.Error($"You have updated from a previous version. It is recommended to regenerate all config files and check the change log for any changes.");
+            }
+            
             Master.ServerConfig = ServerConfigFile.Load();
 
             Master.ActionConfigs = ActionValuesFile.Load();
@@ -113,12 +120,19 @@ namespace GameServer.Core
             Master.ModConfig = ModConfigFile.Load();
             
             Master.ChatConfig = ChatConfigFile.Load();
-
+            
             Master.WorldValues = WorldValuesFile.Load();
-
+            
             Master.ServerBrowserConfig = ServerBrowserConfig.Load();
-
+            
+            WorldValuesFile.Save();
+            
             EventManager.LoadEvents();
+            
+            if (Updater.HasUpdated)
+            {
+                Printer.Error("Successfully updated some files to a newer version, it is HEAVILY recommended to restart your server before continuing.");
+            }
         }
 
         public static void ChangeTitle()

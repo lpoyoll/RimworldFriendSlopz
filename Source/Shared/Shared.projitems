@@ -22,6 +22,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\ListenerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Data\*.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Packets\Details\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Updater.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
