@@ -128,6 +128,8 @@ namespace GameServer.Core
             
             EventManager.LoadEvents();
             
+            Printer.Warning($"String pool has {Pools.StringPool.AllStrings.Count} strings in it!");
+            
             if (Updater.HasUpdated)
             {
                 ServerConfigFile.Save();

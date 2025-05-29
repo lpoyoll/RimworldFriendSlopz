@@ -8,27 +8,17 @@ namespace Shared
     [Serializable]
     public class RoadDetails
     {
-        [JsonProperty("RoadDefName")]
-        [JsonConverter(typeof(Updater.StringConverter))]
-        public byte[]? RoadDefNameRaw { get; set; }
-
-        [JsonIgnore]
+        [JsonIgnore] public string? CachedRoadDefName = null;
+        
         public string? RoadDefName
         {
             get
             {
-                if (RoadDefNameRaw == null) return null;
-                return Encoding.UTF8.GetString(RoadDefNameRaw);
+                return CachedRoadDefName;
             }
             set
             {
-                if (value == null)
-                {
-                    RoadDefNameRaw = null;
-                    return;
-                }
-
-                RoadDefNameRaw = Encoding.UTF8.GetBytes(value);
+                CachedRoadDefName = Pools.StringPool.GetOrAddString(value);
             }
         }
 

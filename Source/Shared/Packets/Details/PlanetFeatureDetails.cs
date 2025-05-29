@@ -8,48 +8,33 @@ namespace Shared
     [Serializable]
     public class PlanetFeatureDetails
     {
-        [JsonProperty("Name")]
-        [JsonConverter(typeof(Updater.StringConverter))]
-        public byte[]? NameRaw { get; set; }
+        public string? Name { get; set;  }
+        // public string? Name
+        // {
+        //     get
+        //     {
+        //         return CachedName;
+        //     }
+        //     set
+        //     {
+        //         CachedName = Pools.StringPool.GetOrAddString(value);
+        //     }
+        // }
+        
         [JsonIgnore]
-        public string? Name
-        {
+        private string? CachedDefName = null;
+        public string? DefName 
+        {           
             get
             {
-                if (NameRaw == null) return null;
-                return Encoding.UTF8.GetString(NameRaw);
+                return CachedDefName;
             }
             set
             {
-                if (value == null)
-                {
-                    NameRaw = null;
-                    return;
-                }
-
-                NameRaw = Encoding.UTF8.GetBytes(value);
+                CachedDefName = Pools.StringPool.GetOrAddString(value);
             }
+            
         }
-        [JsonProperty("DefName")]
-        [JsonConverter(typeof(Updater.StringConverter))]
-        public byte[] DefNameRaw { get; set; }
-        [JsonIgnore]
-        public string? DefName {           
-            get
-            {
-                if (DefNameRaw == null) return null;
-                return Encoding.UTF8.GetString(DefNameRaw);
-            }
-            set
-            {
-                if (value == null)
-                {
-                    DefNameRaw = null;
-                    return;
-                }
-
-                DefNameRaw = Encoding.UTF8.GetBytes(value);
-            }}
 
         public float[]? DrawCenter { get; set; }
 

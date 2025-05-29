@@ -8,25 +8,16 @@ namespace Shared
     [Serializable]
     public class RiverDetails
     {
-        [JsonProperty("RiverDefName")]
-        [JsonConverter(typeof(Updater.StringConverter))]
-        public byte[] RiverDefNameRaw { get; set; }
-        [JsonIgnore]
+        [JsonIgnore] private string? CachedDefName = null;
         public string? RiverDefName 
         {
             get
             {
-                if (RiverDefNameRaw == null) return null;
-                return Encoding.UTF8.GetString(RiverDefNameRaw);
+                return CachedDefName;
             }
             set
             {
-                if (value == null || value.Length == 0)
-                {
-                    RiverDefNameRaw = null;
-                    return;
-                }
-                RiverDefNameRaw = Encoding.UTF8.GetBytes(value);
+                CachedDefName = Pools.StringPool.GetOrAddString(value);
             } 
         }
 
