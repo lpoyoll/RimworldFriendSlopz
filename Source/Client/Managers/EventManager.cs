@@ -50,7 +50,7 @@ namespace GameClient.Managers
                 RT_Dialog_Base.PushNewDialog(d2);
             };
 
-            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the even you want to send",
+            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons("Event Selector", "Choose the event you want to send",
                 eventNames.ToArray(), a1.Invoke, null);
 
             RT_Dialog_Base.PushNewDialog(d1);
