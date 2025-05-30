@@ -14,6 +14,8 @@ using GameClient.Misc;
 using GameClient.Values;
 using GameClient.TCP;
 using System.Collections.Generic;
+using GameClient.Dialogs;
+using System.Linq;
 
 namespace GameClient.Managers
 {
@@ -38,11 +40,11 @@ namespace GameClient.Managers
 
             Printer.Warning(data, LogImportanceMode.Extreme);
 
-            if (data._stepMode == SaveStepMode.Receive) SaveReceiverManager.ReceiveSaveFromServer(data);
+            if (data._stepMode == SaveStepMode.Receive) SaveManager.ReceiveSaveFromServer(data);
             else if (data._stepMode == SaveStepMode.Send)
             {
                 LatestSavePath = SaveFilePath;
-                SaveSenderManager.SendSaveToServer();
+                SaveManager.SendSaveToServer();
             }
             else throw new NotImplementedException();
         }
@@ -88,10 +90,37 @@ namespace GameClient.Managers
             }
             return result;
         }
-    }
 
-    public static class SaveSenderManager
-    {
+        public static void OpenSaveUploaderMenu()
+        {
+            Dictionary<string, string> saves = SaveManager.GetAllSaveFiles();
+            RT_Dialog_ListingWithButton dialog = new RT_Dialog_ListingWithButton("Save uploader",
+                "Select a save to upload:",
+                saves.Keys.ToArray(),
+                delegate
+                {
+                    RT_Dialog_YesNo D2 = new RT_Dialog_YesNo("This feature is in beta and might fail, are you sure?", delegate
+                    {
+                        if (saves.TryGetValue(RT_Dialog_ListingWithButton.DialogButtonListingResultString, out string file))
+                        {
+                            byte[] data = File.ReadAllBytes(file);
+                            File.WriteAllBytes(SaveManager.SaveFilePath, data);
+                            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for save upload"));
+
+                            DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
+
+                            SaveManager.LatestSavePath = SaveManager.SaveFilePath;
+
+                            SaveManager.SendSaveToServer();
+                        }
+                    });
+
+                    RT_Dialog_Base.PushNewDialog(D2);
+                });
+
+            RT_Dialog_Base.PushNewDialog(dialog);
+        }
+
         public static void SendSaveToServer()
         {
             byte[] saveBytes;
@@ -101,9 +130,9 @@ namespace GameClient.Managers
             }
             else
             {
-                saveBytes =  File.ReadAllBytes(SaveManager.LatestSavePath);
+                saveBytes = File.ReadAllBytes(SaveManager.LatestSavePath);
             }
-            
+
             saveBytes = GZip.CompressBytes(saveBytes);
 
             SaveData data = new SaveData();
@@ -119,10 +148,7 @@ namespace GameClient.Managers
 
             Network.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
-    }
 
-    public static class SaveReceiverManager
-    {
         public static void ReceiveSaveFromServer(SaveData data)
         {
             Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
@@ -142,7 +168,7 @@ namespace GameClient.Managers
 
             if (data._instructions != SaveMode.Strict && File.Exists(SaveManager.SaveFilePath))
             {
-                if (SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.ServerSaveFilePath) >= 
+                if (SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.ServerSaveFilePath) >=
                     SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.SaveFilePath))
                 {
                     Printer.Message("Loading remote save", LogImportanceMode.Verbose);

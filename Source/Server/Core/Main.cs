@@ -118,7 +118,7 @@ namespace GameServer.Core
 
             Master.ServerBrowserConfig = ServerBrowserConfig.Load();
 
-            EventManager.LoadEvents();
+            EventManagerHelper.LoadEvents();
         }
 
         public static void ChangeTitle()

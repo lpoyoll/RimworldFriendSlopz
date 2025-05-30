@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,6 +6,7 @@ using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
+using Shared;
 
 namespace GameClient.Managers
 {
@@ -16,7 +18,7 @@ namespace GameClient.Managers
 
         private static readonly string dialogDescription = "Choose which action to execute";
 
-        private static readonly string[] MenuButtons = new string[] { "Mod Manager", "Save Uploader (BETA)"};
+        private static readonly string[] MenuButtons = new string[] { "Mod Manager", "Save Uploader (BETA)", "Event Manager"};
 
         public static void ShowAdminMenu()
         {
@@ -35,32 +37,11 @@ namespace GameClient.Managers
                     break;
 
                 case 1:
-                    Dictionary<string, string> saves = SaveManager.GetAllSaveFiles();
-                    RT_Dialog_ListingWithButton dialog = new RT_Dialog_ListingWithButton("Save uploader",
-                        "Select a save to upload:",
-                        saves.Keys.ToArray(),
-                        delegate
-                        {
-                            RT_Dialog_YesNo D2 = new RT_Dialog_YesNo("This feature is in beta and might fail, are you sure?", delegate
-                            {
-                                if (saves.TryGetValue(RT_Dialog_ListingWithButton.DialogButtonListingResultString, out string file))
-                                {
-                                    byte[] data = File.ReadAllBytes(file);
-                                    File.WriteAllBytes(SaveManager.SaveFilePath, data);
-                                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for save upload"));
+                    SaveManager.OpenSaveUploaderMenu();
+                    break;
 
-                                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
-                                    
-                                    SaveManager.LatestSavePath = SaveManager.SaveFilePath;
-                                    
-                                    SaveSenderManager.SendSaveToServer();
-                                }
-                            });
-
-                            RT_Dialog_Base.PushNewDialog(D2);
-                        });
-
-                    RT_Dialog_Base.PushNewDialog(dialog);
+                case 2:
+                    EventManager.ShowEventTweakerMenu();
                     break;
             }
         }

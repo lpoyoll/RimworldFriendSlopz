@@ -1,4 +1,5 @@
 ﻿using GameServer.TCP;
+using Newtonsoft.Json.Linq;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Misc
@@ -20,6 +21,8 @@ namespace GameServer.Misc
         public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save map] > {client.UserFile.Uid}"); }
 
         public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.UserFile.Uid}"); }
+
+        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set Events] > {client.UserFile.Uid}"); }
 
         public static void DisplayRemoveMap(string value) { Printer.Message($"[Remove map] > {value}"); }
 

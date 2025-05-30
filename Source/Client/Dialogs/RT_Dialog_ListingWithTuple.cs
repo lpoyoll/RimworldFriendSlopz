@@ -23,7 +23,7 @@ namespace GameClient.Dialogs
 
         public static int[]? DialogTupleListingResultInt { get; private set; }
 
-        public RT_Dialog_ListingWithTuple(string title, string description, string[] keys, string[] values, Action actionAccept = null)
+        public RT_Dialog_ListingWithTuple(string title, string description, string[] keys, string[] values, int[] defaultValues = null, Action actionAccept = null)
         {
             this.Title = title;
             this.Description = description;
@@ -41,6 +41,15 @@ namespace GameClient.Dialogs
             List<int> ints = new List<int>();
             for (int i = 0; i < keys.Length; i++) ints.Add(0);
             ValueInt = ints.ToArray();
+
+            if (defaultValues != null)
+            {
+                for (int i = 0; i < ValueString.Length; i++)
+                {
+                    ValueString[i] = values[defaultValues[i]];
+                    ValueInt[i] = defaultValues[i];
+                }
+            }
         }
 
         public override void DoWindowContents(Rect rect)

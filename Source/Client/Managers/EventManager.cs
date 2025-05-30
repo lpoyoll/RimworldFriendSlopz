@@ -40,8 +40,14 @@ namespace GameClient.Managers
         public static void ShowEventMenu()
         {
             List<string> eventNames = new List<string>();
-
-            foreach (EventFile eventFile in EventManagerHelper.availableEvents) eventNames.Add(eventFile.Name);
+            foreach (EventFile eventFile in EventManagerHelper.availableEvents)
+            {
+                if (eventFile.IsEnabled)
+                {
+                    eventNames.Add(eventFile.Name);
+                    Printer.Warning("Enabled");
+                }
+            }
 
             Action a1 = delegate
             {
@@ -55,6 +61,38 @@ namespace GameClient.Managers
                 eventNames.ToArray(), a1.Invoke, null);
 
             RT_Dialog_Base.PushNewDialog(d1);
+        }
+
+        public static void ShowEventTweakerMenu()
+        {
+            string title = "Event Manager";
+            string description = "Configure the availability of each event";
+            string[] values = { "Disabled", "Enabled" };
+
+            List<string> eventNames = new List<string>();
+            foreach (EventFile ev in EventManagerHelper.availableEvents) eventNames.Add(ev.Name);
+
+            List<int> defaultValues = new List<int>();
+            foreach (EventFile ev in EventManagerHelper.availableEvents) defaultValues.Add(ev.IsEnabled == true ? 1 : 0);
+
+            Action toDo = delegate
+            {
+                for (int i = 0; i < EventManagerHelper.availableEvents.Length; i++)
+                {
+                    EventFile file = EventManagerHelper.availableEvents[i];
+                    file.IsEnabled = RT_Dialog_ListingWithTuple.DialogTupleListingResultInt[i] == 1 ? true : false;
+                }
+
+                EventData data = new EventData();
+                data._stepMode = CommonEnumerators.EventStepMode.Customize;
+                data._eventFiles = EventManagerHelper.availableEvents;
+                Network.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("SUCCESS",
+                    new string[] { "Changes will apply to new connecting players" }));
+            };
+
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_ListingWithTuple(title, description, eventNames.ToArray(), values, defaultValues.ToArray(), toDo));
         }
 
         public static void SendEvent()

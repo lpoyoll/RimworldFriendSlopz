@@ -48,7 +48,7 @@ namespace GameClient.Patches
                     MapManager.SendPlayerMapsToServer();
 
                     Printer.Message("Sending save to server", LogImportanceMode.Verbose);
-                    SaveSenderManager.SendSaveToServer();
+                    SaveManager.SendSaveToServer();
                 }
             }
             catch (Exception e) { Printer.Error($"{e}"); }

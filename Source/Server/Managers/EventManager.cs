@@ -29,20 +29,10 @@ namespace GameServer.Managers
                     SendEvent(client, data);
                     break;
 
-                case EventStepMode.Receive:
-                    //Nothing goes here
-                    break;
-
-                case EventStepMode.Recover:
-                    //Nothing goes here
+                case EventStepMode.Customize:
+                    ModifyEvents(client, data);
                     break;
             }
-        }
-
-        public static void LoadEvents()
-        {
-            EventManagerHelper.CheckForEventFiles();
-            EventManagerHelper.LoadAllEvents();
         }
 
         public static void SendEvent(ServerClient client, EventData eventData)
@@ -84,17 +74,27 @@ namespace GameServer.Managers
                 }
             }
         }
+
+        private static void ModifyEvents(ServerClient client, EventData data)
+        {
+            foreach (EventFile ev in data._eventFiles)
+            {
+                Serializer.SerializeToFile(Path.Combine(Master.EventsPath, ev.DefName + EventManagerHelper.FileExtension), ev);
+            }
+
+            EventManagerHelper.LoadEvents();
+
+            InformationDisplayer.DisplaySetEvents(client);
+        }
     }
 
     public static class EventManagerHelper
     {
-        //Variables
+        public static string FileExtension { get; private set; } = ".mpevent";
 
-        public static readonly string fileExtension = ".mpevent";
+        public static EventFile[] LoadedEvents { get; private set; } = null;
 
-        public static EventFile[] loadedEvents;
-
-        public static readonly Dictionary<string, string> baseEvents = new Dictionary<string, string>()
+        public static Dictionary<string, string> BaseEvents { get; private set; } = new Dictionary<string, string>()
         {
             {"Ambush", "Ambush"},
             {"ManhunterAmbush", "Manhunter ambush"},
@@ -217,6 +217,12 @@ namespace GameServer.Managers
             {"ChimeraAssault", "Chimera assault"}
         };
 
+        public static void LoadEvents()
+        {
+            EventManagerHelper.CheckForEventFiles();
+            EventManagerHelper.LoadAllEvents();
+        }
+
         public static void CheckForEventFiles()
         {
             List<string> foundEvents = new List<string>();
@@ -226,7 +232,7 @@ namespace GameServer.Managers
                 foundEvents.Add(Path.GetFileNameWithoutExtension(str));
             }
 
-            foreach (KeyValuePair<string, string> pair in baseEvents)
+            foreach (KeyValuePair<string, string> pair in BaseEvents)
             {
                 if (!foundEvents.Contains(pair.Key))
                 {
@@ -240,11 +246,10 @@ namespace GameServer.Managers
             List<EventFile> toLoad = new List<EventFile>();
             foreach (string str in Directory.GetFiles(Master.EventsPath))
             {
-                EventFile eventFile = Serializer.SerializeFromFile<EventFile>(str);
-                if (eventFile.IsEnabled) toLoad.Add(eventFile);
+                toLoad.Add(Serializer.SerializeFromFile<EventFile>(str));
             }
 
-            loadedEvents = toLoad.OrderBy(fetch => fetch.Name).ToArray();
+            LoadedEvents = toLoad.OrderBy(fetch => fetch.Name).ToArray();
         }
 
         public static void GenerateDefaultEventFile(string defName, string name)
@@ -255,7 +260,7 @@ namespace GameServer.Managers
             newEvent.Cost = 500;
             newEvent.IsEnabled = true;
 
-            Serializer.SerializeToFile(Path.Combine(Master.EventsPath, defName + fileExtension), newEvent);
+            Serializer.SerializeToFile(Path.Combine(Master.EventsPath, defName + FileExtension), newEvent);
         }
     }
 }

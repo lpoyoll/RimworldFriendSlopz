@@ -15,7 +15,7 @@ namespace GameServer.Managers
             globalData._isClientFactionMember = !string.IsNullOrEmpty(client.UserFile.GuildName);
 
             globalData._serverValues = new ServerValuesFile(Master.ServerConfig.Name);
-            globalData._eventValues = EventManagerHelper.loadedEvents;
+            globalData._eventValues = EventManagerHelper.LoadedEvents;
             globalData._siteValues = Master.SiteValues;
             globalData._difficultyValues = Master.DifficultyValues;
             globalData._scenarioValues = Master.ScenarioValues;

@@ -13,6 +13,8 @@ namespace Shared
 
         public EventFile _eventFile { get; set; } = null;
 
+        public EventFile[] _eventFiles { get; set; } = null;
+
         public override string ToString()
         {
             return $"EventData:|{_stepMode}|{_fromTile}|{_toTile}|{_eventFile}";
