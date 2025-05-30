@@ -40,18 +40,11 @@ namespace GameClient.Managers
         public static void ShowEventMenu()
         {
             List<string> eventNames = new List<string>();
-            foreach (EventFile eventFile in EventManagerHelper.availableEvents)
-            {
-                if (eventFile.IsEnabled)
-                {
-                    eventNames.Add(eventFile.Name);
-                    Printer.Warning("Enabled");
-                }
-            }
+            foreach (EventFile eventFile in EventManagerHelper.EnabledEvents) eventNames.Add(eventFile.Name);
 
             Action a1 = delegate
             {
-                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost} " +
+                RT_Dialog_YesNo d2 = new RT_Dialog_YesNo($"This event will cost you {EventManagerHelper.EnabledEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost} " +
                     $"silver, continue?", SendEvent, null);
 
                 RT_Dialog_Base.PushNewDialog(d2);
@@ -70,22 +63,22 @@ namespace GameClient.Managers
             string[] values = { "Disabled", "Enabled" };
 
             List<string> eventNames = new List<string>();
-            foreach (EventFile ev in EventManagerHelper.availableEvents) eventNames.Add(ev.Name);
+            foreach (EventFile ev in EventManagerHelper.AvailableEvents) eventNames.Add(ev.Name);
 
             List<int> defaultValues = new List<int>();
-            foreach (EventFile ev in EventManagerHelper.availableEvents) defaultValues.Add(ev.IsEnabled == true ? 1 : 0);
+            foreach (EventFile ev in EventManagerHelper.AvailableEvents) defaultValues.Add(ev.IsEnabled == true ? 1 : 0);
 
             Action toDo = delegate
             {
-                for (int i = 0; i < EventManagerHelper.availableEvents.Length; i++)
+                for (int i = 0; i < EventManagerHelper.AvailableEvents.Length; i++)
                 {
-                    EventFile file = EventManagerHelper.availableEvents[i];
+                    EventFile file = EventManagerHelper.AvailableEvents[i];
                     file.IsEnabled = RT_Dialog_ListingWithTuple.DialogTupleListingResultInt[i] == 1 ? true : false;
                 }
 
                 EventData data = new EventData();
                 data._stepMode = CommonEnumerators.EventStepMode.Customize;
-                data._eventFiles = EventManagerHelper.availableEvents;
+                data._eventFiles = EventManagerHelper.AvailableEvents;
                 Network.Listener.EnqueuePacket(PacketHeader.EventManager, data);
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("SUCCESS",
@@ -103,20 +96,20 @@ namespace GameClient.Managers
             //MAKE IT SO ALL MAPS ARE ACCOUNTED FOR
             Map toGetSilverFrom = Find.AnyPlayerHomeMap;
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost))
+            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerHelper.EnabledEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost))
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost);
+                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerHelper.EnabledEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost);
 
                 EventData eventData = new EventData();
                 eventData._stepMode = EventStepMode.Send;
                 eventData._fromTile = toGetSilverFrom.Tile;
                 eventData._toTile = SessionValues.ChosenSettlement.Tile;
-                eventData._eventFile = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton];
+                eventData._eventFile = EventManagerHelper.EnabledEvents[RT_Dialog_ScrollButtons.SelectedScrollButton];
 
                 Network.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
@@ -168,7 +161,7 @@ namespace GameClient.Managers
             Map toReturnTo = Find.AnyPlayerHomeMap;
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
-            silverToReturn.stackCount = EventManagerHelper.availableEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost;
+            silverToReturn.stackCount = EventManagerHelper.EnabledEvents[RT_Dialog_ScrollButtons.SelectedScrollButton].Cost;
 
             RimworldManager.PlaceThingIntoMap(silverToReturn, toReturnTo, ThingPlaceMode.Near, true);
 
@@ -178,8 +171,14 @@ namespace GameClient.Managers
 
     public static class EventManagerHelper
     {
-        public static EventFile[] availableEvents;
+        public static EventFile[] AvailableEvents { get; private set; } = null;
 
-        public static void SetValues(ServerGlobalData serverGlobalData) { availableEvents = serverGlobalData._eventValues; }
+        public static EventFile[] EnabledEvents { get; private set; } = null;
+
+        public static void SetValues(ServerGlobalData serverGlobalData) 
+        { 
+            AvailableEvents = serverGlobalData._eventValues;
+            EnabledEvents = AvailableEvents.Where(fetch => fetch.IsEnabled).ToArray();
+        }
     }
 }

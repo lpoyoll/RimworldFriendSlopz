@@ -16,9 +16,12 @@ namespace GameClient.Managers
          
         private static string DialogDescription { get; set; } = "Choose which action to execute";
 
-        private static readonly string dialogDescription = "Choose which action to execute";
-
-        private static readonly string[] MenuButtons = new string[] { "Mod Manager", "Save Uploader (BETA)", "Event Manager"};
+        private static string[] MenuButtons { get; set; } = new string[]
+        {
+            "Mod Manager",
+            "Event Manager",
+            "Save Manager (BETA)"
+        };
 
         public static void ShowAdminMenu()
         {
@@ -37,11 +40,11 @@ namespace GameClient.Managers
                     break;
 
                 case 1:
-                    SaveManager.OpenSaveUploaderMenu();
+                    EventManager.ShowEventTweakerMenu();
                     break;
 
                 case 2:
-                    EventManager.ShowEventTweakerMenu();
+                    SaveManager.OpenSaveUploaderMenu();
                     break;
             }
         }
