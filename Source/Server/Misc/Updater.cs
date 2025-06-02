@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Text;
-#if SERVER
 using GameServer.Core;
 using GameServer.Files;
-#endif
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shared;
 
-namespace Shared.Misc
+namespace GameServer.Misc
 {
     public static class Updater
     {
-#if SERVER
         private static readonly string PathToVersionFile = Path.Combine(Master.MainPath, "Prev-Version.json");
         public static bool HasUpdated {get; private set;}
         public static bool ValidatePreviousVersion()
@@ -30,7 +28,6 @@ namespace Shared.Misc
 
             return true;
         }
-#endif
         // Converts string[] into byte[]
         public class StringArrayConverter : JsonConverter
         {
@@ -48,9 +45,7 @@ namespace Shared.Misc
                 {
                     return (byte[]?)reader.Value;
                 }
-#if SERVER
                 HasUpdated = true;
-#endif
                 string[] data = serializer.Deserialize<string[]>(reader);
                 return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
             }

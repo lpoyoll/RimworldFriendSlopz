@@ -3,6 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Shared.Misc;
 #if SERVER
+using GameServer.Misc;
 using GameServer.Core;
 #endif
 namespace Shared
@@ -31,7 +32,9 @@ namespace Shared
         //World features
         
         [JsonProperty("Tiles")]
+#if SERVER
         [JsonConverter(typeof(Updater.StringArrayConverter))]
+#endif
         public Byte[] RawTiles { get; set; }
         
         [JsonIgnore] public string[] Tiles {

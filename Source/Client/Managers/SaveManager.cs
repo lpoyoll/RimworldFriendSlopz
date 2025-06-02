@@ -49,6 +49,7 @@ namespace GameClient.Managers
 
         public static void ForceSave()
         {
+            Printer.Warning("Force saving", LogImportanceMode.Verbose);
             FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
             FticksSinceSave.SetValue(Current.Game.autosaver, 0);
 
