@@ -22,7 +22,7 @@ namespace GameClient.Patches
                 {
                     SettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
 
-                    if (ClientValues.IsGeneratingFreshWorld) WorldManagerSender.SendWorld();
+                    if (ClientValues.IsGeneratingFreshWorld) WorldManager.SendWorld();
                     else SaveManager.ForceSave();
 
                     ClientValues.ForcePermadeath();

@@ -27,7 +27,7 @@ namespace Shared
 
         //World features
 
-        public string[] Tiles;
+        public WorldTilesFile Tiles;
 
         public PlanetFeatureDetails[] Features;
 
@@ -46,7 +46,7 @@ namespace Shared
             return $"WorldValuesFile:|{PersistentRandomValue}|{SeedString}";
         }
 #if SERVER
-        public static string FilePath => Path.Combine(Master.ConfigsPath, "WorldConfig.json");
+        public static string FilePath => Path.Combine(Master.WorldPath, "WorldValuesFile.json");
 
         public static WorldValuesFile Load()
         {

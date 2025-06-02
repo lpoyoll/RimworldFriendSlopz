@@ -37,7 +37,12 @@ namespace GameServer.Managers
         public static void SendWorld(ServerClient client)
         {
             WorldData data = new WorldData();
-            data._fileBytes = GZip.DecompressBytes(File.ReadAllBytes(WorldValuesFile.FilePath));
+            WorldTilesFile tiles = Serializer.FileBytesToObject<WorldTilesFile>(WorldTilesFile.FilePath);
+
+            WorldValuesFile file = Serializer.FileBytesToObject<WorldValuesFile>(WorldValuesFile.FilePath);
+            file.Tiles = tiles;
+
+            data._fileBytes = Serializer.ConvertObjectToBytes(file);
             data._stepMode = WorldStepMode.Sent;
 
             client.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
@@ -45,8 +50,14 @@ namespace GameServer.Managers
 
         public static void ReceiveWorld(ServerClient client, WorldData data)
         {
-            File.WriteAllBytes(WorldValuesFile.FilePath, GZip.CompressBytes(data._fileBytes));
-            Master.WorldValues = WorldValuesFile.Load();
+            WorldValuesFile file = Serializer.ConvertBytesToObject<WorldValuesFile>(data._fileBytes);
+            Serializer.ObjectBytesToFile(WorldTilesFile.FilePath, file.Tiles);
+
+            file.Tiles = null;
+            Serializer.ObjectBytesToFile(WorldValuesFile.FilePath, file);
+            Master.WorldValues = file;
+
+            InformationDisplayer.DisplaySetWorld(client);
         }
     }
 }

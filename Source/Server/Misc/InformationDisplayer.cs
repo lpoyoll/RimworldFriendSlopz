@@ -22,6 +22,8 @@ namespace GameServer.Misc
 
         public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.UserFile.Uid}"); }
 
+        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set world] > {client.UserFile.Uid}"); }
+
         public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set Events] > {client.UserFile.Uid}"); }
 
         public static void DisplayRemoveMap(string value) { Printer.Message($"[Remove map] > {value}"); }

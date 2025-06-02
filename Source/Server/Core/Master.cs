@@ -37,6 +37,8 @@ namespace GameServer.Core
 
         public static string? EventsPath { get; set; }
 
+        public static string? WorldPath { get; set; }
+
         public static string? BackupServerPath { get; set; }
 
         public static string? BackupUsersPath { get; set; }
