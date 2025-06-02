@@ -37,8 +37,8 @@ namespace GameServer.Managers
         public static void SendWorld(ServerClient client)
         {
             WorldData data = new WorldData();
-            WorldTilesFile tiles = Serializer.FileBytesToObject<WorldTilesFile>(WorldTilesFile.FilePath);
 
+            WorldTilesFile tiles = Serializer.FileBytesToObject<WorldTilesFile>(WorldTilesFile.FilePath);
             WorldValuesFile file = Serializer.FileBytesToObject<WorldValuesFile>(WorldValuesFile.FilePath);
             file.Tiles = tiles;
 
