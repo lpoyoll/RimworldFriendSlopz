@@ -1,9 +1,14 @@
+using System.Diagnostics;
 using System.Globalization;
+using System.Runtime;
+using System.Text;
 using GameServer.Core.Configs;
 using GameServer.Managers;
 using GameServer.Misc;
 using GameServer.TCP;
 using Shared;
+using Shared.Misc;
+using GameServer.Misc;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Core
@@ -91,7 +96,13 @@ namespace GameServer.Core
             Printer.Title($"Server version {CommonValues.ExecutableVersion}");
             Printer.Title($"Loading all necessary resources");
             Printer.Title($"----------------------------------------");
-
+            
+            if (!Updater.ValidatePreviousVersion())
+            {
+                Printer.Error($"You have updated from a previous version. It is recommended to regenerate all config files and check the change-log for any changes.\n" +
+                              $"If this is your first time installing Rimworld Together, please take a look around the configuration files and our wiki https://github.com/RimWorld-Together/Rimworld-Together/wiki.");
+            }
+            
             Master.ServerConfig = ServerConfigFile.Load();
 
             Master.ActionConfigs = ActionValuesFile.Load();
@@ -113,12 +124,33 @@ namespace GameServer.Core
             Master.ModConfig = ModConfigFile.Load();
             
             Master.ChatConfig = ChatConfigFile.Load();
-
+            
             Master.WorldValues = WorldValuesFile.Load();
-
+            
             Master.ServerBrowserConfig = ServerBrowserConfig.Load();
-
+            
             EventManagerHelper.LoadEvents();
+            
+            if (Updater.HasUpdated)
+            {
+                ServerConfigFile.Save();
+                ActionValuesFile.Save();
+                SiteValuesFile.Save();
+                RoadValuesFile.Save();
+                WhitelistConfigFile.Save();
+                DifficultyValuesFile.Save();
+                ScenarioValuesFile.Save();
+                StorytellerValuesFile.Save();
+                BackupConfigFile.Save();
+                ModConfigFile.Save();
+                ChatConfigFile.Save();
+                WorldValuesFile.Save();
+                ServerBrowserConfig.Save();
+                Printer.Error("Successfully updated some files to a newer version, it is HEAVILY recommended to restart your server before continuing.");
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Printer.Warning($"{GC.GetTotalAllocatedBytes() / 1024 / 1024}MB after resource loading", LogImportanceMode.Verbose);
         }
 
         public static void ChangeTitle()

@@ -220,6 +220,7 @@ namespace GameClient.Managers
     {
         public static void PopulateWorldValues()
         {
+            Printer.Warning("Populating world values", LogImportanceMode.Verbose);
             SessionValues.WorldFile.Tiles = GetPlanetTiles();
             SessionValues.WorldFile.Features = GetPlanetFeatures();
             SessionValues.WorldFile.Roads = RoadManagerHelper.GetPlanetRoads();
@@ -410,9 +411,9 @@ namespace GameClient.Managers
             WorldData data = new WorldData();
             data._stepMode = WorldStepMode.Sent;
             data._fileBytes = Serializer.ConvertObjectToBytes(SessionValues.WorldFile);
-
+            
             Network.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
-
+            Printer.Warning("Sent world", LogImportanceMode.Verbose);
             OnWorldSent();
         }
 

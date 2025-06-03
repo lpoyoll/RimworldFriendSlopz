@@ -1,11 +1,26 @@
 using System;
+using System.Text;
+using Newtonsoft.Json;
+using Shared.Misc;
 
 namespace Shared
 {
     [Serializable]
     public class RoadDetails
     {
-        public string? RoadDefName { get; set; }
+        [JsonIgnore] public string? CachedRoadDefName = null;
+        
+        public string? RoadDefName
+        {
+            get
+            {
+                return CachedRoadDefName;
+            }
+            set
+            {
+                CachedRoadDefName = Pools.StringPool.GetOrAddString(value);
+            }
+        }
 
         public int FromTile { get; set; }
 

@@ -128,6 +128,9 @@ namespace GameServer.Commands
             "Clears the console output",
             ClearCommandAction);
 
+        public static readonly CommandBase DebugGCClear = new CommandBase("debuggcclear", 0,
+            "Forces the garbage collector to collect",
+            ForceGCClearCommandAction);
         public static List<CommandBase> Commands = new List<CommandBase>
         {
             BackupCommand,
@@ -158,7 +161,8 @@ namespace GameServer.Commands
             ServerMessageCommand,
             WhitelistAddCommand,
             WhitelistCommand,
-            WhitelistRemoveCommand
+            WhitelistRemoveCommand,
+            DebugGCClear
         };
     }
 
@@ -576,6 +580,12 @@ namespace GameServer.Commands
             Console.Clear();
 
             Printer.Title("[Cleared console]");
+        }
+
+        public static void ForceGCClearCommandAction()
+        {
+            GC.Collect();
+            Printer.Warning($"Currently reporting {GC.GetTotalMemory(false)}");
         }
         public static void ThrowUserNotFoundError()
         {

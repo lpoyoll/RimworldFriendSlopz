@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Text;
+using Newtonsoft.Json;
+using Shared.Misc;
 #if SERVER
+using GameServer.Misc;
 using GameServer.Core;
 #endif
 namespace Shared
@@ -26,8 +30,30 @@ namespace Shared
         public float Pollution;
 
         //World features
-
-        public string[] Tiles;
+        
+        [JsonProperty("Tiles")]
+#if SERVER
+        [JsonConverter(typeof(Updater.StringArrayConverter))]
+#endif
+        public Byte[] RawTiles { get; set; }
+        
+        [JsonIgnore] public string[] Tiles {
+            get
+            {
+                if (RawTiles == null)
+                    return Array.Empty<string>(); // Apparently this is more efficient than new string[0];
+                return JsonConvert.DeserializeObject<string[]>(Encoding.UTF8.GetString(RawTiles)) ?? Array.Empty<string>();
+            }
+            set
+            {
+                if (value == null || value.Length == 0)
+                {
+                    RawTiles = null;
+                    return;
+                }
+                RawTiles = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(value));
+            }
+        }
 
         public PlanetFeatureDetails[] Features;
 
