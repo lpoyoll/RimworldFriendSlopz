@@ -6,14 +6,13 @@ using Shared.Misc;
 namespace Shared
 {
     [Serializable]
-    public readonly struct RiverDetails
+    public class RiverDetails
     {
-        public string RiverDefName { get; }
+        public string RiverDefName { get; set; }
 
-        public int FromTile { get; }
+        public int FromTile { get; set; }
 
-        public int ToTile { get; }
-        [JsonConstructor]
+        public int ToTile { get; set; }
         public RiverDetails(int fromTile, int toTile, string defname)
         {
             FromTile = fromTile;
