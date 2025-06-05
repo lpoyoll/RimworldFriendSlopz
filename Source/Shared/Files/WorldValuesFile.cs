@@ -11,44 +11,39 @@ namespace Shared
     [Serializable]
     public class WorldValuesFile
     {
-        //Misc
+        public int PersistentRandomValue { get; set; } = -1;
 
-        public int PersistentRandomValue;
+        public string SeedString { get; set; } = string.Empty;
 
-        //World Values
+        public float PlanetCoverage { get; set; } = -1f;
 
-        public string SeedString;
+        public int Rainfall { get; set; } = -1;
 
-        public float PlanetCoverage;
+        public int Temperature { get; set; } = -1;
 
-        public int Rainfall;
+        public int Population { get; set; } = -1;
 
-        public int Temperature;
+        public float Pollution { get; set; } = -1f;
 
-        public int Population;
-        
-        public float Pollution;
+        public WorldTilesFile Tiles { get; set; } = null;
 
-        //World features
+        public PlanetFeatureDetails[] Features { get; set; } = null;
 
-        public WorldTilesFile Tiles;
+        public RoadDetails[] Roads { get; set; } = null;
 
-        public PlanetFeatureDetails[] Features;
+        public RiverDetails[] Rivers { get; set; } = null;
 
-        public RoadDetails[] Roads;
+        public PollutionDetails[] PollutedTiles { get; set; } = null;
 
-        public RiverDetails[] Rivers;
+        public PlanetNPCFactionDetails[] NPCFactions { get; set; } = null;
 
-        public PollutionDetails[] PollutedTiles;
-
-        public PlanetNPCFactionDetails[] NPCFactions;
-
-        public PlanetNPCSettlementDetails[] NPCSettlements;
+        public PlanetNPCSettlementDetails[] NPCSettlements { get; set; } = null;
 
         public override string ToString()
         {
             return $"WorldValuesFile:|{PersistentRandomValue}|{SeedString}";
         }
+
 #if SERVER
         public static string FilePath => Path.Combine(Master.WorldPath, "WorldValuesFile.json");
 
@@ -70,5 +65,6 @@ namespace Shared
             catch { return false; }
         }
 #endif
+
     }
 }
