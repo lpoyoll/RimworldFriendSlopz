@@ -49,6 +49,7 @@ namespace GameServer.Core
             Master.FactionsPath = Path.Combine(Master.AssetsPath, "Factions");
             Master.SettlementsPath = Path.Combine(Master.AssetsPath, "Settlements");
             Master.EventsPath = Path.Combine(Master.AssetsPath, "Events");
+            Master.WorldPath = Path.Combine(Master.AssetsPath, "World");
             Master.CompatibilityPatchesPath = Path.Combine(Master.AssetsPath, "Patches");
 
             Master.LogsPath = Path.Combine(Master.MainPath, "Logs");
@@ -74,6 +75,7 @@ namespace GameServer.Core
             if (!Directory.Exists(Master.FactionsPath)) Directory.CreateDirectory(Master.FactionsPath);
             if (!Directory.Exists(Master.SettlementsPath)) Directory.CreateDirectory(Master.SettlementsPath);
             if (!Directory.Exists(Master.EventsPath)) Directory.CreateDirectory(Master.EventsPath);
+            if (!Directory.Exists(Master.WorldPath)) Directory.CreateDirectory(Master.WorldPath);
 
             if (!Directory.Exists(Master.BackupUsersPath)) Directory.CreateDirectory(Master.BackupUsersPath);
             if (!Directory.Exists(Master.BackupServerPath)) Directory.CreateDirectory(Master.BackupServerPath);

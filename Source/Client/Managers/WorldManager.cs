@@ -47,7 +47,7 @@ namespace GameClient.Managers
                     break;
 
                 case WorldStepMode.Sent:
-                    WorldManagerReceiver.ReceiveWorld(data);
+                    WorldManager.OnReceiveWorld(data);
                     break;
             }
         }
@@ -69,6 +69,35 @@ namespace GameClient.Managers
             RT_Dialog_Wait.Instance.Close();
 
             RT_Dialog_Base.PushNewDialog(new Page_SelectScenario());
+        }
+
+        public static void SendWorld()
+        {
+            WorldManagerH.PopulateWorldValues();
+
+            WorldData data = new WorldData();
+            data._stepMode = WorldStepMode.Sent;
+            data._fileBytes = Serializer.ConvertObjectToBytes(SessionValues.WorldFile);
+
+            Network.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
+
+            OnWorldSent();
+        }
+
+        private static void OnWorldSent()
+        {
+            File.Delete(WorldManager.tempWorldPath);
+
+            ClientValues.ToggleGenerateWorld(false);
+
+            SaveManager.ForceSave();
+        }
+
+        public static void OnReceiveWorld(WorldData data)
+        {
+            SessionValues.WorldFile = Serializer.ConvertBytesToObject<WorldValuesFile>(data._fileBytes);
+
+            WorldManager.OnExistingWorld();
         }
 
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, List<FactionDef> factions, float pollution)
@@ -127,10 +156,10 @@ namespace GameClient.Managers
                 else continue;
             }
 
-            if (!ClientValues.IsGeneratingFreshWorld && SessionValues.WorldFile.Tiles != null && SessionValues.WorldFile.Tiles.Length > 0)
+            if (!ClientValues.IsGeneratingFreshWorld && SessionValues.WorldFile.Tiles != null && SessionValues.WorldFile.Tiles.TileData.Length > 0)
             {
                 Current.CreatingWorld.grid.tiles = new List<Tile>();
-                foreach (string str in SessionValues.WorldFile.Tiles) Current.CreatingWorld.grid.tiles.Add(ScribeManager.ScribeToTile(str));
+                foreach (string str in SessionValues.WorldFile.Tiles.TileData) Current.CreatingWorld.grid.tiles.Add(ScribeManager.ScribeToTile(str));
             }
 
             Current.CreatingWorld.grid.StandardizeTileData();
@@ -230,11 +259,14 @@ namespace GameClient.Managers
             SessionValues.WorldFile.NPCFactions = GetPlanetNPCFactions();
         }
 
-        public static string[] GetPlanetTiles()
+        public static WorldTilesFile GetPlanetTiles()
         {
             List<string> toGet = new List<string>();
             foreach (Tile tile in Find.WorldGrid.tiles) toGet.Add(ScribeManager.TileToScribe(tile));
-            return toGet.ToArray();
+
+            WorldTilesFile file = new WorldTilesFile();
+            file.TileData = toGet.ToArray();
+            return file;
         }
 
         public static PlanetNPCFactionDetails[] GetNPCFactionsFromDef(FactionDef[] factionDefs)
@@ -399,41 +431,6 @@ namespace GameClient.Managers
             }
 
             return planetFeatures.ToArray();
-        }
-    }
-
-    public static class WorldManagerSender
-    {
-        public static void SendWorld()
-        {
-            WorldManagerH.PopulateWorldValues();
-
-            WorldData data = new WorldData();
-            data._stepMode = WorldStepMode.Sent;
-            data._fileBytes = Serializer.ConvertObjectToBytes(SessionValues.WorldFile);
-            
-            Network.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
-            Printer.Warning("Sent world", LogImportanceMode.Verbose);
-            OnWorldSent();
-        }
-
-        private static void OnWorldSent()
-        {
-            File.Delete(WorldManager.tempWorldPath);
-
-            ClientValues.ToggleGenerateWorld(false);
-
-            SaveManager.ForceSave();
-        }
-    }
-
-    public static class WorldManagerReceiver
-    {
-        public static void ReceiveWorld(WorldData data)
-        {
-            SessionValues.WorldFile = Serializer.ConvertBytesToObject<WorldValuesFile>(data._fileBytes);
-
-            WorldManager.OnExistingWorld();
         }
     }
 }
