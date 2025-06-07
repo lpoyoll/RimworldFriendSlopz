@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using GameClient.Misc;
 using GameClient.Values;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
@@ -159,6 +160,51 @@ namespace GameClient.Managers
 
             return toLoad;
         }
+
+        public static string DifficultyToScribe(Difficulty toSave)
+        {
+            ClientValues.ToggleUsingScriber(true);
+
+            string scribeData = "";
+
+            try
+            {
+                Scribe.saver.InitSaving("", ScribeManager.ScribeTreeName);
+
+                Scribe_Deep.Look(ref toSave, ScribeManager.ScribeNodeName);
+
+                Scribe.saver.FinalizeSaving();
+
+                scribeData = new Regex(@">\s*<").Replace(ScribeManager.StringWriter.ToString(), "><");
+            }
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
+
+            ClientValues.ToggleUsingScriber(false);
+
+            return scribeData.ToString();
+        }
+
+        public static Difficulty ScribeToDifficulty(string scribeData)
+        {
+            ClientValues.ToggleUsingScriber(true);
+
+            Difficulty toLoad = null;
+
+            try
+            {
+                Scribe.loader.InitLoading(scribeData);
+
+                Scribe_Deep.Look(ref toLoad, ScribeManager.ScribeNodeName);
+
+                Scribe.loader.FinalizeLoading();
+            }
+            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
+
+            ClientValues.ToggleUsingScriber(false);
+
+            return toLoad;
+        }
+        
     }
 
     public static class ScriberH
