@@ -88,7 +88,7 @@ namespace GameClient.Dialogs
             float num2 = base.ScrollPosition.y - 30f;
             float num3 = base.ScrollPosition.y + mainRect.height;
             int num4 = 0;
-
+            AllServers = AllServers.ToList().OrderByDescending(x => x._currentPlayerCount).ToArray();
             for (int i = 0; i < AllServers.Length; i++)
             {
                 if (num > num2 && num < num3)
@@ -110,7 +110,7 @@ namespace GameClient.Dialogs
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            Widgets.Label(fixedRect, $"{server._name} - {server._ip}");
+            Widgets.Label(fixedRect, $"{server._name} - {server._ip} - {server._currentPlayerCount} / {server._maximumPlayerCount}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SmallerButtonSize.x - 5f, rect.yMax - TinyButtonSize.y), new Vector2(SmallerButtonSize.x, TinyButtonSize.y)), "Select"))
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListingInfo(server));

@@ -23,7 +23,6 @@ namespace GameClient.Dialogs
         private static FieldInfo ModsConfigData;
 
         private static FieldInfo ModsConfigDataActiveMods;
-
         private ServerInfo ServerInfo { get; set; }
 
         public RT_Dialog_ServerListingInfo(ServerInfo info) 
@@ -77,10 +76,12 @@ namespace GameClient.Dialogs
         private void ShowMissingModsDialog(ModlistAnalyzer data) 
         {
             Printer.Warning($"Found {data.DownloadableMods.Count} mods to download and {data.MissingMods.Count} mods that cannot be downloaded.");
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Listing("Missing mods!",
-                "Do you want to download/enable the missing mods automatically?",
-                data.Display.ToArray(),
-                () => ProcessMissingMods(data)
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo(
+                "Missing Mods!",
+                (() => ProcessMissingMods(data)),
+                () => RT_Dialog_Base.PushNewDialog(new RT_Dialog_ServerListingModlist($"{ServerInfo._name}'s modlist", "Modlist of a server.",ServerInfo)),
+                "Automatic download",
+                "Manual download"
             ));
         }
 
@@ -93,20 +94,20 @@ namespace GameClient.Dialogs
                     try
                     {
                         data.DownloadableMods.Remove(value.Key);
-                        List<string> activeMods = (List<string>)ModsConfigDataActiveMods.GetValue(ModsConfigData.GetValue(null));
-                        activeMods.Add(value.Key);
-                        Printer.Warning($"Enabled mod {value.Key}", LogImportanceMode.Verbose);
+                        Printer.Warning($"Downloaded mod {value.Key}", LogImportanceMode.Verbose);
                     }
 
                     catch (Exception ex)
                     {
-                        Printer.Error($"Error while trying to activate mod {value.Key}. You will need to manually enable / download this mod.\n{ex}");
+                        Printer.Error(
+                            $"Error while trying to activate mod {value.Key}. You will need to manually enable / download this mod.\n{ex}");
                     }
                 }
 
-                else 
+                else
                 {
-                    Printer.Warning($"Failed to download mod {value.Key} with steam id {value.Value}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Failed to download mod {value.Key} with steam id {value.Value}",
+                        LogImportanceMode.Verbose);
                 }
             }
 
@@ -124,8 +125,7 @@ namespace GameClient.Dialogs
         private void RestartGameWithNewModlist(ModlistAnalyzer data) 
         {
             List<string> modsToEnable = new List<string>();
-            modsToEnable.AddRange(ServerInfo._config.RequiredMods);
-            modsToEnable.AddRange(ServerInfo._config.OptionalMods);
+            modsToEnable.AddRange(ServerInfo._config.UnsortedMods);
             foreach (string str in modsToEnable)
             {
                 if (!ServerInfo._config.ForbiddenMods.Contains(str) && !data.MissingMods.Contains(str))
@@ -203,6 +203,8 @@ namespace GameClient.Dialogs
             public List<string> Display { get; set; } = new();
             public List<string> ModsToEnable { get; set; } = new();
             public bool IsAllMissingOptional { get; set; } = true;
+
+            public List<string> RunningMods { get; set; } = new();
         }
     }
 }

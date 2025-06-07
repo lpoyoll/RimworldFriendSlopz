@@ -20,8 +20,6 @@ namespace GameClient.Dialogs
         private static readonly Color RequiredColor = new Color(255f,0,0f);
         private static readonly Color OptionalColor = new Color(255f,125,0f);
         private ServerInfo ServerInfo { get; set; }
-
-        private List<string> DownloadedMods = new List<string>();
         public override Vector2 InitialSize => new Vector2(550f, 700f);
         public RT_Dialog_ServerListingModlist(string title, string description, ServerInfo serverInfo) 
         {
@@ -88,7 +86,7 @@ namespace GameClient.Dialogs
             Widgets.Label(fixedRect, type);
             Rect nameRect = new Rect(Text.CalcSize(type).x, fixedRect.y, fixedRect.width, fixedRect.height);
             Widgets.Label(nameRect, $"{foundMod?.Name ?? modID}");
-            if (foundMod == null || DownloadedMods.Contains(modID))
+            if (foundMod == null)
             {
                 HandleSteamLinks(fixedRect, modID, index);
             }
@@ -122,7 +120,6 @@ namespace GameClient.Dialogs
                             FileName = url,
                             UseShellExecute = true
                         });
-                        DownloadedMods.Add(modID);
                     }
                     Rect downloadButtonRect = new Rect(linkButtonRect);
                     downloadButtonRect.x = rect.xMax - SlimButtonSize.x;
