@@ -1,6 +1,7 @@
 ﻿using System;
 using GameClient.Core.Configs;
 using GameClient.Values;
+using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -8,6 +9,8 @@ namespace GameClient.Misc
 {
     public static class Printer
     {
+        private static readonly Color RTColor = new  Color(140f, 0f, 255f);
+        
         public static void Message(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Message, importance); }
 
         public static void Warning(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Warning, importance); }
@@ -25,11 +28,11 @@ namespace GameClient.Misc
                 switch (mode)
                 {
                     case LogMode.Message:
-                        Log.Message(toWrite);
+                        Log.Message(toWrite.Colorize(RTColor));
                         break;
 
                     case LogMode.Warning:
-                        Log.Warning(toWrite);
+                        Log.Warning(toWrite.Colorize(RTColor));
                         break;
 
                     case LogMode.Error:
