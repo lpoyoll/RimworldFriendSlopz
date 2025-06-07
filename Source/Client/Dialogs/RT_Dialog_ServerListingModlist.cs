@@ -17,6 +17,8 @@ namespace GameClient.Dialogs
 {
     public class RT_Dialog_ServerListingModlist : RT_Dialog_Base
     {
+        private static readonly Color RequiredColor = new Color(255f,0,0f);
+        private static readonly Color OptionalColor = new Color(255f,125,0f);
         private ServerInfo ServerInfo { get; set; }
 
         private List<string> DownloadedMods = new List<string>();
@@ -82,7 +84,10 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (rowCount % 2 == 0) Widgets.DrawHighlight(fixedRect);
-            Widgets.Label(fixedRect, $"{GetModType(modID)}{foundMod?.Name ?? modID}");
+            string type = GetModType(modID);
+            Widgets.Label(fixedRect, type);
+            Rect nameRect = new Rect(Text.CalcSize(type).x, fixedRect.y, fixedRect.width, fixedRect.height);
+            Widgets.Label(nameRect, $"{foundMod?.Name ?? modID}");
             if (foundMod == null || DownloadedMods.Contains(modID))
             {
                 HandleSteamLinks(fixedRect, modID, index);
@@ -133,7 +138,7 @@ namespace GameClient.Dialogs
         private void HandleExistingMod(Rect rect, ModMetaData mod) 
         {
             Vector2 textSize = Text.CalcSize("Downloaded!");
-            Widgets.Label(new Rect(new Vector2(rect.xMax - textSize.x + 5f, rect.yMax - textSize.y), textSize), "Downloaded!");
+            Widgets.Label(new Rect(new Vector2(rect.xMax - textSize.x, rect.yMax - textSize.y), textSize), "Downloaded!");
         }
 
         private static bool IsSteamRunning()
@@ -173,9 +178,9 @@ namespace GameClient.Dialogs
         private string GetModType(string id) 
         {
             if (ServerInfo._config.RequiredMods.Contains(id))
-                return ("[Required]>");
+                return "[Required]> ".Colorize(RequiredColor);
             else
-                return ("[Optional]>");
+                return "[Optional]> ".Colorize(OptionalColor);
         }
     }
 }
