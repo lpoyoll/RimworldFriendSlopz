@@ -35,11 +35,11 @@ mkdir -p RWTData
 
 **Run with Docker on Linux:**
 ```sh
-docker run -it --rm -v './RWTData:/Data' -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
+docker run -it --rm -v './RWTData:/Data' -p 25555:25555 ghcr.io/rimworld-together/rimworld-together:latest
 ```
 **Run with Docker on Windows:**
 ```sh
-docker run -it --rm -v '.\RWTData:/Data' -p 25555:25555 ghcr.io/byte-nova/rimworld-together:latest
+docker run -it --rm -v '.\RWTData:/Data' -p 25555:25555 ghcr.io/rimworld-together/rimworld-together:latest
 ```
 
 
