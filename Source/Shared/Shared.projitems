@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\EventFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\GuildFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\HumanFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Files\IdeologyFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\MapFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\ModConfigFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />

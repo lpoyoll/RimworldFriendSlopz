@@ -85,7 +85,7 @@ namespace GameClient.Managers
 
             DifficultyValuesFile file = new DifficultyValuesFile();
             
-            file.ScribeData = ScribeManager.DifficultyToScribe(difficulty);
+            file.ScribeData = ScribeManager.DifficultyToString(difficulty);
             
             return file;
         }
@@ -95,8 +95,7 @@ namespace GameClient.Managers
             if (!file.EnforceDifficulty && !bypass) return;
 
             Current.Game.storyteller.difficultyDef = DifficultyDefOf.Rough;
-            Current.Game.storyteller.difficulty = ScribeManager.ScribeToDifficulty(file.ScribeData);
-            Printer.Warning(Current.Game.storyteller.difficulty.threatScale);
+            Current.Game.storyteller.difficulty = ScribeManager.StringToDifficulty(file.ScribeData);
         }
 
         public static void SendDifficulty(DifficultyValuesFile file, bool mode)

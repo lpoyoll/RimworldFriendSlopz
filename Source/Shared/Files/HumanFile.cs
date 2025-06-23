@@ -6,9 +6,11 @@ namespace Shared
 
     public class HumanFile
     {
-        public string ID;
+        public string ID { get; set; }
 
-        public string ScribeData;
+        public string ScribeData { get; set; }
+
+        public IdeologyFile Ideology { get; set; } 
 
         public override string ToString()
         {
