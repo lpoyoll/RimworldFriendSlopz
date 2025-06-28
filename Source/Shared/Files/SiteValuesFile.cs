@@ -1,5 +1,6 @@
 ﻿#if SERVER
 using GameServer.Core;
+using GameServer.Managers;
 #endif
 namespace Shared
 {
@@ -20,6 +21,7 @@ namespace Shared
             else
             {
                 SiteValuesFile obj = new SiteValuesFile();
+                SiteManagerHelper.SetSitePresets(obj);
                 Serializer.SerializeToFile(FilePath, obj);
                 return obj;
             }

@@ -340,7 +340,7 @@ namespace GameServer.Managers
             return null;
         }
 
-        public static void SetSitePresets()
+        public static void SetSitePresets(SiteValuesFile file)
         {
             List<SiteInfoFile> siteInfoFiles = new List<SiteInfoFile>();
 
@@ -564,7 +564,7 @@ namespace GameServer.Managers
                 ]
             });
 
-            Master.SiteValues.SiteInfoFiles = siteInfoFiles.ToArray();
+            file.SiteInfoFiles = siteInfoFiles.ToArray();
         }
     }
 }
