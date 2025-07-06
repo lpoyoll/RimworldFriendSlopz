@@ -538,7 +538,7 @@ namespace GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(TransportPodsArrivalAction_GiveGift), "GetFloatMenuOptions")]
+    [HarmonyPatch(typeof(TransportersArrivalAction_GiveGift), "GetFloatMenuOptions")]
     public static class PatchDropGift
     {
         [HarmonyPostfix]
@@ -570,7 +570,7 @@ namespace GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(TransportPodsArrivalAction_AttackSettlement), "GetFloatMenuOptions")]
+    [HarmonyPatch(typeof(TransportersArrivalAction_AttackSettlement), "GetFloatMenuOptions")]
     public static class PatchDropAttack
     {
         [HarmonyPostfix]
