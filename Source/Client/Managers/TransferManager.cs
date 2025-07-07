@@ -94,7 +94,7 @@ namespace GameClient.Managers
 
                 if (transferLocation == TransferLocation.Caravan)
                 {
-                    TradeSession.playerNegotiator.GetCaravan().RecacheImmobilizedNow();
+                    TradeSession.playerNegotiator.GetCaravan().RecacheInventory();
                 }
             }
         }

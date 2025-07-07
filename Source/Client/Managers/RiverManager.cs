@@ -34,8 +34,8 @@ namespace GameClient.Managers
 
         public static void AddRiverSimple(int tileAID, int tileBID, RiverDef riverDef, bool forceRefresh)
         {
-            Tile tileA = Find.WorldGrid[tileAID];
-            Tile tileB = Find.WorldGrid[tileBID];
+            SurfaceTile tileA = Find.WorldGrid[tileAID];
+            SurfaceTile tileB = Find.WorldGrid[tileBID];
 
             AddRiverLink(tileA, tileBID, riverDef);
             AddRiverLink(tileB, tileAID, riverDef);
@@ -43,23 +43,23 @@ namespace GameClient.Managers
             if (forceRefresh) RiverManagerHelper.ForceRiverLayerRefresh();
         }
 
-        private static void AddRiverLink(Tile toAddTo, int neighborTileID, RiverDef riverDef)
+        private static void AddRiverLink(SurfaceTile toAddTo, int neighborTileID, RiverDef riverDef)
         {
             if (toAddTo.Rivers != null)
             {
-                foreach (Tile.RiverLink link in toAddTo.Rivers)
+                foreach (SurfaceTile.RiverLink link in toAddTo.Rivers)
                 {
                     if (link.neighbor == neighborTileID) return;
                 }
             }
 
-            Tile.RiverLink linkToAdd = new Tile.RiverLink
+            SurfaceTile.RiverLink linkToAdd = new SurfaceTile.RiverLink
             {
                 neighbor = neighborTileID,
                 river = riverDef
             };
 
-            toAddTo.potentialRivers ??= new List<Tile.RiverLink>();
+            toAddTo.potentialRivers ??= new List<SurfaceTile.RiverLink>();
             toAddTo.potentialRivers.Add(linkToAdd);
         }
     }
@@ -70,13 +70,13 @@ namespace GameClient.Managers
         {
             List<RiverDetails> toGet = new List<RiverDetails>();
 
-            foreach (Tile tile in Find.WorldGrid.tiles)
+            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
             {
                 if (tile.Rivers != null)
                 {
-                    foreach (Tile.RiverLink link in tile.Rivers)
+                    foreach (SurfaceTile.RiverLink link in tile.Rivers)
                     {
-                        RiverDetails details = new RiverDetails(Find.WorldGrid.tiles.IndexOf(tile), link.neighbor, link.river.defName);
+                        RiverDetails details = new RiverDetails(Find.WorldGrid.Tiles.IndexOf(tile), link.neighbor, link.river.defName);
 
                         if (!CheckIfExists(details.FromTile, details.ToTile)) toGet.Add(details);
                     }
@@ -98,7 +98,7 @@ namespace GameClient.Managers
 
         public static void ForceRiverLayerRefresh()
         {
-            Find.World.renderer.SetDirty<WorldLayer_Rivers>();
+            Find.World.renderer.SetDirty<WorldDrawLayer>(PlanetLayer.Selected);
             Find.World.renderer.RegenerateLayersIfDirtyInLongEvent();
         }
     }

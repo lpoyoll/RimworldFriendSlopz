@@ -27,7 +27,7 @@ namespace GameClient.Managers
 
         private static readonly List<Type> stepsToUseIfNotFresh = new List<Type>()
         {
-            typeof(WorldGenStep_Components),
+            typeof(WorldGenStep_Tiles),
             typeof(WorldGenStep_Terrain),
             typeof(WorldGenStep_Factions),
             typeof(WorldGenStep_Features)
@@ -262,7 +262,7 @@ namespace GameClient.Managers
         public static WorldTilesFile GetPlanetTiles()
         {
             List<string> toGet = new List<string>();
-            foreach (Tile tile in Find.WorldGrid.tiles) toGet.Add(ScribeManager.TileToString(tile));
+            foreach (Tile tile in Find.WorldGrid.Tiles) toGet.Add(ScribeManager.TileToString(tile));
 
             WorldTilesFile file = new WorldTilesFile();
             file.TileData = toGet.ToArray();

@@ -253,7 +253,7 @@ namespace GameClient.Managers
             if (toFocusOn != null) deployPlace = toFocusOn.Position;
 
             Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == targetFaction).ToArray();
-            LordJob_DefendBase job = new LordJob_DefendBase(targetFaction, deployPlace, true);
+            LordJob_DefendBase job = new LordJob_DefendBase(targetFaction, deployPlace, 1);
             LordMaker.MakeNewLord(targetFaction, job, map, lordPawns);
         }
     }

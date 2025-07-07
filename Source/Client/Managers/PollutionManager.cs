@@ -1,8 +1,10 @@
 ﻿using GameClient.Misc;
 using GameClient.Patches;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using System.Collections.Generic;
+using System.Linq;
 using Verse;
 using static Shared.CommonEnumerators;
 namespace GameClient.Managers
@@ -44,7 +46,7 @@ namespace GameClient.Managers
 
         public static void AddPollutedTileSimple(PollutionDetails details, bool forceRefresh)
         {
-            Tile toPollute = Find.WorldGrid.tiles[details.Tile];
+            SurfaceTile toPollute = Find.WorldGrid.Tiles.First(fetch => fetch.tile == details.Tile);
             toPollute.pollution = details.Quantity;
 
             if (forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
@@ -52,7 +54,7 @@ namespace GameClient.Managers
 
         public static void ClearAllPollution()
         {
-            foreach (Tile tile in Find.WorldGrid.tiles)
+            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
             {
                 if (tile.pollution != 0) tile.pollution = 0;
             }
@@ -73,12 +75,12 @@ namespace GameClient.Managers
         public static PollutionDetails[] GetPlanetPollutedTiles()
         {
             List<PollutionDetails> toGet = new List<PollutionDetails>();
-            foreach (Tile tile in Find.WorldGrid.tiles)
+            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
             {
                 if (tile.pollution != 0)
                 {
                     PollutionDetails details = new PollutionDetails();
-                    details.Tile = Find.WorldGrid.tiles.IndexOf(tile);
+                    details.Tile = tile.tile;
                     details.Quantity = tile.pollution;
 
                     toGet.Add(details);
@@ -90,7 +92,7 @@ namespace GameClient.Managers
 
         public static void ForcePollutionLayerRefresh()
         {
-            Find.World.renderer.SetDirty<WorldLayer_Pollution>();
+            Find.World.renderer.SetDirty<WorldDrawLayer>(PlanetLayer.Selected);
             Find.World.renderer.RegenerateLayersIfDirtyInLongEvent();
         }
     }

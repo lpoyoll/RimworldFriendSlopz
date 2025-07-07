@@ -81,8 +81,8 @@ namespace GameClient.Managers
                 return;
             }
 
-            Tile tileA = Find.WorldGrid[tileAID];
-            Tile tileB = Find.WorldGrid[tileBID];
+            SurfaceTile tileA = Find.WorldGrid[tileAID];
+            SurfaceTile tileB = Find.WorldGrid[tileBID];
 
             AddRoadLink(tileA, tileBID, roadDef);
             AddRoadLink(tileB, tileAID, roadDef);
@@ -90,29 +90,29 @@ namespace GameClient.Managers
             if (forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
         }
 
-        private static void AddRoadLink(Tile toAddTo, int neighborTileID, RoadDef roadDef)
+        private static void AddRoadLink(SurfaceTile toAddTo, int neighborTileID, RoadDef roadDef)
         {
             if (toAddTo.Roads != null)
             {
-                foreach (Tile.RoadLink roadLink in toAddTo.Roads)
+                foreach (SurfaceTile.RoadLink roadLink in toAddTo.Roads)
                 {
                     if (roadLink.neighbor == neighborTileID) return;
                 }
             }
 
-            Tile.RoadLink linkToAdd = new Tile.RoadLink
+            SurfaceTile.RoadLink linkToAdd = new SurfaceTile.RoadLink
             {
                 neighbor = neighborTileID,
                 road = roadDef
             };
 
-            toAddTo.potentialRoads ??= new List<Tile.RoadLink>();
+            toAddTo.potentialRoads ??= new List<SurfaceTile.RoadLink>();
             toAddTo.potentialRoads.Add(linkToAdd);
         }
 
         public static void ClearAllRoads()
         {
-            foreach (Tile tile in Find.WorldGrid.tiles)
+            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
             {
                 tile.Roads?.Clear();
                 tile.potentialRoads = null;
@@ -123,10 +123,10 @@ namespace GameClient.Managers
 
         private static void RemoveRoadSimple(int tileAID, int tileBID, bool forceRefresh)
         {
-            Tile tileA = Find.WorldGrid[tileAID];
-            Tile tileB = Find.WorldGrid[tileBID];
+            SurfaceTile tileA = Find.WorldGrid[tileAID];
+            SurfaceTile tileB = Find.WorldGrid[tileBID];
 
-            foreach (Tile.RoadLink roadLink in tileA.Roads.ToList())
+            foreach (SurfaceTile.RoadLink roadLink in tileA.Roads.ToList())
             {
                 if (roadLink.neighbor == tileBID)
                 {
@@ -138,7 +138,7 @@ namespace GameClient.Managers
                 }
             }
 
-            foreach (Tile.RoadLink roadLink in tileB.Roads.ToList())
+            foreach (SurfaceTile.RoadLink roadLink in tileB.Roads.ToList())
             {
                 if (roadLink.neighbor == tileAID)
                 {
@@ -189,11 +189,11 @@ namespace GameClient.Managers
 
         public static bool CheckIfTwoTilesAreConnected(int tileAID, int tileBID)
         {
-            Tile tileA = Find.WorldGrid[tileAID];
+            SurfaceTile tileA = Find.WorldGrid[tileAID];
 
             if (tileA.Roads != null)
             {
-                foreach (Tile.RoadLink roadLink in tileA.Roads)
+                foreach (SurfaceTile.RoadLink roadLink in tileA.Roads)
                 {
                     if (roadLink.neighbor == tileBID) return true;
                 }
@@ -322,14 +322,14 @@ namespace GameClient.Managers
         public static RoadDetails[] GetPlanetRoads()
         {
             List<RoadDetails> toGet = new List<RoadDetails>();
-            foreach (Tile tile in Find.WorldGrid.tiles)
+            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
             {
                 if (tile.Roads != null)
                 {
-                    foreach (Tile.RoadLink link in tile.Roads)
+                    foreach (SurfaceTile.RoadLink link in tile.Roads)
                     {
                         RoadDetails details = new RoadDetails();
-                        details.FromTile = Find.WorldGrid.tiles.IndexOf(tile);
+                        details.FromTile = Find.WorldGrid.Tiles.IndexOf(tile);
                         details.ToTile = link.neighbor;
                         details.RoadDefName = link.road.defName;
 
@@ -353,7 +353,7 @@ namespace GameClient.Managers
 
         public static void ForceRoadLayerRefresh()
         {
-            Find.World.renderer.SetDirty<WorldLayer_Roads>();
+            Find.World.renderer.SetDirty<WorldDrawLayer>(PlanetLayer.Selected);
             Find.World.renderer.RegenerateLayersIfDirtyInLongEvent();
         }
     }
