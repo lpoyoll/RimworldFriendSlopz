@@ -25,6 +25,8 @@ namespace Shared
 
         public int Population { get; set; } = -1;
 
+        public int LandmarkDensity { get; set; } = -1;
+
         public float Pollution { get; set; } = -1f;
 
         public WorldTilesFile Tiles { get; set; } = null;

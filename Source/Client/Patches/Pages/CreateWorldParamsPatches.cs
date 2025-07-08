@@ -18,7 +18,7 @@ namespace GameClient.Patches.Pages
         public static class PatchWhenHost
         {
             [HarmonyPrefix]
-            public static bool DoPre(Rect rect, Page_CreateWorldParams __instance, string ___seedString, float ___planetCoverage, OverallRainfall ___rainfall, OverallTemperature ___temperature, OverallPopulation ___population, List<FactionDef> ___factions, float ___pollution)
+            public static bool DoPre(Rect rect, Page_CreateWorldParams __instance, string ___seedString, float ___planetCoverage, OverallRainfall ___rainfall, OverallTemperature ___temperature, OverallPopulation ___population, LandmarkDensity ___landmarkDensity, List<FactionDef> ___factions, float ___pollution)
             {
                 if (Network.State == ClientNetworkState.Disconnected) return true;
                 if (!ClientValues.IsGeneratingFreshWorld) return true;
@@ -35,9 +35,10 @@ namespace GameClient.Patches.Pages
                     ___factions.Add(RTFactionDefOf.RTFaction);
 
                     WorldManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall,
-                        ___temperature, ___population, ___factions, ___pollution);
+                        ___temperature, ___population, ___landmarkDensity, ___factions, ___pollution);
 
-                    WorldManager.GeneratePatchedWorld();
+                    if (ClientValues.IsGeneratingFreshWorld) WorldManager.GenerateNormalWorld();
+                    else WorldManager.GenerateNormalWorld();
                 }
 
                 return true;
@@ -55,8 +56,8 @@ namespace GameClient.Patches.Pages
 
                 __instance.Close();
 
-                WorldManager.GeneratePatchedWorld();
-
+                if (ClientValues.IsGeneratingFreshWorld) WorldManager.GenerateNormalWorld();
+                else WorldManager.GenerateNormalWorld();
                 return false;
             }
         }

@@ -76,7 +76,7 @@ namespace GameClient.Managers
                 {
                     foreach (SurfaceTile.RiverLink link in tile.Rivers)
                     {
-                        RiverDetails details = new RiverDetails(Find.WorldGrid.Tiles.IndexOf(tile), link.neighbor, link.river.defName);
+                        RiverDetails details = new RiverDetails(Find.WorldGrid.Tiles.First(fetch => fetch == tile).tile, link.neighbor, link.river.defName);
 
                         if (!CheckIfExists(details.FromTile, details.ToTile)) toGet.Add(details);
                     }
