@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using GameClient.Misc;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -33,11 +34,16 @@ namespace GameClient.Patches
                 {
                     if (codes[i].opcode == OpCodes.Stloc_0)
                     {
-                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldloc_0));
-                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Call, method));
+                        i++;
+                        codes.InsertRange(i, new CodeInstruction[]
+                        {
+                            new (OpCodes.Ldloc_0),
+                            new (OpCodes.Call, method)
+                        });
+                        break;
                     }
                 }
-
+                
                 return codes.AsEnumerable();
             }
 
