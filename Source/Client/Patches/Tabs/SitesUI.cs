@@ -14,9 +14,11 @@ namespace GameClient.Patches.Tabs
 
         private static readonly Vector2 WinSize = new Vector2(432f, 540f);
 
+        private string tabTitle;
+
         public override bool IsVisible => true;
 
-        private string tabTitle;
+        protected override bool StillValid => true;
 
         public SitesUI()
         {
@@ -26,20 +28,17 @@ namespace GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            if (Network.State == ClientNetworkState.Connected)
-            {
-                tabTitle = $"Player Sites [{SiteManager.PlayerSites.Count()}]";
+            tabTitle = $"Player Sites [{SiteManager.PlayerSites.Count()}]";
 
-                float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
+            float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
-                Rect outRect = new Rect(0f, 0f, WinSize.x, WinSize.y).ContractedBy(10f);
-                Rect rect = new Rect(10f, 10f, outRect.width - 16f, Mathf.Max(0f, outRect.height));
+            Rect outRect = new Rect(0f, 0f, WinSize.x, WinSize.y).ContractedBy(10f);
+            Rect rect = new Rect(10f, 10f, outRect.width - 16f, Mathf.Max(0f, outRect.height));
 
-                Text.Font = GameFont.Medium;
-                Widgets.Label(rect, tabTitle);
-                Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
-                GenerateList(new Rect(new Vector2(rect.x, rect.y + 30f), new Vector2(rect.width, rect.height - 30f)));
-            }
+            Text.Font = GameFont.Medium;
+            Widgets.Label(rect, tabTitle);
+            Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
+            GenerateList(new Rect(new Vector2(rect.x, rect.y + 30f), new Vector2(rect.width, rect.height - 30f)));
         }
 
         private void GenerateList(Rect mainRect)
@@ -92,6 +91,11 @@ namespace GameClient.Patches.Tabs
                     }
                 }
             }
+        }
+
+        protected override void CloseTab()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

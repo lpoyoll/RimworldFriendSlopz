@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using GameClient.Core.Configs;
+﻿using GameClient.Core.Configs;
 using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.TCP;
@@ -10,6 +6,11 @@ using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
 using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
@@ -101,13 +102,13 @@ namespace GameClient.Managers
 
         //Takes transferable items from drop pods
 
-        public static void TakeTransferItemsFromPods(CompLaunchable representative)
+        public static void TakeTransferItemsFromPods(IEnumerable<IThingHolder> pods)
         {
             SessionValues.OutgoingManifest._transferMode = TransferMode.Pod;
             SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
             SessionValues.OutgoingManifest._toTile = SessionValues.ChosenSettlement.Tile;
 
-            foreach (CompTransporter pod in representative.TransportersInGroup)
+            foreach (IThingHolder pod in pods)
             {
                 ThingOwner directlyHeldThings = pod.GetDirectlyHeldThings();
 
@@ -359,8 +360,9 @@ namespace GameClient.Managers
 
         public static void LaunchDropPods()
         {
-            SessionValues.ChosendPods.TryLaunch(SessionValues.ChosenSettlement.Tile,
-                new TransportPodsArrivalAction_GiveGift(SessionValues.ChosenSettlement));
+            //FIXME
+            //SessionValues.ChosendPods.TryLaunch(SessionValues.ChosenSettlement.Tile,
+            //    new TransportersArrivalAction_GiveGift(SessionValues.ChosenSettlement));
         }
     }
 

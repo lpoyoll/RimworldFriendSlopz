@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GameClient.Managers;
+﻿using GameClient.Managers;
 using GameClient.TCP;
+using RimWorld;
 using RimWorld.Planet;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -15,9 +16,11 @@ namespace GameClient.Patches.Tabs
 
         private static readonly Vector2 WinSize = new Vector2(432f, 540f);
 
+        private string tabTitle;
+
         public override bool IsVisible => true;
 
-        private string tabTitle;
+        protected override bool StillValid => true;
 
         public PlayersUI()
         {
@@ -27,20 +30,17 @@ namespace GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            if (Network.State == ClientNetworkState.Connected)
-            {
-                tabTitle = $"Players Online [{RecountManager.CurrentPlayers}]";
+            tabTitle = $"Players Online [{RecountManager.CurrentPlayers}]";
 
-                float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
+            float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
-                Rect outRect = new Rect(0f, 0f, WinSize.x, WinSize.y).ContractedBy(10f);
-                Rect rect = new Rect(10f, 10f, outRect.width - 16f, Mathf.Max(0f, outRect.height));
+            Rect outRect = new Rect(0f, 0f, WinSize.x, WinSize.y).ContractedBy(10f);
+            Rect rect = new Rect(10f, 10f, outRect.width - 16f, Mathf.Max(0f, outRect.height));
 
-                Text.Font = GameFont.Medium;
-                Widgets.Label(rect, tabTitle);
-                Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
-                GenerateList(new Rect(new Vector2(rect.x, rect.y + 30f), new Vector2(rect.width, rect.height - 30f)));
-            }
+            Text.Font = GameFont.Medium;
+            Widgets.Label(rect, tabTitle);
+            Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
+            GenerateList(new Rect(new Vector2(rect.x, rect.y + 30f), new Vector2(rect.width, rect.height - 30f)));
         }
 
         private void GenerateList(Rect mainRect)
@@ -79,6 +79,11 @@ namespace GameClient.Patches.Tabs
             if (index % 2 == 0) Widgets.DrawLightHighlight(rect);
             Rect fixedRect = new Rect(new Vector2(rect.x + 10f, rect.y + 5f), new Vector2(rect.width - 52f, rect.height));
             Widgets.Label(fixedRect, str);
+        }
+
+        protected override void CloseTab()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

@@ -234,7 +234,7 @@ namespace GameClient.Managers
             return DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == defName);
         }
 
-        public static void ShowRoadChooseDialog(int[] neighborTiles, bool hasRoadOnTile)
+        public static void ShowRoadChooseDialog(PlanetTile[] neighborTiles, bool hasRoadOnTile)
         {
             if (hasRoadOnTile)
             {
@@ -248,7 +248,7 @@ namespace GameClient.Managers
             else ShowRoadBuildDialog(neighborTiles);
         }
 
-        public static void ShowRoadBuildDialog(int[] neighborTiles)
+        public static void ShowRoadBuildDialog(PlanetTile[] neighborTiles)
         {
             List<string> selectableTileLabels = new List<string>();
             List<int> selectableTiles = new List<int>();
@@ -292,7 +292,7 @@ namespace GameClient.Managers
                 selectableTileLabels.ToArray(), r1));
         }
 
-        public static void ShowRoadDestroyDialog(int[] neighborTiles)
+        public static void ShowRoadDestroyDialog(PlanetTile[] neighborTiles)
         {
             List<string> selectableTilesLabels = new List<string>();
             List<int> selectableTiles = new List<int>();

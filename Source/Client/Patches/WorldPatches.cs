@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using GameClient.Dialogs;
+﻿using GameClient.Dialogs;
 using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.Patches.Tabs;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
+using Steamworks;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -508,9 +510,11 @@ namespace GameClient.Patches
 
                         if (SessionValues.ActionValues.EnableRoads)
                         {
-                            List<int> neighborTiles = new List<int>();
+                            List<PlanetTile> neighborTiles = new List<PlanetTile>();
                             Find.WorldGrid.GetTileNeighbors(SessionValues.ChosenCaravan.Tile, neighborTiles);
-                            RoadManagerHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), Find.WorldGrid[__instance.Tile].Roads != null);
+
+                            SurfaceTile selectedTile = (SurfaceTile)Find.WorldGrid[__instance.Tile];
+                            RoadManagerHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), selectedTile.Roads != null);
                         }
                         else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
@@ -542,7 +546,7 @@ namespace GameClient.Patches
     public static class PatchDropGift
     {
         [HarmonyPostfix]
-        public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement, CompLaunchable representative)
+        public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement, IEnumerable<IThingHolder> pods)
         {
             if (ClientValues.PlayerFactions.Contains(settlement.Faction))
             {
@@ -552,12 +556,12 @@ namespace GameClient.Patches
                 if (Network.State == ClientNetworkState.Connected)
                 {
                     SessionValues.ChosenSettlement = settlement;
-                    SessionValues.ChosendPods = representative;
+                    SessionValues.ChosenPods = pods;
 
                     string optionLabel = $"Transfer things to {settlement.Name}";
                     Action toDo = delegate
                     {
-                        TransferManager.TakeTransferItemsFromPods(SessionValues.ChosendPods);
+                        TransferManager.TakeTransferItemsFromPods(SessionValues.ChosenPods);
                         TransferManager.SendTransferRequestToServer(TransferLocation.Pod);
                     };
 
@@ -644,25 +648,30 @@ namespace GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(WorldInspectPane), "SetInitialSizeAndPosition")]
+    [HarmonyPatch(typeof(WorldInspectPane), "CurTabs", MethodType.Getter)]
     public static class AddSideTabs
     {
         [HarmonyPrefix]
-        public static bool DoPre(ref WITab[] ___TileTabs)
+        public static bool DoPre(WorldInspectPane __instance, ref IEnumerable<InspectTabBase> __result)
         {
-            if (___TileTabs.Count() != 5 && Network.State == ClientNetworkState.Connected)
+            if (Network.State != ClientNetworkState.Connected) return false;
+            else
             {
-                ___TileTabs = new WITab[5]
+                if (Find.WorldSelector.NumSelectedObjects == 1)
                 {
-                    new PlayersUI(),
-                    new BasesUI(),
-                    new SitesUI(),
-                    new WITab_Terrain(),
-                    new WITab_Planet()
-                };
-            }
+                    __result = Find.WorldSelector.SingleSelectedObject.GetInspectTabs();
+                }
 
-            return true;
+                if (Find.WorldSelector.NumSelectedObjects == 0 && Find.WorldSelector.SelectedTile.Valid)
+                {
+                    __result = PlanetLayer.Selected.Def.Tabs;
+                    __result = __result.AddItem(new PlayersUI());
+                    __result = __result.AddItem(new BasesUI());
+                    __result = __result.AddItem(new SitesUI());
+                }
+
+                return false;
+            }
         }
     }
 

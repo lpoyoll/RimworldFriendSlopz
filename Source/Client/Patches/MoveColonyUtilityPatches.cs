@@ -17,14 +17,17 @@ namespace GameClient.Patches
         public static class MoveColonyAndResetPatch
         {
             private static readonly FieldInfo PlayerSettlementsRemoved;
-            
+
             static MoveColonyAndResetPatch()
             {
                 PlayerSettlementsRemoved = AccessTools.Field(typeof(MoveColonyUtility), "playerSettlementsRemoved"); //caching, saves some performance
             }
+
             /// <summary>
             /// Catches the removed player settlements and notifies the server about them
             /// </summary>
+            /// 
+
             [HarmonyTranspiler]
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
@@ -35,7 +38,7 @@ namespace GameClient.Patches
                 {
                     if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == methodToCheck)
                     {
-                        codes.InsertRange(i,new CodeInstruction[]
+                        codes.InsertRange(i, new CodeInstruction[]
                         {
                             new CodeInstruction(OpCodes.Ldsfld,  PlayerSettlementsRemoved),
                             new CodeInstruction(OpCodes.Call, method)
@@ -45,13 +48,13 @@ namespace GameClient.Patches
                 }
                 return codes;
             }
-            
+
             [HarmonyPostfix]
             public static void Postfix(int tile)
             {
                 SettlementManager.SendNewPlayerSettlement(tile);
             }
-            
+
             private static void RemovePreviousSettlements(List<int> settlementsToRemove)
             {
                 foreach (int settlement in settlementsToRemove)
@@ -63,6 +66,6 @@ namespace GameClient.Patches
                     Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
                 }
             }
-        } 
+        }
     }
 }

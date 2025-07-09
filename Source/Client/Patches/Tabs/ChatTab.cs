@@ -13,6 +13,7 @@ namespace GameClient.Patches.Tabs
         public override Vector2 RequestedTabSize => new Vector2(800f, 600f);
 
         private Vector2 scrollPositionPlayers = Vector2.zero;
+
         private Vector2 scrollPositionChat = Vector2.zero;
 
         private readonly int startAcceptingInputAtFrame;

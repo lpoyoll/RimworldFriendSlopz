@@ -1,8 +1,9 @@
-using System.Collections.Generic;
 using GameClient.Patches.Pages;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using System.Collections.Generic;
+using Verse;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Values
@@ -21,7 +22,7 @@ namespace GameClient.Values
 
         public static Site ChosenSite { get; set; } = null;
 
-        public static CompLaunchable ChosendPods { get; set; } = null;
+        public static IEnumerable<IThingHolder> ChosenPods { get; set; } = null;
 
         public static TransferData OutgoingManifest { get; set; } = new TransferData();
 

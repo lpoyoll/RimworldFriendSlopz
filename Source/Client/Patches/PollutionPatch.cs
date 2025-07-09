@@ -1,6 +1,7 @@
 ﻿using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
+using RimWorld.Planet;
 using Shared;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +21,7 @@ namespace GameClient.Patches
 
             public static bool addedByServer;
 
-            public static void StoreNumValue(int num) { lastPollutedTile = num; }
-
-            // TODO
-            // Find out why the transpiler is allergic to IF statements
+            public static void StoreNumValue(PlanetTile num) { lastPollutedTile = num; }
 
             [HarmonyTranspiler]
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
