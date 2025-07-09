@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
@@ -24,16 +25,17 @@ namespace GameClient.Patches.Pages
             {
                 const string disconnectText = "Disconnect";
                 List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-                codes.InsertRange(0, TranspilerHelper.CheckIfConnected(ilGenerator));
                 MethodInfo helper = AccessTools.Method(typeof(PathSelectStartingSitePage), nameof(Helper));
                 int index = 0;
                 for (; index < codes.Count; index++)
                 {
                     if (codes[index].operand is string str && str == "Back")
                     {
-                        codes.RemoveAt(index + 1);
-                        codes.RemoveAt(index + 1);
-                        codes[index].operand = disconnectText;
+                        CodeInstruction[] newInstructions = new CodeInstruction[]{
+                            new(OpCodes.Ldstr, disconnectText) // Swap the text
+                        };
+                        
+                        TranspilerHelper.CheckIfConnected(ilGenerator, codes, newInstructions, ref index, 3);
                         break;
                     }
                 }
@@ -47,13 +49,20 @@ namespace GameClient.Patches.Pages
                             flag = true;
                             continue;
                         }
-                        codes.InsertRange(index, new CodeInstruction[]
+
+                        CodeInstruction[] newInstructions = new CodeInstruction[]
                         {
-                            new(OpCodes.Call, helper),
-                            new(OpCodes.Ret)
-                        });
+                            new(OpCodes.Call, helper), // Call helper so Nova can read it
+                            new(OpCodes.Ret) // Return
+                        };
+                        TranspilerHelper.CheckIfConnected(ilGenerator, codes, newInstructions, ref index, 0);
                         break;
                     }
+                }
+
+                foreach (var instruction in codes)
+                {
+                    Printer.Warning(instruction);
                 }
                 return codes;
             }
