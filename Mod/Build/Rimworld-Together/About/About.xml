@@ -13,6 +13,7 @@
 		<li>Ludeon.RimWorld.Royalty</li>
 		<li>Ludeon.Rimworld.Ideology</li>
 		<li>Ludeon.Rimworld.Biotech</li>
+		<li>Ludeon.Rimworld.Odyssey</li>
 		<li>UnlimitedHugs.HugsLib</li>
 	</loadAfter>
 	<modDependenciesByVersion>
