@@ -7,6 +7,10 @@
         <Nullable>enable</Nullable>
         <RootNamespace>GameServer</RootNamespace>
 		<RuntimeIdentifiers>win-x64;win-x86;linux-x64;linux-arm;linux-arm64</RuntimeIdentifiers>
+        <OutputPath>..\..\Server</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <AppendConfigurationToOutputPath>false</AppendConfigurationToOutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

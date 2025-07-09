@@ -410,7 +410,14 @@ Source/publishServer.sh
 
 # Visual Studio Code
 Source/.vscode/*.*
+
+# Rimworld Together specific exclusions
 Mod/Windows.bat
 Mod/Build/Rimworld-Together/Current/Assemblies/GameClient.dll
 Mod/Build/Rimworld-Together/Current/Assemblies/MessagePack.dll
 Mod/WindowsDouble.bat
+
+# Rimworld specific exclusions
+1.5/Assemblies
+1.6/Assemblies
+/Server
