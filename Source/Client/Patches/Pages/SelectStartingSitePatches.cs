@@ -1,4 +1,7 @@
-﻿using GameClient.Managers;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
+using GameClient.Managers;
 using GameClient.TCP;
 using GameClient.Values;
 using HarmonyLib;
@@ -16,58 +19,50 @@ namespace GameClient.Patches.Pages
         [HarmonyPatch(typeof(Page_SelectStartingSite), "DoCustomBottomButtons")]
         public static class PathSelectStartingSitePage
         {
-            [HarmonyPrefix]
-            public static bool DoPre()
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator ilGenerator)
             {
-                if (Network.State == ClientNetworkState.Disconnected) return true;
-
-                int num = TutorSystem.TutorialMode ? 4 : 5;
-                int num2 = num < 4 || !(UI.screenWidth < 540f + num * (150f + 10f)) ? 1 : 2;
-                int num3 = Mathf.CeilToInt(num / (float)num2);
-                float num4 = 150f * num3 + 10f * (num3 + 1);
-                float num5 = num2 * 38f + 10f * (num2 + 1);
-                Rect rect = new Rect((UI.screenWidth - num4) / 2f, UI.screenHeight - num5 - 4f, num4, num5);
-
-                WorldInspectPane worldInspectPane = Find.WindowStack.WindowOfType<WorldInspectPane>();
-                if (worldInspectPane != null && rect.x < InspectPaneUtility.PaneWidthFor(worldInspectPane) + 4f)
+                const string disconnectText = "Disconnect";
+                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                codes.InsertRange(0, TranspilerHelper.CheckIfConnected(ilGenerator));
+                MethodInfo helper = AccessTools.Method(typeof(PathSelectStartingSitePage), nameof(Helper));
+                int index = 0;
+                for (; index < codes.Count; index++)
                 {
-                    rect.x = InspectPaneUtility.PaneWidthFor(worldInspectPane) + 4f;
+                    if (codes[index].operand is string str && str == "Back")
+                    {
+                        codes.RemoveAt(index + 1);
+                        codes.RemoveAt(index + 1);
+                        codes[index].operand = disconnectText;
+                        break;
+                    }
                 }
-
-                Widgets.DrawWindowBackground(rect);
-
-                float num6 = rect.xMin + 10f;
-                float num7 = rect.yMin + 10f;
-                if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
+                bool flag = false;
+                for (; index < codes.Count; index++)
                 {
-                    SceneManager.LoadScene(0);
-                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.Listener.DisconnectFlag = true;
+                    if (codes[index].opcode == OpCodes.Ldarg_0)
+                    {
+                        if (!flag)
+                        {
+                            flag = true;
+                            continue;
+                        }
+                        codes.InsertRange(index, new CodeInstruction[]
+                        {
+                            new(OpCodes.Call, helper),
+                            new(OpCodes.Ret)
+                        });
+                        break;
+                    }
                 }
-                return true;
+                return codes;
             }
 
-            [HarmonyPostfix]
-            public static void DoPost()
+            private static void Helper()
             {
-                if (Network.State == ClientNetworkState.Disconnected) return;
-
-                int num = TutorSystem.TutorialMode ? 4 : 5;
-                int num2 = num < 4 || !(UI.screenWidth < 540f + num * (150f + 10f)) ? 1 : 2;
-                int num3 = Mathf.CeilToInt(num / (float)num2);
-                float num4 = 150f * num3 + 10f * (num3 + 1);
-                float num5 = num2 * 38f + 10f * (num2 + 1);
-                Rect rect = new Rect((UI.screenWidth - num4) / 2f, UI.screenHeight - num5 - 4f, num4, num5);
-
-                WorldInspectPane worldInspectPane = Find.WindowStack.WindowOfType<WorldInspectPane>();
-                if (worldInspectPane != null && rect.x < InspectPaneUtility.PaneWidthFor(worldInspectPane) + 4f)
-                {
-                    rect.x = InspectPaneUtility.PaneWidthFor(worldInspectPane) + 4f;
-                }
-
-                float num6 = rect.xMin + 10f;
-                float num7 = rect.yMin + 10f;
-                if (Widgets.ButtonText(new Rect(num6, num7, 150f, 38f), "Disconnect") || KeyBindingDefOf.Cancel.KeyDownEvent) { }
+                SceneManager.LoadScene(0);
+                DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
+                Network.Listener.DisconnectFlag = true;
             }
         }
 
