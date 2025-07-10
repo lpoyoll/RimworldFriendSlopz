@@ -37,10 +37,7 @@ namespace GameServer.Managers
         public static void SendWorld(ServerClient client)
         {
             WorldData data = new WorldData();
-
-            WorldTilesFile tiles = Serializer.FileBytesToObject<WorldTilesFile>(WorldTilesFile.FilePath);
             WorldValuesFile file = Serializer.FileBytesToObject<WorldValuesFile>(WorldValuesFile.FilePath);
-            file.Tiles = tiles;
 
             data._fileBytes = Serializer.ConvertObjectToBytes(file);
             data._stepMode = WorldStepMode.Sent;
@@ -51,9 +48,6 @@ namespace GameServer.Managers
         public static void ReceiveWorld(ServerClient client, WorldData data)
         {
             WorldValuesFile file = Serializer.ConvertBytesToObject<WorldValuesFile>(data._fileBytes);
-            Serializer.ObjectBytesToFile(WorldTilesFile.FilePath, file.Tiles);
-
-            file.Tiles = null;
             Serializer.ObjectBytesToFile(WorldValuesFile.FilePath, file);
             Master.WorldValues = file;
 

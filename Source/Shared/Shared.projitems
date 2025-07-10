@@ -30,7 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\StorytellerValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\ThingFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\WorldTilesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Attributes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />

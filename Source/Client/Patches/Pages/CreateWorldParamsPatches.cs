@@ -37,8 +37,7 @@ namespace GameClient.Patches.Pages
                     WorldManager.SetValuesFromGame(___seedString, ___planetCoverage, ___rainfall,
                         ___temperature, ___population, ___landmarkDensity, ___factions, ___pollution);
 
-                    if (ClientValues.IsGeneratingFreshWorld) WorldManager.GenerateNormalWorld();
-                    else WorldManager.GenerateNormalWorld();
+                    WorldManager.GenerateNormalWorld();
                 }
 
                 return true;
@@ -56,8 +55,7 @@ namespace GameClient.Patches.Pages
 
                 __instance.Close();
 
-                if (ClientValues.IsGeneratingFreshWorld) WorldManager.GenerateNormalWorld();
-                else WorldManager.GenerateNormalWorld();
+                WorldManager.GenerateNormalWorld();
                 return false;
             }
         }

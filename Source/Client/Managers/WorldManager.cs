@@ -106,7 +106,8 @@ namespace GameClient.Managers
             WorldManager.OnExistingWorld();
         }
 
-        public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, OverallPopulation population, LandmarkDensity density, List<FactionDef> factions, float pollution)
+        public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, 
+            OverallPopulation population, LandmarkDensity density, List<FactionDef> factions, float pollution)
         {
             SessionValues.WorldFile = new WorldValuesFile();
             SessionValues.WorldFile.SeedString = seedString;
@@ -157,84 +158,6 @@ namespace GameClient.Managers
             Rand.PushState(0);
         }
 
-        public static void GenerateUsedWorld()
-        {
-            LongEventHandler.QueueLongEvent(delegate
-            {
-                Printer.Warning(1);
-
-                Find.GameInitData.ResetWorldRelatedMapInitData();
-
-                Printer.Warning(2);
-
-                Rand.PushState(SessionValues.WorldFile.PersistentRandomValue);
-
-                Printer.Warning(3);
-
-                Current.CreatingWorld = new World
-                {
-                    info =
-                    {
-                        seedString = SessionValues.WorldFile.SeedString,
-                        persistentRandomValue = SessionValues.WorldFile.PersistentRandomValue,
-                        planetCoverage = SessionValues.WorldFile.PlanetCoverage,
-                        overallRainfall = (OverallRainfall)SessionValues.WorldFile.Rainfall,
-                        overallTemperature = (OverallTemperature)SessionValues.WorldFile.Temperature,
-                        overallPopulation = (OverallPopulation)SessionValues.WorldFile.Population,
-                        landmarkDensity = (LandmarkDensity)SessionValues.WorldFile.LandmarkDensity,
-                        name = NameGenerator.GenerateName(RulePackDefOf.NamerWorld),
-                        factions = WorldManagerH.GetFactionDefsFromNPCFaction(SessionValues.WorldFile.NPCFactions),
-                        pollution = SessionValues.WorldFile.Pollution
-                    }
-                };
-
-                Printer.Warning(3.1);
-
-                foreach (GameSetupStepDef item in SetupStepsInOrder)
-                {
-                    Rand.Seed = Gen.HashCombineInt(0, item.setupStep.SeedPart);
-                    item.setupStep.GenerateFresh();
-                }
-
-                Printer.Warning(3.2);
-
-                int num = default(int);
-                PlanetLayer planetLayer = default(PlanetLayer);
-                foreach (KeyValuePair<int, PlanetLayer> planetLayer3 in Find.WorldGrid.PlanetLayers)
-                {
-                    //planetLayer3.Deconstruct(ref num, ref planetLayer);
-                    PlanetLayer planetLayer2 = planetLayer;
-                    GeneratePlanetLayer(planetLayer2, SessionValues.WorldFile.SeedString, 0);
-                    if (planetLayer2.Tiles.Count == 0)
-                    {
-                        Log.Warning($"No tiles on layer {planetLayer2}, layer should have a world gen step worker which initializes tiles such as WorldGenStep_Tiles");
-                    }
-                }
-
-                Printer.Warning(4);
-
-                Rand.Seed = 0;
-
-                Printer.Warning(5);
-
-                Current.CreatingWorld.grid.StandardizeTileData();
-
-                Printer.Warning(6);
-
-                Current.CreatingWorld.FinalizeInit(fromLoad: false);
-
-                Printer.Warning(7);
-
-                Find.Scenario.PostWorldGenerate();
-
-                Printer.Warning(8);
-
-                PostWorldGeneration();
-
-                Printer.Warning(9);
-            }, "GeneratingWorld", doAsynchronously: true, null);
-        }
-
         public static void PostWorldGeneration()
         {
             Page_SelectStartingSite newSelectStartingSite = new Page_SelectStartingSite();
@@ -257,98 +180,6 @@ namespace GameClient.Managers
             }
 
             Find.WindowStack.Add(newSelectStartingSite);
-        }
-
-        private static World GenerateWorld()
-        {
-            Rand.PushState(SessionValues.WorldFile.PersistentRandomValue);
-
-            Current.CreatingWorld = new World
-            {
-                info =
-                {
-                    seedString = SessionValues.WorldFile.SeedString,
-                    persistentRandomValue = SessionValues.WorldFile.PersistentRandomValue,
-                    planetCoverage = SessionValues.WorldFile.PlanetCoverage,
-                    overallRainfall = (OverallRainfall)SessionValues.WorldFile.Rainfall,
-                    overallTemperature = (OverallTemperature)SessionValues.WorldFile.Temperature,
-                    overallPopulation = (OverallPopulation)SessionValues.WorldFile.Population,
-                    landmarkDensity = (LandmarkDensity)SessionValues.WorldFile.LandmarkDensity,
-                    name = NameGenerator.GenerateName(RulePackDefOf.NamerWorld),
-                    factions = WorldManagerH.GetFactionDefsFromNPCFaction(SessionValues.WorldFile.NPCFactions),
-                    pollution = SessionValues.WorldFile.Pollution
-                }
-            };
-
-            foreach (GameSetupStepDef item in SetupStepsInOrder)
-            {
-                Rand.Seed = Gen.HashCombineInt(0, 0);
-                item.setupStep.GenerateFresh();
-            }
-
-            int num = default(int);
-            PlanetLayer planetLayer = default(PlanetLayer);
-            foreach (KeyValuePair<int, PlanetLayer> layer in Find.WorldGrid.PlanetLayers)
-            {
-                //layer.Deconstruct(ref num, ref planetLayer);
-                PlanetLayer planetLayer2 = default(PlanetLayer);
-                GeneratePlanetLayer(planetLayer2, Current.CreatingWorld.info.seedString, 0);
-                if (planetLayer2.Tiles.Count == 0)
-                {
-                    Log.Warning($"No tiles on layer {planetLayer2}, layer should have a world gen step worker which initializes tiles such as WorldGenStep_Tiles");
-                }
-            }
-
-            //if (!ClientValues.IsGeneratingFreshWorld && SessionValues.WorldFile.Tiles != null && SessionValues.WorldFile.Tiles.TileData.Length > 0)
-            //{
-            //    Current.CreatingWorld.grid.Tiles = new List<Tile>();
-            //    foreach (string str in SessionValues.WorldFile.Tiles.TileData) Current.CreatingWorld.grid.Tiles.AddItem(ScribeManager.StringToTile(str));
-            //}
-
-            Rand.Seed = 0;
-            Current.CreatingWorld.grid.StandardizeTileData();
-            Current.CreatingWorld.FinalizeInit(fromLoad: false);
-            Find.Scenario.PostWorldGenerate();
-            if (!ModsConfig.IdeologyActive) Find.Scenario.PostIdeoChosen();
-            return Current.CreatingWorld;
-        }
-
-        public static void GeneratePlanetLayer(PlanetLayer layer, string seedString, int seed)
-        {
-            List<WorldGenStepDef> genStepsInOrder = layer.Def.GenStepsInOrder;
-            DeepProfiler.Start($"WorldGen - {layer}");
-            for (int i = 0; i < genStepsInOrder.Count; i++)
-            {
-                DeepProfiler.Start($"WorldGenStep - {genStepsInOrder[i]}");
-                try
-                {
-                    Rand.Seed = Gen.HashCombineInt(seed, GetSeedPart(genStepsInOrder, i));
-                    genStepsInOrder[i].worldGenStep.GenerateFresh(seedString, layer);
-                }
-                catch (Exception arg)
-                {
-                    Log.Error($"Error in WorldGenStep: {arg}");
-                }
-                finally
-                {
-                    DeepProfiler.End();
-                }
-            }
-        }
-
-        private static int GetSeedPart(List<WorldGenStepDef> genSteps, int index)
-        {
-            int seedPart = genSteps[index].worldGenStep.SeedPart;
-            int num = 0;
-            for (int i = 0; i < index; i++)
-            {
-                if (genSteps[i].worldGenStep.SeedPart == seedPart)
-                {
-                    num++;
-                }
-            }
-
-            return seedPart + num;
         }
 
         public static void SetPlanetFeatures()
@@ -409,23 +240,12 @@ namespace GameClient.Managers
         public static void PopulateWorldValues()
         {
             Printer.Warning("Populating world values", LogImportanceMode.Verbose);
-            SessionValues.WorldFile.Tiles = GetPlanetTiles();
             SessionValues.WorldFile.Features = GetPlanetFeatures();
             SessionValues.WorldFile.Roads = RoadManagerHelper.GetPlanetRoads();
             SessionValues.WorldFile.Rivers = RiverManagerHelper.GetPlanetRivers();
             SessionValues.WorldFile.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
             SessionValues.WorldFile.NPCSettlements = GetPlanetNPCSettlements();
             SessionValues.WorldFile.NPCFactions = GetPlanetNPCFactions();
-        }
-
-        public static WorldTilesFile GetPlanetTiles()
-        {
-            List<string> toGet = new List<string>();
-            foreach (Tile tile in Find.WorldGrid.Tiles) toGet.Add(ScribeManager.TileToString(tile));
-
-            WorldTilesFile file = new WorldTilesFile();
-            file.TileData = toGet.ToArray();
-            return file;
         }
 
         public static PlanetNPCFactionDetails[] GetNPCFactionsFromDef(FactionDef[] factionDefs)

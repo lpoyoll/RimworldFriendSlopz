@@ -29,8 +29,6 @@ namespace Shared
 
         public float Pollution { get; set; } = -1f;
 
-        public WorldTilesFile Tiles { get; set; } = null;
-
         public PlanetFeatureDetails[] Features { get; set; } = null;
 
         public RoadDetails[] Roads { get; set; } = null;
