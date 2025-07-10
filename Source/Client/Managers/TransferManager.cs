@@ -360,11 +360,10 @@ namespace GameClient.Managers
 
         public static void LaunchDropPods()
         {
-            Printer.Warning("FIX ME I'M NOT WORKING");
-
-            //FIXME
-            //SessionValues.ChosendPods.TryLaunch(SessionValues.ChosenSettlement.Tile,
-            //    new TransportersArrivalAction_GiveGift(SessionValues.ChosenSettlement));
+            foreach (IThingHolder holder in SessionValues.ChosenPods.ToArray())
+            {
+                holder.GetDirectlyHeldThings().ClearAndDestroyContents();
+            }
         }
     }
 

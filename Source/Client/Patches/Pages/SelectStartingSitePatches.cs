@@ -39,6 +39,7 @@ namespace GameClient.Patches.Pages
                         break;
                     }
                 }
+
                 bool flag = false;
                 for (; index < codes.Count; index++)
                 {
@@ -60,10 +61,6 @@ namespace GameClient.Patches.Pages
                     }
                 }
 
-                foreach (var instruction in codes)
-                {
-                    Printer.Warning(instruction);
-                }
                 return codes;
             }
 
