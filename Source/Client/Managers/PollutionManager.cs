@@ -34,8 +34,6 @@ namespace GameClient.Managers
             {
                 PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(bytes);
 
-                Printer.Warning(data, LogImportanceMode.Extreme);
-
                 AddPollutedTileOrganic(data._pollutionData);
             }
         }
@@ -68,7 +66,9 @@ namespace GameClient.Managers
 
         public static void ClearAllPollution()
         {
-            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
+            PlanetLayer layer = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
+
+            foreach (SurfaceTile tile in layer.Tiles)
             {
                 if (tile.pollution != 0) tile.pollution = 0;
             }
