@@ -13,7 +13,8 @@ namespace GameClient.Values
 {
     public static class ClientValues
     {
-        public static Stopwatch Watch = new Stopwatch();
+        public static Stopwatch TestingWatch { get; private set; } = new Stopwatch();
+
         public static bool IsGeneratingFreshWorld { get; private set; } = false;
 
         public static bool IsReadyToPlay { get; private set; } = false;
