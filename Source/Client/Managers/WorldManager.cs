@@ -240,22 +240,26 @@ namespace GameClient.Managers
     {
         public static void PopulateWorldValues()
         {
+            Printer.Warning("Populating world values", LogImportanceMode.Verbose);
             Stopwatch watch = new Stopwatch();
             watch.Start();
-            Printer.Warning("Populating world values", LogImportanceMode.Verbose);
+
             SessionValues.WorldFile.Features = GetPlanetFeatures();
-            watch.Stop();
             Printer.Warning($"Getting planet features took {watch.ElapsedMilliseconds} ms",  LogImportanceMode.Verbose);
             watch.Restart();
+
             SessionValues.WorldFile.Roads = RoadManagerHelper.GetPlanetRoads();
             Printer.Warning($"Roads took {watch.ElapsedMilliseconds} ms");
             watch.Restart();
+
             SessionValues.WorldFile.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
             Printer.Warning($"Getting pollution took {watch.ElapsedMilliseconds} ms", LogImportanceMode.Verbose);
             watch.Restart();
+
             SessionValues.WorldFile.NPCSettlements = GetPlanetNPCSettlements();
             Printer.Warning($"Getting settlements took {watch.ElapsedMilliseconds} ms", LogImportanceMode.Verbose);
             watch.Restart();
+
             SessionValues.WorldFile.NPCFactions = GetPlanetNPCFactions();
             Printer.Warning($"Getting factions took {watch.ElapsedMilliseconds} ms", LogImportanceMode.Verbose);
             watch.Restart();
