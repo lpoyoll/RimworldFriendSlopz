@@ -329,7 +329,7 @@ namespace GameClient.Managers
                     foreach (SurfaceTile.RoadLink link in tile.Roads)
                     {
                         RoadDetails details = new RoadDetails();
-                        details.FromTile = Find.WorldGrid.Tiles.First(fetch => fetch == tile).tile;
+                        details.FromTile = tile.tile;
                         details.ToTile = link.neighbor;
                         details.RoadDefName = link.road.defName;
 
