@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using GameClient.Managers;
 using GameClient.Misc;
@@ -12,6 +13,7 @@ namespace GameClient.Values
 {
     public static class ClientValues
     {
+        public static Stopwatch Watch = new Stopwatch();
         public static bool IsGeneratingFreshWorld { get; private set; } = false;
 
         public static bool IsReadyToPlay { get; private set; } = false;
