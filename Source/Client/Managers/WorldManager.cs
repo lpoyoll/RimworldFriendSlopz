@@ -242,7 +242,6 @@ namespace GameClient.Managers
             Printer.Warning("Populating world values", LogImportanceMode.Verbose);
             SessionValues.WorldFile.Features = GetPlanetFeatures();
             SessionValues.WorldFile.Roads = RoadManagerHelper.GetPlanetRoads();
-            SessionValues.WorldFile.Rivers = RiverManagerHelper.GetPlanetRivers();
             SessionValues.WorldFile.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
             SessionValues.WorldFile.NPCSettlements = GetPlanetNPCSettlements();
             SessionValues.WorldFile.NPCFactions = GetPlanetNPCFactions();

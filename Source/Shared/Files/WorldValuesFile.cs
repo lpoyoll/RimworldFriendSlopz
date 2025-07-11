@@ -33,8 +33,6 @@ namespace Shared
 
         public RoadDetails[] Roads { get; set; } = null;
 
-        public RiverDetails[] Rivers { get; set; } = null;
-
         public PollutionDetails[] PollutedTiles { get; set; } = null;
 
         public PlanetNPCFactionDetails[] NPCFactions { get; set; } = null;

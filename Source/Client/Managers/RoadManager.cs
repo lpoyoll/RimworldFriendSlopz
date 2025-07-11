@@ -157,13 +157,19 @@ namespace GameClient.Managers
     public static class RoadManagerHelper
     {
         public static RoadDetails[] tempRoadDetails;
+
         public static RoadDef[] allowedRoadDefs;
+
         public static int[] allowedRoadCosts;
 
         public static RoadDef DirtPathDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "DirtPath");
+
         public static RoadDef DirtRoadDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "DirtRoad");
+
         public static RoadDef StoneRoadDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "StoneRoad");
+
         public static RoadDef AncientAsphaltRoadDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "AncientAsphaltRoad");
+
         public static RoadDef AncientAsphaltHighwayDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "AncientAsphaltHighway");
 
         public static void SetValues(ServerGlobalData serverGlobalData)
@@ -353,8 +359,9 @@ namespace GameClient.Managers
 
         public static void ForceRoadLayerRefresh()
         {
-            Find.World.renderer.SetDirty<WorldDrawLayer>(PlanetLayer.Selected);
-            Find.World.renderer.RegenerateLayersIfDirtyInLongEvent();
+            PlanetLayer toRefresh = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
+            Find.World.renderer.SetDirty<WorldDrawLayer>(toRefresh);
+            Printer.Warning("I'm being called");
         }
     }
 }

@@ -29,6 +29,7 @@ namespace GameClient.Managers
 
                 NPCManager.ClearAllSettlements();
                 NPCManagerH.SaveAllQuests();
+
                 NPCManager.AddSettlements(NPCManagerH.tempNPCSettlements);
                 NPCManagerH.CleanupQuests();
 

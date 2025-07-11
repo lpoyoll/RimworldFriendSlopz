@@ -84,7 +84,6 @@ namespace GameClient.Patches.Pages
                 {
                     WorldManager.SetPlanetFeatures();
                     WorldManager.SetPlanetFactions();
-                    RiverManager.SetPlanetRivers();
                 }
 
                 PlanetManager.BuildPlanet();
