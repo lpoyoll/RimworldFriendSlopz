@@ -6,6 +6,7 @@ using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.WorldObjects;
 using RimWorld;
+using RimWorld.Planet;
 using Shared;
 using Verse;
 
@@ -139,6 +140,8 @@ namespace GameClient.Values
 
         public static void ToggleFaction(bool mode) { HasFaction = mode; }
 
+        public static SurfaceTile[] TilesCached;
+        
         public static void CleanValues()
         {
             ToggleGenerateWorld(false);

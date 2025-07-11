@@ -12,21 +12,6 @@ namespace GameClient.Managers
 {
     public static class PollutionManager
     {
-        private static SurfaceTile[] TilesCached;
-        /// <summary>
-        /// Since tiles are instances now, we can cache their reference
-        /// </summary>
-        static PollutionManager()
-        {
-            TilesCached = new SurfaceTile[Find.WorldGrid.TilesCount];
-            int count = 0;
-            foreach (var tile in Find.WorldGrid.Tiles)
-            {
-                TilesCached[tile.tile.tileId] = tile;
-                count++;
-            }
-        }
-        
         [HandlesPacket(PacketHeader.PollutionManager)]
         private static void ParsePacket(byte[] bytes)
         {
@@ -58,7 +43,7 @@ namespace GameClient.Managers
 
         public static void AddPollutedTileSimple(PollutionDetails details, bool forceRefresh)
         {
-            SurfaceTile toPollute = TilesCached[details.Tile];
+            SurfaceTile toPollute = ClientValues.TilesCached[details.Tile];
             toPollute.pollution = details.Quantity;
 
             if (forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
