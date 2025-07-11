@@ -9,7 +9,6 @@ using Verse;
 using static Shared.CommonEnumerators;
 namespace GameClient.Managers
 {
-
     public static class PollutionManager
     {
         [HandlesPacket(PacketHeader.PollutionManager)]
