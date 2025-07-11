@@ -112,7 +112,9 @@ namespace GameClient.Managers
 
         public static void ClearAllRoads()
         {
-            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
+            PlanetLayer layer = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
+
+            foreach (SurfaceTile tile in layer.Tiles)
             {
                 tile.Roads?.Clear();
                 tile.potentialRoads = null;
@@ -361,7 +363,6 @@ namespace GameClient.Managers
         {
             PlanetLayer toRefresh = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
             Find.World.renderer.SetDirty<WorldDrawLayer>(toRefresh);
-            Printer.Warning("I'm being called");
         }
     }
 }

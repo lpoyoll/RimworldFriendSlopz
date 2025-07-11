@@ -92,8 +92,8 @@ namespace GameClient.Managers
 
         public static void ForcePollutionLayerRefresh()
         {
-            Find.World.renderer.SetDirty<WorldDrawLayer>(PlanetLayer.Selected);
-            Find.World.renderer.RegenerateLayersIfDirtyInLongEvent();
+            PlanetLayer toRefresh = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
+            Find.World.renderer.SetDirty<WorldDrawLayer>(toRefresh);
         }
     }
 }
