@@ -31,6 +31,7 @@ namespace GameClient.Managers
             {
                 AddPollutedTileSimple(detail, forceRefresh);
             }
+
             //If we don't want to force refresh we wait for all and then refresh the layer
             if (!forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
         }
@@ -43,7 +44,7 @@ namespace GameClient.Managers
 
         public static void AddPollutedTileSimple(PollutionDetails details, bool forceRefresh)
         {
-            SurfaceTile toPollute = ClientValues.TilesCached[details.Tile];
+            SurfaceTile toPollute = Find.WorldGrid[details.Tile];
             toPollute.pollution = details.Quantity;
 
             if (forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();

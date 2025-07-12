@@ -140,8 +140,6 @@ namespace GameClient.Values
         }
 
         public static void ToggleFaction(bool mode) { HasFaction = mode; }
-
-        public static SurfaceTile[] TilesCached;
         
         public static void CleanValues()
         {

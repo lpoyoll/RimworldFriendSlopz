@@ -17,7 +17,6 @@ namespace GameClient.Managers
 
         public static void BuildPlanet()
         {
-            CacheTiles();
             ClientValues.FindPlayerFactionsInWorld();
             PlanetManagerHelper.GetMapGenerators();
 
@@ -59,17 +58,6 @@ namespace GameClient.Managers
                 CaravanManagerH.SetAllPlayerCaravans();
                 Printer.Warning($"Swapping caravans took {watch.ElapsedMilliseconds} ms");
                 watch.Restart();
-            }
-        }
-        /// <summary>
-        /// Cache tiles for much faster lookups. Since tiles are now objects, we can hold references.
-        /// </summary>
-        private static void CacheTiles()
-        {
-            ClientValues.TilesCached = new SurfaceTile[Find.WorldGrid.TilesCount];
-            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
-            {
-                ClientValues.TilesCached[tile.tile.tileId] = tile;
             }
         }
     }
