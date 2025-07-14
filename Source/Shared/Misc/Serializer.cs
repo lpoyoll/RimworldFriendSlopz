@@ -1,5 +1,6 @@
+using MessagePack;
+using MessagePack.Resolvers;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Bson;
 using System.IO;
 
 namespace Shared
@@ -22,27 +23,12 @@ namespace Shared
 
         public static byte[] ConvertObjectToBytes(object toConvert, bool compression = false)
         {
-            JsonSerializer serializer = JsonSerializer.Create(DefaultSettings);
-            MemoryStream memoryStream = new MemoryStream();
-
-            using (BsonWriter writer = new BsonWriter(memoryStream)) 
-            { 
-                serializer.Serialize(writer, toConvert); 
-            }
-
-            if (compression) return GZip.CompressBytes(memoryStream.ToArray());
-            else return memoryStream.ToArray();
+            return MessagePackSerializer.Serialize(toConvert, ContractlessStandardResolver.Options);
         }
 
         public static T ConvertBytesToObject<T>(byte[] bytes, bool compression = false)
         {
-            if (compression) bytes = GZip.DecompressBytes(bytes);
-
-            JsonSerializer serializer = JsonSerializer.Create(DefaultSettings);
-            MemoryStream memoryStream = new MemoryStream(bytes);
-
-            using BsonReader reader = new BsonReader(memoryStream);
-            return serializer.Deserialize<T>(reader);
+            return MessagePackSerializer.Deserialize<T>(bytes, ContractlessStandardResolver.Options);
         }
 
         // Serialize from and to strings
