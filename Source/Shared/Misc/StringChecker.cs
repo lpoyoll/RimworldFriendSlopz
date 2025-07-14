@@ -11,6 +11,7 @@ namespace Shared
 
         public static bool CheckIfStringValid(string toCheck)
         {
+            toCheck.Replace(" ", "_");
             if (string.IsNullOrEmpty(toCheck)) return false;
             if (string.IsNullOrWhiteSpace(toCheck)) return false;
 
@@ -18,7 +19,7 @@ namespace Shared
             {
                 if (toCheck.Contains(str)) return false;
             }
-
+            
             return true;
         }
     }
