@@ -54,8 +54,9 @@ namespace GameClient.Core
             Master.AppdataTempPath = Path.Combine(Master.AppdataRTPath, "Temp");
             Master.AppdataTempVersionPath = Path.Combine(Master.AppdataTempPath, "Version");
             Master.AppdataTempModsPath = Path.Combine(Master.AppdataTempPath, "Mods");
-
-            Master.ModMainPath = LoadedModManager.RunningMods.First(m => m.PackageId == Master.ModPackageID).RootDir;
+            string mod = LoadedModManager.RunningMods.First(m => (m.PackageId == Master.ModPackageID || m.PackageId == Master.ModPackageID + "_steam") 
+                                                                 && ModLister.GetActiveModWithIdentifier(m.PackageId) != null).RootDir;
+            Master.ModMainPath = mod;
             Master.ModAddonsPath = Path.Combine(Master.ModMainPath, "Addons");
             Master.ModAssemblyPath = Path.Combine(Master.ModMainPath, "Current", "Assemblies");
 
