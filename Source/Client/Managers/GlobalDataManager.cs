@@ -14,7 +14,7 @@ namespace GameClient.Managers
 
             ClientValues.SetValues(serverGlobalData);
             SessionValues.SetValues(serverGlobalData);
-            EventManagerHelper.SetValues(serverGlobalData);
+            EventManagerH.SetValues(serverGlobalData);
             GameParameterManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);
             NPCManagerH.SetValues(serverGlobalData);

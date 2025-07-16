@@ -126,7 +126,7 @@ namespace GameServer.Core
             
             Master.ServerBrowserConfig = ServerBrowserConfig.Load();
             
-            EventManagerHelper.LoadEvents();
+            EventManagerH.LoadAllEvents();
             
             GC.Collect();
             GC.WaitForPendingFinalizers();

@@ -367,7 +367,7 @@ namespace GameServer.Commands
             if (client == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
             else
             {
-                EventFile toFind = EventManagerHelper.LoadedEvents.FirstOrDefault(fetch => fetch.DefName == ConsoleManager.commandParameters[1]);
+                EventFile toFind = EventManagerH.LoadedEvents.FirstOrDefault(fetch => fetch.DefName == ConsoleManager.commandParameters[1]);
                 if (toFind == null) Printer.Warning($"Event '{ConsoleManager.commandParameters[1]}' was not found");
                 else
                 {
@@ -387,7 +387,7 @@ namespace GameServer.Commands
 
         public static void EventAllCommandAction()
         {
-            EventFile toFind = EventManagerHelper.LoadedEvents.FirstOrDefault(fetch => fetch.DefName == ConsoleManager.commandParameters[0]);
+            EventFile toFind = EventManagerH.LoadedEvents.FirstOrDefault(fetch => fetch.DefName == ConsoleManager.commandParameters[0]);
             if (toFind == null) Printer.Warning($"Event '{ConsoleManager.commandParameters[0]}' was not found");
             else
             {
@@ -409,9 +409,9 @@ namespace GameServer.Commands
 
         public static void EventListCommandAction()
         {
-            Printer.Title($"Available events: [{EventManagerHelper.LoadedEvents.Length}]");
+            Printer.Title($"Available events: [{EventManagerH.LoadedEvents.Length}]");
             Printer.Title("----------------------------------------");
-            foreach (EventFile eventFile in EventManagerHelper.LoadedEvents) Printer.Warning($"{eventFile.DefName}");
+            foreach (EventFile eventFile in EventManagerH.LoadedEvents) Printer.Warning($"{eventFile.DefName}");
             Printer.Title("----------------------------------------");
         }
 

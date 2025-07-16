@@ -20,7 +20,7 @@ namespace Shared
 
         public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
-        public enum EventStepMode { Send, Receive, Recover, Customize }
+        public enum EventStepMode { Send, Receive, Recover, Customize, Set }
 
         public enum AidStepMode { Send, Receive, Accept, Reject }
 

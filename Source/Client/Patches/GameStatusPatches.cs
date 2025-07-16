@@ -22,8 +22,12 @@ namespace GameClient.Patches
                 {
                     SettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
 
-                    if (ClientValues.IsGeneratingFreshWorld) WorldManager.SendWorld();
-                    else SaveManager.ForceSave();
+                    if (!ClientValues.IsGeneratingFreshWorld) SaveManager.ForceSave();
+                    else
+                    {
+                        WorldManager.SendWorld();
+                        EventManager.SendExistingEventsToServer();
+                    }
 
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
