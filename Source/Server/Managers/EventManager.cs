@@ -81,7 +81,7 @@ namespace GameServer.Managers
 
         public static void SetEvents(ServerClient client, EventData eventData)
         {
-            if (EventManagerH.LoadedEvents.Count() > 0) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+            if (EventManagerH.LoadedEvents.Count() > 0) ResponseShortcutManager.SendIllegalPacket(client, "Illegal setting of events!");
             else
             {
                 foreach (EventFile file in eventData._eventFiles)
@@ -96,14 +96,17 @@ namespace GameServer.Managers
 
         private static void ModifyEvents(ServerClient client, EventData data)
         {
-            foreach (EventFile ev in data._eventFiles)
+            if (!client.UserFile.IsAdmin) ResponseShortcutManager.SendIllegalPacket(client, "Tried to modify events without being admin!");
+            else
             {
-                Serializer.SerializeToFile(Path.Combine(Master.EventsPath, ev.DefName + EventManagerH.FileExtension), ev);
+                foreach (EventFile file in data._eventFiles)
+                {
+                    Serializer.SerializeToFile(Path.Combine(Master.EventsPath, file.DefName + EventManagerH.FileExtension), file);
+                }
+
+                EventManagerH.LoadAllEvents();
+                InformationDisplayer.DisplaySetEvents(client);
             }
-
-            EventManagerH.LoadAllEvents();
-
-            InformationDisplayer.DisplaySetEvents(client);
         }
     }
 
