@@ -78,36 +78,6 @@ namespace GameClient.Managers
 
             Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
-
-        public static DifficultyValuesFile GetDifficulty(Page_SelectStoryteller __instance)
-        {
-            Difficulty difficulty = GameParameterManagerH.GetDifficultyReference(__instance);
-
-            DifficultyValuesFile file = new DifficultyValuesFile();
-            
-            file.ScribeData = ScribeManager.DifficultyToString(difficulty);
-            
-            return file;
-        }
-
-        public static void SetDifficulty(DifficultyValuesFile file, bool bypass = false)
-        {
-            if (!file.EnforceDifficulty && !bypass) return;
-
-            Current.Game.storyteller.difficultyDef = DifficultyDefOf.Rough;
-            Current.Game.storyteller.difficulty = ScribeManager.StringToDifficulty(file.ScribeData);
-        }
-
-        public static void SendDifficulty(DifficultyValuesFile file, bool mode)
-        {
-            file.EnforceDifficulty = mode;
-
-            GameParameterData data = new GameParameterData();
-            data._stepMode = GenStepMode.Difficulty;
-            data._difficulty = file;
-
-            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
-        }
     }
 
     public static class GameParameterManagerH

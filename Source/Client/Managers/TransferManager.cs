@@ -388,12 +388,12 @@ namespace GameClient.Managers
             {
                 Pawn pawn = thing as Pawn;
 
-                SessionValues.OutgoingManifest._animals.Add(ScribeManager.AnimalToString(pawn));
+                SessionValues.OutgoingManifest._animals.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Thing));
 
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
-            else SessionValues.OutgoingManifest._things.Add(ScribeManager.ThingToString(thing, thingCount));
+            else SessionValues.OutgoingManifest._things.Add(ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thingCount));
         }
 
         //Gets the transfer location in the desired map
@@ -428,14 +428,14 @@ namespace GameClient.Managers
                 allTransferedItems.Add(ScribeManager.StringtoHuman(file));
             }
 
-            foreach (AnimalFile file in transferData._animals)
+            foreach (string data in transferData._animals)
             {
-                allTransferedItems.Add(ScribeManager.StringToAnimal(file));
+                allTransferedItems.Add((Pawn)ScribeManager.SerializeFromString<Pawn>(data));
             }
 
-            foreach (ThingFile file in transferData._things)
+            foreach (string data in transferData._things)
             {
-                allTransferedItems.Add(ScribeManager.StringToThing(file));
+                allTransferedItems.Add((Thing)ScribeManager.SerializeFromString<Thing>(data));
             }
 
             return allTransferedItems.ToArray();

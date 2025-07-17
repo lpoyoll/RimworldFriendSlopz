@@ -26,7 +26,7 @@ namespace GameClient.Patches
 
                 GameParameterManager.SetScenario(SessionValues.ScenarioFile);
                 GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
+                DifficultyManager.SetDifficulty(SessionValues.DifficultyFile);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
                 SaveManager.LatestSavePath = filePath;

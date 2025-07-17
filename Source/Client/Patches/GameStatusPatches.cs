@@ -47,7 +47,7 @@ namespace GameClient.Patches
 
                     GameParameterManager.SetScenario(SessionValues.ScenarioFile);
                     GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                    GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
+                    DifficultyManager.SetDifficulty(SessionValues.DifficultyFile);
 
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);

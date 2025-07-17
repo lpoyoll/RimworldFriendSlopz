@@ -105,17 +105,17 @@ namespace GameClient.Misc
         {
             try
             {
-                List<ThingFile> tempFactionThings = new List<ThingFile>();
-                List<ThingFile> tempNonFactionThings = new List<ThingFile>();
+                List<string> tempFactionThings = new List<string>();
+                List<string> tempNonFactionThings = new List<string>();
 
                 foreach (Thing thing in map.listerThings.AllThings)
                 {
                     if (!ScriberH.CheckIfThingIsHuman(thing) && !ScriberH.CheckIfThingIsAnimal(thing))
                     {
-                        ThingFile thingData = ScribeManager.ThingToString(thing, thing.stackCount);
+                        string data = ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thing.stackCount);
 
-                        if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(thingData);
-                        else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(thingData);
+                        if (thing.def.alwaysHaulable && factionThings) tempFactionThings.Add(data);
+                        else if (!thing.def.alwaysHaulable && nonFactionThings) tempNonFactionThings.Add(data);
                     }
                 }
 
@@ -153,14 +153,14 @@ namespace GameClient.Misc
         {
             try
             {
-                List<AnimalFile> tempFactionAnimals = new List<AnimalFile>();
-                List<AnimalFile> tempNonFactionAnimals = new List<AnimalFile>();
+                List<string> tempFactionAnimals = new List<string>();
+                List<string> tempNonFactionAnimals = new List<string>();
 
                 foreach (Thing thing in map.listerThings.AllThings)
                 {
                     if (ScriberH.CheckIfThingIsAnimal(thing))
                     {
-                        AnimalFile animalData = ScribeManager.AnimalToString(thing as Pawn);
+                        string animalData = ScribeManager.SerializeToString(thing as Pawn, ScribeManager.SerializableType.Thing);
 
                         if (thing.Faction == Faction.OfPlayer && factionAnimals) tempFactionAnimals.Add(animalData);
                         else if (thing.Faction != Faction.OfPlayer && nonFactionAnimals) tempNonFactionAnimals.Add(animalData);
@@ -251,11 +251,11 @@ namespace GameClient.Misc
                 {
                     Random rnd = new Random();
 
-                    foreach (ThingFile item in mapFile.FactionThings)
+                    foreach (string item in mapFile.FactionThings)
                     {
                         try
                         {
-                            Thing toGet = ScribeManager.StringToThing(item);
+                            Thing toGet = (Thing)ScribeManager.SerializeFromString<Thing>(item);
 
                             if (lessLoot)
                             {
@@ -270,11 +270,11 @@ namespace GameClient.Misc
 
                 if (nonFactionThings)
                 {
-                    foreach (ThingFile item in mapFile.NonFactionThings)
+                    foreach (string item in mapFile.NonFactionThings)
                     {
                         try
                         {
-                            Thing toGet = ScribeManager.StringToThing(item);
+                            Thing toGet = (Thing)ScribeManager.SerializeFromString<Thing>(item);
                             thingsToGetInThisTile.Add(toGet);
                         }
                         catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
@@ -335,11 +335,11 @@ namespace GameClient.Misc
             {
                 if (factionAnimals)
                 {
-                    foreach (AnimalFile pawn in mapFile.FactionAnimals)
+                    foreach (string pawn in mapFile.FactionAnimals)
                     {
                         try
                         {
-                            Pawn animal = ScribeManager.StringToAnimal(pawn);
+                            Pawn animal = (Pawn)ScribeManager.SerializeFromString<Pawn>(pawn);
                             animal.SetFaction(ClientValues.NeutralPlayer);
 
                             GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
@@ -350,11 +350,11 @@ namespace GameClient.Misc
 
                 if (nonFactionAnimals)
                 {
-                    foreach (AnimalFile pawn in mapFile.NonFactionAnimals)
+                    foreach (string pawn in mapFile.NonFactionAnimals)
                     {
                         try
                         {
-                            Pawn animal = ScribeManager.StringToAnimal(pawn);
+                            Pawn animal = (Pawn)ScribeManager.SerializeFromString<Pawn>(pawn);
                             GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
                         }
                         catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }

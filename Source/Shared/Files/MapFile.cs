@@ -14,17 +14,17 @@ namespace Shared
 
         public MapTileDetails[] Tiles = new MapTileDetails[0];
 
-        public ThingFile[] FactionThings;
+        public string[] FactionThings;
 
-        public ThingFile[] NonFactionThings;
+        public string[] NonFactionThings;
 
         public HumanFile[] FactionHumans;
 
         public HumanFile[] NonFactionHumans;
 
-        public AnimalFile[] FactionAnimals;
+        public string[] FactionAnimals;
         
-        public AnimalFile[] NonFactionAnimals;
+        public string[] NonFactionAnimals;
 
         public override string ToString()
         {
