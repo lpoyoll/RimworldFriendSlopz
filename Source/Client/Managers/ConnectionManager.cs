@@ -1,7 +1,7 @@
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 
 namespace GameClient.Managers
 {

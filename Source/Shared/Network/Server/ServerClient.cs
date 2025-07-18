@@ -1,9 +1,10 @@
-﻿using System.Net;
+﻿#if SERVER
+using System.Net;
 using System.Net.Sockets;
 using GameServer.Files;
 using GameServer.Managers;
 
-namespace GameServer.TCP
+namespace Shared.Network.Server
 {
     //Class object for the client connecting into the server. Contains all important data about it
 
@@ -27,3 +28,4 @@ namespace GameServer.TCP
         public void LoadUserFromFile() { UserFile = UserManagerH.GetUserFile(this); }
     }
 }
+#endif

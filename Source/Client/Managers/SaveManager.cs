@@ -12,7 +12,7 @@ using System;
 using GameClient.Core;
 using GameClient.Misc;
 using GameClient.Values;
-using GameClient.TCP;
+using Shared.Network.Client;
 using System.Collections.Generic;
 using GameClient.Dialogs;
 using System.Linq;

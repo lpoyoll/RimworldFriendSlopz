@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
@@ -34,7 +34,7 @@ namespace GameClient.Managers
         public static bool ChatAutoscroll = true;
 
         //Chat clock
-        private static Task? ChatClockTask { get; set; }
+        private static Task ChatClockTask { get; set; }
         private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
         //Icons
@@ -261,10 +261,10 @@ namespace GameClient.Managers
     [DefOf]
     public static class ChatSounds
     {
-        public static SoundDef? OwnChatDing;
-        public static SoundDef? AllyChatDing;
-        public static SoundDef? NeutralChatDing;
-        public static SoundDef? HostileChatDing;
-        public static SoundDef? SystemChatDing;
+        public static SoundDef OwnChatDing;
+        public static SoundDef AllyChatDing;
+        public static SoundDef NeutralChatDing;
+        public static SoundDef HostileChatDing;
+        public static SoundDef SystemChatDing;
     }
 }

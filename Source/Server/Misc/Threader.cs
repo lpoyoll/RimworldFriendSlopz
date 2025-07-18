@@ -1,5 +1,5 @@
 ﻿using GameServer.Managers;
-using GameServer.TCP;
+using Shared.Network.Server;
 
 namespace GameServer.Misc
 {

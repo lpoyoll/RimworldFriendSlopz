@@ -1,5 +1,5 @@
-﻿using GameClient.Misc;
-using Shared;
+#if CLIENT
+using GameClient.Misc;
 using System;
 using System.Linq;
 using System.Net.Sockets;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 
-namespace GameClient.TCP
+namespace Shared.Network.Client
 {
     public class Listener : ListenerBase
     {
@@ -52,7 +52,7 @@ namespace GameClient.TCP
                         if (!IgnoredLogPackets.Contains(header)) Printer.Message($"[Packet] > {header}", LogImportanceMode.Verbose);
                         else Printer.Message($"[Packet] > {header}", LogImportanceMode.Extreme);
 
-                        try 
+                        try
                         {
                             MainThreadHandler.Instance.Enqueue(delegate
                             {
@@ -86,3 +86,4 @@ namespace GameClient.TCP
         }
     }
 }
+#endif

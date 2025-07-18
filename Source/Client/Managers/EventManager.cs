@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Values;
 using RimWorld;
 using Shared;

@@ -2,7 +2,7 @@
 using HarmonyLib;
 using RimWorld.Planet;
 using static Shared.CommonEnumerators;
-using GameClient.TCP;
+using Shared.Network.Client;
 
 namespace GameClient.Patches
 {

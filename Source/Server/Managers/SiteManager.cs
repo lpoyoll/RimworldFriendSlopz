@@ -1,19 +1,14 @@
 ﻿using GameServer.Core;
 using GameServer.Files;
 using GameServer.Misc;
-using GameServer.TCP;
+using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
-
     public static class SiteManager
     {
-        //Variables
-
-        private static readonly double taskDelayMS = 1800000;
-
         [HandlesPacket(PacketHeader.SiteManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {

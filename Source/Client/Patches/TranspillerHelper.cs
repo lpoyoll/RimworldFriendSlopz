@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using GameClient.TCP;
+using Shared.Network.Client;
 using HarmonyLib;
 using Shared;
 

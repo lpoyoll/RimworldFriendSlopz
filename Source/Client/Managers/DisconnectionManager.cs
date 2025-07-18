@@ -3,7 +3,7 @@ using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
 using Shared;
-using GameClient.TCP;
+using Shared.Network.Client;
 
 namespace GameClient.Managers
 {

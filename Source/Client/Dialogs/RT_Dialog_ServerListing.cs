@@ -3,7 +3,7 @@ using GameClient.Core.Preferences;
 using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using RimWorld;
 using Shared;
 using UnityEngine;

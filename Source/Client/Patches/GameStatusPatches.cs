@@ -1,5 +1,5 @@
 ﻿using GameClient.Managers;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;

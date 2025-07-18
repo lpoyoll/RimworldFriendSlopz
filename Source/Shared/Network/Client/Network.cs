@@ -1,17 +1,12 @@
-﻿using System.IO;
-using System;
-using System.Net.Sockets;
+#if CLIENT
 using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
 using static Shared.CommonEnumerators;
-using System.Threading;
-using System.Threading.Tasks;
-using Shared;
 
-namespace GameClient.TCP
+namespace Shared.Network.Client
 {
     //Main class that is used to handle the connection with the server
 
@@ -78,7 +73,7 @@ namespace GameClient.TCP
             CleanNetworkVariables();
             DisconnectionManager.HandleDisconnect();
         }
-        
+
         public static void CleanNetworkVariables()
         {
             Printer.Warning($"Cleaning network variables...", LogImportanceMode.Verbose);
@@ -92,3 +87,4 @@ namespace GameClient.TCP
         }
     }
 }
+#endif

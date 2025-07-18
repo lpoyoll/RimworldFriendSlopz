@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Reflection;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Values;
 using RimWorld;
 using Shared;

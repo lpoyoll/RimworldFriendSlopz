@@ -1,4 +1,4 @@
-﻿using GameServer.TCP;
+﻿using Shared.Network.Server;
 using Mono.Nat;
 
 namespace GameServer.Misc

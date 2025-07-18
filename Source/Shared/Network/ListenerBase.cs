@@ -1,16 +1,23 @@
-using System.Threading;
+#if CLIENT
+using GameClient.Misc;
+using static Shared.CommonValues;
+#endif
+
 using System;
 using System.Collections.Concurrent;
-using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Net.Sockets;
+using System.Threading;
+using static Shared.CommonEnumerators;
+using System.Linq;
 
 namespace Shared
 {
     public class ListenerBase
     {
-        public TcpClient? Connection { get; set; }
+        public TcpClient Connection { get; set; }
 
-        public NetworkStream? Stream { get; set; }
+        public NetworkStream Stream { get; set; }
 
         public bool DisconnectFlag { get; set; }
 
@@ -20,15 +27,15 @@ namespace Shared
 
         public void EnqueuePacket(PacketHeader header, object obj) 
         {
-            if(ClosingFlag) return;
+            if (ClosingFlag) return;
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
 
-        public Action? PrintVerboseAction { get; set; }
+        public Action PrintVerboseAction { get; set; }
 
-        public Action? PrintExtremeAction { get; set; }
+        public Action PrintExtremeAction { get; set; }
 
-        public string? LatestException { get; private set; }
+        public string LatestException { get; private set; }
 
         public void Write()
         {

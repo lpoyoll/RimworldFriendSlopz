@@ -41,11 +41,55 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\StringChecker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)network\client\Listener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)network\client\Network.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\ListenerBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Packets\Data\*.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Packets\Details\*.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\ActivityData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\AidData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\CaravanData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\ChatData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\CommandData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\EventData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\FactionGoodwillData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\GenData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\KeepAliveData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\LoginData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\MapData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\MasterServerData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\ModConfigData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\NPCSettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\PlayerGuildData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\PlayerRecountData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\PlayerSettlementData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\PollutionData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\ResponseShortcutData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\RewardData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\RoadData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\SaveData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\ServerGlobalData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\SiteData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\SiteRewardConfigData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\SpyData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\TransferData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\VersionData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\HediffDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\MapTileDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\PlanetFeatureDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\PlanetNPCFactionDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\PlanetNPCSettlementDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\PollutionDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\RiverDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\RoadDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Server\Listener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Server\Network.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Server\ServerClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\WorldData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\TransformDetails.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Network\Client\" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 ﻿using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using Shared;
 using Verse;
 
