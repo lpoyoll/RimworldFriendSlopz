@@ -41,8 +41,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\StringChecker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\TimeConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)network\client\Listener.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)network\client\Network.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Listener.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\Client\Network.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\ListenerBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\ActivityData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\AidData.cs" />
