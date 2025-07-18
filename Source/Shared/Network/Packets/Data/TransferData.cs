@@ -3,7 +3,6 @@ using static Shared.CommonEnumerators;
 
 namespace Shared
 {
-
     public class TransferData
     {
         public TransferStepMode _stepMode { get; set; } = TransferStepMode.TradeRequest;

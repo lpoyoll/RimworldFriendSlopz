@@ -72,7 +72,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\SpyData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\TransferData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\VersionData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\HediffDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\MapTileDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\PlanetFeatureDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\PlanetNPCFactionDetails.cs" />
@@ -84,7 +83,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Server\Network.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Server\ServerClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\WorldData.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Details\TransformDetails.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Assemblies\Newtonsoft.Json.dll" />
