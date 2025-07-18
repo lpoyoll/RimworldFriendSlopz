@@ -2,8 +2,8 @@
 using GameServer.Core;
 using GameServer.Files;
 using GameServer.Misc;
-using GameServer.TCP;
 using Shared;
+using Shared.Network.Server;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers

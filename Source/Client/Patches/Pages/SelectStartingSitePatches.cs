@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;

@@ -7,7 +7,7 @@ using GameClient.Core;
 using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using Shared;
 using Verse;
 using static Shared.CommonEnumerators;

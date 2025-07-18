@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
 using Shared;
 

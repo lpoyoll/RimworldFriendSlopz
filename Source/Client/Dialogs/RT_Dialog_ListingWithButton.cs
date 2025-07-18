@@ -13,7 +13,7 @@ namespace GameClient.Dialogs
 
         public string[] Elements { get; private set; }
 
-        public static string? DialogButtonListingResultString { get; private set; }
+        public static string DialogButtonListingResultString { get; private set; }
 
         public static int DialogButtonListingResultInt { get; private set; }
 

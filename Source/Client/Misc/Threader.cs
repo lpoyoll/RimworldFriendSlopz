@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using GameClient.Managers;
-using GameClient.TCP;
+using Shared.Network.Client;
 
 namespace GameClient.Misc
 {

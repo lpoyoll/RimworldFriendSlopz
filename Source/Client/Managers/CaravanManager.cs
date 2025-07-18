@@ -1,11 +1,11 @@
 ﻿using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
 using GameClient.Values;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;

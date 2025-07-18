@@ -5,7 +5,7 @@ using Verse;
 using static Shared.CommonEnumerators;
 using GameClient.Dialogs;
 using GameClient.Values;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Misc;
 
 namespace GameClient.Managers

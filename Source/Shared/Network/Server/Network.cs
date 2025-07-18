@@ -1,4 +1,5 @@
-﻿using GameServer.Core;
+﻿#if SERVER
+using GameServer.Core;
 using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
@@ -6,7 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
 
-namespace GameServer.TCP
+namespace Shared.Network.Server
 {
     public static class Network
     {
@@ -14,7 +15,7 @@ namespace GameServer.TCP
 
         public static int Port { get; private set; } = int.Parse(Master.ServerConfig.Port);
 
-        private static TcpListener? Connection { get; set; }
+        private static TcpListener Connection { get; set; }
 
         public static List<ServerClient> ConnectedClients { get; private set; } = new List<ServerClient>();
 
@@ -108,3 +109,4 @@ namespace GameServer.TCP
         }
     }
 }
+#endif

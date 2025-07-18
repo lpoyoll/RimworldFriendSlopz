@@ -2,7 +2,7 @@
 using HarmonyLib;
 using RimWorld;
 using static Shared.CommonEnumerators;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Managers;
 using GameClient.Dialogs;
 

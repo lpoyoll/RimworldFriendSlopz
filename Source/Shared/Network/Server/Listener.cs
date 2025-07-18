@@ -1,10 +1,11 @@
-﻿using GameServer.Misc;
+﻿#if SERVER
+using GameServer.Misc;
 using Shared;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 
-namespace GameServer.TCP
+namespace Shared.Network.Server
 {
     public class Listener : ListenerBase
     {
@@ -80,3 +81,4 @@ namespace GameServer.TCP
         }
     }
 }
+#endif

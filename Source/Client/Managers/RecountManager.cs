@@ -10,7 +10,7 @@ namespace GameClient.Managers
     {
         public static int CurrentPlayers { get; private set; }
 
-        public static List<string>? CurrentPlayerNames { get; private set; }
+        public static List<string> CurrentPlayerNames { get; private set; }
 
         [HandlesPacket(PacketHeader.RecountManager)]
         private static void ParsePacket(byte[] bytes) { SetServerPlayers(bytes); }

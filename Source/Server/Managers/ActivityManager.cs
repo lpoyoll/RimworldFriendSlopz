@@ -1,6 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using GameServer.TCP;
+using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
 

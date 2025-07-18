@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using GameServer.Core;
 using GameServer.Core.Configs;
 using GameServer.Misc;
-using GameServer.TCP;
+using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
 
@@ -161,7 +161,7 @@ namespace GameServer.Managers
             e.Cancel = true;
             SendClosureSignal().Wait();
         }
-        private static void SendClosureSignalFromApplicationShutdown(object? sender, EventArgs e)
+        private static void SendClosureSignalFromApplicationShutdown(object sender, EventArgs e)
         {
             SendClosureSignal().Wait();
         }

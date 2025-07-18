@@ -6,7 +6,7 @@ using GameServer.Core;
 using GameServer.Files;
 using GameServer.Managers;
 using GameServer.Misc;
-using GameServer.TCP;
+using Shared.Network.Server;
 
 namespace GameServer.Commands
 {

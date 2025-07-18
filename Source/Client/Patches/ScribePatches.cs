@@ -4,7 +4,7 @@ using System.IO;
 using System.Xml;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using Verse;

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using GameClient.Managers;
-using GameClient.TCP;
 using GameClient.Values;
 using RimWorld;
 using Shared;
+using Shared.Network.Client;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -45,7 +45,7 @@ namespace GameClient.Dialogs
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept"))
             {
-                OnAccept();
+                Accept();
             }
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel"))
@@ -107,7 +107,7 @@ namespace GameClient.Dialogs
             }
         }
 
-        private void OnAccept()
+        private void Accept()
         {
             Action r1 = delegate
             {

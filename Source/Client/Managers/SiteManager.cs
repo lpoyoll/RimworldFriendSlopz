@@ -4,7 +4,7 @@ using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.TCP;
+using Shared.Network.Client;
 using GameClient.Values;
 using GameClient.WorldObjects;
 using RimWorld;

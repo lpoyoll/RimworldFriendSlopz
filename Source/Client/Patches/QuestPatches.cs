@@ -3,7 +3,7 @@ using System.Linq;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
-using GameClient.TCP;
+using Shared.Network.Client;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches

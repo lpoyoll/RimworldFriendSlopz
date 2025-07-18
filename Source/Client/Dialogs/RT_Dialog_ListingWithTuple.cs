@@ -19,9 +19,9 @@ namespace GameClient.Dialogs
 
         public int[] ValueInt { get; private set; }
 
-        public static string[]? DialogTupleListingResultString { get; private set; }
+        public static string[] DialogTupleListingResultString { get; private set; }
 
-        public static int[]? DialogTupleListingResultInt { get; private set; }
+        public static int[] DialogTupleListingResultInt { get; private set; }
 
         public RT_Dialog_ListingWithTuple(string title, string description, string[] keys, string[] values, int[] defaultValues = null, Action actionAccept = null)
         {

@@ -73,9 +73,9 @@ namespace GameClient.Dialogs
             FillMainRect(new Rect(0f, 55f, rect.width, rect.height - SlimButtonSize.y - 65));
 
             Text.Font = GameFont.Small;
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept")) OnAccept();
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.width / 2 - SlimButtonSize.x / 2, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Reset")) OnReset();
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel")) OnCancel();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept")) Accept();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.width / 2 - SlimButtonSize.x / 2, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Reset")) Reset();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel")) Cancel();
         }
 
         private void FillMainRect(Rect mainRect)
@@ -106,7 +106,7 @@ namespace GameClient.Dialogs
             Widgets.EndScrollView();
         }
 
-        private void OnAccept()
+        private void Accept()
         {
             if (TransferLocation == TransferLocation.Caravan)
             {
@@ -154,7 +154,7 @@ namespace GameClient.Dialogs
             }
         }
 
-        private void OnCancel()
+        private void Cancel()
         {
             Action r1 = delegate
             {
@@ -176,7 +176,7 @@ namespace GameClient.Dialogs
             else r1.Invoke();
         }
 
-        private void OnReset()
+        private void Reset()
         {
             SoundDefOf.Tick_Low.PlayOneShotOnCamera();
             GenerateTradeList();

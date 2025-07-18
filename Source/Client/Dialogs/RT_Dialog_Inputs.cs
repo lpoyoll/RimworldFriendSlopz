@@ -26,7 +26,7 @@ namespace GameClient.Dialogs
 
         private string[] CensorResult { get; set; } = new string[] { };
 
-        public static string[]? DialogInputResults { get; set; }
+        public static string[] DialogInputResults { get; set; }
 
         public RT_Dialog_Inputs(string title, string[] labels, bool[] censors, Action onConfirm = null, Action onCancel = null, string onConfirmText = "Confirm", string OnCancel = "Cancel")
         {
