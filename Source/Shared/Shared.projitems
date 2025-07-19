@@ -10,13 +10,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Files\ActionValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\AnimalFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\CaravanFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\DifficultyValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\EventFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\GuildFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\HumanFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\IdeologyFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\MapFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\ModConfigFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\RoadValuesFile.cs" />
@@ -29,7 +27,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteRewardFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\SiteValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\StorytellerValuesFile.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Files\ThingFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Files\WorldValuesFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\Attributes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\CommonEnumerators.cs" />

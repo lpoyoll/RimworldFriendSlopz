@@ -54,16 +54,16 @@ namespace GameClient.Patches.Pages
 
                     Action difficultyYes = delegate
                     {
-                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty(__instance), true);
-                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(__instance), true);
+                        DifficultyManager.SetDifficulty(DifficultyManager.GetDifficulty(__instance), true);
+                        DifficultyManager.SendDifficulty(DifficultyManager.GetDifficulty(__instance), true);
                         RT_Dialog_Base.PushNewDialog(__instance.next);
                         __instance.Close();
                     };
 
                     Action difficultyNo = delegate
                     {
-                        GameParameterManager.SetDifficulty(GameParameterManager.GetDifficulty(__instance), true);
-                        GameParameterManager.SendDifficulty(GameParameterManager.GetDifficulty(__instance), false);
+                        DifficultyManager.SetDifficulty(DifficultyManager.GetDifficulty(__instance), true);
+                        DifficultyManager.SendDifficulty(DifficultyManager.GetDifficulty(__instance), false);
                         RT_Dialog_Base.PushNewDialog(__instance.next);
                         __instance.Close();
                     };
@@ -100,7 +100,7 @@ namespace GameClient.Patches.Pages
                         Action toDo = delegate
                         {
                             GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                            GameParameterManager.SetDifficulty(SessionValues.DifficultyFile, true);
+                            DifficultyManager.SetDifficulty(SessionValues.DifficultyFile, true);
                             RT_Dialog_Base.PushNewDialog(__instance.next);
                             __instance.Close();
 
@@ -137,13 +137,18 @@ namespace GameClient.Patches.Pages
         {
             if (Network.State == ClientNetworkState.Disconnected) return true;
 
+            if (ClientValues.IsAdmin)
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Difficulty settings overriden due to being an admin" }));
+                return true;
+            }
+
             if (SessionValues.DifficultyFile.EnforceDifficulty || SessionValues.StorytellerFile.EnforceStoryteller)
             {
                 Action toDo = delegate
                 {
                     GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-
-                    GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
+                    DifficultyManager.SetDifficulty(SessionValues.DifficultyFile);
                 };
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));
