@@ -8,6 +8,8 @@ namespace Shared
 
         public string UID;
 
+        public int Wealth;
+
         public string CurWeatherDefName;
 
         public ModConfigFile Mods;

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameClient.Managers;
-using RimWorld;
 using UnityEngine;
 using Verse;
 

@@ -49,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\EventData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\FactionGoodwillData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\GenData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)network\packets\data\InformationData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\KeepAliveData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\LoginData.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Network\Packets\Data\MapData.cs" />

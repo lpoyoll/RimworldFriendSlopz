@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
-using RimWorld;
 using Shared;
 using Shared.Network.Client;
 using UnityEngine;

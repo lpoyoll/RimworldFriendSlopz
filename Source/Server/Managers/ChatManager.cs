@@ -5,7 +5,6 @@ using Shared.Network.Server;
 using Shared;
 using System.Text;
 using static Shared.CommonEnumerators;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer.Managers
 {

@@ -1,13 +1,11 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.Patches.Tabs;
 using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -143,6 +141,30 @@ namespace GameClient.Patches
                 }
             };
 
+            Command_Action command_Info = new Command_Action
+            {
+                defaultLabel = "Info",
+                defaultDesc = "Shows if the player is connected",
+                icon = ContentFinder<Texture2D>.Get("Commands/Info"),
+                action = delegate
+                {
+                    SessionValues.ChosenSettlement = __instance;
+                    InformationManager.AskForInformation();
+                }
+            };
+
+            Command_Action command_Wealth = new Command_Action
+            {
+                defaultLabel = "Wealth",
+                defaultDesc = "Shows the selected settlement's wealth",
+                icon = ContentFinder<Texture2D>.Get("Commands/Wealth"),
+                action = delegate
+                {
+                    SessionValues.ChosenSettlement = __instance;
+                    InformationManager.AskForWealth();
+                }
+            };
+
             Command_Action command_PersonalFactionMenu = new Command_Action
             {
                 defaultLabel = "Faction Menu",
@@ -161,32 +183,49 @@ namespace GameClient.Patches
                 }
             };
 
-            if (ClientValues.PlayerFactions.Contains(__instance.Faction))
+            if (Find.AnyPlayerHomeMap == null)
             {
-                gizmoList.Clear();
-
-                if (__instance.Map != null) gizmoList.Add(command_Caravan);
-                else
+                if (ClientValues.PlayerFactions.Contains(__instance.Faction))
                 {
-                    if (__instance.Faction != ClientValues.YourOnlineFaction)
-                    {
-                        gizmoList.Add(command_Goodwill);
-                        gizmoList.Add(command_Spy);
-                    }
-
-                    if (ClientValues.HasFaction) gizmoList.Add(command_FactionMenu);
-
-                    gizmoList.Add(command_Event);
-                    gizmoList.Add(command_Aid);
+                    gizmoList.Add(command_Info);
+                    gizmoList.Add(command_Wealth);
+                    gizmoList.Add(command_Goodwill);
                 }
 
                 __result = gizmoList;
             }
 
-            else if (__instance.Faction == Find.FactionManager.OfPlayer)
+            else
             {
-                gizmoList.Add(command_PersonalFactionMenu);
-                __result = gizmoList;
+                if (__instance.Faction == Find.FactionManager.OfPlayer)
+                {
+                    gizmoList.Add(command_PersonalFactionMenu);
+                    __result = gizmoList;
+                }
+
+                else if (ClientValues.PlayerFactions.Contains(__instance.Faction))
+                {
+                    gizmoList.Clear();
+
+                    if (__instance.Map != null) gizmoList.Add(command_Caravan);
+                    else
+                    {
+                        if (__instance.Faction != ClientValues.YourOnlineFaction)
+                        {
+                            gizmoList.Add(command_Goodwill);
+                            gizmoList.Add(command_Spy);
+                        }
+
+                        if (ClientValues.HasFaction) gizmoList.Add(command_FactionMenu);
+
+                        gizmoList.Add(command_Event);
+                        gizmoList.Add(command_Aid);
+                        gizmoList.Add(command_Info);
+                        gizmoList.Add(command_Wealth);
+                    }
+
+                    __result = gizmoList;
+                }
             }
         }
     }

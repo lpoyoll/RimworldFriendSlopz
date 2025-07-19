@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.WorldObjects;
 using RimWorld;
-using RimWorld.Planet;
 using Shared;
 using Verse;
 

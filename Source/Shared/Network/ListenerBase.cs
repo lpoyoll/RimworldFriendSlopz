@@ -8,8 +8,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
-using static Shared.CommonEnumerators;
-using System.Linq;
 
 namespace Shared
 {

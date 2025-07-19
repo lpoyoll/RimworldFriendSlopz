@@ -1,13 +1,9 @@
-﻿using GameClient.Misc;
-using GameClient.Patches;
+﻿using GameClient.Patches;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using System.Collections.Generic;
-using System.Linq;
-using GameClient.Values;
 using Verse;
-using static Shared.CommonEnumerators;
 namespace GameClient.Managers
 {
     public static class PollutionManager

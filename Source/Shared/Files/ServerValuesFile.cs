@@ -1,5 +1,3 @@
-using MessagePack;
-
 namespace Shared
 {
     public class ServerValuesFile

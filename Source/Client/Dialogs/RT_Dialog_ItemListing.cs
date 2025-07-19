@@ -2,7 +2,6 @@
 using System.Linq;
 using GameClient.Managers;
 using GameClient.Values;
-using RimWorld;
 using Shared;
 using Shared.Network.Client;
 using UnityEngine;

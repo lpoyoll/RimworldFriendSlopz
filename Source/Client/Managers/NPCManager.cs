@@ -4,7 +4,6 @@ using System.Linq;
 using GameClient.Misc;
 using Shared.Network.Client;
 using GameClient.Values;
-using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;

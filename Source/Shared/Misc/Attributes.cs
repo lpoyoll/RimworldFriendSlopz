@@ -40,6 +40,7 @@ namespace Shared
         ConsoleManager,
         GlobalDataManager,
         ResponseShortcutManager,
-        RecountManager
+        RecountManager,
+        InformationManager
     }
 }

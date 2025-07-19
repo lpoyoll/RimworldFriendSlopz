@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using GameClient.Managers;
-using GameClient.Misc;
 using Shared.Network.Client;
 using HarmonyLib;
 using RimWorld;

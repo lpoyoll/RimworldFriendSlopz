@@ -15,9 +15,9 @@ namespace Shared
 
         public List<HumanFile> _humans { get; set; } = new List<HumanFile>();
 
-        public List<AnimalFile> _animals { get; set; } = new List<AnimalFile>();
+        public List<string> _animals { get; set; } = new List<string>();
 
-        public List<ThingFile> _things { get; set; } = new List<ThingFile>();
+        public List<string> _things { get; set; } = new List<string>();
 
         public override string ToString()
         {

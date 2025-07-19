@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using GameClient.Managers;
-using GameClient.Misc;
-using Shared.Network.Client;
 using GameClient.Values;
 using RimWorld.Planet;
 using UnityEngine;

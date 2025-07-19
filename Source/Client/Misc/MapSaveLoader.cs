@@ -17,6 +17,8 @@ namespace GameClient.Misc
         {
             MapFile mapFile = new MapFile();
 
+            mapFile.Wealth = (int)map.wealthWatcher.WealthTotal;
+
             GetMapTile(mapFile, map);
 
             GetMapSize(mapFile, map);

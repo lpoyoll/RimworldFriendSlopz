@@ -1,12 +1,8 @@
 ﻿using GameClient.Dialogs;
-using GameClient.TCP;
 using RimWorld;
 using Shared;
+using Shared.Network.Client;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 using static Shared.CommonEnumerators;
 

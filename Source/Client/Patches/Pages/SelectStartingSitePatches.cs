@@ -2,15 +2,11 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using GameClient.Managers;
-using GameClient.Misc;
 using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
-using RimWorld.Planet;
-using UnityEngine;
 using UnityEngine.SceneManagement;
-using Verse;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Pages

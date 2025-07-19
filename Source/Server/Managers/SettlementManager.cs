@@ -2,7 +2,6 @@
 using GameServer.Misc;
 using Shared.Network.Server;
 using Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers

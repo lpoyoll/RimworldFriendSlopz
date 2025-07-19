@@ -1,13 +1,4 @@
 using GameClient.Dialogs;
-using GameClient.Misc;
-using GameClient.Values;
-using RimWorld;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Verse;
 
 namespace GameClient.Managers
 {

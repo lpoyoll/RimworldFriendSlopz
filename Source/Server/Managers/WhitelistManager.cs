@@ -1,7 +1,6 @@
 using GameServer.Core;
 using GameServer.Core.Configs;
 using GameServer.Misc;
-using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Text;
-using Newtonsoft.Json;
-using Shared.Misc;
 
 #if SERVER
 using GameServer.Misc;
