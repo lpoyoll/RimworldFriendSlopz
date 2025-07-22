@@ -23,9 +23,20 @@ namespace Shared.Network.Server
         {
             if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
 
-            Connection = new TcpListener(LocalAddress, Port);
-            Connection.Start();
-
+            try
+            {
+                Connection = new TcpListener(LocalAddress, Port);
+                Connection.Start();
+            }
+            catch (SocketException e)
+            {
+                Printer.Error(
+                    $"Failed to start server on {LocalAddress}:{Port}, try setting the address to your local ip address or '0.0.0.0' on port 25555");
+            }
+            catch (Exception e)
+            {
+                Printer.Error(e);
+            }
             Printer.Warning("Server launched");
             Printer.Warning($"Listening for users at {LocalAddress}:{Port}");
             Printer.Warning("Type 'help' to get a list of available commands");
