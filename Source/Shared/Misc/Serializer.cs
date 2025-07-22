@@ -1,3 +1,4 @@
+using System;
 using MessagePack;
 using MessagePack.Resolvers;
 using Newtonsoft.Json;
@@ -37,16 +38,64 @@ namespace Shared
 
         public static T SerializeFromString<T>(string serializable) { return JsonConvert.DeserializeObject<T>(serializable, DefaultSettings); }
 
-        // Serialize from and to files text
+        /// <summary>
+        /// Serializes an object to a JSON at the path specified, deserialized by <see cref="SerializeToFile"/>
+        /// </summary>
+        public static void SerializeToFile(string path, object serializable)
+        {
+            try
+            {
+                File.WriteAllText(path, JsonConvert.SerializeObject(serializable, IndentedSettings));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to write serialized json object to path: {path}", ex);
+            }
+        }
 
-        public static void SerializeToFile(string path, object serializable) { File.WriteAllText(path, JsonConvert.SerializeObject(serializable, IndentedSettings)); }
+        /// <summary>
+        /// Deserializes an object from JSON, serialized by <see cref="SerializeFromString"/>
+        /// </summary>
+        public static T SerializeFromFile<T>(string path)
+        {
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(File.ReadAllText(path), DefaultSettings);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to read serialized json object from path: {path}", ex);
+            }
+        }
 
-        public static T SerializeFromFile<T>(string path) { return JsonConvert.DeserializeObject<T>(File.ReadAllText(path), DefaultSettings); }
+        /// <summary>
+        /// Serializes an object to binary to a file, deserialized by <see cref="FileBytesToObject{T}"/>
+        /// </summary>
+        public static void ObjectBytesToFile(string path, object serializable)
+        {
+            try
+            {
+                File.WriteAllBytes(path, ConvertObjectToBytes(serializable, true));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to write serialized binary object to path: {path}", ex);
+            }
+        }
 
-        // Serialize from and to file bytes
-
-        public static void ObjectBytesToFile(string path, object serializable) { File.WriteAllBytes(path, ConvertObjectToBytes(serializable, true)); }
-
-        public static T FileBytesToObject<T>(string path) { return ConvertBytesToObject<T>(File.ReadAllBytes(path), true); }
+        /// <summary>
+        /// Deserializes an object from binary from a file, serialize by <see cref="ObjectBytesToFile"/>
+        /// </summary>
+        public static T FileBytesToObject<T>(string path)
+        {
+            try
+            {
+                return ConvertBytesToObject<T>(File.ReadAllBytes(path), true);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to read serialized file bytes to path: {path}", ex);
+            }
+        }
     }
 }
