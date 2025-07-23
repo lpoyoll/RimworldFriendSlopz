@@ -19,6 +19,8 @@ namespace GameClient.Core.Preferences
 
         public static LoginDataFile LoadLoginData()
         {
+            RemoveOnNextUpdate.FixSpacesInUsername();
+
             // For testing purposes
 
             if (Input.GetKey(KeyCode.LeftShift)) return GetTestingLoginFile();
