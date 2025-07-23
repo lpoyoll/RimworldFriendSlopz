@@ -1,9 +1,9 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using Shared.Network.Client;
 using GameClient.Values;
 using RimWorld;
 using Shared;
+using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +11,7 @@ using System.Linq;
 using Verse;
 using Verse.Steam;
 using static Shared.CommonEnumerators;
+using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient.Managers
 {
@@ -99,6 +100,7 @@ namespace GameClient.Managers
                 modFileNames.Add(Path.GetFileName(str));
                 modConfigs.Add(File.ReadAllText(str));
             }
+
             data._configFile.ModFileNames = modFileNames.ToArray();
             data._configFile.ModConfigs = modConfigs.ToArray();
             data._configFile.EnforcedConfigs = true;
@@ -118,8 +120,23 @@ namespace GameClient.Managers
     {
         public static string[] GetAllModConfigs()
         {
-            return Directory.GetFiles(GenFilePaths.ConfigFolderPath)
-                .Where(fetch => Path.GetFileName(fetch).StartsWith("Mod_")).ToArray();
+            ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
+            string[] existingModConfigs = Directory.GetFiles(GenFilePaths.ConfigFolderPath);
+
+            List<string> configsToFetch = new List<string>();
+            foreach (ModContentPack mod in runningMods)
+            {
+                try
+                {
+                    string toGet = $"Mod_{mod.ModMetaData.GetPublishedFileId()}";
+                    string toFetch = existingModConfigs.FirstOrDefault(fetch => fetch.Contains(toGet));
+                    if (toFetch.Contains(toGet)) configsToFetch.Add(toFetch);
+                    else Printer.Warning($"Config file for {mod.Name} did not exist, skipping");
+                }
+                catch { continue; }
+            }
+
+            return configsToFetch.ToArray();
         }
 
         public static ModConfigFile GetRunningModList()
@@ -149,6 +166,7 @@ namespace GameClient.Managers
             List<string> optionalMods = new List<string>();
             List<string> forbiddenMods = new List<string>();
             List<ulong> steamIds = new List<ulong>();
+
             for (int i = 0; i < modNames.Length; i++)
             {
                 switch ((ModType)categoryIndexes[i])
@@ -167,7 +185,6 @@ namespace GameClient.Managers
                 }
 
                 ModMetaData mod = ModLister.GetActiveModWithIdentifier(modNames[i]);
-
                 if (mod.OnSteamWorkshop) 
                 {
                     Printer.Warning($"Mod {mod.PackageId} was on steam!", LogImportanceMode.Verbose);
