@@ -16,9 +16,7 @@ jobs:
       - name: Setup dotnet ${{ matrix.version }}
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: | 
-            ${{matrix.version}}
-            4.7.2
+          dotnet-version: ${{matrix.version}}
       - name: Build Shared
         run: make build-shared
       - name: Build Game Server
