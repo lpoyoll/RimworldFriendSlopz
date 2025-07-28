@@ -2,6 +2,7 @@
 using GameServer.Misc;
 using Shared.Network.Server;
 using Shared;
+using Shared.Files;
 
 namespace GameServer.Managers
 {
@@ -46,7 +47,7 @@ namespace GameServer.Managers
 
                 if (shouldBroadcast) NetworkHelper.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
 
-                WorldValuesFile.Save();
+                Master.WorldValues.Save();
             }
 
             catch

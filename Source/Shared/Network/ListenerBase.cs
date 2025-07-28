@@ -1,8 +1,3 @@
-#if CLIENT
-using GameClient.Misc;
-using static Shared.CommonValues;
-#endif
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

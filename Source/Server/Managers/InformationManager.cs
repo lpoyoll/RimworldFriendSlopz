@@ -1,4 +1,5 @@
 ﻿using Shared;
+using Shared.Files;
 using Shared.Network.Server;
 
 namespace GameServer.Managers

@@ -1,6 +1,7 @@
 ﻿using GameClient.Dialogs;
 using RimWorld;
 using Shared;
+using Shared.Files;
 using Shared.Network.Client;
 using System;
 using Verse;

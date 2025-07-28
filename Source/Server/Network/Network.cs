@@ -1,5 +1,4 @@
-﻿#if SERVER
-using GameServer.Core;
+﻿using GameServer.Core;
 using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
@@ -28,15 +27,18 @@ namespace Shared.Network.Server
                 Connection = new TcpListener(LocalAddress, Port);
                 Connection.Start();
             }
+
             catch (SocketException e)
             {
                 Printer.Error(
-                    $"Failed to start server on {LocalAddress}:{Port}, try setting the address to your local ip address or '0.0.0.0' on port 25555");
+                    $"Failed to start server on {LocalAddress}:{Port}, try setting the address to your local ip address or '0.0.0.0' on port 25555, {e}");
             }
+
             catch (Exception e)
             {
                 Printer.Error(e);
             }
+
             Printer.Warning("Server launched");
             Printer.Warning($"Listening for users at {LocalAddress}:{Port}");
             Printer.Warning("Type 'help' to get a list of available commands");
@@ -120,4 +122,3 @@ namespace Shared.Network.Server
         }
     }
 }
-#endif

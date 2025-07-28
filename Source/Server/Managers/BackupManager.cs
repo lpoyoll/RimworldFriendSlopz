@@ -1,6 +1,7 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
 using Shared;
+using Shared.Files;
 using System.IO.Compression;
 using static Shared.CommonEnumerators;
 

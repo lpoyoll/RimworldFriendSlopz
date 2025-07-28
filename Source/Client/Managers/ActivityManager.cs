@@ -7,6 +7,7 @@ using GameClient.Dialogs;
 using GameClient.Values;
 using Shared.Network.Client;
 using GameClient.Misc;
+using Shared.Files;
 
 namespace GameClient.Managers
 {

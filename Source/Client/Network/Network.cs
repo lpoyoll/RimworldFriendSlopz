@@ -1,4 +1,3 @@
-#if CLIENT
 using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Managers;
@@ -33,7 +32,6 @@ namespace Shared.Network.Client
             if (TryConnectToServer())
             {
                 ConnectionDataHandler.SaveConnectionData(Ip, Port);
-                ClientValues.ManageDevOptions();
 
                 State = ClientNetworkState.Connected;
 
@@ -87,4 +85,3 @@ namespace Shared.Network.Client
         }
     }
 }
-#endif

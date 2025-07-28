@@ -5,6 +5,7 @@ using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Shared.Files;
 using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using System.Threading;
 using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
+using static Shared.TransferData;
 
 namespace GameClient.Managers
 {

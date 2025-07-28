@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Shared.Files;
+using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
 namespace Shared

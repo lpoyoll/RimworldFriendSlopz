@@ -38,12 +38,6 @@ namespace Shared
 
         public enum GoodwillTarget { Settlement, Site }
 
-        public enum TransferMode { Gift, Trade, Rebound, Pod }
-
-        public enum TransferLocation { Caravan, Settlement, Pod }
-
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
-
         public enum ActivityStepMode { Request, Deny }
 
         public enum ActivityType { None, Visit, Raid, Spy }

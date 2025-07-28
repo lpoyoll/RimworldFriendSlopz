@@ -5,6 +5,7 @@ using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Shared.Files;
 using Shared.Network.Client;
 using System;
 using System.Collections.Generic;

@@ -1,20 +1,18 @@
-﻿#if SERVER
-using GameServer.Misc;
-using Shared;
+using GameClient.Misc;
+using System;
+using System.Linq;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 
-namespace Shared.Network.Server
+namespace Shared.Network.Client
 {
     public class Listener : ListenerBase
     {
-        private ServerClient TargetClient { get; set; }
-
-        public Listener(ServerClient clientToUse, TcpClient connection)
+        public Listener(TcpClient connection)
         {
-            this.TargetClient = clientToUse;
-
             this.Connection = connection;
             this.Stream = connection.GetStream();
 
@@ -24,7 +22,7 @@ namespace Shared.Network.Server
             Task.Run(() => Read());
             Task.Run(() => Write());
             Task.Run(() => SendKAFlag());
-            Task.Run(() => CheckConnectionHealth(delegate { Network.KickClient(TargetClient); }));
+            Task.Run(() => CheckConnectionHealth(delegate { Network.DisconnectFromServerInstant(); }));
         }
 
         public void Read()
@@ -53,7 +51,13 @@ namespace Shared.Network.Server
                         if (!IgnoredLogPackets.Contains(header)) Printer.Message($"[Packet] > {header}", LogImportanceMode.Verbose);
                         else Printer.Message($"[Packet] > {header}", LogImportanceMode.Extreme);
 
-                        try { MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { TargetClient, buffer }); }
+                        try
+                        {
+                            MainThreadHandler.Instance.Enqueue(delegate
+                            {
+                                MethodGatherer.ClientMethodDictionary[header].Invoke(null, new object[] { buffer });
+                            });
+                        }
                         catch (Exception ex) { OnHandleError(ex); }
 
                         void OnHandleError(Exception ex)
@@ -81,4 +85,3 @@ namespace Shared.Network.Server
         }
     }
 }
-#endif

@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
 
 namespace GameServer.Managers
 {
@@ -88,7 +89,7 @@ namespace GameServer.Managers
             currentRoads.Add(details);
 
             Master.WorldValues.Roads = currentRoads.ToArray();
-            WorldValuesFile.Save();
+            Master.WorldValues.Save();
 
             InformationDisplayer.DisplayAddRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
@@ -99,7 +100,7 @@ namespace GameServer.Managers
             currentRoads.Remove(details);
 
             Master.WorldValues.Roads = currentRoads.ToArray();
-            WorldValuesFile.Save();
+            Master.WorldValues.Save();
 
             InformationDisplayer.DisplayRemoveRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }

@@ -1,4 +1,6 @@
-﻿namespace Shared
+﻿using Shared.Files;
+
+namespace Shared
 {
 
     public class ServerGlobalData

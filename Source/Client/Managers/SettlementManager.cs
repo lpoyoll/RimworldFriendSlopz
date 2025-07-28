@@ -9,6 +9,7 @@ using static Shared.CommonEnumerators;
 using GameClient.Misc;
 using GameClient.Values;
 using Shared.Network.Client;
+using Shared.Files;
 
 namespace GameClient.Managers
 {
