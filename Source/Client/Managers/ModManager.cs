@@ -27,24 +27,20 @@ namespace GameClient.Managers
             switch (data._stepMode)
             {
                 case ModConfigStepMode.Ask:
-                    OpenModManagerMenu(false);
+                    OpenModManagerMenu();
                     break;
             }
         }
 
-        public static void OpenModManagerMenu(bool isFirstEdit)
+        public static void OpenModManagerMenu(bool isFirstEdit = false)
         {
-            Action toDo = delegate
-            {
-                AskForSyncConfigs(isFirstEdit);
-
-                if (isFirstEdit) return;
-                else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Mod configuration has been changed!" }));
-            };
-
+            Action toDo = delegate { AskForSyncConfigs(isFirstEdit); };
             string[] keys = ModManagerH.GetRunningModList().UnsortedMods;
             string[] values = new string[] { "Required", "Optional", "Forbidden" };
-            RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager", "Manage mods for the server", keys, values, null, toDo);
+
+            RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager", "Manage mods for the server", 
+                keys, values, null, toDo);
+
             RT_Dialog_Base.PushNewDialog(dialog);
         }
 
@@ -70,49 +66,19 @@ namespace GameClient.Managers
 
         private static void AskForSyncConfigs(bool isFirstEdit)
         {
-            ModConfigData data = new ModConfigData();
-            data._stepMode = ModConfigStepMode.Send;
-            data._configFile = ModManagerH.SortModsIntoCategories(RT_Dialog_ListingWithTuple.DialogTupleListingResultString, 
-                RT_Dialog_ListingWithTuple.DialogTupleListingResultInt);
-
             Action toDoYes = delegate 
             { 
-                SendModConfigs(data);
-                if (isFirstEdit) OnFirstEdit(); 
+                GameParameterManager.SendCurrentModConfigs(true);
+                if (isFirstEdit) GameParameterManager.SetFirstTimeSetup();
             };
 
-            Action toDoNo = delegate
-            {
-                Network.Listener.EnqueuePacket(PacketHeader.ModManager, data);
-                if (isFirstEdit) OnFirstEdit();
+            Action toDoNo = delegate 
+            { 
+                GameParameterManager.SendCurrentModConfigs(false);
+                if (isFirstEdit) GameParameterManager.SetFirstTimeSetup();
             };
 
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Do you want to enforce the mod settings?",
-                toDoYes, toDoNo));
-        }
-
-        public static void SendModConfigs(ModConfigData data)
-        {
-            List<string> modFileNames = new List<string>();
-            List<string> modConfigs = new List<string>();
-            foreach (string str in ModManagerH.GetAllModConfigs())
-            {
-                modFileNames.Add(Path.GetFileName(str));
-                modConfigs.Add(File.ReadAllText(str));
-            }
-
-            data._configFile.ModFileNames = modFileNames.ToArray();
-            data._configFile.ModConfigs = modConfigs.ToArray();
-            data._configFile.EnforcedConfigs = true;
-
-            Network.Listener.EnqueuePacket(PacketHeader.ModManager, data);
-        }
-
-        public static void OnFirstEdit()
-        {
-            Page toUse = new Page_SelectScenario();
-            toUse.next = new Page_SelectStartingSite();
-            RT_Dialog_Base.PushNewDialog(toUse);
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Do you want to enforce the mod settings?", toDoYes, toDoNo));
         }
     }
 

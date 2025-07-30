@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using GameClient.Dialogs;
+﻿using GameClient.Dialogs;
 using GameClient.Managers;
-using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
+using Shared.Network.Client;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
@@ -13,8 +14,8 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Pages
 {
-    [HarmonyPatch(typeof(Page_SelectScenario), "DoWindowContents")]
-    public static class PatchSelectScenarioPage
+    [HarmonyPatch(typeof(Page_SelectScenario), nameof(Page_SelectScenario.DoWindowContents))]
+    public static class Patch_Page_SelectScenario_DoWindowContents
     {
         public static bool executedMessage;
 
@@ -30,7 +31,8 @@ namespace GameClient.Patches.Pages
                 {
                     Action toDo = delegate
                     {
-                        Page_SelectScenario.BeginScenarioConfiguration(GameParameterManagerH.GetScenarioReference(__instance), __instance);
+                        Scenario scenario = (Scenario)typeof(Page_SelectScenario).GetField("curScen", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
+                        Page_SelectScenario.BeginScenarioConfiguration(scenario, __instance);
                         GameParameterManager.SetScenario(SessionValues.ScenarioFile);
 
                         RT_Dialog_Base.PushNewDialog(__instance.next);
@@ -52,30 +54,6 @@ namespace GameClient.Patches.Pages
                     DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
                     Network.Listener.DisconnectFlag = true;
                 }
-
-                if (ClientValues.IsGeneratingFreshWorld)
-                {
-                    if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomRight), ""))
-                    {
-                        Page_SelectScenario.BeginScenarioConfiguration(GameParameterManagerH.GetScenarioReference(__instance), __instance);
-
-                        Action a1 = delegate
-                        {
-                            GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), true);
-                            RT_Dialog_Base.PushNewDialog(__instance.next);
-                            __instance.Close();
-                        };
-
-                        Action a2 = delegate
-                        {
-                            GameParameterManager.SendScenario(GameParameterManager.GetScenario(__instance), false);
-                            RT_Dialog_Base.PushNewDialog(__instance.next);
-                            __instance.Close();
-                        };
-
-                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Do you want to ENFORCE the selected SCENARIO?", a1, a2));
-                    };
-                }
             }
 
             return true;
@@ -91,21 +69,23 @@ namespace GameClient.Patches.Pages
     }
 
     [HarmonyPatch(typeof(Page_SelectScenario), "GoToScenarioEditor")]
-    public static class PatchCustomScenarioCreate
+    public static class Patch_Page_SelectScenario_GoToScenarioEditor
     {
         [HarmonyPrefix]
         public static bool DoPre()
         {
             if (Network.State == ClientNetworkState.Disconnected) return true;
-            if (SessionValues.ActionValues.EnableCustomScenarios) return true;
-
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
-            return false;
+            else if (SessionValues.ActionValues.EnableCustomScenarios) return true;
+            else
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
+                return false;
+            }
         }
     }
 
     [HarmonyPatch(typeof(Page_SelectScenario), "DoScenarioSelectionList")]
-    public static class PatchCustomScenarioList
+    public static class Patch_Page_SelectScenario_DoScenarioSelectionList
     {
         private static float totalScenarioListHeight;
         private static Vector2 scenariosScrollPosition = Vector2.zero;

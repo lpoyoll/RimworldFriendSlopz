@@ -58,14 +58,11 @@ namespace GameClient.Managers
 
         public static void OnAskForWorld()
         {
-            RT_Dialog_Wait.Instance.Close();
-
             ClientValues.ToggleGenerateWorld(true);
 
-            RT_Dialog_Message d1 = new RT_Dialog_Message("MESSAGE", new string[] { "You are the first person joining the server!",
-                "Configure the world that everyone will play on" }, delegate { ModManager.OpenModManagerMenu(true); });
+            RT_Dialog_Wait.Instance.Close();
 
-            RT_Dialog_Base.PushNewDialog(d1);
+            RT_Dialog_Base.PushNewDialog(new Page_SelectScenario());
         }
 
         public static void OnExistingWorld()
@@ -93,8 +90,6 @@ namespace GameClient.Managers
             File.Delete(WorldManager.tempWorldPath);
 
             ClientValues.ToggleGenerateWorld(false);
-
-            SaveManager.ForceSave();
         }
 
         public static void OnReceiveWorld(WorldData data)

@@ -7,6 +7,9 @@ using RimWorld.Planet;
 using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
+using GameClient.Misc;
+using GameClient.Dialogs;
+using System;
 
 namespace GameClient.Patches
 {
@@ -23,11 +26,7 @@ namespace GameClient.Patches
                     SettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
 
                     if (!ClientValues.IsGeneratingFreshWorld) SaveManager.ForceSave();
-                    else
-                    {
-                        WorldManager.SendWorld();
-                        EventManager.SendExistingEventsToServer();
-                    }
+                    else ModManager.OpenModManagerMenu(true);
 
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
@@ -47,7 +46,7 @@ namespace GameClient.Patches
 
                     GameParameterManager.SetScenario(SessionValues.ScenarioFile);
                     GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                    DifficultyManager.SetDifficulty(SessionValues.DifficultyFile);
+                    GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
 
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);

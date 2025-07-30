@@ -61,9 +61,9 @@ namespace GameClient.Values
             IncomingManifest = new TransferData();
             ListToShowInTradesMenu = new List<Tradeable>();
 
-            PatchSelectScenarioPage.executedMessage = false;
-            PreventModOptionsButton.executedMessage = false;
-            PatchSelectStorytellerPage.executedMessage = false;
+            Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
+            Patch_DialogOptions_DoModOptions.executedMessage = false;
+            Patch_Page_SelectStoryteller_DoWindowContents.executedMessage = false;
         }
     }
 }

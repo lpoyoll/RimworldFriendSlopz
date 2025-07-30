@@ -8,7 +8,7 @@ using GameClient.Dialogs;
 namespace GameClient.Patches.Pages
 {
     [HarmonyPatch(typeof(Dialog_Options), "DoModOptions")]
-    public static class PreventModOptionsButton
+    public static class Patch_DialogOptions_DoModOptions
     {
         public static bool executedMessage;
 

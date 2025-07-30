@@ -11,8 +11,8 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Pages
 {
-    [HarmonyPatch(typeof(Page_SelectStoryteller), "PreOpen")]
-    public static class PatchDifficultyOverride
+    [HarmonyPatch(typeof(Page_SelectStoryteller), nameof(Page_SelectStoryteller.PreOpen))]
+    public static class Patch_Page_SelectStoryteller_PreOpen
     {
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
@@ -34,8 +34,8 @@ namespace GameClient.Patches.Pages
         }
     }
 
-    [HarmonyPatch(typeof(Page_SelectStoryteller), "DoWindowContents")]
-    public static class PatchSelectStorytellerPage
+    [HarmonyPatch(typeof(Page_SelectStoryteller), nameof(Page_SelectStoryteller.DoWindowContents))]
+    public static class Patch_Page_SelectStoryteller_DoWindowContents
     {
         public static bool executedMessage;
 
@@ -44,51 +44,7 @@ namespace GameClient.Patches.Pages
         {
             if (Network.State == ClientNetworkState.Disconnected) return true;
 
-            if (ClientValues.IsGeneratingFreshWorld)
-            {
-                if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomRight), ""))
-                {
-                    Current.Game.storyteller = GameParameterManagerH.GetStorytellerReference(__instance);
-
-                    Action difficultyYes = delegate
-                    {
-                        DifficultyManager.SetDifficulty(DifficultyManager.GetDifficulty(__instance), true);
-                        DifficultyManager.SendDifficulty(DifficultyManager.GetDifficulty(__instance), true);
-                        RT_Dialog_Base.PushNewDialog(__instance.next);
-                        __instance.Close();
-                    };
-
-                    Action difficultyNo = delegate
-                    {
-                        DifficultyManager.SetDifficulty(DifficultyManager.GetDifficulty(__instance), true);
-                        DifficultyManager.SendDifficulty(DifficultyManager.GetDifficulty(__instance), false);
-                        RT_Dialog_Base.PushNewDialog(__instance.next);
-                        __instance.Close();
-                    };
-
-                    RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("Do you want to ENFORCE the selected DIFFICULTY?", difficultyYes, difficultyNo);
-
-                    Action storytellerYes = delegate
-                    {
-                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance), true);
-                        GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), true);
-                        RT_Dialog_Base.PushNewDialog(d2);
-                    };
-
-                    Action storytellerNo = delegate
-                    {
-                        GameParameterManager.SetStoryteller(GameParameterManager.GetStoryteller(__instance), true);
-                        GameParameterManager.SendStoryteller(GameParameterManager.GetStoryteller(__instance), false);
-                        RT_Dialog_Base.PushNewDialog(d2);
-                    };
-
-                    RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to ENFORCE the selected STORYTELLER?", storytellerYes, storytellerNo);
-
-                    RT_Dialog_Base.PushNewDialog(d1);
-                };
-            }
-
-            else
+            if (!ClientValues.IsGeneratingFreshWorld)
             {
                 if (SessionValues.StorytellerFile.EnforceStoryteller)
                 {
@@ -98,7 +54,7 @@ namespace GameClient.Patches.Pages
                         Action toDo = delegate
                         {
                             GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                            DifficultyManager.SetDifficulty(SessionValues.DifficultyFile, true);
+                            GameParameterManager.SetDifficulty(SessionValues.DifficultyFile, true);
                             RT_Dialog_Base.PushNewDialog(__instance.next);
                             __instance.Close();
 
@@ -113,22 +69,10 @@ namespace GameClient.Patches.Pages
 
             return true;
         }
-
-        [HarmonyPostfix]
-        public static void DoPost(Rect rect)
-        {
-            if (Network.State == ClientNetworkState.Disconnected) return;
-            if (ClientValues.IsGeneratingFreshWorld) return;
-
-            Text.Font = GameFont.Small;
-            Vector2 buttonSize = new Vector2(150f, 38f);
-            Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
-            if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), "Join")) { }
-        }
     }
 
-    [HarmonyPatch(typeof(Page_SelectStorytellerInGame), "PreClose")]
-    public static class PatchSelectStorytellerInGamePageClose
+    [HarmonyPatch(typeof(Page_SelectStorytellerInGame), nameof(Page_SelectStorytellerInGame.PreClose))]
+    public static class Patch_Page_SelectStorytellerInGame_PreClose
     {
         [HarmonyPrefix]
         public static bool DoPre()
@@ -146,7 +90,7 @@ namespace GameClient.Patches.Pages
                 Action toDo = delegate
                 {
                     GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                    DifficultyManager.SetDifficulty(SessionValues.DifficultyFile);
+                    GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
                 };
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));

@@ -29,7 +29,7 @@ namespace GameClient.Managers
             switch (RT_Dialog_ScrollButtons.SelectedScrollButton)
             {
                 case 0:
-                    ModManager.OpenModManagerMenu(false);
+                    ModManager.OpenModManagerMenu();
                     break;
 
                 case 1:
