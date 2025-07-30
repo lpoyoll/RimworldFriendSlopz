@@ -139,6 +139,9 @@ namespace GameClient.Managers
             WorldManager.SendWorld();
             EventManager.SendExistingEventsToServer();
             SaveManager.ForceSave();
+
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", 
+                new string[] { "Some configurations might require a reconnection to apply" }));
         }
     }
 }
