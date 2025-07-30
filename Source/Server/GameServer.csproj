@@ -30,7 +30,13 @@
 	    <Reference Include="Newtonsoft.Json">
 	      <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
 	    </Reference>
+
+	    <Reference Include="Shared">
+	      <HintPath>..\..\1.6\Assemblies\Shared.dll</HintPath>
+	    </Reference>
 	</ItemGroup>
-	
-    <Import Project="..\Shared\Shared.projitems" Label="Shared" />
+
+    <ItemGroup>
+      <Folder Include="Network\" />
+    </ItemGroup>
 </Project>

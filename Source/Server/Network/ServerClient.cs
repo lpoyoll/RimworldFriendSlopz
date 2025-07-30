@@ -1,5 +1,4 @@
-﻿#if SERVER
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using GameServer.Files;
 using GameServer.Managers;
@@ -28,4 +27,3 @@ namespace Shared.Network.Server
         public void LoadUserFromFile() { UserFile = UserManagerH.GetUserFile(this); }
     }
 }
-#endif

@@ -1,3 +1,5 @@
+using Shared.Files;
+
 namespace Shared
 {
     // These classes should not be touched without notifying me first. The fields need to exactly match in both name and type to the master server.

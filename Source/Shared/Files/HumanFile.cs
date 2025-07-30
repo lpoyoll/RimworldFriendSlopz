@@ -1,13 +1,13 @@
 using System;
 
-namespace Shared
+namespace Shared.Files
 {
     [Serializable]
 
     public class HumanFile
     {
-        public string ScribeData { get; set; }
+        public string ScribeData { get; set; } = string.Empty;
 
-        public string IdeologyData { get; set; } 
+        public string IdeologyData { get; set; } = string.Empty;
     }
 }

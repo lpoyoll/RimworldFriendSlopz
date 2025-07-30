@@ -9,6 +9,7 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
+using static Shared.TransferData;
 
 namespace GameClient.Dialogs
 {

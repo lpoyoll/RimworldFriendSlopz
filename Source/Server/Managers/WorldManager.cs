@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
 
 namespace GameServer.Managers
 {
@@ -24,7 +25,7 @@ namespace GameServer.Managers
             }
         }
 
-        public static bool CheckIfWorldExists() { return File.Exists(WorldValuesFile.FilePath); }
+        public static bool CheckIfWorldExists() { return File.Exists(WorldValuesFile.Path); }
 
         public static void RequireWorldFile(ServerClient client)
         {
@@ -37,7 +38,7 @@ namespace GameServer.Managers
         public static void SendWorld(ServerClient client)
         {
             WorldData data = new WorldData();
-            WorldValuesFile file = Serializer.FileBytesToObject<WorldValuesFile>(WorldValuesFile.FilePath);
+            WorldValuesFile file = Serializer.FileBytesToObject<WorldValuesFile>(WorldValuesFile.Path);
 
             data._fileBytes = Serializer.ConvertObjectToBytes(file);
             data._stepMode = WorldStepMode.Sent;
@@ -48,7 +49,7 @@ namespace GameServer.Managers
         public static void ReceiveWorld(ServerClient client, WorldData data)
         {
             WorldValuesFile file = Serializer.ConvertBytesToObject<WorldValuesFile>(data._fileBytes);
-            Serializer.ObjectBytesToFile(WorldValuesFile.FilePath, file);
+            Serializer.ObjectBytesToFile(WorldValuesFile.Path, file);
             Master.WorldValues = file;
 
             InformationDisplayer.DisplaySetWorld(client);

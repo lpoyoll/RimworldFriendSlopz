@@ -5,6 +5,7 @@ using GameClient.Managers;
 using GameClient.Values;
 using RimWorld;
 using Shared;
+using Shared.Files;
 using Verse;
 using static Shared.CommonEnumerators;
 

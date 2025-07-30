@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
 
 namespace GameServer.Managers
 {
@@ -35,7 +36,7 @@ namespace GameServer.Managers
             else
             {
                 Master.ModConfig = file;
-                ModConfigFile.Save();
+                Master.ModConfig.Save();
                 InformationDisplayer.DisplaySetMods(client);
             }
         }

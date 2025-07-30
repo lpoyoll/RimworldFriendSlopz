@@ -1,36 +1,31 @@
-namespace Shared
+namespace Shared.Files
 {
     public class MapFile
     {
-        public int Tile;
+        public int Tile { get; set; } = -1;
 
-        public int[] Size;
+        public int[] Size { get; set; } = null;
 
-        public string UID;
+        public string UID { get; set; } = string.Empty;
 
-        public int Wealth;
+        public int Wealth { get; set; } = -1;
 
-        public string CurWeatherDefName;
+        public string CurWeatherDefName { get; set; } = string.Empty;
 
-        public ModConfigFile Mods;
+        public ModConfigFile Mods { get; set; } = null;
 
-        public MapTileDetails[] Tiles = new MapTileDetails[0];
+        public MapTileDetails[] Tiles { get; set; } = new MapTileDetails[0];
 
-        public string[] FactionThings;
+        public string[] FactionThings { get; set; } = null;
 
-        public string[] NonFactionThings;
+        public string[] NonFactionThings { get; set; } = null;
 
-        public HumanFile[] FactionHumans;
+        public HumanFile[] FactionHumans { get; set; } = null;
 
-        public HumanFile[] NonFactionHumans;
+        public HumanFile[] NonFactionHumans { get; set; } = null;
 
-        public string[] FactionAnimals;
-        
-        public string[] NonFactionAnimals;
+        public string[] FactionAnimals { get; set; } = null;
 
-        public override string ToString()
-        {
-            return $"MapFile:|{Tile}|{UID}|{CurWeatherDefName}|{Mods}";
-        }
+        public string[] NonFactionAnimals { get; set; } = null;
     }
 }

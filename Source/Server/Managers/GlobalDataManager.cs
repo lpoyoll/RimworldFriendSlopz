@@ -1,6 +1,7 @@
 ﻿using GameServer.Core;
 using Shared.Network.Server;
 using Shared;
+using Shared.Files;
 
 namespace GameServer.Managers
 {

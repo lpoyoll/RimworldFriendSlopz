@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
 
 namespace GameServer.Managers
 {
@@ -56,7 +57,7 @@ namespace GameServer.Managers
             List<PlanetNPCSettlementDetails> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
             finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.Tile));
             Master.WorldValues.NPCSettlements = finalSettlements.ToArray();
-            WorldValuesFile.Save();
+            Master.WorldValues.Save();
         }
 
         private static void BroadcastSettlementDeletion(PlanetNPCSettlementDetails settlement)

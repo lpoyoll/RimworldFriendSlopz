@@ -1,10 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using Shared.Files;
+using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
 namespace Shared
 {
     public class TransferData
     {
+        public enum TransferMode { Gift, Trade, Rebound, Pod }
+
+        public enum TransferLocation { Caravan, Settlement, Pod }
+
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
+
         public TransferStepMode _stepMode { get; set; } = TransferStepMode.TradeRequest;
 
         public TransferMode _transferMode { get; set; } = TransferMode.Gift;

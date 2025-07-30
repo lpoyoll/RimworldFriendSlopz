@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
 
 namespace GameServer.Managers
 {
@@ -43,7 +44,7 @@ namespace GameServer.Managers
             else
             {
                 Master.ScenarioValues = file;
-                ScenarioValuesFile.Save();
+                Master.ScenarioValues.Save();
                 InformationDisplayer.DisplaySetScenario(client.UserFile.Uid);
             }
         }
@@ -59,7 +60,7 @@ namespace GameServer.Managers
             else
             {
                 Master.StorytellerValues = file;
-                StorytellerValuesFile.Save();
+                Master.StorytellerValues.Save();
                 InformationDisplayer.DisplaySetStoryteller(client.UserFile.Uid);
             }
         }
@@ -75,7 +76,7 @@ namespace GameServer.Managers
             else
             {
                 Master.DifficultyValues = file;
-                DifficultyValuesFile.Save();
+                Master.DifficultyValues.Save();
                 InformationDisplayer.DisplaySetDifficulty(client.UserFile.Uid);
             }
         }

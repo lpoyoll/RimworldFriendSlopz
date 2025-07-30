@@ -2,6 +2,7 @@ using GameClient.Patches.Pages;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Shared.Files;
 using System.Collections.Generic;
 using Verse;
 using static Shared.CommonEnumerators;

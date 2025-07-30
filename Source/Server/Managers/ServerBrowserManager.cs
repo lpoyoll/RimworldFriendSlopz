@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using System.Text;
 using GameServer.Core;
-using GameServer.Core.Configs;
 using GameServer.Misc;
 using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
+using Shared.Files;
 
 namespace GameServer.Managers
 {
