@@ -31,8 +31,6 @@ namespace GameServer.Misc
 
         public static void DisplaySiteTick() { Printer.Warning($"[Tick] > Sites", LogImportanceMode.Verbose); }
 
-        public static void DisplayCaravanTick() { Printer.Warning($"[Tick] > Caravans", LogImportanceMode.Verbose); }
-
         public static void DisplayAddSettlement(string value) { Printer.Message($"[Add settlement] > {value}"); }
 
         public static void DisplayRemoveSettlement(string value) { Printer.Message($"[Remove settlement] > {value}"); }
@@ -55,10 +53,6 @@ namespace GameServer.Misc
 
         public static void DisplayMoveCaravan(string value) { Printer.Message($"[Move caravan] > {value}", LogImportanceMode.Verbose); }
 
-        public static void DisplaySaveFile(string value) { Printer.Warning($"[Save file] > {value}"); }
-
-        public static void DisplayLoadFile(string value) { Printer.Warning($"[Load file] > {value}"); }
-
         public static void DisplayServerBackup(string value) { Printer.Warning($"[Server backup] > {value}"); }
 
         public static void DisplayUserBackup(string value) { Printer.Message($"[User backup] > {value}"); }
@@ -69,9 +63,7 @@ namespace GameServer.Misc
 
         public static void DisplayModMismatch(string value) { Printer.Warning($"[Mod mismatch] > {value}"); }
 
-        public static void DisplayVersionMismatch(string value) { Printer.Warning($"[Version mismatch] > {value}"); }
-
-        public static void DisplayReceivePacket(string value, LogImportanceMode mode) { Printer.Message($"[Packet] > {value}", mode); }
+        public static void DisplayVersionMismatch(ServerClient client) { Printer.Warning($"[Version mismatch] > {client.UserFile.Label}"); }
 
         public static void DisplaySetScenario(string value) { Printer.Warning($"[Set scenario] > {value}"); }
 

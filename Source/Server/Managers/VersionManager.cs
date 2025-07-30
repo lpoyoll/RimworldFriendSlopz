@@ -20,7 +20,12 @@ namespace GameServer.Managers
                 data._step = VersionData.VersionStep.Pass;
                 client.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
             }
-            else LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongVersion);
+
+            else
+            {
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongVersion);
+                InformationDisplayer.DisplayVersionMismatch(client);
+            }
         }
 
         public static void AskForClientVersion(ServerClient client)
