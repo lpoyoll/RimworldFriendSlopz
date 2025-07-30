@@ -1,3 +1,6 @@
+# Currently broken due to GitHub Actions not being able to build Shared project
+# Please find a way to fix it soon
+
 name: Project Build
 
 on: [push]
@@ -11,12 +14,12 @@ jobs:
         os: 
           - ubuntu-latest
     runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup dotnet ${{ matrix.version }}
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: ${{matrix.version}}
+    #steps:
+      #- uses: actions/checkout@v4
+      #- name: Setup dotnet ${{ matrix.version }}
+      #  uses: actions/setup-dotnet@v4
+      #  with:
+      #    dotnet-version: ${{matrix.version}}
       #- name: Build Shared
       #  run: make build-shared
       #- name: Build Game Server
