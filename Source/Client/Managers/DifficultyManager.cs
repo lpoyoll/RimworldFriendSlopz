@@ -13,8 +13,6 @@ namespace GameClient.Managers
 {
     public static class DifficultyManager
     {
-
-
         public static void OpenDifficultyMenu()
         {
             string description = "Do you want to enforce the current difficulty?";
@@ -22,11 +20,9 @@ namespace GameClient.Managers
             {
                 GameParameterManager.SendCurrentStoryteller(true);
                 GameParameterManager.SendCurrentDifficulty(true);
-
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Difficulty has been enforced!" }));
             };
-            RT_Dialog_YesNo dialog = new RT_Dialog_YesNo(description, actionYes);
-            RT_Dialog_Base.PushNewDialog(dialog);
+
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo(description, actionYes));
         }
     }
 }
