@@ -13,7 +13,7 @@ namespace Shared
         public SiteInfoFile Clone() 
         {
             byte[] data = Serializer.ConvertObjectToBytes(this);
-            return Serializer.ConvertBytesToObject<SiteInfoFile>(data, false);
+            return Serializer.ConvertBytesToObject<SiteInfoFile>(data);
         }
 
         //Override ToString() once rework is done

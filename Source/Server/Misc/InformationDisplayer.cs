@@ -13,17 +13,17 @@ namespace GameServer.Misc
 
         public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.UserFile.Uid}"); }
 
-        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save Game] > {client.UserFile.Uid}"); }
+        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.UserFile.Uid}"); }
 
-        public static void DisplayLoadGame(ServerClient client) { Printer.Message($"[Load Game] > {client.UserFile.Uid}"); }
+        public static void DisplayLoadGame(ServerClient client) { Printer.Message($"[Load game] > {client.UserFile.Uid}"); }
 
         public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save Map] > {client.UserFile.Uid}"); }
 
-        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set Mods] > {client.UserFile.Uid}"); }
+        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.UserFile.Uid}"); }
 
-        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set World] > {client.UserFile.Uid}"); }
+        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set world] > {client.UserFile.Uid}"); }
 
-        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set Events] > {client.UserFile.Uid}"); }
+        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set events] > {client.UserFile.Uid}"); }
 
         public static void DisplayRemoveMap(string value) { Printer.Message($"[Remove map] > {value}"); }
 
@@ -59,9 +59,9 @@ namespace GameServer.Misc
 
         public static void DisplayLoadFile(string value) { Printer.Warning($"[Load file] > {value}"); }
 
-        public static void DisplayServerBackup(string value) { Printer.Warning($"[Server Backup] > {value}"); }
+        public static void DisplayServerBackup(string value) { Printer.Warning($"[Server backup] > {value}"); }
 
-        public static void DisplayUserBackup(string value) { Printer.Message($"[User Backup] > {value}"); }
+        public static void DisplayUserBackup(string value) { Printer.Message($"[User backup] > {value}"); }
 
         public static void DisplayResetPlayer(string value) { Printer.Message($"[Reset player] > {value}"); }
 
