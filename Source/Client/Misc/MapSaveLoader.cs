@@ -18,11 +18,13 @@ namespace GameClient.Misc
         {
             MapFile mapFile = new MapFile();
 
+            mapFile.Tile = map.Tile;
+
+            mapFile.Size = ValueParser.IntVec3ToArray(map.Size);
+
             mapFile.Wealth = (int)map.wealthWatcher.WealthTotal;
 
-            GetMapTile(mapFile, map);
-
-            GetMapSize(mapFile, map);
+            mapFile.CurWeatherDefName = map.weatherManager.curWeather.defName;
 
             GetMapTerrain(mapFile, map);
 
@@ -32,19 +34,15 @@ namespace GameClient.Misc
 
             GetMapAnimals(mapFile, map, factionAnimals, nonFactionAnimals);
 
-            GetMapWeather(mapFile, map);
-
             GetMapMods(mapFile);
 
             return mapFile;
         }
 
         public static Map StringToMap(MapFile mapFile, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, 
-            bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false, WorldObjectMode mode = WorldObjectMode.Settlement)
+            bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false)
         {
-            Map map;
-            if (mode == WorldObjectMode.Settlement) map = SetEmptyMap(mapFile, SessionValues.ChosenSettlement.Tile);
-            else map = SetEmptyMap(mapFile, SessionValues.ChosenSite.Tile);
+            Map map = SetEmptyMap(mapFile, SessionValues.ChosenSettlement.Tile);
 
             SetMapTerrain(mapFile, map);
 
@@ -64,18 +62,6 @@ namespace GameClient.Misc
         }
 
         //Getters
-
-        private static void GetMapTile(MapFile mapFile, Map map)
-        {
-            try { mapFile.Tile = map.Tile; }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
-        }
-
-        private static void GetMapSize(MapFile mapFile, Map map)
-        {
-            try { mapFile.Size = ValueParser.IntVec3ToArray(map.Size); }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
-        }
 
         private static void GetMapTerrain(MapFile mapFile, Map map)
         {
@@ -173,12 +159,6 @@ namespace GameClient.Misc
                 mapFile.FactionAnimals = tempFactionAnimals.ToArray();
                 mapFile.NonFactionAnimals = tempNonFactionAnimals.ToArray();
             }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
-        }
-
-        private static void GetMapWeather(MapFile mapFile, Map map)
-        {
-            try { mapFile.CurWeatherDefName = map.weatherManager.curWeather.defName; }
             catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
         }
 

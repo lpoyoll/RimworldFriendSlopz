@@ -59,7 +59,7 @@ namespace GameClient.Managers
             return scribeData.ToString();
         }
 
-        public static T SerializeFromString<T>(string scribeData)
+        public static T SerializeFromString<T>(string scribeData, SerializableType type = SerializableType.Thing)
         {
             ClientValues.ToggleUsingScriber(true);
 
@@ -72,6 +72,12 @@ namespace GameClient.Managers
                 Scribe_Deep.Look(ref toLoad, ScribeNodeName);
 
                 Scribe.loader.FinalizeLoading();
+
+                if (type == SerializableType.Thing)
+                {
+                    Thing thing = toLoad as Thing;
+                    thing.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
+                }
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
 
