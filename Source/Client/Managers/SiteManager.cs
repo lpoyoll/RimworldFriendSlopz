@@ -50,40 +50,10 @@ namespace GameClient.Managers
                     RemoveSingleSite(data._file);
                     break;
 
-                case SiteStepMode.Visit:
-                    VisitSite(data);
-                    break;
-
-                case SiteStepMode.Raid:
-                    RaidSite(data);
-                    break;
-
                 case SiteStepMode.Rewards:
                     ReceiveSiteRewards(data._rewardFiles);
                     break;
             }
-        }
-
-        public static void RequestVisitSite()
-        {
-            SiteData siteData = new SiteData();
-            siteData._file.Tile = SessionValues.ChosenSite.Tile;
-            siteData._stepMode = SiteStepMode.Visit;
-
-            Network.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
-
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
-        }
-
-        public static void RequestRaidSite()
-        {
-            SiteData siteData = new SiteData();
-            siteData._file.Tile = SessionValues.ChosenSite.Tile;
-            siteData._stepMode = SiteStepMode.Raid;
-
-            Network.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
-
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for server response"));
         }
 
         public static void RequestDestroySite()
@@ -223,32 +193,6 @@ namespace GameClient.Managers
                 else Printer.Warning($"Ignored removal of site at {toGet.Tile} because player was inside");
             }
             catch (Exception e) { Printer.Error($"Failed to remove site at {toRemove.Tile}. Reason: {e}"); }
-        }
-
-        private static void VisitSite(SiteData siteData)
-        {
-            RT_Dialog_Wait.Instance.Close();
-
-            Map toUse = null;
-            if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
-            else toUse = MapSaveLoader.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
-
-            CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, toUse, CaravanEnterMode.Edge);
-        }
-
-        private static void RaidSite(SiteData siteData)
-        {
-            RT_Dialog_Wait.Instance.Close();
-
-            Map toUse = null;
-            if (siteData._siteMap == null) toUse = GetOrGenerateMapUtility.GetOrGenerateMap(siteData._file.Tile, null);
-            else toUse = MapSaveLoader.StringToMap(siteData._siteMap, false, true, false, true, false, true, false, WorldObjectMode.Site);
-
-            RimworldManager.HandleMapFactions(toUse, ClientValues.EnemyPlayer);
-
-            RimworldManager.PrepareMapLord(toUse, ClientValues.EnemyPlayer);
-
-            CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, toUse, CaravanEnterMode.Edge);
         }
 
         private static void OnSiteAccept()

@@ -33,14 +33,6 @@ namespace GameServer.Managers
                     DestroySite(client, data);
                     break;
 
-                case SiteStepMode.Visit:
-                    VisitSite(client, data);
-                    break;
-
-                case SiteStepMode.Raid:
-                    RaidSite(client, data);
-                    break;
-
                 case SiteStepMode.Info:
                     SiteManagerHelper.GetSiteInfo(client, data);
                     break;

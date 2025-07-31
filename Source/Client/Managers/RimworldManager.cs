@@ -225,7 +225,7 @@ namespace GameClient.Managers
             else return false;
         }
 
-        public static void HandleMapFactions(Map map, Faction targetFaction)
+        public static void SetMapFactions(Map map, Faction targetFaction)
         {
             foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
             {
@@ -244,7 +244,7 @@ namespace GameClient.Managers
             }
         }
 
-        public static void PrepareMapLord(Map map, Faction targetFaction)
+        public static void SetMapLord(Map map, Faction targetFaction)
         {
             Thing toFocusOn;
 
@@ -253,7 +253,7 @@ namespace GameClient.Managers
             if (toFocusOn != null) deployPlace = toFocusOn.Position;
 
             Pawn[] lordPawns = map.mapPawns.AllPawns.ToList().FindAll(fetch => fetch.Faction == targetFaction).ToArray();
-            LordJob_DefendBase job = new LordJob_DefendBase(targetFaction, deployPlace, 1);
+            LordJob_DefendBase job = new LordJob_DefendBase(targetFaction, deployPlace, int.MaxValue);
             LordMaker.MakeNewLord(targetFaction, job, map, lordPawns);
         }
     }

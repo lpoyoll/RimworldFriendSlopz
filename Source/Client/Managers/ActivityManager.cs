@@ -1,13 +1,15 @@
-﻿using RimWorld.Planet;
+﻿using GameClient.Dialogs;
+using GameClient.Misc;
+using GameClient.Patches;
+using GameClient.Values;
 using RimWorld;
+using RimWorld.Planet;
 using Shared;
+using Shared.Files;
+using Shared.Network.Client;
+using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
-using GameClient.Dialogs;
-using GameClient.Values;
-using Shared.Network.Client;
-using GameClient.Misc;
-using Shared.Files;
 
 namespace GameClient.Managers
 {
@@ -57,11 +59,11 @@ namespace GameClient.Managers
             Network.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
         }
 
-        private static void OnAccept(ActivityData offlineVisitData) 
+        private static void OnAccept(ActivityData data) 
         {
             RT_Dialog_Wait.Instance.Close();
 
-            PrepareMap(offlineVisitData._mapFile); 
+            PrepareMap(data._mapFile); 
         }
 
         private static void OnDeny()
@@ -75,48 +77,41 @@ namespace GameClient.Managers
         {
             Map map = null;
 
-            if (SessionValues.latestActivity == ActivityType.Visit)
-            {
-                map = MapSaveLoader.StringToMap(mapFile, false, true, true, true, true, true, false);
-            }
-
-            else if (SessionValues.latestActivity == ActivityType.Raid)
+            if (SessionValues.latestActivity == ActivityType.Raid)
             {
                 map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
             }
 
-            else if (SessionValues.latestActivity == ActivityType.Spy)
+            else if (SessionValues.latestActivity == ActivityType.Zoom)
             {
-                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
+                map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, false);
             }
 
             Faction faction;
-            if (SessionValues.latestActivity == ActivityType.Visit) faction = ClientValues.AllyPlayer;
-            else if (SessionValues.latestActivity == ActivityType.Raid) faction = ClientValues.EnemyPlayer;
-            else faction = ClientValues.EnemyPlayer;
+            if (SessionValues.latestActivity == ActivityType.Raid) faction = ClientValues.EnemyPlayer;
+            else faction = ClientValues.NeutralPlayer;
 
-            RimworldManager.HandleMapFactions(map, faction);
+            RimworldManager.SetMapFactions(map, faction);
 
-            RimworldManager.PrepareMapLord(map, faction);
+            RimworldManager.SetMapLord(map, faction);
 
-            if (SessionValues.latestActivity == ActivityType.Visit)
+            if (SessionValues.latestActivity == ActivityType.Raid)
             {
-                CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, map, CaravanEnterMode.Edge,
-                    CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
-            }
-
-            else if (SessionValues.latestActivity == ActivityType.Raid)
-            {
+                Patch_MapParent_CheckRemoveMap.LatestTickCheck = 0;
                 SettlementUtility.Attack(SessionValues.ChosenCaravan, SessionValues.ChosenSettlement);
+                CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
             }
 
-            else if (SessionValues.latestActivity == ActivityType.Spy)
+            else if (SessionValues.latestActivity == ActivityType.Zoom)
             {
+                Patch_MapParent_CheckRemoveMap.LatestTickCheck = Find.TickManager.TicksGame;
+
                 Pawn pawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Colonist, Faction.OfPlayer);
                 Caravan caravan = CaravanMaker.MakeCaravan(new Pawn[] { pawn }, Faction.OfPlayer, map.Tile, true);
+                CaravanEnterMapUtility.Enter(caravan, map, CaravanEnterMode.Edge);
 
-                CaravanEnterMapUtility.Enter(caravan, map, CaravanEnterMode.Edge,
-                    CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
+                CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
+                pawn.Destroy();
             }
         }
     }

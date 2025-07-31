@@ -128,16 +128,16 @@ namespace GameClient.Patches
                 }
             };
 
-            Command_Action command_Spy = new Command_Action
+            Command_Action command_Zoom = new Command_Action
             {
-                defaultLabel = "Spy",
-                defaultDesc = "Spy this location",
-                icon = ContentFinder<Texture2D>.Get("Commands/Spy"),
+                defaultLabel = "Zoom Into",
+                defaultDesc = "Zoom into the settlement",
+                icon = ContentFinder<Texture2D>.Get("Commands/Zoom"),
                 action = delegate
                 {
                     SessionValues.ChosenSettlement = __instance;
 
-                    ActivityManager.RequestActivity(ActivityType.Spy, 
+                    ActivityManager.RequestActivity(ActivityType.Zoom, 
                         SessionValues.ChosenSettlement.Tile);
                 }
             };
@@ -211,18 +211,14 @@ namespace GameClient.Patches
                     if (__instance.Map != null) gizmoList.Add(command_Caravan);
                     else
                     {
-                        if (__instance.Faction != ClientValues.YourOnlineFaction)
-                        {
-                            gizmoList.Add(command_Goodwill);
-                            gizmoList.Add(command_Spy);
-                        }
-
+                        if (__instance.Faction != ClientValues.YourOnlineFaction) gizmoList.Add(command_Goodwill);
                         if (ClientValues.HasFaction) gizmoList.Add(command_FactionMenu);
 
                         gizmoList.Add(command_Event);
                         gizmoList.Add(command_Aid);
                         gizmoList.Add(command_Info);
                         gizmoList.Add(command_Wealth);
+                        gizmoList.Add(command_Zoom);
                     }
 
                     __result = gizmoList;
@@ -267,21 +263,6 @@ namespace GameClient.Patches
                     }
                 };
 
-                Command_Action command_Visit = new Command_Action
-                {
-                    defaultLabel = "Visit",
-                    defaultDesc = "Visit this location",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Visit"),
-                    action = delegate
-                    {
-                        SessionValues.ChosenSettlement = __instance;
-                        SessionValues.ChosenCaravan = caravan;
-
-                        ActivityManager.RequestActivity(ActivityType.Visit, 
-                            SessionValues.ChosenSettlement.Tile);
-                    }
-                };
-
                 Command_Action command_Transfer = new Command_Action
                 {
                     defaultLabel = "Transfer Items",
@@ -309,12 +290,7 @@ namespace GameClient.Patches
                     }
                 };
 
-                if (RimworldManager.CheckIfPlayerHasMap())
-                {
-                    gizmoList.Add(command_Transfer);
-                    gizmoList.Add(command_Visit);
-                }
-
+                if (RimworldManager.CheckIfPlayerHasMap()) gizmoList.Add(command_Transfer);
                 if (__instance.Faction != ClientValues.YourOnlineFaction) gizmoList.Add(command_Raid);
 
                 __result = gizmoList;
@@ -356,20 +332,6 @@ namespace GameClient.Patches
             if (Network.State == ClientNetworkState.Disconnected) return;
 
             List<Gizmo> gizmoList = __result.ToList();
-
-            Command_Action command_Caravan = new Command_Action
-            {
-                defaultLabel = "Form Caravan",
-                defaultDesc = "Form a new caravan",
-                icon = ContentFinder<Texture2D>.Get("UI/Commands/FormCaravan"),
-                action = delegate
-                {
-                    SessionValues.ChosenSite = __instance;
-
-                    Dialog_FormCaravan d1 = new Dialog_FormCaravan(__instance.Map, mapAboutToBeRemoved: true);
-                    RT_Dialog_Base.PushNewDialog(d1);
-                }
-            };
 
             Command_Action command_Goodwill = new Command_Action
             {
@@ -431,15 +393,11 @@ namespace GameClient.Patches
                         gizmoList.Add(command_Goodwill);
                     }
                 }
-
-                if (__instance.Map != null) gizmoList.Add(command_Caravan);
             }
 
             else if (__instance.Faction == Faction.OfPlayer)
             {
                 gizmoList.Clear();
-
-                if (__instance.Map != null) gizmoList.Add(command_Caravan);
 
                 gizmoList.Add(command_Config);
             }
@@ -494,36 +452,6 @@ namespace GameClient.Patches
                     }
                 };
 
-                Command_Action command_VisitSite = new Command_Action
-                {
-                    defaultLabel = "Visit",
-                    defaultDesc = "Visit this location",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Visit"),
-                    action = delegate
-                    {
-                        SessionValues.ChosenCaravan = __instance;
-                        SessionValues.ChosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
-
-                        if (SessionValues.ActionValues.EnableSites) SiteManager.RequestVisitSite();
-                        else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
-                    }
-                };
-
-                Command_Action command_RaidSite = new Command_Action
-                {
-                    defaultLabel = "Raid",
-                    defaultDesc = "Visit this location",
-                    icon = ContentFinder<Texture2D>.Get("Commands/Raid"),
-                    action = delegate
-                    {
-                        SessionValues.ChosenCaravan = __instance;
-                        SessionValues.ChosenSite = Find.WorldObjects.Sites.Find(x => x.Tile == __instance.Tile);
-
-                        if (SessionValues.ActionValues.EnableSites) SiteManager.RequestRaidSite();
-                        else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
-                    }
-                };
-
                 Command_Action command_DestroySite = new Command_Action
                 {
                     defaultLabel = "Destroy",
@@ -561,19 +489,6 @@ namespace GameClient.Patches
                 };
 
                 if (presentSettlement == null && presentSite == null) gizmoList.Add(Command_BuildSite);
-                else if (presentSite != null)
-                {
-                    if (presentSite.Faction == Faction.OfPlayer)
-                    {
-                        gizmoList.Add(command_VisitSite);
-                        gizmoList.Add(command_DestroySite);
-                    }
-
-                    else if (ClientValues.PlayerFactions.Contains(presentSite.Faction))
-                    {
-                        if (presentSite.Faction != ClientValues.YourOnlineFaction) gizmoList.Add(command_RaidSite);
-                    }
-                }
 
                 gizmoList.Add(Command_BuildRoad);
 
@@ -653,37 +568,27 @@ namespace GameClient.Patches
     }
 
     [HarmonyPatch(typeof(MapParent), nameof(MapParent.CheckRemoveMapNow))]
-    public static class PatchExitMap
+    public static class Patch_MapParent_CheckRemoveMap
     {
+        public static int LatestTickCheck { get; set; } = 0;
+
+        private static int TicksToWait { get; set; } = 180;
+
         [HarmonyPrefix]
         public static bool DoPre(MapParent __instance)
         {
             if (Network.State == ClientNetworkState.Disconnected) return true;
-            else if (__instance.Faction != Faction.OfPlayer && !ClientValues.PlayerFactions.Contains(__instance.Faction)) return true;
+            else if (__instance.Faction == Faction.OfPlayer) return true;
+            else if (!ClientValues.PlayerFactions.Contains(__instance.Faction)) return true;
             else
             {
-                if (__instance.ParentHolder != null)
+                if (__instance.HasMap && __instance.ShouldRemoveMapNow(out var alsoRemoveWorldObject))
                 {
-                    if (__instance.HasMap && __instance.ShouldRemoveMapNow(out bool alsoRemoveWorldObject))
-                    {
-                        if (__instance.Faction == Faction.OfPlayer) MapManager.SendMapToServer(__instance.Map);
-                        Current.Game.DeinitAndRemoveMap(__instance.Map, notifyPlayer: true);
-                    }
+                    if (Current.Game.CurrentMap.Tile == __instance.Map.Tile) return false;
+                    else if (LatestTickCheck + TicksToWait > Find.TickManager.TicksGame) return false;
+                    else return true;
                 }
-
-                else
-                {
-                    if (__instance.HasMap && __instance.ShouldRemoveMapNow(out bool alsoRemoveWorldObject))
-                    {
-                        Current.Game.DeinitAndRemoveMap(__instance.Map, notifyPlayer: true);
-                        if (!__instance.Destroyed && (alsoRemoveWorldObject || __instance.forceRemoveWorldObjectWhenMapRemoved))
-                        {
-                            __instance.Destroy();
-                        }
-                    }
-                }
-
-                return false;
+                else return true;
             }
         }
     }

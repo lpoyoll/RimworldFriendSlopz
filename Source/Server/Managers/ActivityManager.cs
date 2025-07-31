@@ -6,7 +6,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
-
     public static class ActivityManager
     {
         [HandlesPacket(PacketHeader.ActivityManager)]
