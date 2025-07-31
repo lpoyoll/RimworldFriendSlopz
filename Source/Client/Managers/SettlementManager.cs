@@ -99,6 +99,17 @@ namespace GameClient.Managers
 
             Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
         }
+
+        public static void AbandonSettlement(int settlementTile)
+        {
+            PlayerSettlementData settlementData = new PlayerSettlementData();
+            settlementData._settlementFile.Tile = settlementTile;
+            settlementData._stepMode = SettlementStepMode.Remove;
+
+            Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+
+            SaveManager.ForceSave();
+        }
     }
 
     public static class PlayerSettlementManagerHelper

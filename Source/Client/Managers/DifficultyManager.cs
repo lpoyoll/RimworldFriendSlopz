@@ -1,5 +1,6 @@
 ﻿using GameClient.Dialogs;
 using RimWorld;
+using RimWorld.Planet;
 using Shared;
 using Shared.Files;
 using Shared.Network.Client;

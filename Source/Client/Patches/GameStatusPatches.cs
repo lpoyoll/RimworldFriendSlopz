@@ -90,16 +90,8 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.State == ClientNetworkState.Connected)
-                {
-                    PlayerSettlementData settlementData = new PlayerSettlementData();
-                    settlementData._settlementFile.Tile = settlement.Tile;
-                    settlementData._stepMode = SettlementStepMode.Remove;
-
-                    Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
-
-                    SaveManager.ForceSave();
-                }
+                if (Network.State != ClientNetworkState.Connected) return;
+                else SettlementManager.AbandonSettlement(settlement.Tile);
             }
         }
 
