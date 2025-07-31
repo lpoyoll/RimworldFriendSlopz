@@ -227,19 +227,25 @@ namespace GameClient.Managers
 
         public static void SetMapFactions(Map map, Faction targetFaction)
         {
-            foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
-            {
-                if (pawn.Faction == ClientValues.NeutralPlayer)
-                {
-                    pawn.SetFaction(targetFaction);
-                }
-            }
+            //We don't wanna change to neutral faction because it's the default one
 
-            foreach (Thing thing in map.listerThings.AllThings.ToArray())
+            if (targetFaction == ClientValues.NeutralPlayer) return;
+            else
             {
-                if (thing.Faction == ClientValues.NeutralPlayer)
+                foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
                 {
-                    if (thing.def.CanHaveFaction) thing.SetFaction(targetFaction);
+                    if (pawn.Faction == ClientValues.NeutralPlayer)
+                    {
+                        pawn.SetFaction(targetFaction);
+                    }
+                }
+
+                foreach (Thing thing in map.listerThings.AllThings.ToArray())
+                {
+                    if (thing.Faction == ClientValues.NeutralPlayer)
+                    {
+                        if (thing.def.CanHaveFaction) thing.SetFaction(targetFaction);
+                    }
                 }
             }
         }
