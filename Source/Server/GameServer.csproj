@@ -29,14 +29,15 @@
 
 	    <Reference Include="Newtonsoft.Json">
 	      <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
-	    </Reference>
-
-	    <Reference Include="Shared">
-	      <HintPath>..\..\1.6\Assemblies\Shared.dll</HintPath>
+	      <Private>True</Private>
 	    </Reference>
 	</ItemGroup>
 
     <ItemGroup>
       <Folder Include="Network\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 </Project>
