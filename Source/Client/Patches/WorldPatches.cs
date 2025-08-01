@@ -130,9 +130,9 @@ namespace GameClient.Patches
 
             Command_Action command_Zoom = new Command_Action
             {
-                defaultLabel = "Zoom Into",
-                defaultDesc = "Zoom into the settlement",
-                icon = ContentFinder<Texture2D>.Get("Commands/Zoom"),
+                defaultLabel = "View",
+                defaultDesc = "View this settlement",
+                icon = ContentFinder<Texture2D>.Get("Commands/View"),
                 action = delegate
                 {
                     SessionValues.ChosenSettlement = __instance;
