@@ -14,16 +14,16 @@ jobs:
         os: 
           - ubuntu-latest
     runs-on: ${{ matrix.os }}
-    #steps:
-      #- uses: actions/checkout@v4
-      #- name: Setup dotnet ${{ matrix.version }}
-      #  uses: actions/setup-dotnet@v4
-      #  with:
-      #    dotnet-version: ${{matrix.version}}
-      #- name: Build Shared
-      #  run: make build-shared
-      #- name: Build Game Server
-      #  run: make build-server
-      #- name: Build Game Client
-      #  run: make build-client
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet ${{ matrix.version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{matrix.version}}
+      - name: Build Shared
+        run: make build-shared
+      - name: Build Game Server
+        run: make build-server
+      - name: Build Game Client
+        run: make build-client
 
