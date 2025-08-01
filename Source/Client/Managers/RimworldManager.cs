@@ -78,10 +78,8 @@ namespace GameClient.Managers
         public static int GetSpecificThingCountInMap(ThingDef thingDef, Map map)
         {
             int totalCount = 0;
-
-            Thing[] allFetchedThings = map.listerThings.AllThings.Where(fetch => fetch.def == thingDef && !fetch.Position.Fogged(map)).ToArray();
-
-            foreach (Thing thing in allFetchedThings)
+            List<Thing> things = map.listerThings.ThingsOfDef(thingDef).FindAll(fetch => fetch.IsInAnyStorage()).ToList();
+            foreach (Thing thing in things)
             {
                 totalCount += thing.stackCount;
             }
@@ -177,19 +175,15 @@ namespace GameClient.Managers
 
         public static void RemoveThingFromSettlement(Map map, ThingDef thingDef, int requiredQuantity)
         {
+            List<Thing> things = map.listerThings.ThingsOfDef(thingDef).Where(fetch => fetch.IsInAnyStorage()).ToList();
+
             while (requiredQuantity > 0)
             {
-                List<Thing> things = map.listerThings.ThingsOfDef(thingDef).Where(fetch => fetch.IsInAnyStorage())
-                    .ToList();
-
-                while (requiredQuantity > 0)
-                {
-                    Thing thing = things.First();
-                    int stackDeleting = Mathf.Min(requiredQuantity, thing.stackCount);
-                    thing.SplitOff(stackDeleting);
-                    requiredQuantity -= stackDeleting;
-                    things.Remove(thing);
-                }
+                Thing thing = things.First();
+                int stackDeleting = Mathf.Min(requiredQuantity, thing.stackCount);
+                thing.SplitOff(stackDeleting);
+                requiredQuantity -= stackDeleting;
+                things.Remove(thing);
             }
         }
 
