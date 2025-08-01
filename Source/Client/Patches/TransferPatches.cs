@@ -77,9 +77,10 @@ namespace GameClient.Patches
 
                     //Need to check if they are slaves or prisoners because the game already adds them by default
 
-                    foreach (Pawn pawn in SessionValues.ChosenCaravan.PawnsListForReading.Where(fetch => !fetch.IsPrisoner && !fetch.IsSlave && !fetch.IsAnimal))
+                    foreach (Pawn pawn in SessionValues.ChosenCaravan.PawnsListForReading)
                     {
                         if (TradeSession.playerNegotiator == pawn) continue;
+                        else if (!pawn.IsFreeColonist || !pawn.IsFreeNonSlaveColonist) continue;
                         else toInvoke.Invoke(__instance, new object[] { pawn, Transactor.Colony });
                     }
 
