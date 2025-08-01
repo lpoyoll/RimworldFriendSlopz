@@ -693,6 +693,8 @@ namespace GameClient.Patches
         }
     }
 
+    // Makes sure that the map isn't forcefully destroyed if the player is looking at it
+
     [HarmonyPatch(typeof(MapParent), nameof(MapParent.CheckRemoveMapNow))]
     public static class Patch_MapParent_CheckRemoveMap
     {
@@ -716,6 +718,20 @@ namespace GameClient.Patches
                 }
                 else return true;
             }
+        }
+    }
+
+    // Makes sure pawns from other players don't get passed into the world
+
+    [HarmonyPatch(typeof(WorldPawns), nameof(WorldPawns.PassToWorld))]
+    public static class Patch_WorldPawns_PassToWorld
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Pawn pawn)
+        {
+            if (Network.State == ClientNetworkState.Disconnected) return true;
+            else if (!ClientValues.PlayerFactions.Contains(pawn.Faction)) return true;
+            else return false;
         }
     }
 }
