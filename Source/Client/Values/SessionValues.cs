@@ -29,8 +29,6 @@ namespace GameClient.Values
 
         public static TransferData IncomingManifest { get; set; } = new TransferData();
 
-        public static List<Tradeable> ListToShowInTradesMenu { get; set; } = new List<Tradeable>();
-
         public static ActionValuesFile ActionValues { get; set; } = null;
 
         public static ModConfigFile ConfigFile { get; set; } = null;
@@ -60,7 +58,6 @@ namespace GameClient.Values
 
             OutgoingManifest = new TransferData();
             IncomingManifest = new TransferData();
-            ListToShowInTradesMenu = new List<Tradeable>();
 
             Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
             Patch_DialogOptions_DoModOptions.executedMessage = false;

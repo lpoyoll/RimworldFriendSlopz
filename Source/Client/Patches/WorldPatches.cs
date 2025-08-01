@@ -16,8 +16,8 @@ using static Shared.TransferData;
 
 namespace GameClient.Patches
 {
-    [HarmonyPatch(typeof(Settlement), "GetGizmos")]
-    public static class SettlementGizmoPatch
+    [HarmonyPatch(typeof(Settlement), nameof(Settlement.GetGizmos))]
+    public static class Patch_Settlement_GetGizmos
     {
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance)
@@ -242,11 +242,10 @@ namespace GameClient.Patches
                 List<Gizmo> removeList = new List<Gizmo>();
                 foreach (Command_Action action in gizmoList.ToList())
                 {
-                    if (action.defaultLabel == "CommandAttackSettlement".Translate()) removeList.Add(action);
-                    else if (action.defaultLabel == "CommandOfferGifts".Translate()) removeList.Add(action);
-                    else if (action.defaultLabel == "CommandTrade".Translate()) removeList.Add(action);
+                    if (action.defaultLabel == "CommandAttackSettlement".Translate()) gizmoList.Remove(action);
+                    else if (action.defaultLabel == "CommandOfferGifts".Translate()) gizmoList.Remove(action);
+                    else if (action.defaultLabel == "CommandTrade".Translate()) gizmoList.Remove(action);
                 }
-                foreach (Gizmo g in removeList) gizmoList.Remove(g);
 
                 Command_Action command_Raid = new Command_Action
                 {
@@ -281,10 +280,8 @@ namespace GameClient.Patches
 
                         else
                         {
-                            if (RimworldManager.CheckIfSocialPawnInCaravan(SessionValues.ChosenCaravan))
-                            {
-                                RT_Dialog_Base.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Caravan, true, true, true));
-                            }
+                            Pawn negotiator = RimworldManager.GetIfSocialPawnInCaravan(SessionValues.ChosenCaravan);
+                            if (negotiator != null) Find.WindowStack.Add(new Dialog_Trade(negotiator, SessionValues.ChosenSettlement));
                             else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
                         }
                     }
@@ -298,28 +295,14 @@ namespace GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(Settlement), "GetFloatMenuOptions")]
-    public static class PatchPlayerSettlements
+    [HarmonyPatch(typeof(Settlement), nameof(Settlement.GetFloatMenuOptions))]
+    public static class Patch_Settlement_GetFloatMenuOptions
     {
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<FloatMenuOption> __result, Caravan caravan, Settlement __instance)
         {
-            if (ClientValues.PlayerFactions.Contains(__instance.Faction))
-            {
-                List<FloatMenuOption> gizmoList = __result.ToList();
-
-                gizmoList.Clear();
-
-                if (CaravanVisitUtility.SettlementVisitedNow(caravan) != __instance)
-                {
-                    foreach (FloatMenuOption floatMenuOption2 in CaravanArrivalAction_VisitSettlement.GetFloatMenuOptions(caravan, __instance))
-                    {
-                        gizmoList.Add(floatMenuOption2);
-                    }
-                }
-
-                __result = gizmoList;
-            }
+            if (Network.State == ClientNetworkState.Disconnected) return;
+            else if (ClientValues.PlayerFactions.Contains(__instance.Faction)) __result = new List<FloatMenuOption>();
         }
     }
 
@@ -406,25 +389,19 @@ namespace GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(Site), "GetFloatMenuOptions")]
-    public static class PatchPlayerSites
+    [HarmonyPatch(typeof(Site), nameof(Site.GetFloatMenuOptions))]
+    public static class Patch_Site_GetFloatMenuOptions
     {
         [HarmonyPostfix]
         public static void DoPost(Site __instance, ref IEnumerable<FloatMenuOption> __result)
         {
-            if (ClientValues.PlayerFactions.Contains(__instance.Faction) || __instance.Faction == Faction.OfPlayer)
-            {
-                List<FloatMenuOption> floatMenuList = __result.ToList();
-
-                floatMenuList.Clear();
-
-                __result = floatMenuList;
-            }
+            if (Network.State == ClientNetworkState.Disconnected) return;
+            else if (ClientValues.PlayerFactions.Contains(__instance.Faction) || __instance.Faction == Faction.OfPlayer) __result = new List<FloatMenuOption>();
         }
     }
 
-    [HarmonyPatch(typeof(Caravan), "GetGizmos")]
-    public static class PatchCaravanGizmos
+    [HarmonyPatch(typeof(Caravan), nameof(Caravan.GetGizmos))]
+    public static class Patch_Caravan_GetGizmos
     {
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<Gizmo> __result, Caravan __instance)
@@ -497,6 +474,7 @@ namespace GameClient.Patches
         }
     }
 
+    //Hook displaying new tabs in world map
     [HarmonyPatch(typeof(TransportersArrivalAction_GiveGift), "GetFloatMenuOptions")]
     public static class PatchDropGift
     {
@@ -567,34 +545,8 @@ namespace GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(MapParent), nameof(MapParent.CheckRemoveMapNow))]
-    public static class Patch_MapParent_CheckRemoveMap
-    {
-        public static int LatestTickCheck { get; set; } = 0;
-
-        private static int TicksToWait { get; set; } = 180;
-
-        [HarmonyPrefix]
-        public static bool DoPre(MapParent __instance)
-        {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
-            else if (__instance.Faction == Faction.OfPlayer) return true;
-            else if (!ClientValues.PlayerFactions.Contains(__instance.Faction)) return true;
-            else
-            {
-                if (__instance.HasMap && __instance.ShouldRemoveMapNow(out var alsoRemoveWorldObject))
-                {
-                    if (Current.Game.CurrentMap.Tile == __instance.Map.Tile) return false;
-                    else if (LatestTickCheck + TicksToWait > Find.TickManager.TicksGame) return false;
-                    else return true;
-                }
-                else return true;
-            }
-        }
-    }
-
     [HarmonyPatch(typeof(WorldInspectPane), "CurTabs", MethodType.Getter)]
-    public static class AddSideTabs
+    public static class Patch_WorldInspectPane_CurTabs
     {
         [HarmonyPrefix]
         public static bool DoPre(WorldInspectPane __instance, ref IEnumerable<InspectTabBase> __result)
@@ -620,33 +572,150 @@ namespace GameClient.Patches
         }
     }
 
-    [HarmonyPatch(typeof(SettlementProximityGoodwillUtility), "AppendProximityGoodwillOffsets")]
-    public static class PrevenGoodwillChangePatch
+    //Bypass settlement proximity check
+
+    [HarmonyPatch(typeof(SettlementProximityGoodwillUtility), nameof(SettlementProximityGoodwillUtility.AppendProximityGoodwillOffsets))]
+    public static class Patch_SettlementProximityGoodwillUtility_AppendProximityGoodwillOffsets
     {
         [HarmonyPrefix]
         public static bool DoPre(ref int tile, ref List<Pair<Settlement, int>> outOffsets)
         {
             if (Network.State == ClientNetworkState.Disconnected) return true;
-
-            int maxDist = SettlementProximityGoodwillUtility.MaxDist;
-            List<Settlement> settlements = Find.WorldObjects.Settlements;
-            for (int i = 0; i < settlements.Count; i++)
+            else
             {
-                Settlement settlement = settlements[i];
-
-                if (ClientValues.PlayerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
-                else
+                for (int i = 0; i < Find.WorldObjects.Settlements.Count; i++)
                 {
-                    int num = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, maxDist);
-                    if (num != int.MaxValue)
+                    Settlement settlement = Find.WorldObjects.Settlements[i];
+
+                    if (ClientValues.PlayerFactions.Contains(settlement.Faction) || settlement.Faction == Faction.OfPlayer) continue;
+                    else
                     {
-                        int num2 = Mathf.RoundToInt(DiplomacyTuning.Goodwill_PerQuadrumFromSettlementProximity.Evaluate(num));
-                        if (num2 != 0) outOffsets.Add(new Pair<Settlement, int>(settlement, num2));
+                        int distance = Find.WorldGrid.TraversalDistanceBetween(tile, settlement.Tile, passImpassable: false, 
+                            SettlementProximityGoodwillUtility.MaxDist);
+
+                        if (distance != int.MaxValue)
+                        {
+                            int valuedDistance = Mathf.RoundToInt(DiplomacyTuning.Goodwill_PerQuadrumFromSettlementProximity.Evaluate(distance));
+                            if (valuedDistance != 0) outOffsets.Add(new Pair<Settlement, int>(settlement, valuedDistance));
+                        }
                     }
                 }
-            }
 
-            return false;
+                return false;
+            }
+        }
+    }
+
+    //Hook raiding settlement
+
+    [HarmonyPatch(typeof(SettlementUtility), "AttackNow")]
+    public static class Patch_SettlementUtility_Attack
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(Caravan caravan, Settlement settlement)
+        {
+            if (Network.State == ClientNetworkState.Disconnected) return true;
+            else if (!ClientValues.PlayerFactions.Contains(settlement.Faction)) return true;
+            else
+            {
+                if (settlement.Map != null) return true;
+                else
+                {
+                    SessionValues.ChosenCaravan = caravan;
+                    SessionValues.ChosenSettlement = settlement;
+                    ActivityManager.RequestActivity(ActivityType.Raid, SessionValues.ChosenSettlement.Tile);
+                    return false;
+                }
+            }
+        }
+    }
+
+    //Hook giving gift to settlement
+
+    [HarmonyPatch(typeof(TransportersArrivalAction_GiveGift), nameof(TransportersArrivalAction_GiveGift.GetFloatMenuOptions))]
+    public static class Patch_TransportersArrivalAction_GiveGift_GetFloatMenuOptions
+    {
+        [HarmonyPostfix]
+        public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement, IEnumerable<IThingHolder> pods)
+        {
+            if (Network.State == ClientNetworkState.Disconnected) return;
+            else
+            {
+                if (ClientValues.PlayerFactions.Contains(settlement.Faction))
+                {
+                    List<FloatMenuOption> floatMenuList = new List<FloatMenuOption>();
+
+                    if (Network.State == ClientNetworkState.Connected)
+                    {
+                        SessionValues.ChosenSettlement = settlement;
+                        SessionValues.ChosenPods = pods;
+
+                        string optionLabel = $"Transfer things to {settlement.Name}";
+                        Action toDo = delegate
+                        {
+                            TransferManager.TakeTransferItemsFromPods(SessionValues.ChosenPods);
+                            TransferManager.SendTransferRequestToServer(TransferLocation.Pod);
+                        };
+
+                        FloatMenuOption floatMenuOption = new FloatMenuOption(optionLabel, toDo);
+                        floatMenuList.Add(floatMenuOption);
+                    }
+
+                    __result = floatMenuList;
+                }
+            }
+        }
+    }
+
+    //Prohibit raiding through drop pod
+
+    [HarmonyPatch(typeof(TransportersArrivalAction_AttackSettlement), nameof(TransportersArrivalAction_AttackSettlement.GetFloatMenuOptions))]
+    public static class Patch_TransportersArrivalAction_AttackSettlement_GetFloatMenuOptions
+    {
+        [HarmonyPostfix]
+        public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement)
+        {
+            if (Network.State == ClientNetworkState.Disconnected) return;
+            else if (ClientValues.PlayerFactions.Contains(settlement.Faction)) __result = new List<FloatMenuOption>();
+        }
+    }
+
+    //Prohibit any gizmo of destroyed settlement
+
+    [HarmonyPatch(typeof(DestroyedSettlement), "GetGizmos")]
+    public static class Patch_DestroyedSettlement_GetGizmos
+    {
+        [HarmonyPostfix]
+        public static void DoPost(ref IEnumerable<Gizmo> __result)
+        {
+            if (Network.State == ClientNetworkState.Disconnected) return;
+            else __result = new List<Gizmo>();
+        }
+    }
+
+    [HarmonyPatch(typeof(MapParent), nameof(MapParent.CheckRemoveMapNow))]
+    public static class Patch_MapParent_CheckRemoveMap
+    {
+        public static int LatestTickCheck { get; set; } = 0;
+
+        private static int TicksToWait { get; set; } = 180;
+
+        [HarmonyPrefix]
+        public static bool DoPre(MapParent __instance)
+        {
+            if (Network.State == ClientNetworkState.Disconnected) return true;
+            else if (__instance.Faction == Faction.OfPlayer) return true;
+            else if (!ClientValues.PlayerFactions.Contains(__instance.Faction)) return true;
+            else
+            {
+                if (__instance.HasMap && __instance.ShouldRemoveMapNow(out var alsoRemoveWorldObject))
+                {
+                    if (Current.Game.CurrentMap.Tile == __instance.Map.Tile) return false;
+                    else if (LatestTickCheck + TicksToWait > Find.TickManager.TicksGame) return false;
+                    else return true;
+                }
+                else return true;
+            }
         }
     }
 }

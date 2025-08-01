@@ -1,9 +1,11 @@
-﻿using System;
-using System.Linq;
-using GameClient.Managers;
+﻿using GameClient.Managers;
 using GameClient.Values;
+using RimWorld;
+using RimWorld.Planet;
 using Shared;
 using Shared.Network.Client;
+using System;
+using System.Linq;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -13,7 +15,7 @@ namespace GameClient.Dialogs
 {
     public class RT_Dialog_ItemListing : RT_Dialog_Base
     {
-        public override Vector2 InitialSize => new Vector2(350f, 512f);
+        public override Vector2 InitialSize => new Vector2(400f, 512f);
 
         private Thing[] ListedThings { get; set; }
 
@@ -38,9 +40,7 @@ namespace GameClient.Dialogs
         {
             Text.Font = GameFont.Medium;
             Widgets.Label(new Rect(rect.width / 2 - Text.CalcSize(Title).x / 2, rect.y, rect.width, Text.CalcSize(Title).y), Title);
-
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - SlimButtonSize.y - 45));
-
             Text.Font = GameFont.Small;
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept"))
@@ -50,7 +50,7 @@ namespace GameClient.Dialogs
 
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel"))
             {
-                OnReject();
+                Reject();
             }
         }
 
@@ -91,75 +91,61 @@ namespace GameClient.Dialogs
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (ScriberH.CheckIfThingIsHuman(thing))
-            {
-                Widgets.Label(fixedRect, $"[H] {itemName}");
-            }
-
-            else if (ScriberH.CheckIfThingIsAnimal(thing))
-            {
-                Widgets.Label(fixedRect, $"[A] {itemName}");
-            }
-
-            else
-            {
-                Widgets.Label(fixedRect, $"[I] {itemName} (x{thing.stackCount}) ({thing.HitPoints} HP)");
-            }
+            if (ScriberH.CheckIfThingIsHuman(thing)) Widgets.Label(fixedRect, $"[Human] {itemName}");
+            else if (ScriberH.CheckIfThingIsAnimal(thing)) Widgets.Label(fixedRect, $"[Animal] {itemName}");
+            else Widgets.Label(fixedRect, $"[Item] {itemName} (x{thing.stackCount}) ({thing.HitPoints} HP)");
         }
 
         private void Accept()
         {
-            Action r1 = delegate
+            ClientValues.ToggleTradeStep(ClientValues.LatestTradeStep.Receiving);
+
+            if (TransferMode == TransferMode.Gift)
             {
-                if (TransferMode == TransferMode.Gift)
+                TransferManager.GetTransferedItemsToSettlement(ListedThings);
+                Close();
+            }
+
+            else if (TransferMode == TransferMode.Trade)
+            {
+                if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
                 {
-                    TransferManager.GetTransferedItemsToSettlement(ListedThings);
+                    Map map = Find.WorldObjects.SettlementAt(SessionValues.IncomingManifest._fromTile).Map;
+                    Pawn negotiator = RimworldManager.GetNegotiatorAtMap(map);
+                    Find.WindowStack.Add(new Dialog_Trade(negotiator, Find.WorldObjects.SettlementAt(SessionValues.IncomingManifest._fromTile)));
                 }
 
-                else if (TransferMode == TransferMode.Trade)
+                else
                 {
-                    if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
-                    {
-                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_TransferMenu(TransferLocation.Settlement, true, true, true));
-                    }
-
-                    else
-                    {
-                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
-                        TransferManager.RejectRequest(TransferMode);
-                    }
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have any pawn capable of trading!" }));
+                    TransferManager.RejectRequest(TransferMode);
+                    Close();
                 }
+            }
 
-                else if (TransferMode == TransferMode.Pod)
-                {
-                    TransferManager.GetTransferedItemsToSettlement(ListedThings);
-                }
+            else if (TransferMode == TransferMode.Rebound)
+            {
+                SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                else if (TransferMode == TransferMode.Rebound)
-                {
-                    SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
+                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
 
-                    Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
-
-                    TransferManager.GetTransferedItemsToCaravan(ListedThings);
-                }
+                TransferManager.GetTransferedItemsToCaravan(ListedThings);
 
                 Close();
-            };
+            }
 
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to accept?", r1, null));
+            else if (TransferMode == TransferMode.Pod)
+            {
+                TransferManager.GetTransferedItemsToSettlement(ListedThings);
+                Close();
+            }
         }
 
-        private void OnReject()
+        private void Reject()
         {
-            Action r1 = delegate
-            {
-                TransferManager.RejectRequest(TransferMode);
+            TransferManager.RejectRequest(TransferMode);
 
-                Close();
-            };
-
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Are you sure you want to decline?", r1, null));
+            Close();
         }
     }
 }

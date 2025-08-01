@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GameClient.Misc;
 using GameClient.Values;
@@ -20,16 +21,14 @@ namespace GameClient.Managers
             else return false;
         }
 
+        public static Pawn GetIfSocialPawnInCaravan(Caravan caravan)
+        {
+            return caravan.PawnsListForReading.FirstOrDefault(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
+        }
+
         public static bool CheckIfSocialPawnInMap(Map map)
         {
             Pawn playerNegotiator = map.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
-            if (playerNegotiator != null) return true;
-            else return false;
-        }
-
-        public static bool CheckIfSocialPawnInCaravan(Caravan caravan)
-        {
-            Pawn playerNegotiator = caravan.PawnsListForReading.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
             if (playerNegotiator != null) return true;
             else return false;
         }
@@ -63,6 +62,11 @@ namespace GameClient.Managers
             if (totalItem >= quantity) return true;
 
             return false;
+        }
+
+        public static Pawn GetNegotiatorAtMap(Map map)
+        {
+            return Find.AnyPlayerHomeMap.mapPawns.AllPawns.Find(fetch => fetch.IsColonist && !fetch.skills.skills[10].PermanentlyDisabled);
         }
 
         public static Thing[] GetAllThingsInMap(Map map)
