@@ -1,29 +1,29 @@
-# # Currently broken due to GitHub Actions not being able to build Shared project
-# # Please find a way to fix it soon
+# Currently broken due to GitHub Actions not being able to build Shared project
+# Please find a way to fix it soon
 
-# name: Project Build
+name: Project Build
 
-# on: [push]
+on: [push]
 
-# jobs:
-#   build-server:
-#     strategy:
-#       matrix:
-#         version:
-#           - 8.0.x
-#         os: 
-#           - ubuntu-latest
-#     runs-on: ${{ matrix.os }}
-#     steps:
-#       - uses: actions/checkout@v4
-#       - name: Setup dotnet ${{ matrix.version }}
-#         uses: actions/setup-dotnet@v4
-#         with:
-#           dotnet-version: ${{matrix.version}}
-#       - name: Build Shared
-#         run: make build-shared
-#       - name: Build Game Server
-#         run: make build-server
-#       - name: Build Game Client
-#         run: make build-client
+jobs:
+  build-server:
+    strategy:
+      matrix:
+        version:
+          - 8.0.x
+        os: 
+          - ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet ${{ matrix.version }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{matrix.version}}
+      - name: Build Shared
+        run: make build-shared
+      - name: Build Game Server
+        run: make build-server
+      - name: Build Game Client
+        run: make build-client
 
