@@ -30,9 +30,9 @@ namespace GameClient.Values
 
         public static bool HasFaction { get; set; } = false;
 
-        public enum LatestTradeStep { None, Receiving }
+        public enum TradeMode { None, Sending, Receiving }
 
-        public static LatestTradeStep TradeStep { get; private set; } = ClientValues.LatestTradeStep.None;
+        public static TradeMode LastTradeStep { get; private set; } = ClientValues.TradeMode.None;
 
         public static List<Faction> PlayerFactions { get; set; } = new List<Faction>();
 
@@ -133,7 +133,7 @@ namespace GameClient.Values
 
         public static void ToggleUsingScriber(bool mode) { IsUsingScriber = mode; }
 
-        public static void ToggleTradeStep(LatestTradeStep step) { TradeStep = step; }
+        public static void ToggleTradeStep(TradeMode step) { LastTradeStep = step; }
 
         public static void ToggleAdmin(bool mode) 
         { 
@@ -152,7 +152,7 @@ namespace GameClient.Values
             ToggleUsingScriber(false);
             ToggleAdmin(false);
             ToggleFaction(false);
-            ToggleTradeStep(LatestTradeStep.None);
+            ToggleTradeStep(TradeMode.None);
 
             DisconnectionManager.SetIntentionalDisconnect(false);
         }

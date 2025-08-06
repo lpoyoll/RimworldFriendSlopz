@@ -98,7 +98,7 @@ namespace GameClient.Dialogs
 
         private void Accept()
         {
-            ClientValues.ToggleTradeStep(ClientValues.LatestTradeStep.Receiving);
+            ClientValues.ToggleTradeStep(ClientValues.TradeMode.Receiving);
 
             if (TransferMode == TransferMode.Gift)
             {
@@ -110,9 +110,9 @@ namespace GameClient.Dialogs
             {
                 if (RimworldManager.CheckIfSocialPawnInMap(Find.AnyPlayerHomeMap))
                 {
-                    Map map = Find.WorldObjects.SettlementAt(SessionValues.IncomingManifest._fromTile).Map;
-                    Pawn negotiator = RimworldManager.GetNegotiatorAtMap(map);
-                    Find.WindowStack.Add(new Dialog_Trade(negotiator, Find.WorldObjects.SettlementAt(SessionValues.IncomingManifest._fromTile)));
+                    Settlement settlement = Find.World.worldObjects.Settlements.First(fetch => fetch.Faction != Faction.OfPlayer);
+                    Pawn negotiator = RimworldManager.GetNegotiatorAtMap(settlement.Map);
+                    Find.WindowStack.Add(new Dialog_Trade(negotiator, settlement));
                 }
 
                 else

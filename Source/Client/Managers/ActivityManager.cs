@@ -2,6 +2,7 @@
 using GameClient.Misc;
 using GameClient.Patches;
 using GameClient.Values;
+using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -13,7 +14,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-
     public static class ActivityManager
     {
         [HandlesPacket(PacketHeader.ActivityManager)]
@@ -97,15 +97,14 @@ namespace GameClient.Managers
 
             if (SessionValues.latestActivity == ActivityType.Raid)
             {
-                Patch_MapParent_CheckRemoveMap.LatestTickCheck = 0;
-                SettlementUtility.Attack(SessionValues.ChosenCaravan, SessionValues.ChosenSettlement);
+                CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, SessionValues.ChosenSettlement.Map, 
+                    CaravanEnterMode.Edge, CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
+
                 CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
             }
 
             else if (SessionValues.latestActivity == ActivityType.Zoom)
             {
-                Patch_MapParent_CheckRemoveMap.LatestTickCheck = Find.TickManager.TicksGame;
-
                 Pawn pawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Colonist, Faction.OfPlayer);
                 Caravan caravan = CaravanMaker.MakeCaravan(new Pawn[] { pawn }, Faction.OfPlayer, map.Tile, true);
                 CaravanEnterMapUtility.Enter(caravan, map, CaravanEnterMode.Edge);

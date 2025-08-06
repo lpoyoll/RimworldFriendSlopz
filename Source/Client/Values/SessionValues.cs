@@ -1,4 +1,5 @@
 using GameClient.Patches.Pages;
+using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -17,11 +18,11 @@ namespace GameClient.Values
 
         public static bool IsActivityReady { get; set; } = false;
 
-        public static Settlement ChosenSettlement { get; set; } = null;
-
-        public static Caravan ChosenCaravan { get; set; } = null;
+        public static RTSettlement ChosenSettlement { get; set; } = null;
 
         public static Site ChosenSite { get; set; } = null;
+
+        public static Caravan ChosenCaravan { get; set; } = null;
 
         public static IEnumerable<IThingHolder> ChosenPods { get; set; } = null;
 

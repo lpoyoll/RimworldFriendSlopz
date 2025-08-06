@@ -218,7 +218,7 @@ namespace GameClient.Managers
 
         public static void FinishTransfer(bool success)
         {
-            ClientValues.ToggleTradeStep(ClientValues.LatestTradeStep.None);
+            ClientValues.ToggleTradeStep(ClientValues.TradeMode.None);
 
             if (success) SaveManager.ForceSave();
 
