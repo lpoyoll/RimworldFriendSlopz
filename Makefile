@@ -1,3 +1,6 @@
+build-network:
+	dotnet build Source/TCPNetwork/TCPNetwork.csproj --configuration Release /property:WarningLevel=0
+
 build-shared:
 	dotnet build Source/Shared/Shared.csproj --configuration Release /property:WarningLevel=0
 
