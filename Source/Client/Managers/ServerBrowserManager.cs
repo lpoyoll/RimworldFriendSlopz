@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using GameClient.Misc;
+using TCPNetwork.Packets;
 using Shared;
 using Steamworks;
 using static Shared.CommonEnumerators;

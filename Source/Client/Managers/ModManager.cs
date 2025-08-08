@@ -1,10 +1,10 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
+using TCPNetwork.Packets;
 using RimWorld;
 using Shared;
 using Shared.Files;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;

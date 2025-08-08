@@ -5,8 +5,8 @@ using System.Reflection;
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
+using TCPNetwork.Packets;
 using Shared;
-using Shared.Network.Client;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -186,10 +186,10 @@ namespace GameClient.Dialogs
 
         private void ConnectToServer() 
         {
-            Network.Ip = ServerInfo._ip;
-            Network.Port = ServerInfo._port.ToString();
+            ClientNetwork.Ip = ServerInfo._ip;
+            ClientNetwork.Port = ServerInfo._port.ToString();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-            Threader.GenerateThread(Threader.Mode.Start);
+            ClientNetwork _ = new ClientNetwork();
             Close();
         }
 

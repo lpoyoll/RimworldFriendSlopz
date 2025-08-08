@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using GameClient.Managers;
+using TCPNetwork.Packets;
 using Shared;
 using UnityEngine;
 using Verse;

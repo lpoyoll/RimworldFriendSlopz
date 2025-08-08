@@ -2,7 +2,6 @@ using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
 using Shared.Files;
-using Shared.Network.Server;
 using System.Globalization;
 using System.Reflection;
 using static Shared.CommonEnumerators;
@@ -19,19 +18,18 @@ namespace GameServer.Core
             LoadFiles();
             SetCulture();
             LoadResources();
-            ChangeTitle();
+
             Validator.CheckIfFirstBoot();
             MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
 
             if (Master.ActionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
 
-            Threader.GenerateServerThread(Threader.ServerMode.Start);
-            Threader.GenerateServerThread(Threader.ServerMode.Console);
+            ServerNetwork _ = new ServerNetwork();
 
             if (Master.BackupConfig.AutomaticBackups) Threader.GenerateServerThread(Threader.ServerMode.Backup);
             ServerBrowserManager.StartLoops();
 
-            while (true) Thread.Sleep(1);
+            while (true) ConsoleManager.ListenForServerCommands();
         }
 
         public static void SetPaths()
@@ -117,7 +115,7 @@ namespace GameServer.Core
         public static void ChangeTitle()
         {
             Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - " +
-                $"Players [{NetworkHelper.GetConnectedClientsSafe().Length}/{Master.ServerConfig.MaxPlayers}]";
+                $"Players [{ServerNetwork.Instance.GetConnectedClientsSafe().Length}/{Master.ServerConfig.MaxPlayers}]";
         }
     }
 }

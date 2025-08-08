@@ -4,6 +4,7 @@ using System.Linq;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
 using Shared;
 using Verse;

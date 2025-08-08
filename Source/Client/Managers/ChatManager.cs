@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using GameClient.Misc;
-using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
@@ -14,6 +13,7 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -72,7 +72,7 @@ namespace GameClient.Managers
             chatData._username = ClientValues.Username;
             chatData._message = messageToSend;
 
-            Network.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)

@@ -2,7 +2,6 @@
 using HarmonyLib;
 using RimWorld;
 using static Shared.CommonEnumerators;
-using Shared.Network.Client;
 using GameClient.Dialogs;
 
 namespace GameClient.Patches.Pages
@@ -15,7 +14,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Dialog_Options __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (!SessionValues.ConfigFile.EnforcedConfigs) return true;
             else if (ClientValues.IsAdmin) return true;
             else

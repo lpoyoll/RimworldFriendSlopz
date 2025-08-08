@@ -1,4 +1,4 @@
-﻿using Shared.Network.Server;
+﻿using TCPNetwork.Server;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Misc

@@ -1,11 +1,11 @@
 ﻿using GameServer.Core;
-using Shared.Network.Server;
 using Shared;
 using Shared.Files;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
-
     public static class GlobalDataManager
     {
         public static void SendServerGlobalData(ServerClient client)

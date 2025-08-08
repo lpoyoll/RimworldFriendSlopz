@@ -1,7 +1,6 @@
 ﻿using System;
 using GameClient.Dialogs;
 using GameClient.Managers;
-using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
@@ -17,7 +16,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 Find.GameInitData.permadeathChosen = true;
@@ -42,7 +41,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStoryteller __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
             if (!ClientValues.IsGeneratingFreshWorld)
             {
@@ -77,7 +76,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
             if (ClientValues.IsAdmin)
             {

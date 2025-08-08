@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using Shared.Network.Client;
 using GameClient.Values;
 using RimWorld;
 using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 using Shared.Files;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -56,7 +56,7 @@ namespace GameClient.Managers
             eventData._stepMode = EventStepMode.Set;
             eventData._eventFiles = existingEvents.ToArray();
 
-            Network.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.EventManager, eventData);
         }
 
         public static void ShowEventMenu()
@@ -101,7 +101,7 @@ namespace GameClient.Managers
                 EventData data = new EventData();
                 data._stepMode = CommonEnumerators.EventStepMode.Customize;
                 data._eventFiles = EventManagerH.AvailableEvents;
-                Network.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.EventManager, data);
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("SUCCESS",
                     new string[] { "Changes will apply to new connecting players" }));
@@ -133,7 +133,7 @@ namespace GameClient.Managers
                 eventData._toTile = SessionValues.ChosenSettlement.Tile;
                 eventData._eventFile = EventManagerH.EnabledEvents[RT_Dialog_ScrollButtons.SelectedScrollButton];
 
-                Network.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for event"));
             }

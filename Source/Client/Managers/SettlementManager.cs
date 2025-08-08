@@ -8,9 +8,9 @@ using Shared;
 using static Shared.CommonEnumerators;
 using GameClient.Misc;
 using GameClient.Values;
-using Shared.Network.Client;
 using Shared.Files;
 using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -99,7 +99,7 @@ namespace GameClient.Managers
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Add;
 
-            Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
         }
 
         public static void AbandonSettlement(int settlementTile)
@@ -108,7 +108,7 @@ namespace GameClient.Managers
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Remove;
 
-            Network.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
 
             SaveManager.ForceSave();
         }

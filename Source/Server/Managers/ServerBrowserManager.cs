@@ -2,10 +2,10 @@
 using System.Text;
 using GameServer.Core;
 using GameServer.Misc;
-using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
 using Shared.Files;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
@@ -115,7 +115,7 @@ namespace GameServer.Managers
                     _name = Master.ServerConfig.Name,
                     _description = Master.ServerConfig.Description,
                     _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
-                    _currentPlayerCount = Network.ConnectedClients.Count,
+                    _currentPlayerCount = ServerNetwork.Instance.ServerClients.Count,
                     _config = Master.ModConfig
                 };
                 HttpResponseMessage response = await Client.PostAsync(MasterServer, 
@@ -140,7 +140,7 @@ namespace GameServer.Managers
                 Client.DefaultRequestHeaders.Add("action", "Player-Count");
 
                 HttpResponseMessage response = await Client.PostAsync(MasterServer,
-                    new StringContent(Network.ConnectedClients.Count.ToString()));
+                    new StringContent(ServerNetwork.Instance.ServerClients.Count.ToString()));
 
                 response.EnsureSuccessStatusCode();
                 return true;

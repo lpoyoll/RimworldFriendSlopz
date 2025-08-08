@@ -2,11 +2,11 @@
 using GameClient.Misc;
 using GameClient.Values;
 using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,7 +132,7 @@ namespace GameClient.Managers
             data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
-            Network.Listener.EnqueuePacket(PacketHeader.CaravanManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void RequestCaravanRemove(Caravan caravan)
@@ -146,7 +146,7 @@ namespace GameClient.Managers
 
             PlayerCaravans.Remove(caravan);
 
-            Network.Listener.EnqueuePacket(PacketHeader.CaravanManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void RequestCaravanUpdate(Caravan caravan)
@@ -158,7 +158,7 @@ namespace GameClient.Managers
             data._caravanFile.UID = ClientValues.Uid;
             data._caravanFile.ID = caravan.ID;
 
-            Network.Listener.EnqueuePacket(PacketHeader.CaravanManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.CaravanManager, data);
         }
 
         public static void ClearAllCaravans()

@@ -1,9 +1,10 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
 using Shared.Files;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
@@ -66,7 +67,7 @@ namespace GameServer.Managers
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData = settlement;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.NPCManager, data);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.NPCManager, data);
         }
     }
 

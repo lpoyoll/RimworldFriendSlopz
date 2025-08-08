@@ -1,10 +1,10 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +45,7 @@ namespace GameClient.Managers
             data._details.ToTile = tileBID;
             data._details.RoadDefName = roadDef.defName;
 
-            Network.Listener.EnqueuePacket(PacketHeader.RoadManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
 
         public static void SendRoadRemoveRequest(int tileAID, int tileBID)
@@ -57,7 +57,7 @@ namespace GameClient.Managers
             data._details.FromTile = tileAID;
             data._details.ToTile = tileBID;
 
-            Network.Listener.EnqueuePacket(PacketHeader.RoadManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
 
         public static void AddRoads(RoadDetails[] details, bool forceRefresh)

@@ -1,5 +1,4 @@
-﻿using Shared.Network.Client;
-using GameClient.Values;
+﻿using GameClient.Values;
 using HarmonyLib;
 using RimWorld.Planet;
 using Shared;
@@ -9,6 +8,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Verse;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Packets;
 
 namespace GameClient.Patches
 {
@@ -49,7 +49,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void DoPost(float pollutionAmount)
             {
-                if (Network.State == ClientNetworkState.Disconnected) return;
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
                 else if (!SessionValues.ActionValues.EnablePollutionSpread) return;
                 else if (addedByServer) addedByServer = false;
                 else
@@ -61,7 +61,7 @@ namespace GameClient.Patches
                     PollutionData data = new PollutionData();
                     data._pollutionData = pollution;
 
-                    Network.Listener.EnqueuePacket(PacketHeader.PollutionManager, data);
+                    ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.PollutionManager, data);
                 }
             }
         }

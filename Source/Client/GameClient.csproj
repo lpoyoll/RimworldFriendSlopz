@@ -44,11 +44,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Network\" />
+	  <ProjectReference Include="..\Shared\Shared.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Shared\Shared.csproj" />
+		<ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

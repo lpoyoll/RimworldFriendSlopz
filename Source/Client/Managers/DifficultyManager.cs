@@ -3,7 +3,6 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
-using Shared.Network.Client;
 using System;
 using System.Reflection;
 using Verse;

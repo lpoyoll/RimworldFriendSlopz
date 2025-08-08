@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GameClient.Misc;
+using TCPNetwork.Packets;
 using Shared;
 using static Shared.CommonEnumerators;
 

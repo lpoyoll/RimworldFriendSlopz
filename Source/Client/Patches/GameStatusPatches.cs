@@ -1,5 +1,4 @@
 ﻿using GameClient.Managers;
-using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
@@ -21,7 +20,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (Network.State == ClientNetworkState.Connected)
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     SettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
 
@@ -40,7 +39,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (Network.State == ClientNetworkState.Connected)
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     PlanetManager.BuildPlanet();
 
@@ -60,7 +59,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Caravan caravan)
             {
-                if (Network.State == ClientNetworkState.Connected)
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     SettlementManager.SendNewPlayerSettlement(caravan.Tile);
 
@@ -75,7 +74,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Map map)
             {
-                if (Network.State == ClientNetworkState.Connected)
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     SettlementManager.SendNewPlayerSettlement(map.Tile);
 
@@ -90,7 +89,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Settlement settlement)
             {
-                if (Network.State != ClientNetworkState.Connected) return;
+                if (SessionValues.CurrentNetworkState != ClientNetworkState.Connected) return;
                 else SettlementManager.AbandonSettlement(settlement.Tile);
             }
         }
@@ -101,7 +100,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Settlement __instance)
             {
-                if (Network.State == ClientNetworkState.Connected)
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     if (!ClientValues.IsReadyToPlay) return;
                     if (!SessionValues.ActionValues.EnableNPCDestruction) return;
@@ -119,7 +118,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (Network.State == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
+                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
                 else return;
             }
         }

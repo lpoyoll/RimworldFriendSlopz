@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Patches.Tabs;
-using Shared.Network.Client;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
@@ -12,7 +11,6 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
-using static Shared.TransferData;
 
 namespace GameClient.Patches
 {
@@ -22,7 +20,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
 
             List<Gizmo> gizmoList = __result.ToList();
 
@@ -54,7 +52,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<Gizmo> __result, Caravan __instance)
         {
-            if (Network.State == ClientNetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
             {
                 Site presentSite = Find.World.worldObjects.Sites.ToList().Find(x => x.Tile == __instance.Tile);
                 Settlement presentSettlement = Find.World.worldObjects.Settlements.ToList().Find(x => x.Tile == __instance.Tile);
@@ -130,7 +128,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
 
             List<Gizmo> gizmoList = __result.ToList();
             List<Gizmo> removeList = new List<Gizmo>();
@@ -151,7 +149,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(WorldInspectPane __instance, ref IEnumerable<InspectTabBase> __result)
         {
-            if (Network.State != ClientNetworkState.Connected) return false;
+            if (SessionValues.CurrentNetworkState != ClientNetworkState.Connected) return false;
             else
             {
                 if (Find.WorldSelector.NumSelectedObjects == 1)
@@ -180,7 +178,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Pawn pawn)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (!ClientValues.PlayerFactions.Contains(pawn.Faction)) return true;
             else return false;
         }

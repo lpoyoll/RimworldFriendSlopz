@@ -2,11 +2,11 @@
 using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -81,7 +81,7 @@ namespace GameClient.Managers
             data._stepMode = WorldStepMode.Sent;
             data._fileBytes = Serializer.ConvertObjectToBytes(SessionValues.WorldFile);
 
-            Network.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.WorldManager, data);
 
             OnWorldSent();
         }

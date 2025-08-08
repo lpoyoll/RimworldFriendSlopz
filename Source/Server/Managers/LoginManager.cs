@@ -1,7 +1,8 @@
 using GameServer.Core;
 using GameServer.Misc;
+using TCPNetwork.Packets;
+using TCPNetwork.Server;
 using Shared;
-using Shared.Network.Server;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
@@ -90,7 +91,7 @@ namespace GameServer.Managers
     {
         public static void RemoveOldClientSessions(ServerClient client)
         {
-            foreach (ServerClient toFind in NetworkHelper.GetConnectedClientsSafe())
+            foreach (ServerClient toFind in ServerNetwork.Instance.GetConnectedClientsSafe())
             {
                 if (toFind == client) continue;
                 else

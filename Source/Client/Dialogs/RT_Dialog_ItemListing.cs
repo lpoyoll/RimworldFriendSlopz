@@ -3,13 +3,12 @@ using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using Shared.Network.Client;
 using System;
 using System.Linq;
 using UnityEngine;
 using Verse;
+using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
-using static Shared.TransferData;
 
 namespace GameClient.Dialogs
 {
@@ -127,7 +126,7 @@ namespace GameClient.Dialogs
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
 
                 TransferManager.GetTransferedItemsToCaravan(ListedThings);
 

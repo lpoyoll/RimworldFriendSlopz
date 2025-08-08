@@ -2,10 +2,10 @@
 using GameClient.Misc;
 using GameClient.Values;
 using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using Shared.Network.Client;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
@@ -81,7 +81,7 @@ namespace GameClient.Managers
             factionGoodwillData._tile = structureTile;
             factionGoodwillData._goodwill = goodwill;
 
-            Network.Listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
 
             RT_Dialog_Wait d1 = new RT_Dialog_Wait("Changing settlement goodwill");
             RT_Dialog_Base.PushNewDialog(d1);

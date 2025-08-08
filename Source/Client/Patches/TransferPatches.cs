@@ -5,14 +5,13 @@ using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Verse;
+using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
-using static Shared.TransferData;
 
 namespace GameClient.Patches
 {
@@ -24,7 +23,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return;
             else
             {
@@ -45,7 +44,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref bool __result)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else
             {
@@ -63,7 +62,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(TradeDeal __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else
             {
@@ -118,7 +117,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Transactor trans)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else
             {
@@ -136,7 +135,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref bool __result)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else
             {
@@ -154,7 +153,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref int __result)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else
             {
@@ -172,7 +171,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else
             {
@@ -198,7 +197,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Tradeable_Pawn __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else
             {
@@ -224,7 +223,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Thing toGive, int countToGive)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else
             {
@@ -254,7 +253,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (ClientValues.LastTradeStep == ClientValues.TradeMode.None) return true;
             else return false;
         }
@@ -268,7 +267,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPre()
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             else ClientValues.ToggleTradeStep(ClientValues.TradeMode.None);
         }
     }

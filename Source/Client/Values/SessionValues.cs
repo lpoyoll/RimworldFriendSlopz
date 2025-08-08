@@ -1,5 +1,6 @@
 using GameClient.Patches.Pages;
 using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -12,7 +13,9 @@ namespace GameClient.Values
 {
     public static class SessionValues
     {
-        public static ActivityType latestActivity = ActivityType.None;
+        public static ClientNetworkState CurrentNetworkState = ClientNetworkState.Disconnected;
+
+        public static ActivityType latestActivity { get; set; } = ActivityType.None;
 
         public static bool IsActivityHost { get; set; } = false;
 

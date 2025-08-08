@@ -2,19 +2,19 @@
 using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Values;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Verse;
 using Verse.Sound;
+using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
-using static Shared.TransferData;
 
 namespace GameClient.Managers
 {
@@ -122,7 +122,7 @@ namespace GameClient.Managers
                 SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
                 SessionValues.OutgoingManifest._toTile = TradeSession.playerNegotiator.Tile;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
@@ -133,7 +133,7 @@ namespace GameClient.Managers
                 SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
                 SessionValues.OutgoingManifest._toTile = SessionValues.IncomingManifest._fromTile;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Pod)
@@ -142,7 +142,7 @@ namespace GameClient.Managers
                 SessionValues.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
                 SessionValues.OutgoingManifest._toTile = SessionValues.ChosenSettlement.Tile;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.OutgoingManifest);
             }
         }
 
@@ -304,7 +304,7 @@ namespace GameClient.Managers
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReject;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
             }
 
             else if (transferMode == TransferMode.Pod)
@@ -316,7 +316,7 @@ namespace GameClient.Managers
             {
                 SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReReject;
 
-                Network.Listener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
 
                 RecoverTradeItems(TransferLocation.Caravan);
             }

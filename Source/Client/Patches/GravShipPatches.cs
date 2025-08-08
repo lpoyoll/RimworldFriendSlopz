@@ -1,8 +1,8 @@
 ﻿using GameClient.Managers;
+using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             else SettlementManager.AbandonSettlement(map.Tile);
         }
     }
@@ -31,7 +31,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Gravship gravship)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             else
             {
                 Map map = Find.WorldObjects.MapParentAt(gravship.destinationTile)?.Map;
@@ -47,7 +47,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Gravship gravship)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
             else
             {
                 Map map = Find.WorldObjects.MapParentAt(gravship.destinationTile)?.Map;

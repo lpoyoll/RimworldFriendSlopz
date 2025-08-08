@@ -1,6 +1,7 @@
-﻿using Shared;
+﻿using TCPNetwork.Packets;
+using TCPNetwork.Server;
+using Shared;
 using Shared.Files;
-using Shared.Network.Server;
 
 namespace GameServer.Managers
 {
@@ -26,7 +27,7 @@ namespace GameServer.Managers
         private static void SendInformation(ServerClient client, InformationData data)
         {
             SettlementFile settlementToFind = SettlementManager.GetSettlementFileFromTile(data._settlementTile);
-            ServerClient clientToFind = NetworkHelper.GetConnectedClientFromUid(settlementToFind.UID);
+            ServerClient clientToFind = ServerNetwork.Instance.GetConnectedClientFromUid(settlementToFind.UID);
 
             data._isPlayerOnline = clientToFind != null ? true : false;
 

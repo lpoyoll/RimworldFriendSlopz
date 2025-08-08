@@ -3,7 +3,6 @@ using GameClient.Misc;
 using GameClient.Values;
 using RimWorld;
 using Shared;
-using Shared.Network.Client;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +10,7 @@ using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
 using Shared.Files;
+using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
@@ -79,7 +79,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Scenario;
             data._scenario = file;
 
-            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
 
         public static void SendCurrentStoryteller(bool isEnforced)
@@ -92,7 +92,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Storyteller;
             data._storyteller = file;
 
-            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
 
         public static void SendCurrentDifficulty(bool isEnforced)
@@ -105,7 +105,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Difficulty;
             data._difficulty = file;
 
-            Network.Listener.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
 
         public static void SendCurrentModConfigs(bool isEnforced)
@@ -127,7 +127,7 @@ namespace GameClient.Managers
             data._configFile.ModConfigs = modConfigs.ToArray();
             data._configFile.EnforcedConfigs = isEnforced;
 
-            Network.Listener.EnqueuePacket(PacketHeader.ModManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ModManager, data);
         }
 
         private static void SendFirstTimeSetup()

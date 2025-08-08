@@ -1,10 +1,11 @@
 using GameServer.Commands;
 using GameServer.Core;
 using GameServer.Misc;
-using Shared.Network.Server;
 using Shared;
 using System.Text;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
@@ -76,7 +77,7 @@ namespace GameServer.Managers
             chatData._usernameColor = client.UserFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
             chatData._messageColor = client.UserFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(client.UserFile.Label, message);
             ChatManagerHelper.ShowChatInConsole(client.UserFile.Label, message);
@@ -90,7 +91,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Discord;
             chatData._messageColor = MessageColor.Discord;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(client, message);
             ChatManagerHelper.ShowChatInConsole(client, message, true);
@@ -104,7 +105,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Console;
             chatData._messageColor = MessageColor.Console;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(chatData._username, message);
             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
@@ -118,7 +119,7 @@ namespace GameServer.Managers
             chatData._usernameColor = UserColor.Server;
             chatData._messageColor = MessageColor.Server;
 
-            NetworkHelper.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(chatData._username, message);
             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
@@ -169,7 +170,7 @@ namespace GameServer.Managers
     {
         public static ServerClient GetUserFromName(string username)
         {
-            return NetworkHelper.GetConnectedClientFromUid(username);
+            return ServerNetwork.Instance.GetConnectedClientFromUid(username);
         }
 
         public static CommandBase GetCommandFromName(string commandName)

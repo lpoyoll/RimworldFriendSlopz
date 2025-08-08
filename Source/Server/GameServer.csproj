@@ -34,10 +34,10 @@
 	</ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Network\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
+	</ItemGroup>
 </Project>

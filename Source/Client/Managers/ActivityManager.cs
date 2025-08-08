@@ -3,11 +3,11 @@ using GameClient.Misc;
 using GameClient.Patches;
 using GameClient.Values;
 using GameClient.WorldObjects;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
-using Shared.Network.Client;
 using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -56,7 +56,7 @@ namespace GameClient.Managers
             data._stepMode = ActivityStepMode.Request;
             data._targetTile = targetTile;
 
-            Network.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ActivityManager, data);
         }
 
         private static void OnAccept(ActivityData data) 

@@ -3,7 +3,8 @@ using static Shared.CommonEnumerators;
 using static GameServer.Commands.ChatCommandActions;
 using static GameServer.Commands.ChatCommands;
 using GameServer.Managers;
-using Shared.Network.Server;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
 
 namespace GameServer.Commands
 {

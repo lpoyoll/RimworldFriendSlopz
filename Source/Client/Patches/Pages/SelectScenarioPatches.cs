@@ -3,7 +3,6 @@ using GameClient.Managers;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -22,7 +21,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectScenario __instance)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
             if (!ClientValues.IsGeneratingFreshWorld && SessionValues.ScenarioFile.EnforceScenario)
             {
@@ -52,7 +51,7 @@ namespace GameClient.Patches.Pages
                 {
                     __instance.Close();
                     DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
-                    Network.Listener.DisconnectFlag = true;
+                    ClientNetwork.Instance.ClientListener.DisconnectFlag = true;
                 }
             }
 
@@ -62,7 +61,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void DoPost(Rect rect)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
 
             if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomLeft), "Disconnect")) { };
         }
@@ -74,7 +73,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else if (SessionValues.ActionValues.EnableCustomScenarios) return true;
             else
             {
@@ -94,7 +93,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref Scenario ___curScen)
         {
-            if (Network.State == ClientNetworkState.Disconnected) return true;
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             if (SessionValues.ActionValues.EnableCustomScenarios) return true;
 
             if (curScen != null) ___curScen = curScen;

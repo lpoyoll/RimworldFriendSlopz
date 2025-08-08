@@ -1,10 +1,11 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using Shared.Network.Server;
 using Shared;
 using static Shared.CommonEnumerators;
-using static Shared.TransferData;
 using Shared.Files;
+using TCPNetwork.Server;
+using TCPNetwork.Packets;
+using static TCPNetwork.Packets.TransferData;
 
 namespace GameServer.Managers
 {
@@ -80,7 +81,7 @@ namespace GameServer.Managers
                     }
 
                     transferData._stepMode = TransferStepMode.TradeRequest;
-                    NetworkHelper.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                    ServerNetwork.Instance.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
                 }
             }
         }
@@ -99,7 +100,7 @@ namespace GameServer.Managers
             else
             {
                 transferData._stepMode = TransferStepMode.TradeReject;
-                NetworkHelper.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                ServerNetwork.Instance.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
             }
         }
 
@@ -117,7 +118,7 @@ namespace GameServer.Managers
             else
             {
                 transferData._stepMode = TransferStepMode.TradeReRequest;
-                NetworkHelper.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                ServerNetwork.Instance.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
             }
         }
 
@@ -135,7 +136,7 @@ namespace GameServer.Managers
             else
             {
                 transferData._stepMode = TransferStepMode.TradeReAccept;
-                NetworkHelper.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                ServerNetwork.Instance.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
             }
         }
 
@@ -153,7 +154,7 @@ namespace GameServer.Managers
             else
             {
                 transferData._stepMode = TransferStepMode.TradeReReject;
-                NetworkHelper.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                ServerNetwork.Instance.GetConnectedClientFromUid(settlement.UID).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
             }
         }
     }

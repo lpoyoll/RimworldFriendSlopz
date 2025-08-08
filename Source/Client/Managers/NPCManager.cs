@@ -1,9 +1,9 @@
 ﻿using GameClient.Misc;
 using GameClient.Values;
+using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using Shared.Network.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -142,7 +142,7 @@ namespace GameClient.Managers
             data._stepMode = SettlementStepMode.Remove;
             data._settlementData.Tile = settlement.Tile;
 
-            Network.Listener.EnqueuePacket(PacketHeader.NPCManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.NPCManager, data);
         }
     }
 
