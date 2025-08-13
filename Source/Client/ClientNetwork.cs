@@ -22,6 +22,7 @@ namespace GameClient
             MainThreadHandler.Instance.Enqueue(delegate
             {
                 MethodGatherer.ClientMethodDictionary[header].Invoke(null, new object[] { buffer });
+                DiagnosticsHandler.IncreaseNetworkRate(buffer.Length);
             });
         };
 

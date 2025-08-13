@@ -12,6 +12,10 @@ namespace Shared
 
         public static Dictionary<PacketHeader, MethodInfo> ServerMethodDictionary { get; private set; }
 
+        public static MethodInfo[] InitializerMethods { get; private set; }
+
+        public static MethodInfo[] CheckPerFrameMethods { get; private set; }
+
         public enum AssemblyType { Client, Server }
 
         public static void CacheAllMethods(AssemblyType type)
@@ -26,6 +30,9 @@ namespace Shared
                     ClientMethodDictionary.Add(clientMethods[i].GetCustomAttribute<HandlesPacket>().header,
                         clientMethods[i]);
                 }
+
+                InitializerMethods = GetSessionInitializeAttributes(GetAllTypes());
+                CheckPerFrameMethods = GetCheckPerFrameAttributes(GetAllTypes());
             }
 
             else
@@ -48,6 +55,33 @@ namespace Shared
             {
                 toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
                     .Where(fetch => fetch.GetCustomAttribute<HandlesPacket>() != null).ToList());
+            }
+            return toAdd.ToArray();
+        }
+
+        private static Type[] GetAllTypes()
+        {
+            return (Type[])Assembly.GetExecutingAssembly().GetTypes().Where(fetch => !fetch.Namespace.Contains("Synchronous")).ToArray();
+        }
+
+        private static MethodInfo[] GetSessionInitializeAttributes(Type[] types)
+        {
+            List<MethodInfo> toAdd = new List<MethodInfo>();
+            for (int x = 0; x < types.Length; x++)
+            {
+                toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+                    .Where(fetch => fetch.GetCustomAttribute<ShouldInitializeOnSession>() != null).ToList());
+            }
+            return toAdd.ToArray();
+        }
+
+        private static MethodInfo[] GetCheckPerFrameAttributes(Type[] types)
+        {
+            List<MethodInfo> toAdd = new List<MethodInfo>();
+            for (int x = 0; x < types.Length; x++)
+            {
+                toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+                    .Where(fetch => fetch.GetCustomAttribute<ShouldCheckPerFrame>() != null).ToList());
             }
             return toAdd.ToArray();
         }

@@ -13,6 +13,12 @@ namespace Shared
         public readonly PacketHeader header;
     }
 
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public class ShouldInitializeOnSession() : Attribute { }
+
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+    public class ShouldCheckPerFrame() : Attribute { }
+
     public enum PacketHeader : byte
     {
         None,

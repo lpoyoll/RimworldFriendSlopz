@@ -9,3 +9,6 @@ build-server:
 
 build-client:
 	dotnet build Source/Client/GameClient.csproj --configuration Release /property:WarningLevel=0
+
+build-synchronous:
+	dotnet build Source/Synchronous/Synchronous.csproj --configuration Release /property:WarningLevel=0
