@@ -1,6 +1,9 @@
 ﻿using Shared.Files;
 using System;
 using System.IO;
+using MessagePack;
+using Newtonsoft.Json;
+using Shared.Misc;
 
 namespace Shared.Files
 {
@@ -8,26 +11,22 @@ namespace Shared.Files
     public class DifficultyValuesFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
-
-        public bool EnforceDifficulty { get; set; } = false;
-
         public string ScribeData { get; set; } = string.Empty;
+        [JsonIgnore] [IgnoreMember] public bool EnforceDifficulty => !string.IsNullOrEmpty(ScribeData);
 
         public override void Save()
         {
-            try { Serializer.SerializeToFile(Path, this); }
-            catch (Exception e) { throw new Exception(e.ToString()); }
+            XmlHelper.WriteXmlToFile(ScribeData, Path, true);
         }
 
         public static object Load<T>()
         {
-            if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
-            else
+            DifficultyValuesFile file = new DifficultyValuesFile();
+            if (File.Exists(Path))
             {
-                DifficultyValuesFile file = new DifficultyValuesFile();
-                Serializer.SerializeToFile(Path, file);
-                return file;
+                file.ScribeData = XmlHelper.ReadXmlFromFile(Path);
             }
+            return file;
         }
     }
 }

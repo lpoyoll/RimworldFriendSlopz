@@ -98,8 +98,8 @@ namespace GameClient.Managers
         public static void SendCurrentDifficulty(bool isEnforced)
         {
             DifficultyValuesFile file = new DifficultyValuesFile();
-            file.EnforceDifficulty = isEnforced;
-            file.ScribeData = ScribeManager.SerializeToString(Current.Game.storyteller.difficulty, ScribeManager.SerializableType.Other);
+            if(isEnforced)
+                file.ScribeData = ScribeManager.SerializeToString(Current.Game.storyteller.difficulty, ScribeManager.SerializableType.Other);
 
             GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Difficulty;
