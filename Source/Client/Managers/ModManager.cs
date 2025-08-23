@@ -110,7 +110,13 @@ namespace GameClient.Managers
         {
             List<string> loadedMods = new List<string>();
             ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
-            foreach (ModContentPack mod in runningMods) loadedMods.Add(mod.PackageId);
+            foreach (ModContentPack mod in runningMods)
+            {
+                string id = mod.PackageId;
+                id = id.Replace("steam_", "");
+                loadedMods.Add(id);
+            }
+
             loadedMods.Sort();
 
             ModConfigFile configFile = new ModConfigFile();
@@ -136,18 +142,19 @@ namespace GameClient.Managers
 
             for (int i = 0; i < modNames.Length; i++)
             {
+                string id = modNames[i].Replace("steam_", "");
                 switch ((ModType)categoryIndexes[i])
                 {
                     case ModType.Required:
-                        requiredMods.Add(modNames[i]);
+                        requiredMods.Add(id);
                         break;
 
                     case ModType.Optional:
-                        optionalMods.Add(modNames[i]);
+                        optionalMods.Add(id);
                         break;
 
                     case ModType.Forbidden:
-                        forbiddenMods.Add(modNames[i]);
+                        forbiddenMods.Add(id);
                         break;
                 }
 
