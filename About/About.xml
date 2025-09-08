@@ -14,24 +14,17 @@
 		<li>Ludeon.Rimworld.Ideology</li>
 		<li>Ludeon.Rimworld.Biotech</li>
 		<li>Ludeon.Rimworld.Odyssey</li>
-		<li>UnlimitedHugs.HugsLib</li>
 	</loadAfter>
-	<modDependenciesByVersion>
-		<v1.5>
-			<li>
-				<packageId>brrainz.harmony</packageId>
-				<displayName>Harmony</displayName>
-				<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
-			</li>
-		</v1.5>
-		<v1.6>
-			<li>
-				<packageId>brrainz.harmony</packageId>
-				<displayName>Harmony</displayName>
-				<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
-			</li>
-		</v1.6>
-	</modDependenciesByVersion>
+	<modDependencies>
+		<li>
+			<packageId>brrainz.harmony</packageId>
+			<displayName>Harmony</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+		</li>
+	</modDependencies>
+	<incompatibleWith>
+		<li>jikulopo.prepatcher</li>
+	</incompatibleWith>
 	<description>Ever wondered how would it be to be able to play with other players online in the same RimWorld world?\n
 "RimWorld Together" is an early access community project founded by people who want to push the idea further!\n
 Join a playstyle in which other players will actually be able to affect you!\n
