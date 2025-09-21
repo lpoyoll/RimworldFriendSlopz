@@ -96,7 +96,7 @@ namespace GameClient.Patches
                         SaveManager.RequestResetSave();
                     };
 
-                    RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to delete your save?", r1, null);
+                    RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to delete your save?", r1, null, "DELETE!", "no", Color.red);
                     RT_Dialog_Base.PushNewDialog(d1);
                 }
             }

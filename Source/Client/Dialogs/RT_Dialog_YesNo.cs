@@ -11,8 +11,13 @@ namespace GameClient.Dialogs
         private string YesText { get; set; }
 
         private string NoText { get; set; }
+        
+        private Color YesColor { get; set; }
+        
+        private Color NoColor { get; set; }
 
-        public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null, string yText = "Yes", string nText = "No")
+        public RT_Dialog_YesNo(string description, Action actionYes, Action actionNo = null, 
+            string yText = "Yes", string nText = "No", Color? yesColor = null, Color? noColor = null)
         {
             this.Title = "OPTION";
             this.Description = description;
@@ -21,6 +26,14 @@ namespace GameClient.Dialogs
             this.YesText = yText;
             this.NoText = nText;
 
+            if(yesColor == null)
+                yesColor = Color.white;
+            if(noColor == null)
+                noColor = Color.white;
+            
+            YesColor = yesColor.Value;
+            NoColor = noColor.Value;
+            
             closeOnAccept = false;
             closeOnCancel = false;
         }
@@ -39,17 +52,19 @@ namespace GameClient.Dialogs
             Text.Font = GameFont.Small;
             Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
 
+            GUI.color = YesColor;
             if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomLeft), YesText))
             {
                 OnAccept?.Invoke();
                 Close();
             }
-
+            GUI.color = NoColor;
             if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomRight), NoText))
             {
                 OnCancel?.Invoke();
                 Close();
             }
+            GUI.color = Color.white;
         }
     }
 }
