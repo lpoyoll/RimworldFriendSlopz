@@ -48,6 +48,8 @@ namespace GameClient.WorldObjects
         {
             List<Gizmo> gizmos = new List<Gizmo>();
 
+            if (Find.AnyPlayerHomeMap == null) return gizmos;
+
             Command_Action command_Goodwill = new Command_Action
             {
                 defaultLabel = "Change Goodwill",
