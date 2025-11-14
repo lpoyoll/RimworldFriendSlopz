@@ -16,12 +16,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Client\GameClient.csproj" />
-	  <ProjectReference Include="..\Shared\Shared.csproj" />
-	  <ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
+	  <Compile Remove="Misc\**" />
+	  <EmbeddedResource Remove="Misc\**" />
+	  <None Remove="Misc\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Misc\" />
+	  <ProjectReference Include="..\Client\GameClient.csproj" />
+	  <ProjectReference Include="..\Shared\Shared.csproj" />
+	  <ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
 	</ItemGroup>
 </Project>
