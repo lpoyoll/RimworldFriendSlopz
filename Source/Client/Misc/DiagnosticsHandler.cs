@@ -16,6 +16,8 @@ namespace GameClient.Misc
     {
         public static int PlayerNetworkRateBits { get; private set; } = 0;
 
+        public static int TotalPlayerNetworkRateBits { get; private set; } = 0;
+
         private static int PlayerNetworkRateBuffer { get; set; } = 0;
 
         public static int PlayerNetworkReadRateMs { get; private set; } = 0;
@@ -37,19 +39,22 @@ namespace GameClient.Misc
             PlayerNetworkRateBuffer = 0;
             PlayerNetworkReadRateMs = 0;
             PlayerNetworkWriteRateMs = 0;
+            TotalPlayerNetworkRateBits = 0;
             UpdateCurrentTime = 0;
 
             ReadingStopwatch = new Stopwatch();
             WritingStopwatch = new Stopwatch();
         }
 
-        public static void CalculateNetworkRate()
+        [ShouldCheckPerFrame]
+        private static void CalculateNetworkRate()
         {
             UpdateCurrentTime += Time.deltaTime;
 
             if (UpdateCurrentTime > UpdateTargetTime)
             {
                 PlayerNetworkRateBits = PlayerNetworkRateBuffer;
+                TotalPlayerNetworkRateBits += PlayerNetworkRateBits;
                 PlayerNetworkRateBuffer = 0;
                 UpdateCurrentTime = 0;
             }
@@ -84,9 +89,15 @@ namespace GameClient.Misc
             float defaultMargin = 8.0f;
             float lineHeight = defaultMargin;
 
-            string toDisplay = $"Network usage rate: {(int)(PlayerNetworkRateBits / 1000f)} kbps";
+            string toDisplay = $"Total network usage rate: {(int)(TotalPlayerNetworkRateBits / 1000f)} kbps";
             Vector2 size = Text.CalcSize(toDisplay);
             Vector2 position = new Vector2(UI.screenWidth - size.x - defaultMargin, lineHeight);
+            Widgets.Label(new Rect(position, size), toDisplay);
+
+            toDisplay = $"Network usage rate: {(int)(PlayerNetworkRateBits / 1000f)} kbps";
+            size = Text.CalcSize(toDisplay);
+            lineHeight += size.y;
+            position = new Vector2(UI.screenWidth - size.x - defaultMargin, lineHeight);
             Widgets.Label(new Rect(position, size), toDisplay);
 
             toDisplay = $"Network read rate: {PlayerNetworkReadRateMs} ms";

@@ -29,20 +29,21 @@ namespace GameClient.Misc
 
             if (SessionValues.CurrentNetworkState == CommonEnumerators.ClientNetworkState.Connected)
             {
-                DoNetworkUpdates();
-
                 DoPlayerUpdates();
             }
-        }
-
-        private void DoNetworkUpdates()
-        {
-            DiagnosticsHandler.CalculateNetworkRate();
         }
 
         private void DoPlayerUpdates()
         {
             foreach (MethodInfo method in MethodGatherer.CheckPerFrameMethods)
+            {
+                method.Invoke(null, null);
+            }
+        }
+
+        public void DoInitializationMethods()
+        {
+            foreach (MethodInfo method in MethodGatherer.InitializerMethods)
             {
                 method.Invoke(null, null);
             }

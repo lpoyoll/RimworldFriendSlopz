@@ -29,6 +29,8 @@ namespace TCPNetwork
 
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = null;
 
+        private Action<bool> OnWritePacket { get; set; } = null;
+
         private Action<ServerClient> OnDisconnect { get; set; } = null;
 
         private Action<object, LogImportanceMode> OnMessage { get; set; } = null;
@@ -45,7 +47,7 @@ namespace TCPNetwork
 
         public static readonly int KeepAliveCooldown = 3000;
 
-        public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, 
+        public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
             Action<ServerClient> onDisconnect, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
             Action<object, LogImportanceMode> onError, ListenerMode mode)
         {
@@ -58,6 +60,7 @@ namespace TCPNetwork
             this.OnError = onError;
 
             this.OnReadPacket = onReadPacket;
+            this.OnWritePacket = onWritePacket;
             this.OnDisconnect = onDisconnect;
 
             Task.Run(() => Read());
@@ -133,6 +136,8 @@ namespace TCPNetwork
                 {
                     Thread.Sleep(1);
 
+                    OnWritePacket(true);
+
                     if (PacketQueue.Count > 0)
                     {
                         if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
@@ -147,6 +152,8 @@ namespace TCPNetwork
                         // Write packet data
                         Stream.Write(packetData.Value, 0, packetData.Value.Length);
                     }
+
+                    OnWritePacket(false);
                 }
             }
 

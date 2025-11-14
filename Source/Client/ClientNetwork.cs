@@ -21,8 +21,18 @@ namespace GameClient
         {
             MainThreadHandler.Instance.Enqueue(delegate
             {
+                DiagnosticsHandler.ToggleReadStopwatch(true);
                 MethodGatherer.ClientMethodDictionary[header].Invoke(null, new object[] { buffer });
                 DiagnosticsHandler.IncreaseNetworkRate(buffer.Length);
+                DiagnosticsHandler.ToggleReadStopwatch(false);
+            });
+        };
+
+        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode)
+        {
+            MainThreadHandler.Instance.Enqueue(delegate
+            {
+                DiagnosticsHandler.ToggleWriteStopwatch(mode);
             });
         };
 
@@ -80,7 +90,7 @@ namespace GameClient
 
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
-                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnDisconnect,
+                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect,
                     OnMessage, OnWarning, OnError, Listener.ListenerMode.Client);
             }
             catch { return false; }

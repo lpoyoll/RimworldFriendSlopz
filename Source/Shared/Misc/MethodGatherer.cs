@@ -61,7 +61,15 @@ namespace Shared
 
         private static Type[] GetAllTypes()
         {
-            return (Type[])Assembly.GetExecutingAssembly().GetTypes().Where(fetch => !fetch.Namespace.Contains("Synchronous")).ToArray();
+            List<Type> allTypes = new List<Type>();
+
+            Assembly toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameClient");
+            allTypes.AddRange(toUse.GetTypes().ToList());
+
+            toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "Synchronous");
+            allTypes.AddRange(toUse.GetTypes().ToList());
+
+            return allTypes.ToArray();
         }
 
         private static MethodInfo[] GetSessionInitializeAttributes(Type[] types)
