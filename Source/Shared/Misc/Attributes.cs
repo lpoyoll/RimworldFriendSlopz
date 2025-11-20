@@ -48,6 +48,7 @@ namespace Shared
         ResponseShortcutManager,
         RecountManager,
         InformationManager,
-        SPlayerDraft
+        SPlayerDraft,
+        SPlayerWeather,
     }
 }

@@ -19,7 +19,7 @@ namespace Synchronous.Patches
             if (PatchHandler.BypassFlag) return true;
             else
             {
-                DraftManager.AskForDraft(__instance.pawn, value);
+                SDraftManager.Ask(__instance.pawn, value);
                 return false;
             }
         }

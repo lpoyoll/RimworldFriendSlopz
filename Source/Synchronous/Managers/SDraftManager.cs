@@ -4,7 +4,6 @@ using GameClient.Misc;
 using GameClient.Values;
 using RimWorld;
 using Shared;
-using Synchronous.Data;
 using Synchronous.Misc;
 using Synchronous.Objects;
 using System;
@@ -16,7 +15,7 @@ using Verse;
 
 namespace Synchronous.Managers
 {
-    public static class DraftManager
+    public static class SDraftManager
     {
         private static List<PlayerDraft> PlayerDrafts { get; set; } = new List<PlayerDraft>();
 
@@ -34,10 +33,10 @@ namespace Synchronous.Managers
             }
         }
 
-        public static void AskForDraft(Pawn pawn, bool mode) { PlayerDrafts.Add(new PlayerDraft(pawn.Map.uniqueID, pawn.ThingID, mode)); }
+        public static void Ask(Pawn pawn, bool mode) { PlayerDrafts.Add(new PlayerDraft(pawn.Map.uniqueID, pawn.ThingID, mode)); }
 
         [HandlesPacket(PacketHeader.SPlayerDraft)]
-        private static void ReceiveDrafts(byte[] bytes)
+        private static void Receive(byte[] bytes)
         {
             PlayerDraft[] drafts = Serializer.ConvertBytesToObject<PlayerDraft[]>(bytes);
 
@@ -47,8 +46,6 @@ namespace Synchronous.Managers
                 {
                     Map map = Finder.GetMapFromID(playerDraft.MapID);
                     Pawn pawn = Finder.GetPawnFromID(map, playerDraft.PawnID);
-
-                    Printer.Warning(pawn.Label);
 
                     pawn.drafter ??= new Pawn_DraftController(pawn);
                     pawn.drafter.Drafted = playerDraft.DraftValue;
