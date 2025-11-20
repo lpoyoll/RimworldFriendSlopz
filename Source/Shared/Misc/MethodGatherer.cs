@@ -23,7 +23,7 @@ namespace Shared
             if (type == AssemblyType.Client)
             {
                 Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameClient");
-                MethodInfo[] clientMethods = GetPacketHandlerAttributes((Type[])assembly.GetTypes().ToArray());
+                MethodInfo[] clientMethods = GetPacketHandlerAttributes(GetAllGameTypes()).ToArray();
                 ClientMethodDictionary = new Dictionary<PacketHeader, MethodInfo>();
                 for (int i = 0; i < clientMethods.Length; i++)
                 {
@@ -31,8 +31,8 @@ namespace Shared
                         clientMethods[i]);
                 }
 
-                InitializerMethods = GetSessionInitializeAttributes(GetAllTypes());
-                CheckPerFrameMethods = GetCheckPerFrameAttributes(GetAllTypes());
+                InitializerMethods = GetSessionInitializeAttributes(GetAllGameTypes());
+                CheckPerFrameMethods = GetCheckPerFrameAttributes(GetAllGameTypes());
             }
 
             else
@@ -59,7 +59,7 @@ namespace Shared
             return toAdd.ToArray();
         }
 
-        private static Type[] GetAllTypes()
+        private static Type[] GetAllGameTypes()
         {
             List<Type> allTypes = new List<Type>();
 

@@ -47,6 +47,7 @@ namespace Shared
         GlobalDataManager,
         ResponseShortcutManager,
         RecountManager,
-        InformationManager
+        InformationManager,
+        SPlayerDraft
     }
 }

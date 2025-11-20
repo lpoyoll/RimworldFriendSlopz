@@ -75,6 +75,12 @@ namespace TCPNetwork
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
 
+        public void EnqueuePacket(PacketHeader header, byte[] bytes)
+        {
+            if (ClosingFlag) return;
+            PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
+        }
+
         private void Read()
         {
             try
