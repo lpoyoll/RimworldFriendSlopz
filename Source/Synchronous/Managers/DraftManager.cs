@@ -23,18 +23,8 @@ namespace Synchronous.Managers
         [ShouldInitializeOnSession]
         private static void Initialize() { PlayerDrafts = new List<PlayerDraft>(); }
 
-        public static void AskForDraft(Pawn pawn, bool mode)
-        {
-            PlayerDraft playerDraft = new PlayerDraft();
-            playerDraft.MapID = pawn.Map.uniqueID;
-            playerDraft.PawnID = pawn.ThingID;
-            playerDraft.DraftValue = mode;
-
-            PlayerDrafts.Add(playerDraft);
-        }
-
         [ShouldCheckPerFrame]
-        private static void CheckForPlayerDrafts()
+        private static void Check()
         {
             if (PlayerDrafts.Count > 0)
             {
@@ -43,6 +33,8 @@ namespace Synchronous.Managers
                 PlayerDrafts.Clear();
             }
         }
+
+        public static void AskForDraft(Pawn pawn, bool mode) { PlayerDrafts.Add(new PlayerDraft(pawn.Map.uniqueID, pawn.ThingID, mode)); }
 
         [HandlesPacket(PacketHeader.SPlayerDraft)]
         private static void ReceiveDrafts(byte[] bytes)

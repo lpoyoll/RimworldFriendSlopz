@@ -8,10 +8,17 @@ namespace Synchronous.Objects
 {
     public class PlayerDraft
     {
-        public int MapID = 0;
+        public PlayerDraft(int mapID, string pawnID, bool draftValue)
+        {
+            MapID = mapID;
+            PawnID = pawnID;
+            DraftValue = draftValue;
+        }
 
-        public string PawnID = string.Empty;
+        public int MapID { get; set; } = 0;
 
-        public bool DraftValue = false;
+        public string PawnID { get; set; } = string.Empty;
+
+        public bool DraftValue { get; set; } = false;
     }
 }
