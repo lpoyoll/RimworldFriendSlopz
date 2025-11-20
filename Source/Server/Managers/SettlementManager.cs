@@ -16,7 +16,7 @@ namespace GameServer.Managers
         public readonly static string fileExtension = ".mpsettlement";
 
         [HandlesPacket(PacketHeader.SettlementManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PlayerSettlementData data = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
 

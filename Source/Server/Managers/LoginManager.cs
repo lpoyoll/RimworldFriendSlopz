@@ -11,7 +11,7 @@ namespace GameServer.Managers
     public static class LoginManager
     {
         [HandlesPacket(PacketHeader.LoginManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
             LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
 

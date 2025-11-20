@@ -16,7 +16,7 @@ namespace GameServer
 
         public override Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { client, buffer });
+            MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { client, buffer, header });
         };
 
         public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode)

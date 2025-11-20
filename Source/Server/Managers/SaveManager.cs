@@ -18,7 +18,7 @@ namespace GameServer.Managers
         public readonly static string tempFileExtension = ".mpsavetemp";
 
         [HandlesPacket(PacketHeader.SaveManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
             SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
 

@@ -13,9 +13,9 @@ namespace GameServer.Managers
     public static class SynchronousManager
     {
         [HandlesPacket(PacketHeader.SPlayerDraft)]
-        private static void HandleSPacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            client.Listener.EnqueuePacket(PacketHeader.SPlayerDraft, bytes);
+            client.Listener.EnqueuePacket(header, bytes);
         }
     }
 }

@@ -18,13 +18,10 @@ namespace Synchronous.Managers
 {
     public static class DraftManager
     {
-        private static List<PlayerDraft> PlayerDrafts { get; set; }
+        private static List<PlayerDraft> PlayerDrafts { get; set; } = new List<PlayerDraft>();
 
         [ShouldInitializeOnSession]
-        private static void Initialize()
-        {
-            PlayerDrafts = new List<PlayerDraft>();
-        }
+        private static void Initialize() { PlayerDrafts = new List<PlayerDraft>(); }
 
         public static void AskForDraft(Pawn pawn, bool mode)
         {
@@ -41,9 +38,9 @@ namespace Synchronous.Managers
         {
             if (PlayerDrafts.Count > 0)
             {
-                DraftData data = new DraftData();
-                data._userID = ClientValues.Uid;
-                data._playerDrafts = PlayerDrafts;
+                SynchronousData data = new SynchronousData();
+                data._uid = ClientValues.Uid;
+                data._bytes = Serializer.ConvertObjectToBytes(PlayerDrafts);
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SPlayerDraft, data);
 
@@ -54,14 +51,17 @@ namespace Synchronous.Managers
         [HandlesPacket(PacketHeader.SPlayerDraft)]
         private static void ReceiveDrafts(byte[] bytes)
         {
-            DraftData data = Serializer.ConvertBytesToObject<DraftData>(bytes);
+            SynchronousData data = Serializer.ConvertBytesToObject<SynchronousData>(bytes);
+            PlayerDraft[] drafts = Serializer.ConvertBytesToObject<PlayerDraft[]>(data._bytes);
 
             PatchHandler.ExecuteInBypass(delegate
             {
-                foreach (PlayerDraft playerDraft in data._playerDrafts)
+                foreach (PlayerDraft playerDraft in drafts)
                 {
                     Map map = Finder.GetMapFromID(playerDraft.MapID);
                     Pawn pawn = Finder.GetPawnFromID(map, playerDraft.PawnID);
+
+                    Printer.Warning(pawn.Label);
 
                     pawn.drafter ??= new Pawn_DraftController(pawn);
                     pawn.drafter.Drafted = playerDraft.DraftValue;

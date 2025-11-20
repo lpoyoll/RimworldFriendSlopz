@@ -14,7 +14,7 @@ namespace GameServer.Managers
         public readonly static string fileExtension = ".mproad";
 
         [HandlesPacket(PacketHeader.RoadManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!Master.ActionConfigs.EnableRoads)
             {

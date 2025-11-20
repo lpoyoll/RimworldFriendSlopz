@@ -15,7 +15,7 @@ namespace GameServer.Managers
         public static readonly string fileExtension = ".mpcaravan";
 
         [HandlesPacket(PacketHeader.CaravanManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
             CaravanData data = Serializer.ConvertBytesToObject<CaravanData>(bytes);
 

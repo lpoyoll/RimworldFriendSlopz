@@ -15,7 +15,7 @@ namespace GameServer.Managers
         public readonly static string fileExtension = ".mpmap";
 
         [HandlesPacket(PacketHeader.MapManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
             MapData data = Serializer.ConvertBytesToObject<MapData>(bytes);
 
