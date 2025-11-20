@@ -38,11 +38,7 @@ namespace Synchronous.Managers
         {
             if (PlayerDrafts.Count > 0)
             {
-                SynchronousData data = new SynchronousData();
-                data._uid = ClientValues.Uid;
-                data._bytes = Serializer.ConvertObjectToBytes(PlayerDrafts);
-
-                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SPlayerDraft, data);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SPlayerDraft, Serializer.ConvertObjectToBytes(PlayerDrafts));
 
                 PlayerDrafts.Clear();
             }
@@ -51,8 +47,7 @@ namespace Synchronous.Managers
         [HandlesPacket(PacketHeader.SPlayerDraft)]
         private static void ReceiveDrafts(byte[] bytes)
         {
-            SynchronousData data = Serializer.ConvertBytesToObject<SynchronousData>(bytes);
-            PlayerDraft[] drafts = Serializer.ConvertBytesToObject<PlayerDraft[]>(data._bytes);
+            PlayerDraft[] drafts = Serializer.ConvertBytesToObject<PlayerDraft[]>(bytes);
 
             PatchHandler.ExecuteInBypass(delegate
             {
