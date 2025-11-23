@@ -18,5 +18,10 @@ namespace GameClient.Misc
         public static Pawn[] GetAllPawnsInMap(Map map) { return map.mapPawns.AllPawns.ToArray(); }
 
         public static Thing[] GetAllThingsInMap(Map map) { return map.listerThings.AllThings.ToArray(); }
+
+        public static MentalStateDef GetMentalStateDefFromName(string defname)
+        {
+            return DefDatabase<MentalStateDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == defname);
+        }
     }
 }

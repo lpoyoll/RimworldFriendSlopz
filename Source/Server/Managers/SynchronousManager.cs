@@ -23,5 +23,11 @@ namespace GameServer.Managers
         {
             client.Listener.EnqueuePacket(header, bytes);
         }
+
+        [HandlesPacket(PacketHeader.SPlayerMentalState)]
+        private static void SPlayerMentalState(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            client.Listener.EnqueuePacket(header, bytes);
+        }
     }
 }

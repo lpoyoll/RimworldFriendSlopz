@@ -50,5 +50,6 @@ namespace Shared
         InformationManager,
         SPlayerDraft,
         SPlayerWeather,
+        SPlayerMentalState,
     }
 }
