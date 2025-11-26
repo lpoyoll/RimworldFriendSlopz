@@ -1,15 +1,17 @@
+using GameClient.Core.Configs;
 using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
-using TCPNetwork;
-using TCPNetwork.Server;
 using Shared;
 using System;
 using System.Net.Sockets;
-using static Shared.CommonEnumerators;
+using System.Threading;
 using System.Threading.Tasks;
+using TCPNetwork;
+using TCPNetwork.Server;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -19,6 +21,8 @@ namespace GameClient
 
         public override Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
+            Thread.Sleep(250 * (int)ModConfigGetter.CurrentSimulatedLag);
+
             MainThreadHandler.Instance.Enqueue(delegate
             {
                 DiagnosticsHandler.ToggleReadStopwatch(true);

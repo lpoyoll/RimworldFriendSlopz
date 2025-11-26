@@ -29,5 +29,11 @@ namespace GameServer.Managers
         {
             client.Listener.EnqueuePacket(header, bytes);
         }
+
+        [HandlesPacket(PacketHeader.SPlayerGameSpeed)]
+        private static void SPlayerGameSpeed(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            client.Listener.EnqueuePacket(header, bytes);
+        }
     }
 }

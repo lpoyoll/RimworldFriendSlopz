@@ -51,5 +51,6 @@ namespace Shared
         SPlayerDraft,
         SPlayerWeather,
         SPlayerMentalState,
+        SPlayerGameSpeed,
     }
 }

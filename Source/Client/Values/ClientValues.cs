@@ -47,6 +47,8 @@ namespace GameClient.Values
 
         public enum VerboseMode { None, Verbose, Extreme }
 
+        public enum EnforcedSimulatedLag { None, Small, Medium, Big, ENORMOUS }
+
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
             ToggleAdmin(serverGlobalData._isClientAdmin);
