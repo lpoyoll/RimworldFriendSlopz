@@ -11,6 +11,8 @@ namespace Shared.Files
 
         public bool EnableServerBrowser { get; set; } = false;
 
+        public bool EnableServerTelemetry { get; set; } = true;
+
         public string PublicEndPoint { get; set; } = string.Empty;
 
         public override void Save()

@@ -14,63 +14,69 @@ namespace GameServer.Managers
         private const string MasterServer = "https://rimworldtogether.eragon.dev";
         private const int MaxDescriptionLength = 200;
         private const int MaxNameLength = 40;
-        private const int DelayBetweenRequest = 520000; //Temporary testing timer, should be 5 minutes, aka 520000 miliseconds
+        private const int DelayBetweenRequest = 520000;
         private const int DelayBetweenErrors = 18000000;
+
         private static HttpClientHandler handler = new HttpClientHandler() { UseProxy = false };
         private static HttpClient Client = new HttpClient(handler) 
         {
             DefaultRequestVersion = HttpVersion.Version11
         };
-        public static void StartLoops()
+
+        public static void StartFeature()
         {
-            Task.Run(async () =>
+            if (Master.ServerBrowserConfig.EnableServerBrowser)
             {
-                if (Master.ServerBrowserConfig.EnableServerBrowser)
+                if (ValidateServerInformation())
                 {
-                    if (ValidateServerInfos())
+                    Printer.Warning("Server discovery is ENABLED");
+                    Printer.Warning("The server details are currently being transmitted to the public browser");
+
+                    Task.Run(async () =>
                     {
-                        Printer.Warning($"You have enabled the server browser feature. By doing so, you understand that:" +
-                            $"\n- Your server's information (name, description, player count, ect... will be shared to possibly all Rimworld Together's users." +
-                            $"\n- Your server's contact information (public ip adress and port) will be shared to possibly all Rimworld Together's users." +
-                            $"\n If you do not want to share this information, you can disable the server browser in:\n{Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json")} " +
-                            "\nunder the `EnableServerBrowser` setting and then restart the server.");
-                        Console.CancelKeyPress += SendClosureSignalFromConsole;
-                        AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
                         while (true)
                         {
-                            bool result = await SendServerInfo();
-                            if (result)
-                            {
-                                await Task.Delay(DelayBetweenRequest);
-                            }
-                            else
-                            {
-                                await Task.Delay(DelayBetweenErrors);
-                            }
+                            bool result = await SendServerInformation();
+                            if (result) await Task.Delay(DelayBetweenRequest);
+                            else await Task.Delay(DelayBetweenErrors);
                         }
-                    }
+                    });
                 }
+            }
+
+            else
+            {
+                Printer.Warning("Server discovery is DISABLED");
+                Printer.Warning("Please turn the service ON in the settings if you want your server listed publicly");
+                Printer.Title($"----------------------------------------");
+
+                if (Master.ServerBrowserConfig.EnableServerTelemetry)
+                {
+                    Task.Run(async () =>
+                    {
+                        while (true)
+                        {
+                            bool result = await SendServerPlayerCount();
+
+                            if (result) await Task.Delay(DelayBetweenRequest);
+                            else await Task.Delay(DelayBetweenErrors);
+                        }
+                    });
+                }
+
                 else
                 {
-                    Printer.Warning($"The server browser is currently disabled. " +
-                        $"If you want to advertise your server to all Rimworld Together's users, you can turn on the server browser.");
-                    while (true)
-                    {
-                        bool result = await SendServerPlayerCount();
-                        if (result)
-                        {
-                            await Task.Delay(DelayBetweenRequest);
-                        }
-                        else
-                        {
-                            await Task.Delay(DelayBetweenErrors);
-                        }
-                    }
+                    Printer.Warning("Server telemetry is DISABLED");
+                    Printer.Warning("No diagnostics details will be send to the master server");
+                    Printer.Warning("Please consider ENABLING this feature! It helps the development of the mod!");
+                    Printer.Title($"----------------------------------------");
                 }
-            });
+            }
+
+
         }
 
-        private static bool ValidateServerInfos() 
+        private static bool ValidateServerInformation() 
         {
             ServerConfigFile serverInfo = Master.ServerConfig;
             ServerBrowserConfig serverBrowserInfo = Master.ServerBrowserConfig;
@@ -93,7 +99,7 @@ namespace GameServer.Managers
                 return false;
             }
 
-            if(serverInfo.Name == "RimWorld-Together-Server") 
+            if (serverInfo.Name == "RimWorld-Together-Server") 
             {
                 Printer.Error($"Server name is the default name of {serverInfo.Name}. Please change the server name to something unique!. Server browser features have been turned off.");
                 return false;
@@ -102,7 +108,7 @@ namespace GameServer.Managers
             return true;
         }
 
-        private static async Task<bool> SendServerInfo()
+        private static async Task<bool> SendServerInformation()
         {
             try
             {
@@ -118,12 +124,14 @@ namespace GameServer.Managers
                     _currentPlayerCount = ServerNetwork.Instance.ServerClients.Count,
                     _config = Master.ModConfig
                 };
+
                 HttpResponseMessage response = await Client.PostAsync(MasterServer, 
                     new StringContent(Serializer.SerializeToString(info), Encoding.UTF8, "application/json"));
 
                 response.EnsureSuccessStatusCode();
                 return true;
             }
+
             catch (Exception ex)
             {
                 Printer.Error($"Error while notifying the Master Server\n {ex}");
@@ -145,34 +153,12 @@ namespace GameServer.Managers
                 response.EnsureSuccessStatusCode();
                 return true;
             }
+
             catch(Exception ex)
             {
                 Printer.Error(ex, LogImportanceMode.Verbose);
                 return false;
             }
-        }
-
-        private static void SendClosureSignalFromConsole(object sender, ConsoleCancelEventArgs e) 
-        {
-            e.Cancel = true;
-            SendClosureSignal().Wait();
-        }
-        private static void SendClosureSignalFromApplicationShutdown(object sender, EventArgs e)
-        {
-            SendClosureSignal().Wait();
-        }
-        private static async Task SendClosureSignal() 
-        {
-            Client.DefaultRequestHeaders.Clear();
-            Client.DefaultRequestHeaders.Add("action", "Remove-Server-Browser");
-            ServerInfo info = new ServerInfo()
-            {
-                _ip = Master.ServerBrowserConfig.PublicEndPoint,
-                _port = int.Parse(Master.ServerConfig.Port),
-                _name = Master.ServerConfig.Name
-            };
-            HttpResponseMessage response = await Client.PostAsync(MasterServer,
-                new StringContent(Serializer.SerializeToString(info)));
         }
     }
 }
