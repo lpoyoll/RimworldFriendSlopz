@@ -98,14 +98,9 @@ namespace GameClient.Core.Preferences
             else
             {
                 TimeSpan timeSpan = DateTime.UtcNow - new DateTime(1970, 1, 1);
+                double uid = timeSpan.TotalMilliseconds + Rand.Int;
 
                 LoginDataFile file = LoadLoginData();
-                var uid = timeSpan.TotalMilliseconds;
-                if (SteamManager.Active)
-                    uid += SteamUser.GetSteamID().m_SteamID;
-                else
-                    uid += Rand.Int;
-                
                 file.UID = Hasher.GetHashFromString(uid).Substring(0, 16);
                 SaveLoginData(file);
             }
