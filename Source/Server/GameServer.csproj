@@ -40,4 +40,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Misc\XML\" />
+	</ItemGroup>
 </Project>

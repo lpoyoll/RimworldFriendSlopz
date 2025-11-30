@@ -132,6 +132,7 @@ namespace GameServer.Commands
         public static readonly CommandBase DebugGCClear = new CommandBase("debuggcclear", 0,
             "Forces the garbage collector to collect",
             ForceGCClearCommandAction);
+
         public static List<CommandBase> Commands = new List<CommandBase>
         {
             BackupCommand,

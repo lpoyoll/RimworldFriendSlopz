@@ -83,7 +83,16 @@ namespace GameServer.Managers
                 if (SaveManager.CheckIfUserHasSave(client)) SaveSenderManager.SendSaveToClient(client);
                 else WorldManager.SendWorld(client);
             }
-            else WorldManager.RequireWorldFile(client);
+
+            else
+            {
+                Printer.Warning($"Giving first join admin permission to {client.UserFile.Uid}");
+
+                UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Uid == client.UserFile.Uid).FirstOrDefault();
+                toFind.UpdateAdmin(true, client);
+
+                WorldManager.RequireWorldFile(client);
+            }
         }
     }
 

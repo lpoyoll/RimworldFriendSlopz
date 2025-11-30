@@ -1,11 +1,12 @@
-﻿using TCPNetwork.Packets;
-using Shared;
+﻿using Shared;
 using Shared.Files;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Server
 {
@@ -81,8 +82,17 @@ namespace TCPNetwork.Server
             SaveUserFile();
         }
 
-        public void UpdateAdmin(bool mode)
+        public void UpdateAdmin(bool mode, ServerClient connectedClient = null)
         {
+            if (connectedClient != null)
+            {
+                connectedClient.UserFile.IsAdmin = true;
+
+                CommandData commandData = new CommandData();
+                commandData._commandMode = CommandMode.Op;
+                connectedClient.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+            }
+
             IsAdmin = mode;
             SaveUserFile();
         }

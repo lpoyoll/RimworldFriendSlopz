@@ -40,7 +40,7 @@ namespace GameServer.Core
             ScenarioValuesFile.Path = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
             RoadValuesFile.Path = Path.Combine(Master.ConfigsPath, "RoadConfig.json");
             ModConfigFile.Path = Path.Combine(Master.ConfigsPath, "ModConfig.json");
-            DifficultyValuesFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
+            DifficultyValuesFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");
             ServerBrowserConfig.Path = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
             WhitelistConfigFile.Path = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
             BackupConfigFile.Path = Path.Combine(Master.ConfigsPath, "BackupConfig.json");

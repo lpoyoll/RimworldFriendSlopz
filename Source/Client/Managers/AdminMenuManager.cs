@@ -12,8 +12,8 @@ namespace GameClient.Managers
         {
             "Mod Manager",
             "Event Manager",
-            "Save Manager (BETA)",
-            "Difficulty Manager"
+            "Difficulty Manager",
+            "Save Manager (BETA)"
         };
 
         public static void ShowAdminMenu()
@@ -37,11 +37,11 @@ namespace GameClient.Managers
                     break;
 
                 case 2:
-                    SaveManager.OpenSaveUploaderMenu();
+                    DifficultyManager.OpenDifficultyMenu();
                     break;
 
                 case 3:
-                    DifficultyManager.OpenDifficultyMenu();
+                    SaveManager.OpenSaveUploaderMenu();
                     break;
             }
         }

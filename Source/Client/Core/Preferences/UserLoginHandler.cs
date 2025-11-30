@@ -8,8 +8,10 @@ using GameClient.Misc;
 using GameClient.Values;
 using TCPNetwork.Packets;
 using Shared;
+using Steamworks;
 using UnityEngine;
 using Verse;
+using Verse.Steam;
 
 namespace GameClient.Core.Preferences
 {
@@ -96,9 +98,10 @@ namespace GameClient.Core.Preferences
             else
             {
                 TimeSpan timeSpan = DateTime.UtcNow - new DateTime(1970, 1, 1);
+                double uid = timeSpan.TotalMilliseconds + Rand.Int;
 
                 LoginDataFile file = LoadLoginData();
-                file.UID = Hasher.GetHashFromString(timeSpan.TotalMilliseconds).Substring(0, 16);
+                file.UID = Hasher.GetHashFromString(uid).Substring(0, 16);
                 SaveLoginData(file);
             }
         }

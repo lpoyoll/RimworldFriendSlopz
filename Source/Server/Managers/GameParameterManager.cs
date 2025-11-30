@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
 using Shared.Files;
+using Shared.Misc;
 using TCPNetwork.Server;
 using TCPNetwork.Packets;
 
@@ -29,7 +30,7 @@ namespace GameServer.Managers
                     break;
 
                 case GenStepMode.Difficulty:
-                    SetDifficulty(client, data._difficulty);
+                    SetDifficulty(client, data._difficulty, true);
                     break;
             }
         }
@@ -66,7 +67,7 @@ namespace GameServer.Managers
             }
         }
 
-        private static void SetDifficulty(ServerClient client, DifficultyValuesFile file)
+        private static void SetDifficulty(ServerClient client, DifficultyValuesFile file, bool fixXml = false)
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
@@ -77,6 +78,10 @@ namespace GameServer.Managers
             else
             {
                 Master.DifficultyValues = file;
+                if (fixXml)
+                {
+                    Master.DifficultyValues.ScribeData = XmlHelper.PrettyXml(Master.DifficultyValues.ScribeData);
+                }
                 Master.DifficultyValues.Save();
                 InformationDisplayer.DisplaySetDifficulty(client.UserFile.Uid);
             }

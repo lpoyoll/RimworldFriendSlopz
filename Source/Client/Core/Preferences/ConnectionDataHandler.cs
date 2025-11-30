@@ -8,9 +8,7 @@ namespace GameClient.Core.Preferences
     {
         public static void SaveConnectionData(string ip, string port)
         {
-            ConnectionDataFile newConnectionData;
-            if (File.Exists(Master.ConnectionDataPath)) newConnectionData = Serializer.SerializeFromFile<ConnectionDataFile>(Master.ConnectionDataPath);
-            else newConnectionData = new ConnectionDataFile();
+            ConnectionDataFile newConnectionData = new ConnectionDataFile();
 
             newConnectionData.IP = ip;
             newConnectionData.Port = port;

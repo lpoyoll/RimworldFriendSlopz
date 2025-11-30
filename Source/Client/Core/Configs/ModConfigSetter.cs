@@ -49,6 +49,12 @@ namespace GameClient.Core.Configs
             if (listingStandard.ButtonTextLabeled("Reset account [DANGEROUS]", "Reset")) { ShowResetAccountQuestion(); }
             GUI.color = Color.white;
 
+            listingStandard.GapLine();
+            listingStandard.Label("Misc");
+            if (listingStandard.ButtonTextLabeled("Check the mod's Discord", "Open")) { StartProcess("https://discord.gg/yUF2ec8Vt8"); }
+            if (listingStandard.ButtonTextLabeled("Check the mod's Wiki", "Open")) { StartProcess("https://rimworldtogether.wiki.gg"); }
+            if (listingStandard.ButtonTextLabeled("Check the mod's GitHub", "Open")) { StartProcess("https://github.com/Byte-Nova/Rimworld-Together"); }
+
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
         }

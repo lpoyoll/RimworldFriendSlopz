@@ -72,6 +72,10 @@ namespace TCPNetwork
         public void EnqueuePacket(PacketHeader header, object obj)
         {
             if (ClosingFlag) return;
+            
+            if (!IgnoredLogPackets.Contains(header)) OnMessage($"[Packet] Sent packet > {header}", LogImportanceMode.Verbose);
+            else OnMessage($"[Packet] > Sent packet {header}", LogImportanceMode.Extreme);
+            
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
 
@@ -104,8 +108,8 @@ namespace TCPNetwork
                         buffer = new byte[BitConverter.ToInt32(buffer, 0)];
                         ReadFullPacket(buffer);
 
-                        if (!IgnoredLogPackets.Contains(header)) OnMessage($"[Packet] > {header}", LogImportanceMode.Verbose);
-                        else OnMessage($"[Packet] > {header}", LogImportanceMode.Extreme);
+                        if (!IgnoredLogPackets.Contains(header)) OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
+                        else OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
                         try { OnReadPacket(header, buffer, TargetClient); }
                         catch (Exception ex) { OnHandleError(ex); }
