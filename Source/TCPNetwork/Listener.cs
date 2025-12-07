@@ -210,10 +210,7 @@ namespace TCPNetwork
 
         private void CheckConnectionHealth(Action toDo)
         {
-            while (!DisconnectFlag)
-            {
-                Thread.Sleep(1);
-            }
+            while (!DisconnectFlag) Thread.Sleep(1);
 
             Thread.Sleep(1000);
 

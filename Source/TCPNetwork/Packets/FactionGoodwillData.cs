@@ -7,7 +7,7 @@ namespace TCPNetwork.Packets
     {
         public int _tile { get; set; } = -1;
 
-        public string _uid { get; set; } = string.Empty;
+        public string _username { get; set; } = string.Empty;
 
         public Goodwill _goodwill { get; set; } = Goodwill.Enemy;
 
@@ -22,10 +22,5 @@ namespace TCPNetwork.Packets
         public List<int> _siteTiles { get; set; } = new List<int>();
 
         public Goodwill[] _siteGoodwills { get; set; } = null;
-
-        public override string ToString()
-        {
-            return $"FactionGoodwillData:|{_tile}|{_uid}";
-        }
     }
 }

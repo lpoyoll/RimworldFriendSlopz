@@ -42,11 +42,10 @@ namespace GameClient.Core.Preferences
             {
                 LoginDataFile file = LoadLoginData();
                 ClientValues.Username = file.Username;
-                ClientValues.Uid = file.UID;
 
                 LoginData data = new LoginData();
-                data._uid = file.UID;
                 data._username = file.Username;
+                data._password = file.Password;
                 data._runningMods = ModManagerH.GetRunningModList();
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.LoginManager, data);
@@ -56,8 +55,8 @@ namespace GameClient.Core.Preferences
         private static LoginDataFile GetTestingLoginFile()
         {
             LoginDataFile file = new LoginDataFile();
-            file.UID = "UID";
             file.Username = "Username";
+            file.Password = "1234";
             return file;
         }
 
@@ -65,45 +64,41 @@ namespace GameClient.Core.Preferences
         {
             Action toDo = delegate
             {
-                if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[0]))
+                bool isInvalid = false;
+                if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[0])) isInvalid = true;
+                else if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[1])) isInvalid = true;
+
+                if (isInvalid)
                 {
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
-                        new string[] { "Your username contains illegal characters", "Please choose another one and try again" }));
+                        new string[] { "Your login details contains illegal characters", "Please try again" }));
                 }
 
                 else
                 {
-                    AssignPlayerUsername(RT_Dialog_Inputs.DialogInputResults[0]);
-                    AssignPlayerHash();
+                    AssignLoginDetails(RT_Dialog_Inputs.DialogInputResults[0], RT_Dialog_Inputs.DialogInputResults[1]);
 
                     if (isQuickConnect) QuickConnectUser();
                     else ConnectionManager.ShowConnectDialogs();
                 }
             };
 
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Question", 
-                new string[] { "What would you like your username to be?" }, new bool[] { false }, toDo));
+            Action toDo2 = delegate
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Account Setup",
+                    new string[] { "Username", "Password" }, new bool[] { false, true }, toDo));
+            };
+
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("Account Setup", new string[] { "Please create or log into your account" }, toDo2));
         }
 
-        public static void AssignPlayerUsername(string user)
+        public static void AssignLoginDetails(string username, string password)
         {
             LoginDataFile file = LoadLoginData();
-            file.Username = user;
+            file.Username = username;
+            file.Password = password;
+
             SaveLoginData(file);
-        }
-
-        public static void AssignPlayerHash()
-        {
-            if (UserLoginManagerH.CheckIfLoginIsValid()) return;
-            else
-            {
-                TimeSpan timeSpan = DateTime.UtcNow - new DateTime(1970, 1, 1);
-                double uid = timeSpan.TotalMilliseconds + Rand.Int;
-
-                LoginDataFile file = LoadLoginData();
-                file.UID = Hasher.GetHashFromString(uid).Substring(0, 16);
-                SaveLoginData(file);
-            }
         }
 
         public static void QuickConnectUser()
@@ -119,8 +114,8 @@ namespace GameClient.Core.Preferences
         public static bool CheckIfLoginIsValid()
         {
             LoginDataFile file = UserLoginHandler.LoadLoginData();
-            if (string.IsNullOrWhiteSpace(file.UID)) return false;
-            else if (string.IsNullOrWhiteSpace(file.Username)) return false;
+            if (string.IsNullOrWhiteSpace(file.Username)) return false;
+            else if (string.IsNullOrWhiteSpace(file.Password)) return false;
             else return true;
         }
 

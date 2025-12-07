@@ -46,7 +46,7 @@ namespace TCPNetwork.Server
                 if (!userFile.EndsWith(UserFile.fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.Uid == client.UserFile.Uid) return file;
+                if (file.Username == client.UserFile.Username) return file;
             }
 
             return null;

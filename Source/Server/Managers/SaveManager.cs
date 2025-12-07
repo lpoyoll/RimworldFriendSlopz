@@ -43,7 +43,7 @@ namespace GameServer.Managers
             foreach (string save in saves)
             {
                 if (!save.EndsWith(fileExtension)) continue;
-                if (Path.GetFileNameWithoutExtension(save) == client.UserFile.Uid) return true;
+                if (Path.GetFileNameWithoutExtension(save) == client.UserFile.Username) return true;
             }
 
             return false;
@@ -65,40 +65,40 @@ namespace GameServer.Managers
         {
             if (!CheckIfUserHasSave(client))
             {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Uid}'s save was attempted to be reset while the player doesn't have a save");
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username}'s save was attempted to be reset while the player doesn't have a save");
                 return;
             }
             client.Listener.DisconnectFlag = true;
 
-            ResetPlayerData(client, client.UserFile.Uid);
+            ResetPlayerData(client, client.UserFile.Username);
         }
 
-        public static void ResetPlayerData(ServerClient client, string uid)
+        public static void ResetPlayerData(ServerClient client, string username)
         {
-            BackupManager.BackupUser(uid);
+            BackupManager.BackupUser(username);
 
             if (client != null) client.Listener.DisconnectFlag = true;
 
             // Delete save file
-            try { File.Delete(Path.Combine(Master.SavesPath, uid + fileExtension)); }
-            catch { Printer.Warning($"Failed to find {client.UserFile.Label}'s save"); }
+            try { File.Delete(Path.Combine(Master.SavesPath, username + fileExtension)); }
+            catch { Printer.Warning($"Failed to find {client.UserFile.Username}'s save"); }
 
             // Delete site files
-            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
+            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
             foreach (SiteFile site in playerSites) SiteManager.DestroySiteFromFile(site);
 
             // Delete settlement files
-            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(uid);
+            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
             foreach (SettlementFile settlement in playerSettlements)
             {
                 PlayerSettlementData settlementData = new PlayerSettlementData();
                 settlementData._settlementFile.Tile = settlement.Tile;
-                settlementData._settlementFile.UID = settlement.UID;
+                settlementData._settlementFile.Username = settlement.Username;
 
                 SettlementManager.RemoveSettlement(client, settlementData);
             }
 
-            InformationDisplayer.DisplayResetPlayer(uid);
+            InformationDisplayer.DisplayResetPlayer(username);
         }
     }
 
@@ -106,7 +106,7 @@ namespace GameServer.Managers
     {
         public static void SendSaveToClient(ServerClient client)
         {
-            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Uid + SaveManager.fileExtension);
+            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Username + SaveManager.fileExtension);
 
             InformationDisplayer.DisplayLoadGame(client);
 
@@ -123,8 +123,8 @@ namespace GameServer.Managers
     {
         public static void ReceiveSaveFromClient(ServerClient client, SaveData data)
         {
-            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Uid + SaveManager.fileExtension);
-            string tempClientSavePath = Path.Combine(Master.TempPath, client.UserFile.Uid + SaveManager.tempFileExtension);
+            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Username + SaveManager.fileExtension);
+            string tempClientSavePath = Path.Combine(Master.TempPath, client.UserFile.Username + SaveManager.tempFileExtension);
 
             File.WriteAllBytes(tempClientSavePath, data._fileBytes);
 

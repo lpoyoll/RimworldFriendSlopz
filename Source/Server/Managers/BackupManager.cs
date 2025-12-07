@@ -42,13 +42,13 @@ namespace GameServer.Managers
             savingSemaphore.Release();
         }
 
-        public static void BackupUser(string uid, bool persistent = false)
+        public static void BackupUser(string username, bool persistent = false)
         {
             savingSemaphore.WaitOne();
 
             try
             {
-                string playerArchivedSavePath = Path.Combine(Master.BackupUsersPath, uid);
+                string playerArchivedSavePath = Path.Combine(Master.BackupUsersPath, username);
                 if (persistent) playerArchivedSavePath += " - persistent";
                 playerArchivedSavePath += fileExtension;
 
@@ -56,7 +56,7 @@ namespace GameServer.Managers
                 {
                     if (persistent == true)
                     {
-                        Printer.Error($"Could not backup user {uid} because the file {playerArchivedSavePath} already exist. Consider running a non-persistent backup if you want to overwrite it.");
+                        Printer.Error($"Could not backup user {username} because the file {playerArchivedSavePath} already exist. Consider running a non-persistent backup if you want to overwrite it.");
                         savingSemaphore.Release();
                         return;
                     }
@@ -64,22 +64,22 @@ namespace GameServer.Managers
                     else
                     {
                         File.Delete(playerArchivedSavePath);
-                        Printer.Warning($"Deleting backup of {uid} because he already had one.", LogImportanceMode.Verbose);
+                        Printer.Warning($"Deleting backup of {username} because he already had one.", LogImportanceMode.Verbose);
                     }
                 }
 
                 List<string> toArchive = new List<string>();
 
-                string userFilePath = Path.Combine(Master.UsersPath, uid + UserManagerH.fileExtension);
+                string userFilePath = Path.Combine(Master.UsersPath, username + UserManagerH.fileExtension);
                 if (File.Exists(userFilePath)) toArchive.Add(userFilePath);
 
-                string userSavePath = Path.Combine(Master.SavesPath, uid + SaveManager.fileExtension);
+                string userSavePath = Path.Combine(Master.SavesPath, username + SaveManager.fileExtension);
                 if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
 
-                SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUID(uid);
+                SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
                 foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + SiteManagerHelper.fileExtension));
 
-                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(uid);
+                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
                 foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
 
                 CreateArchive(toArchive, playerArchivedSavePath);

@@ -17,39 +17,39 @@ namespace GameServer.Managers
         {
             PlayerRecountData playerRecountData = new PlayerRecountData();
             playerRecountData._currentPlayerCount = ServerNetwork.Instance.GetConnectedClientsSafe().Count();
-            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.UserFile.Label);
+            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe()) playerRecountData._currentPlayerNames.Add(client.UserFile.Username);
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.RecountManager, playerRecountData);
         }
 
-        public static void BanPlayerFromName(string uid)
+        public static void BanPlayerFromName(string username)
         {
-            UserFile userFile = UserManagerH.GetUserFileFromName(uid);
-            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUid(uid);
+            UserFile userFile = UserManagerH.GetUserFileFromName(username);
+            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUsername(username);
             if (userFile == null || client == null) ConsoleCommandActions.ThrowUserNotFoundError();
             else
             {
-                if (userFile.IsBanned) Printer.Warning($"User '{userFile.Label}' is already banned from the server");
+                if (userFile.IsBanned) Printer.Warning($"User '{userFile.Username}' is already banned from the server");
                 else
                 {
                     userFile.UpdateBan(true);
                     client.Listener.DisconnectFlag = true;
-                    Printer.Warning($"User '{userFile.Label}' has been banned from the server");
+                    Printer.Warning($"User '{userFile.Username}' has been banned from the server");
                 }
             }
         }
 
-        public static void PardonPlayerFromName(string uid)
+        public static void PardonPlayerFromName(string username)
         {
-            UserFile userFile = UserManagerH.GetUserFileFromName(uid);
+            UserFile userFile = UserManagerH.GetUserFileFromName(username);
             if (userFile == null) ConsoleCommandActions.ThrowUserNotFoundError();
             else
             {
-                if (!userFile.IsBanned) Printer.Warning($"User '{userFile.Label}' is not banned from the server");
+                if (!userFile.IsBanned) Printer.Warning($"User '{userFile.Username}' is not banned from the server");
                 else
                 {
                     userFile.UpdateBan(false);
-                    Printer.Warning($"User '{userFile.Label}' has been pardoned from the server");
+                    Printer.Warning($"User '{userFile.Username}' has been pardoned from the server");
                 }
             }
         }
@@ -70,7 +70,7 @@ namespace GameServer.Managers
                 if (!userFile.EndsWith(fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.Uid == client.UserFile.Uid) return file;
+                if (file.Username == client.UserFile.Username) return file;
             }
 
             return null;
@@ -85,7 +85,7 @@ namespace GameServer.Managers
                 if (!userFile.EndsWith(fileExtension)) continue;
 
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.Uid == username) return file;
+                if (file.Username == username) return file;
             }
 
             return null;
@@ -106,21 +106,21 @@ namespace GameServer.Managers
 
         public static bool CheckIfUserIsConnected(string username)
         {
-            ServerClient toGet = ServerNetwork.Instance.GetConnectedClientFromUid(username);
+            ServerClient toGet = ServerNetwork.Instance.GetConnectedClientFromUsername(username);
             if (toGet != null) return true;
             else return false;
         }
 
         public static bool CheckIfUserExists(ServerClient client, LoginData data)
         {
-            UserFile toFind = GetAllUserFiles().FirstOrDefault(fetch => fetch.Uid == data._uid);
+            UserFile toFind = GetAllUserFiles().FirstOrDefault(fetch => fetch.Username.ToLower() == data._username.ToLower());
             if (toFind != null) return true;
             else return false;
         }
 
         public static bool CheckIfUserAuthCorrect(ServerClient client, LoginData data)
         {
-            UserFile toFind = GetAllUserFiles().FirstOrDefault(fetch => fetch.Uid == data._uid);
+            UserFile toFind = GetAllUserFiles().FirstOrDefault(fetch => fetch.Username == data._username && fetch.Password == data._password);
             if (toFind != null) return true;
             else
             {
@@ -134,7 +134,7 @@ namespace GameServer.Managers
             if (!client.UserFile.IsBanned) return false;
             else
             {
-                Printer.Message($"Banned user '{client.UserFile.Uid}' tried to join the server");
+                Printer.Message($"Banned user '{client.UserFile.Username}' tried to join the server");
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.BannedLogin);
                 return true;
             }
@@ -143,13 +143,9 @@ namespace GameServer.Managers
         public static bool CheckLoginData(ServerClient client, LoginData data)
         {
             bool isInvalid = false;
-
-            if (!StringChecker.CheckIfStringValid(data._uid)) isInvalid = true;
             if (!StringChecker.CheckIfStringValid(data._username)) isInvalid = true;
-
-            if (data._username.Any(char.IsWhiteSpace)) isInvalid = true;
-            if (data._username.Length > 32) isInvalid = true;
-            if (data._uid.Length > 64) isInvalid = true;
+            else if (data._username.Any(char.IsWhiteSpace)) isInvalid = true;
+            else if (data._username.Length > 32) isInvalid = true;
 
             if (!isInvalid) return true;
             else
@@ -162,7 +158,7 @@ namespace GameServer.Managers
         public static bool CheckWhitelist(ServerClient client)
         {
             if (!Master.Whitelist.UseWhitelist) return true;
-            else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.UserFile.Uid) != null) return true;
+            else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.UserFile.Username) != null) return true;
             else
             {
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Whitelist);
@@ -172,8 +168,8 @@ namespace GameServer.Managers
 
         public static int[] GetUserStructuresTilesFromUsername(string username)
         {
-            SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.UID == username).ToArray();
-            SiteFile[] sites = SiteManagerHelper.GetAllSites().ToList().FindAll(x => x.UID == username).ToArray();
+            SettlementFile[] settlements = SettlementManager.GetAllSettlements().ToList().FindAll(x => x.Username == username).ToArray();
+            SiteFile[] sites = SiteManagerHelper.GetAllSites().ToList().FindAll(x => x.Username == username).ToArray();
 
             List<int> tilesToExclude = new List<int>();
             foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.Tile);
@@ -186,7 +182,7 @@ namespace GameServer.Managers
         {
             userFile.SavingSemaphore.WaitOne();
 
-            try { Serializer.SerializeToFile(Path.Combine(Master.UsersPath, userFile.Uid + fileExtension), userFile); }
+            try { Serializer.SerializeToFile(Path.Combine(Master.UsersPath, userFile.Username + fileExtension), userFile); }
             catch (Exception e) { Printer.Error(e.ToString()); }
 
             userFile.SavingSemaphore.Release();

@@ -9,21 +9,21 @@ namespace GameServer.Misc
 
         public static void DisplayDisconnect(ServerClient client) { Printer.Message($"[Disconnect] > {client.UserFile.SavedIP}"); }
 
-        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.UserFile.Uid}"); }
+        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.UserFile.Username}"); }
 
-        public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.UserFile.Uid}"); }
+        public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.UserFile.Username}"); }
 
-        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.UserFile.Uid}"); }
+        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.UserFile.Username}"); }
 
-        public static void DisplayLoadGame(ServerClient client) { Printer.Message($"[Load game] > {client.UserFile.Uid}"); }
+        public static void DisplayLoadGame(ServerClient client) { Printer.Message($"[Load game] > {client.UserFile.Username}"); }
 
-        public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save Map] > {client.UserFile.Uid}"); }
+        public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save Map] > {client.UserFile.Username}"); }
 
-        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.UserFile.Uid}"); }
+        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.UserFile.Username}"); }
 
-        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set world] > {client.UserFile.Uid}"); }
+        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set world] > {client.UserFile.Username}"); }
 
-        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set events] > {client.UserFile.Uid}"); }
+        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set events] > {client.UserFile.Username}"); }
 
         public static void DisplayRemoveMap(string value) { Printer.Message($"[Remove map] > {value}"); }
 
@@ -63,7 +63,7 @@ namespace GameServer.Misc
 
         public static void DisplayModMismatch(string value) { Printer.Warning($"[Mod mismatch] > {value}"); }
 
-        public static void DisplayVersionMismatch(ServerClient client) { Printer.Warning($"[Version mismatch] > {client.UserFile.Label}"); }
+        public static void DisplayVersionMismatch(ServerClient client) { Printer.Warning($"[Version mismatch] > {client.UserFile.Username}"); }
 
         public static void DisplaySetScenario(string value) { Printer.Warning($"[Set scenario] > {value}"); }
 

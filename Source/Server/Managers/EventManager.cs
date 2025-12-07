@@ -42,11 +42,11 @@ namespace GameServer.Managers
 
         public static void SendEvent(ServerClient client, EventData eventData)
         {
-            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Uid} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
+            if (!SettlementManager.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
             else
             {
                 SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(eventData._toTile);
-                if (!UserManagerH.CheckIfUserIsConnected(settlement.UID))
+                if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
                 {
                     eventData._stepMode = EventStepMode.Recover;
                     client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
@@ -54,7 +54,7 @@ namespace GameServer.Managers
 
                 else
                 {
-                    ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUid(settlement.UID);
+                    ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUsername(settlement.Username);
 
                     if (!ValueChecker.CheckIfCanEvent(target.UserFile))
                     {

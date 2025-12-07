@@ -5,8 +5,8 @@ namespace GameClient.Files
     [Serializable]
     public class LoginDataFile
     {
-        public string UID;
+        public string Username { get; set; } = string.Empty;
 
-        public string Username;
+        public string Password { get; set; } = string.Empty;
     }
 }

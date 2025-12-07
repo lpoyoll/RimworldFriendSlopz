@@ -62,7 +62,7 @@ namespace GameServer.Managers
             string chatCommand = "";
             for (int i = 0; i < command.Length; i++) chatCommand += command[i] + "";
 
-            ChatManagerHelper.ShowChatInConsole(client.UserFile.Label, chatCommand);
+            ChatManagerHelper.ShowChatInConsole(client.UserFile.Username, chatCommand);
 
             commandSemaphore.Release();
         }
@@ -72,15 +72,15 @@ namespace GameServer.Managers
             if (Master.ServerConfig == null) return;
 
             ChatData chatData = new ChatData();
-            chatData._username = client.UserFile.Label;
+            chatData._username = client.UserFile.Username;
             chatData._message = message;
             chatData._usernameColor = client.UserFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
             chatData._messageColor = client.UserFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
-            WriteToLogs(client.UserFile.Label, message);
-            ChatManagerHelper.ShowChatInConsole(client.UserFile.Label, message);
+            WriteToLogs(client.UserFile.Username, message);
+            ChatManagerHelper.ShowChatInConsole(client.UserFile.Username, message);
         }
 
         public static void BroadcastDiscordMessage(string client, string message)
@@ -170,7 +170,7 @@ namespace GameServer.Managers
     {
         public static ServerClient GetUserFromName(string username)
         {
-            return ServerNetwork.Instance.GetConnectedClientFromUid(username);
+            return ServerNetwork.Instance.GetConnectedClientFromUsername(username);
         }
 
         public static CommandBase GetCommandFromName(string commandName)

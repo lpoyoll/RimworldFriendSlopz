@@ -2,10 +2,12 @@
 using GameClient.Misc;
 using GameClient.Values;
 using Shared;
+using Shared.Files.Guild;
 using System;
 using System.Collections.Generic;
-using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
+using static Shared.Files.Guild.GuildMember;
 
 namespace GameClient.Managers
 {
@@ -255,10 +257,12 @@ namespace GameClient.Managers
             RT_Dialog_Wait.Instance.Close();
 
             List<string> toDisplay = new List<string>();
-            for (int i = 0; i < factionManifest._file.CurrentUids.Count; i++)
+
+            for (int i = 0; i < factionManifest._file.GuildMembers.Count; i++)
             {
-                toDisplay.Add($"{factionManifest._file.CurrentLabels[i]} " +
-                    $"- {(FactionRanks)factionManifest._file.CurrentRanks[i]}");
+                GuildMember member = factionManifest._file.GuildMembers[i];
+
+                toDisplay.Add($"{member.Username} - {(GuildRanks)member.Rank}");
             }
 
             RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members",

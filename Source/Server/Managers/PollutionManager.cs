@@ -50,11 +50,7 @@ namespace GameServer.Managers
 
                 Master.WorldValues.Save();
             }
-
-            catch
-            {
-                Printer.Warning($"Could not add pollution to tile {data}. Coming from {client.UserFile.Uid}");
-            }
+            catch { Printer.Warning($"Could not add pollution to tile {data}. Coming from {client.UserFile.Username}"); }
         }
     }
 }

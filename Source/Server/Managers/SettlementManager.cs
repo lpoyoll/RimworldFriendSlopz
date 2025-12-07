@@ -36,13 +36,13 @@ namespace GameServer.Managers
 
         public static void AddSettlement(ServerClient client, PlayerSettlementData settlementData)
         {
-            if (CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Label} attempted to add a settlement at tile {settlementData._settlementFile.Tile}, but that tile already has a settlement");
+            if (CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to add a settlement at tile {settlementData._settlementFile.Tile}, but that tile already has a settlement");
             else
             {
                 SettlementFile settlementFile = new SettlementFile();
                 settlementFile.Tile = settlementData._settlementFile.Tile;
-                settlementFile.UID = client.UserFile.Uid;
-                settlementFile.Label = client.UserFile.Label;
+                settlementFile.Username = client.UserFile.Username;
+                settlementFile.Label = client.UserFile.Username;
                 settlementData._settlementFile = settlementFile;
 
                 Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + fileExtension), settlementFile);
@@ -71,10 +71,10 @@ namespace GameServer.Managers
 
             if (client != null)
             {
-                if (settlementFile.UID != client.UserFile.Uid)
+                if (settlementFile.Username != client.UserFile.Username)
                 {
                     ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementFile.Tile} attempted to be removed by " +
-                        $"{client.UserFile.Uid}, but {settlementFile.UID} owns the settlement");
+                        $"{client.UserFile.Username}, but {settlementFile.Username} owns the settlement");
                 }
 
                 else
@@ -141,7 +141,7 @@ namespace GameServer.Managers
                 if (!settlement.EndsWith(fileExtension)) continue;
 
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
-                if (settlementFile.UID == usernameToGet) return settlementFile;
+                if (settlementFile.Username == usernameToGet) return settlementFile;
             }
 
             return null;
@@ -171,7 +171,7 @@ namespace GameServer.Managers
                 if (!settlement.EndsWith(fileExtension)) continue;
 
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
-                if (settlementFile.UID == usernameToCheck) settlementList.Add(settlementFile);
+                if (settlementFile.Username == usernameToCheck) settlementList.Add(settlementFile);
             }
 
             return settlementList.ToArray();

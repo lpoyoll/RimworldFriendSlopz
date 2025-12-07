@@ -6,6 +6,7 @@ using static Shared.CommonEnumerators;
 using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Server;
+using Shared.Files.Guild;
 
 namespace GameServer.Managers
 {
@@ -74,7 +75,7 @@ namespace GameServer.Managers
                 SiteFile siteFile = new SiteFile();
 
                 siteFile.Tile = siteData._file.Tile;
-                siteFile.UID = client.UserFile.Uid;
+                siteFile.Username = client.UserFile.Username;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._file.Type.DefName);
                 if (!string.IsNullOrEmpty(client.UserFile.GuildName)) siteFile.GuildName = client.UserFile.GuildName;
                 ConfirmNewSite(client, siteFile);
@@ -84,7 +85,7 @@ namespace GameServer.Managers
         private static void DestroySite(ServerClient client, SiteData siteData)
         {
             SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._file.Tile);
-            if (siteFile.UID == client.UserFile.Uid) DestroySiteFromFile(siteFile);
+            if (siteFile.Username == client.UserFile.Username) DestroySiteFromFile(siteFile);
             else return;
         }
 
@@ -138,7 +139,7 @@ namespace GameServer.Managers
 
                 // Get player specific sites
                 List<SiteFile> sitesToAdd = new List<SiteFile>();
-                if (string.IsNullOrEmpty(client.UserFile.GuildName)) sitesToAdd = sites.ToList().FindAll(fetch => fetch.UID == client.UserFile.Uid);
+                if (string.IsNullOrEmpty(client.UserFile.GuildName)) sitesToAdd = sites.ToList().FindAll(fetch => fetch.Username == client.UserFile.Username);
                 else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.GuildName == client.UserFile.GuildName));
 
                 foreach (SiteFile site in sitesToAdd)
@@ -192,7 +193,7 @@ namespace GameServer.Managers
                 {
                     if (!Master.SiteValues.SiteInfoFiles.Any(site => site.Rewards.Any(reward => reward.RewardDef == config.RewardDefName)))
                     {
-                        Printer.Warning($"{file.Uid}'s config was outdated for site {config.DefName}. Updating to new default config.", LogImportanceMode.Verbose);
+                        Printer.Warning($"{file.Username}'s config was outdated for site {config.DefName}. Updating to new default config.", LogImportanceMode.Verbose);
                         config.RewardDefName = Master.SiteValues.SiteInfoFiles.Where(S => S.DefName == config.DefName).First().Rewards.First().RewardDef;
                         UserManagerH.SaveUserFile(file);
                     }
@@ -252,7 +253,7 @@ namespace GameServer.Managers
             SaveSite(siteFile);
         }
 
-        public static SiteFile[] GetAllSitesFromUID(string uid)
+        public static SiteFile[] GetAllSitesFromUsername(string username)
         {
             List<SiteFile> sitesList = new List<SiteFile>();
 
@@ -260,7 +261,7 @@ namespace GameServer.Managers
             foreach (string site in sites)
             {
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
-                if (siteFile.UID == uid) sitesList.Add(siteFile);
+                if (siteFile.Username == username) sitesList.Add(siteFile);
             }
 
             return sitesList.ToArray();

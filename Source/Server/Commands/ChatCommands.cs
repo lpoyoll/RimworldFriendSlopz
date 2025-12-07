@@ -107,11 +107,11 @@ namespace GameServer.Commands
                             chatData._messageColor = MessageColor.Private;
 
                             //Send to sender
-                            chatData._username = $">> {toFind.UserFile.Label}";
+                            chatData._username = $">> {toFind.UserFile.Username}";
                             TargetClient.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
                             //Send to recipient
-                            chatData._username = $"<< {TargetClient.UserFile.Label}";
+                            chatData._username = $"<< {TargetClient.UserFile.Username}";
                             toFind.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
                             ChatManagerHelper.ShowChatInConsole(chatData._username, message);

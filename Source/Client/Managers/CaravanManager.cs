@@ -51,7 +51,7 @@ namespace GameClient.Managers
         public static void AddCaravan(CaravanFile file)
         {
             if (!ClientValues.IsReadyToPlay) return;
-            if (file.UID == ClientValues.Uid) return;
+            if (file.Username == ClientValues.Username) return;
 
             try
             {
@@ -76,7 +76,7 @@ namespace GameClient.Managers
         private static void RemoveCaravan(CaravanFile file)
         {
             if (!ClientValues.IsReadyToPlay) return;
-            if (file.UID == ClientValues.Uid) return;
+            if (file.Username == ClientValues.Username) return;
 
             try
             {
@@ -100,7 +100,7 @@ namespace GameClient.Managers
         private static void MoveCaravan(CaravanFile file)
         {
             if (!ClientValues.IsReadyToPlay) return;
-            if (file.UID == ClientValues.Uid) return;
+            if (file.Username == ClientValues.Username) return;
 
             try
             {
@@ -129,7 +129,7 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.UID = ClientValues.Uid;
+            data._caravanFile.Username = ClientValues.Username;
             data._caravanFile.ID = caravan.ID;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.CaravanManager, data);
@@ -141,7 +141,7 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Remove;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.UID = ClientValues.Uid;
+            data._caravanFile.Username = ClientValues.Username;
             data._caravanFile.ID = caravan.ID;
 
             PlayerCaravans.Remove(caravan);
@@ -155,7 +155,7 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Move;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.UID = ClientValues.Uid;
+            data._caravanFile.Username = ClientValues.Username;
             data._caravanFile.ID = caravan.ID;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.CaravanManager, data);
@@ -189,7 +189,7 @@ public static class CaravanManagerH
 
     public static CaravanFile GetExistingCaravanFromFile(CaravanFile file)
     {
-        return CaravanManager.GuestCaravans.FirstOrDefault(fetch => fetch.UID == file.UID 
+        return CaravanManager.GuestCaravans.FirstOrDefault(fetch => fetch.Username == file.Username
             && fetch.ID == file.ID);
     }
 

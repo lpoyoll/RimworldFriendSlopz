@@ -30,8 +30,8 @@ namespace GameServer.Managers
         {
             if (Master.WorldValues != null && !client.UserFile.IsAdmin)
             {
-                UserManager.BanPlayerFromName(client.UserFile.Uid);
-                Printer.Warning($"Player {client.UserFile.Uid} tried to change mod config without being admin");
+                UserManager.BanPlayerFromName(client.UserFile.Username);
+                Printer.Warning($"Player {client.UserFile.Username} tried to change mod config without being admin");
             }
 
             else
@@ -52,25 +52,25 @@ namespace GameServer.Managers
 
             if (Master.ModConfig.RequiredMods.Length > 0)
             {
-                foreach (string mod in Master.ModConfig.RequiredMods)
+                foreach (string str in Master.ModConfig.RequiredMods)
                 {
-                    if (!clientMods.Contains(mod))
+                    if (!clientMods.Contains(str))
                     {
-                        conflictingMods.Add($"[Required] > {mod}");
-                        conflictingNames.Add(mod);
+                        conflictingMods.Add($"[Required] > {str}");
+                        conflictingNames.Add(str);
                         continue;
                     }
                 }
 
                 //Check for optional mods
 
-                foreach (string mod in clientMods)
+                foreach (string str in clientMods)
                 {
-                    if (conflictingNames.Contains(mod)) continue;
-                    else if (!Master.ModConfig.RequiredMods.Contains(mod) && !Master.ModConfig.OptionalMods.Contains(mod))
+                    if (conflictingNames.Contains(str)) continue;
+                    else if (!Master.ModConfig.RequiredMods.Contains(str) && !Master.ModConfig.OptionalMods.Contains(str))
                     {
-                        conflictingMods.Add($"[Disallowed] > {mod}");
-                        conflictingNames.Add(mod);
+                        conflictingMods.Add($"[Disallowed] > {str}");
+                        conflictingNames.Add(str);
                         continue;
                     }
                 }
@@ -80,13 +80,13 @@ namespace GameServer.Managers
 
             if (Master.ModConfig.ForbiddenMods.Length > 0)
             {
-                foreach (string mod in Master.ModConfig.ForbiddenMods)
+                foreach (string str in Master.ModConfig.ForbiddenMods)
                 {
-                    if (conflictingNames.Contains(mod)) continue;
-                    else if (clientMods.Contains(mod))
+                    if (conflictingNames.Contains(str)) continue;
+                    else if (clientMods.Contains(str))
                     {
-                        conflictingMods.Add($"[Forbidden] > {mod}");
-                        conflictingNames.Add(mod);
+                        conflictingMods.Add($"[Forbidden] > {str}");
+                        conflictingNames.Add(str);
                     }
                 }
             }
@@ -103,14 +103,14 @@ namespace GameServer.Managers
             {
                 if (client.UserFile.IsAdmin)
                 {
-                    InformationDisplayer.DisplayModBypass(client.UserFile.Label);
+                    InformationDisplayer.DisplayModBypass(client.UserFile.Username);
                     client.UserFile.UpdateMods(clientMods);
                     return false;
                 }
 
                 else
                 {
-                    InformationDisplayer.DisplayModMismatch(client.UserFile.Label);
+                    InformationDisplayer.DisplayModMismatch(client.UserFile.Username);
                     LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongMods, conflictingMods);
                     return true;
                 }

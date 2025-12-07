@@ -25,8 +25,6 @@ namespace GameClient.Values
 
         public static string Username { get; set; } = string.Empty;
 
-        public static string Uid { get; set; } = string.Empty;
-
         public static bool IsAdmin { get; set; } = false;
 
         public static bool HasFaction { get; set; } = false;

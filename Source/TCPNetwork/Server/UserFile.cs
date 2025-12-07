@@ -1,5 +1,6 @@
 ﻿using Shared;
 using Shared.Files;
+using Shared.Files.Guild;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,9 +13,9 @@ namespace TCPNetwork.Server
 {
     public class UserFile
     {
-        public string Uid;
+        public string Username;
 
-        public string Label;
+        public string Password;
 
         public bool IsAdmin;
 
@@ -46,17 +47,15 @@ namespace TCPNetwork.Server
 
         public void SetLoginDetails(LoginData data)
         {
-            // No need to save these details
-
-            Uid = data._uid;
-            Label = data._username;
+            Username = data._username;
+            Password = data._password;
         }
 
         public void SaveUserFile()
         {
             SavingSemaphore.WaitOne();
 
-            try { Serializer.SerializeToFile(Path.Combine(UsersPath, Uid + fileExtension), this); }
+            try { Serializer.SerializeToFile(Path.Combine(UsersPath, Username + fileExtension), this); }
             catch (Exception e) { throw new Exception(e.ToString()); }
 
             SavingSemaphore.Release();

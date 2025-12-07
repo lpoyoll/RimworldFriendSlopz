@@ -45,7 +45,7 @@ namespace GameServer.Managers
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.CaravanManager, data);
 
-            InformationDisplayer.DisplayAddCaravan(client.UserFile.Uid);
+            InformationDisplayer.DisplayAddCaravan(client.UserFile.Username);
         }
 
         public static void RemoveCaravan(ServerClient client, CaravanFile file)
@@ -56,7 +56,7 @@ namespace GameServer.Managers
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.CaravanManager, data);
 
-            InformationDisplayer.DisplayRemoveCaravan(client.UserFile.Uid);
+            InformationDisplayer.DisplayRemoveCaravan(client.UserFile.Username);
         }
 
         private static void MoveCaravan(ServerClient client, CaravanFile file)
@@ -67,7 +67,7 @@ namespace GameServer.Managers
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
 
-            InformationDisplayer.DisplayMoveCaravan(client.UserFile.Uid);
+            InformationDisplayer.DisplayMoveCaravan(client.UserFile.Username);
         }
     }
 }

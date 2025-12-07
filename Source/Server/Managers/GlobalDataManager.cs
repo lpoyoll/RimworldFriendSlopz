@@ -49,11 +49,11 @@ namespace GameServer.Managers
             {
                 SettlementFile file = new SettlementFile();
 
-                if (settlement.UID == client.UserFile.Uid) continue;
+                if (settlement.Username == client.UserFile.Username) continue;
                 else
                 {
                     file.Tile = settlement.Tile;
-                    file.UID = settlement.UID;
+                    file.Username = settlement.Username;
                     file.Label = settlement.Label;
                     file.Goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
 
@@ -72,7 +72,7 @@ namespace GameServer.Managers
                 SiteFile file = new SiteFile();
 
                 file.Tile = site.Tile;
-                file.UID = site.UID;
+                file.Username = site.Username;
                 file.Goodwill = GoodwillManager.GetSiteGoodwill(client, site);
                 file.Type = site.Type;
                 file.GuildName = site.GuildName;

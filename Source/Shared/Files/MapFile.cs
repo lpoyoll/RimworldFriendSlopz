@@ -6,7 +6,7 @@ namespace Shared.Files
 
         public int[] Size { get; set; } = null;
 
-        public string UID { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
 
         public int Wealth { get; set; } = -1;
 

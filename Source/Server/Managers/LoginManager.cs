@@ -7,7 +7,6 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
-
     public static class LoginManager
     {
         [HandlesPacket(PacketHeader.LoginManager)]
@@ -76,7 +75,7 @@ namespace GameServer.Managers
 
             if (Master.ChatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
 
-            if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Uid} has joined the server!");
+            if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has joined the server!");
 
             if (WorldManager.CheckIfWorldExists())
             {
@@ -86,9 +85,9 @@ namespace GameServer.Managers
 
             else
             {
-                Printer.Warning($"Giving first join admin permission to {client.UserFile.Uid}");
+                Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
 
-                UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Uid == client.UserFile.Uid).FirstOrDefault();
+                UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Username == client.UserFile.Username).FirstOrDefault();
                 toFind.UpdateAdmin(true, client);
 
                 WorldManager.RequireWorldFile(client);
@@ -105,7 +104,7 @@ namespace GameServer.Managers
                 if (toFind == client) continue;
                 else
                 {
-                    if (toFind.UserFile.Uid == client.UserFile.Uid)
+                    if (toFind.UserFile.Username == client.UserFile.Username)
                     {
                         DenyConnectionWithReason(toFind, LoginResponse.ExtraLogin);
                     }

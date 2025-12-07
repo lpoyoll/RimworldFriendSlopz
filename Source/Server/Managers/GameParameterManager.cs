@@ -39,15 +39,15 @@ namespace GameServer.Managers
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
-                UserManager.BanPlayerFromName(client.UserFile.Uid);
-                Printer.Warning($"Player {client.UserFile.Uid} attempted to set the scenario while not being an admin");
+                UserManager.BanPlayerFromName(client.UserFile.Username);
+                Printer.Warning($"Player {client.UserFile.Username} attempted to set the scenario while not being an admin");
             }
 
             else
             {
                 Master.ScenarioValues = file;
                 Master.ScenarioValues.Save();
-                InformationDisplayer.DisplaySetScenario(client.UserFile.Uid);
+                InformationDisplayer.DisplaySetScenario(client.UserFile.Username);
             }
         }
 
@@ -55,15 +55,15 @@ namespace GameServer.Managers
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
-                UserManager.BanPlayerFromName(client.UserFile.Uid);
-                Printer.Warning($"Player {client.UserFile.Uid} attempted to set the storyteller while not being an admin");
+                UserManager.BanPlayerFromName(client.UserFile.Username);
+                Printer.Warning($"Player {client.UserFile.Username} attempted to set the storyteller while not being an admin");
             }
 
             else
             {
                 Master.StorytellerValues = file;
                 Master.StorytellerValues.Save();
-                InformationDisplayer.DisplaySetStoryteller(client.UserFile.Uid);
+                InformationDisplayer.DisplaySetStoryteller(client.UserFile.Username);
             }
         }
 
@@ -71,19 +71,18 @@ namespace GameServer.Managers
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
-                UserManager.BanPlayerFromName(client.UserFile.Uid);
-                Printer.Warning($"Player {client.UserFile.Uid} attempted to set the difficulty while not being an admin");
+                UserManager.BanPlayerFromName(client.UserFile.Username);
+                Printer.Warning($"Player {client.UserFile.Username} attempted to set the difficulty while not being an admin");
             }
 
             else
             {
                 Master.DifficultyValues = file;
-                if (fixXml)
-                {
-                    Master.DifficultyValues.ScribeData = XmlHelper.PrettyXml(Master.DifficultyValues.ScribeData);
-                }
+
+                if (fixXml) Master.DifficultyValues.ScribeData = XmlHelper.PrettyXml(Master.DifficultyValues.ScribeData);
+
                 Master.DifficultyValues.Save();
-                InformationDisplayer.DisplaySetDifficulty(client.UserFile.Uid);
+                InformationDisplayer.DisplaySetDifficulty(client.UserFile.Username);
             }
         }
     }

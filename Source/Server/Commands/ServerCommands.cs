@@ -199,8 +199,8 @@ namespace GameServer.Commands
                 Printer.Warning("Please type 'YES' or 'NO'");
                 string response = Console.ReadLine();
 
-                if (response == "NO") BackupManager.BackupUser(userFile.Uid);
-                else if (response == "YES") BackupManager.BackupUser(userFile.Uid, true);
+                if (response == "NO") BackupManager.BackupUser(userFile.Username);
+                else if (response == "YES") BackupManager.BackupUser(userFile.Username, true);
                 else
                 {
                     Printer.Error($"{response} is not a valid option; The options must be capitalized");
@@ -215,7 +215,7 @@ namespace GameServer.Commands
             Printer.Title("----------------------------------------");
             foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
             {
-                Printer.Warning($"{client.UserFile.SavedIP} - {client.UserFile.Label} - {client.UserFile.Uid}");
+                Printer.Warning($"{client.UserFile.SavedIP} - {client.UserFile.Username}");
             }
             Printer.Title("----------------------------------------");
         }
@@ -228,14 +228,14 @@ namespace GameServer.Commands
             Printer.Title("----------------------------------------");
             foreach (UserFile user in userFiles)
             {
-                Printer.Warning($"{user.Label} - {user.Uid}");
+                Printer.Warning($"{user.Username}");
             }
             Printer.Title("----------------------------------------");
         }
 
         public static void OpCommandAction()
         {
-            UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Uid == ConsoleManager.commandParameters[0]).FirstOrDefault();
+            UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Username == ConsoleManager.commandParameters[0]).FirstOrDefault();
             if (toFind == null) 
             {
                 ThrowUserNotFoundError();
@@ -246,7 +246,7 @@ namespace GameServer.Commands
 
             toFind.UpdateAdmin(true);
 
-            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUid(toFind.Uid);
+            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUsername(toFind.Username);
             if (client != null)
             {
                 CommandData commandData = new CommandData();
@@ -257,12 +257,12 @@ namespace GameServer.Commands
             }
             UserManagerH.SaveUserFile(toFind);
 
-            Printer.Warning($"User '{toFind.Label}' has now admin privileges");
+            Printer.Warning($"User '{toFind.Username}' has now admin privileges");
             bool CheckIfIsAlready(UserFile userFile)
             {
                 if (userFile.IsAdmin)
                 {
-                    Printer.Warning($"User '{userFile.Label}' was already an admin");
+                    Printer.Warning($"User '{userFile.Username}' was already an admin");
                     return true;
                 }
 
@@ -272,7 +272,7 @@ namespace GameServer.Commands
 
         public static void DeopCommandAction()
         {
-            UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Uid == ConsoleManager.commandParameters[0]).FirstOrDefault();
+            UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Username == ConsoleManager.commandParameters[0]).FirstOrDefault();
 
             if (toFind == null)
             {
@@ -283,7 +283,7 @@ namespace GameServer.Commands
             if (CheckIfIsAlready(toFind)) return;
 
             toFind.UpdateAdmin(false);
-            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUid(toFind.Uid);
+            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUsername(toFind.Username);
             if (client != null)
             {
                 CommandData commandData = new CommandData();
@@ -294,13 +294,13 @@ namespace GameServer.Commands
             }
             UserManagerH.SaveUserFile(toFind);
 
-            Printer.Warning($"User '{toFind.Label}' is no longer an admin");
+            Printer.Warning($"User '{toFind.Username}' is no longer an admin");
 
             bool CheckIfIsAlready(UserFile client)
             {
                 if (!client.IsAdmin)
                 {
-                    Printer.Warning($"User '{client.Label}' was not an admin");
+                    Printer.Warning($"User '{client.Username}' was not an admin");
                     return true;
                 }
 
@@ -310,7 +310,7 @@ namespace GameServer.Commands
 
         public static void KickCommandAction()
         {
-            ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
+            ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
 
             if (toFind == null)
             {
@@ -319,7 +319,7 @@ namespace GameServer.Commands
             }
             toFind.Listener.DisconnectFlag = true;
 
-            Printer.Warning($"User '{toFind.UserFile.Label}' has been kicked from the server");
+            Printer.Warning($"User '{toFind.UserFile.Username}' has been kicked from the server");
         }
 
         public static void BanListCommandAction()
@@ -328,7 +328,7 @@ namespace GameServer.Commands
 
             Printer.Title($"Banned players: [{userFiles.Count()}]");
             Printer.Title("----------------------------------------");
-            foreach (UserFile user in userFiles) Printer.Warning($"{user.Label} - {user.SavedIP}");
+            foreach (UserFile user in userFiles) Printer.Warning($"{user.Username} - {user.SavedIP}");
             Printer.Title("----------------------------------------");
         }
 
@@ -364,7 +364,7 @@ namespace GameServer.Commands
 
         public static void EventCommandAction()
         {
-            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
+            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
 
             if (client == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
             else
@@ -466,7 +466,7 @@ namespace GameServer.Commands
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (Master.Whitelist.WhitelistedUsers.Contains(userFile.Uid))
+                if (Master.Whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
                     Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was already whitelisted");
                     return true;
@@ -489,7 +489,7 @@ namespace GameServer.Commands
 
             bool CheckIfIsAlready(UserFile userFile)
             {
-                if (!Master.Whitelist.WhitelistedUsers.Contains(userFile.Uid))
+                if (!Master.Whitelist.WhitelistedUsers.Contains(userFile.Username))
                 {
                     Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not whitelisted");
                     return true;
@@ -501,7 +501,7 @@ namespace GameServer.Commands
 
         public static void ForceSaveCommandAction()
         {
-            ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUid(ConsoleManager.commandParameters[0]);
+            ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
             if (toFind == null) ThrowUserNotFoundError();
             else
             {
@@ -520,8 +520,8 @@ namespace GameServer.Commands
             if (userFile == null) ThrowUserNotFoundError();
             else
             {
-                ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUid(userFile.Uid);
-                SaveManager.ResetPlayerData(toFind, userFile.Uid);
+                ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUsername(userFile.Username);
+                SaveManager.ResetPlayerData(toFind, userFile.Username);
             }
         }
 
@@ -589,18 +589,19 @@ namespace GameServer.Commands
             GC.Collect();
             Printer.Warning($"Currently reporting {GC.GetTotalMemory(false)}");
         }
+
         public static void ThrowUserNotFoundError()
         {
             Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
             UserFile[] allUsers = UserManagerH.GetAllUserFiles();
-            if (allUsers.Any(u => u.Label == ConsoleManager.commandParameters[0]))
+            if (allUsers.Any(u => u.Username == ConsoleManager.commandParameters[0]))
                 Printer.Warning($"Username detected. You can only use UIDs for user commands. " +
                     $"Use the command `deeplist` to get the UID of {ConsoleManager.commandParameters[0]}.");
-            UserFile[] usersWithMatchingUsername = allUsers.Where(u => u.Label == ConsoleManager.commandParameters[0]).ToArray();
+            UserFile[] usersWithMatchingUsername = allUsers.Where(u => u.Username == ConsoleManager.commandParameters[0]).ToArray();
             if (usersWithMatchingUsername.Length == 1)
             {
                 Printer.Warning($"Since only one person with the username {ConsoleManager.commandParameters[0]} exists, " +
-                    $"we were able to fetch his UID automatically: {usersWithMatchingUsername.First().Uid}");
+                    $"we were able to fetch his UID automatically: {usersWithMatchingUsername.First().Username}");
             }
         }
     }

@@ -27,7 +27,7 @@ namespace GameServer.Managers
         private static void SendInformation(ServerClient client, InformationData data)
         {
             SettlementFile settlementToFind = SettlementManager.GetSettlementFileFromTile(data._settlementTile);
-            ServerClient clientToFind = ServerNetwork.Instance.GetConnectedClientFromUid(settlementToFind.UID);
+            ServerClient clientToFind = ServerNetwork.Instance.GetConnectedClientFromUsername(settlementToFind.Username);
 
             data._isPlayerOnline = clientToFind != null ? true : false;
 

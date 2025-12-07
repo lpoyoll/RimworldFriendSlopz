@@ -6,7 +6,7 @@ namespace Shared.Files
     {
         public int Tile { get; set; } = -1;
 
-        public string UID { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
 
         public int ID { get; set; } = -1;
     }

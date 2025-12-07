@@ -13,6 +13,7 @@ namespace Shared
         {
             if (string.IsNullOrEmpty(toCheck)) return false;
             if (string.IsNullOrWhiteSpace(toCheck)) return false;
+
             foreach (string str in IllegalChars)
             {
                 if (toCheck.Contains(str)) return false;

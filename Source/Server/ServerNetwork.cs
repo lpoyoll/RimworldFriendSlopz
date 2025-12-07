@@ -124,20 +124,20 @@ namespace GameServer
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
                 InformationDisplayer.DisplayDisconnect(client);
-                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Uid} has left the server!");
+                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
             }
-            catch { Printer.Warning($"Error disconnecting user {client.UserFile.Uid}, this will cause memory overhead"); }
+            catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
         }
 
         public ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)
         {
-            if (toExclude != null) return ServerNetwork.Instance.ServerClients.Where(fetch => fetch.UserFile.Uid != toExclude.UserFile.Uid).ToArray();
+            if (toExclude != null) return ServerNetwork.Instance.ServerClients.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
             else return ServerNetwork.Instance.ServerClients.ToArray();
         }
 
-        public ServerClient GetConnectedClientFromUid(string uid)
+        public ServerClient GetConnectedClientFromUsername(string username)
         {
-            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.UserFile.Uid == uid);
+            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.UserFile.Username == username);
         }
 
         public void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
