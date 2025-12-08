@@ -11,10 +11,10 @@ using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
+using UnityEngine;
 
 namespace GameClient.Managers
 {
-
     public static class VersionManager
     {
         [HandlesPacket(PacketHeader.VersionManager)]
@@ -53,26 +53,37 @@ namespace GameClient.Managers
 
         private static void ChangeVersion()
         {
-            string downloadPath = Path.Combine(Master.AppdataTempVersionPath, "3005289691.zip");
-            string extractPath = Path.Combine(Master.AppdataTempVersionPath, "3005289691");
-            string uri = $"https://github.com/Byte-Nova/Rimworld-Together/releases/download/{RT_Dialog_Inputs.DialogInputResults[0]}/3005289691.zip";
+            string downloadPath = Path.Combine(Master.ModTempPath, "3005289691.zip");
+            string uri = $"https://github.com/RimWorld-Together/Rimworld-Together/releases/download/{RT_Dialog_Inputs.DialogInputResults[0]}/3005289691.zip";
 
-            bool freezeGame = true;
-            Task.Run(delegate
+            if (!Directory.Exists(Master.ModTempPath)) Directory.CreateDirectory(Master.ModTempPath);
+
+            if (!DownloadVersion(uri, downloadPath))
             {
-                if (!DownloadVersion(uri, downloadPath)) { freezeGame = false; return; }
-                else if (!UnzipVersion(downloadPath, extractPath)) { freezeGame = false; return; }
-                else if (!InstallVersion(extractPath)) { freezeGame = false; return; }
-                else if (!Cleanup(downloadPath)) { freezeGame = false; return; }
-                freezeGame = false;
-            });
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
+                    new string[] { "Failed to download specified version! Please retry" }));
+            }
 
-            while (freezeGame) Thread.Sleep(1);
+            else
+            {
+                Action toDo = delegate
+                {
+                    string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
+                    string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
 
-            RT_Dialog_Message dialog2 = new RT_Dialog_Message("MESSAGE", new string[] { "The game will restart to apply the new version" }, 
-                GenCommandLine.Restart);
+                    if (File.Exists(copyPath)) File.Delete(copyPath);
+                    File.Copy(scriptPath, copyPath);
 
-            RT_Dialog_Base.PushNewDialog(dialog2);
+                    CMDExecuter.StartCMDWindow($"\"\"{copyPath}\"");
+
+                    Application.Quit();
+                };
+
+                RT_Dialog_Message dialog = new RT_Dialog_Message("MESSAGE", new string[] { "The game will close to apply the new version" },
+                    toDo);
+
+                RT_Dialog_Base.PushNewDialog(dialog);
+            }
         }
 
         private static bool DownloadVersion(string uri, string downloadPath)
@@ -86,42 +97,6 @@ namespace GameClient.Managers
 
                 return true;
             }
-            catch { return false; }
-        }
-
-        private static bool UnzipVersion(string downloadPath, string extractPath)
-        {
-            try
-            {
-                if (Directory.Exists(extractPath)) Directory.Delete(extractPath, true);
-
-                string appPath = Path.Combine(Master.ModAddonsPath, "7z", "7z.exe");
-                CMDExecuter.StartCMDWindow($"\"\"{appPath}\" x \"{downloadPath}\" -p\"{RT_Dialog_Inputs.DialogInputResults[1]}\" -o\"{extractPath}\"");
-
-                return true;
-            }
-            catch { return false; }
-        }
-
-        private static bool InstallVersion(string extractPath)
-        {
-            try
-            {
-                string modsDirectory = Directory.GetParent(Master.ModMainPath).ToString();
-                string installDirectory = Path.Combine(modsDirectory, "3005289691");
-
-                CMDExecuter.StartCMDWindow($"rmdir \"{installDirectory}\" /s /q");
-
-                CMDExecuter.StartCMDWindow($"move \"{extractPath}\" \"{modsDirectory}\"");
-
-                return true;
-            }
-            catch { return false; }
-        }
-
-        private static bool Cleanup(string toClean)
-        {
-            try { CMDExecuter.StartCMDWindow($"del \"{toClean}\""); return true; }
             catch { return false; }
         }
     }

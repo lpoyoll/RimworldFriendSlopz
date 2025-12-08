@@ -4,27 +4,19 @@ namespace GameClient.Core
 {
     public static class Master
     {
-        // Instances
-
-        public static ModConfigGetter ModConfigs { get; private set; } = new ModConfigGetter();
-
-        // Paths
-
         public static string AppdataPath { get; set; }
 
         public static string AppdataRTPath { get; set; }
 
         public static string AppdataTempPath { get; set; }
 
-        public static string AppdataTempVersionPath { get; set; }
-
-        public static string AppdataTempModsPath { get; set; }
-
         public static string ModMainPath { get; set; }
 
         public static string ModAssemblyPath { get; set; }
 
-        public static string ModAddonsPath { get; set; }
+        public static string ModTempPath { get; set; }
+
+        public static string ModScriptsPath { get; set; }
 
         public static string ConnectionDataPath { get; set; }
 

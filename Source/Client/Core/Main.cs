@@ -51,12 +51,13 @@ namespace GameClient.Core
             Master.AppdataPath = GenFilePaths.SaveDataFolderPath;
             Master.AppdataRTPath = Path.Combine(Master.AppdataPath, "RimWorld Together");
             Master.AppdataTempPath = Path.Combine(Master.AppdataRTPath, "Temp");
-            Master.AppdataTempVersionPath = Path.Combine(Master.AppdataTempPath, "Version");
-            Master.AppdataTempModsPath = Path.Combine(Master.AppdataTempPath, "Mods");
+
             string mod = LoadedModManager.RunningMods.First(m => (m.PackageId == Master.ModPackageID || m.PackageId == Master.ModPackageID + "_steam") 
-                                                                 && ModLister.GetActiveModWithIdentifier(m.PackageId) != null).RootDir;
+                && ModLister.GetActiveModWithIdentifier(m.PackageId) != null).RootDir;
+
             Master.ModMainPath = mod;
-            Master.ModAddonsPath = Path.Combine(Master.ModMainPath, "Addons");
+            Master.ModTempPath = Path.Combine(Master.ModMainPath, "Temp");
+            Master.ModScriptsPath = Path.Combine(Master.ModMainPath, "Scripts");
             Master.ModAssemblyPath = Path.Combine(Master.ModMainPath, "Current", "Assemblies");
 
             Master.ConnectionDataPath = Path.Combine(Master.AppdataRTPath, "ConnectionData.json");
@@ -66,9 +67,6 @@ namespace GameClient.Core
 
             if (!Directory.Exists(Master.AppdataRTPath)) Directory.CreateDirectory(Master.AppdataRTPath);
             if (!Directory.Exists(Master.AppdataTempPath)) Directory.CreateDirectory(Master.AppdataTempPath);
-            if (!Directory.Exists(Master.AppdataTempVersionPath)) Directory.CreateDirectory(Master.AppdataTempVersionPath);
-            if (!Directory.Exists(Master.AppdataTempModsPath)) Directory.CreateDirectory(Master.AppdataTempModsPath);
-            if (!Directory.Exists(Master.ModAddonsPath)) Directory.CreateDirectory(Master.ModAddonsPath);        
         }
 
         private static void CreateUnityDispatcher()
