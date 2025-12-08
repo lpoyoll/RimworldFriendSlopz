@@ -48,6 +48,8 @@ namespace GameServer.Core
             BackupConfigFile.Path = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
             ChatConfigFile.Path = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
 
+            CommonValues.ServerUsersPath = Master.UsersPath;
+
             if (!Directory.Exists(Master.AssetsPath)) Directory.CreateDirectory(Master.AssetsPath);
             if (!Directory.Exists(Master.ConfigsPath)) Directory.CreateDirectory(Master.ConfigsPath);
 

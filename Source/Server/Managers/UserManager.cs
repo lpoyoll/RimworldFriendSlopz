@@ -177,15 +177,5 @@ namespace GameServer.Managers
 
             return tilesToExclude.ToArray();
         }
-
-        public static void SaveUserFile(UserFile userFile)
-        {
-            userFile.SavingSemaphore.WaitOne();
-
-            try { Serializer.SerializeToFile(Path.Combine(Master.UsersPath, userFile.Username + fileExtension), userFile); }
-            catch (Exception e) { Printer.Error(e.ToString()); }
-
-            userFile.SavingSemaphore.Release();
-        }
     }
 }

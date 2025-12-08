@@ -80,12 +80,11 @@ namespace GameServer
         private void TryConnect()
         {
             TcpClient newTCP = ServerListener.AcceptTcpClient();
-            ServerClient newServerClient = new ServerClient(newTCP, Master.UsersPath);
 
-            Listener newListener = new Listener(newServerClient, newTCP, OnReadPacket, OnDisconnect,
+            ServerClient newServerClient = new ServerClient(newTCP);
+            newServerClient.UserFile = new UserFile();
+            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnDisconnect,
                 OnMessage, OnWarning, OnError, Listener.ListenerMode.Server);
-
-            newServerClient.Listener = newListener;
 
             if (Master.IsClosing)
             {

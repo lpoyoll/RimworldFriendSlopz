@@ -86,7 +86,7 @@ namespace GameServer.Managers
             }
             data._siteGoodwills = tempSiteList.ToArray();
 
-            UserManagerH.SaveUserFile(client.UserFile);
+            client.UserFile.SaveUserFile();
 
             client.Listener.EnqueuePacket(PacketHeader.GoodWillManager, data);
         }
@@ -213,7 +213,7 @@ namespace GameServer.Managers
                     }
                 }
 
-                UserManagerH.SaveUserFile(file);
+                file.SaveUserFile();
             }
         }
 

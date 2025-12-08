@@ -195,7 +195,7 @@ namespace GameServer.Managers
                     {
                         Printer.Warning($"{file.Username}'s config was outdated for site {config.DefName}. Updating to new default config.", LogImportanceMode.Verbose);
                         config.RewardDefName = Master.SiteValues.SiteInfoFiles.Where(S => S.DefName == config.DefName).First().Rewards.First().RewardDef;
-                        UserManagerH.SaveUserFile(file);
+                        file.SaveUserFile();
                     }
                 }
             }
@@ -207,7 +207,7 @@ namespace GameServer.Managers
             SiteConfigFile toModify = client.UserFile.SiteConfigs.First(fetch => fetch.DefName == config._siteDef);
             toModify.RewardDefName = config._rewardDef;
 
-            UserManagerH.SaveUserFile(client.UserFile);
+            client.UserFile.SaveUserFile();
         }
 
         public static void SetSiteInfoForClient(ServerClient client)
@@ -227,7 +227,7 @@ namespace GameServer.Managers
 
                 client.UserFile.SiteConfigs = configFiles.ToArray();
 
-                UserManagerH.SaveUserFile(client.UserFile);
+                client.UserFile.SaveUserFile();
             }
         }
     }

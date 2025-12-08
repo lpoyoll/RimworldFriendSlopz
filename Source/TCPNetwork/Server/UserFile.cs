@@ -13,37 +13,31 @@ namespace TCPNetwork.Server
 {
     public class UserFile
     {
-        public string Username;
+        public string Username { get; set; } = string.Empty;
 
-        public string Password;
+        public string Password { get; set; } = string.Empty;
 
-        public bool IsAdmin;
+        public bool IsAdmin { get; set; } = false;
 
-        public bool IsBanned;
+        public bool IsBanned { get; set; } = false;
 
-        public string SavedIP;
+        public string SavedIP { get; set; } = string.Empty;
 
-        public double EventProtectionTime;
+        public double EventProtectionTime { get; set; } = -1;
 
-        public double AidProtectionTime;
+        public double AidProtectionTime { get; set; } = -1;
 
-        public string GuildName;
+        public string GuildName { get; set; } = string.Empty;
 
-        public string[] RunningMods;
+        public List<string> AllyPlayers { get; set; } = new List<string>();
 
-        public List<string> AllyPlayers = new List<string>();
+        public List<string> EnemyPlayers { get; set; } = new List<string>();
 
-        public List<string> EnemyPlayers = new List<string>();
+        public SiteConfigFile[] SiteConfigs { get; set; } = Array.Empty<SiteConfigFile>();
 
-        public SiteConfigFile[] SiteConfigs = Array.Empty<SiteConfigFile>();
-
-        [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
-
-        public string UsersPath { get; set; } = string.Empty;
+        private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 
         public static string fileExtension { get; set; } = ".mpuser";
-
-        public UserFile(string usersPath) { this.UsersPath = usersPath; }
 
         public void SetLoginDetails(LoginData data)
         {
@@ -55,7 +49,7 @@ namespace TCPNetwork.Server
         {
             SavingSemaphore.WaitOne();
 
-            try { Serializer.SerializeToFile(Path.Combine(UsersPath, Username + fileExtension), this); }
+            try { Serializer.SerializeToFile(Path.Combine(CommonValues.ServerUsersPath, Username + fileExtension), this); }
             catch (Exception e) { throw new Exception(e.ToString()); }
 
             SavingSemaphore.Release();
@@ -99,12 +93,6 @@ namespace TCPNetwork.Server
         public void UpdateBan(bool mode)
         {
             IsBanned = mode;
-            SaveUserFile();
-        }
-
-        public void UpdateMods(string[] mods)
-        {
-            RunningMods = mods;
             SaveUserFile();
         }
     }

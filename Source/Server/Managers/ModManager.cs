@@ -93,18 +93,12 @@ namespace GameServer.Managers
 
             //Check for final conflicting count
 
-            if (conflictingMods.Count == 0)
-            {
-                client.UserFile.UpdateMods(clientMods);
-                return false;
-            }
-
+            if (conflictingMods.Count == 0) return false;
             else
             {
                 if (client.UserFile.IsAdmin)
                 {
                     InformationDisplayer.DisplayModBypass(client.UserFile.Username);
-                    client.UserFile.UpdateMods(clientMods);
                     return false;
                 }
 

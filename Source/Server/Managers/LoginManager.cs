@@ -33,7 +33,7 @@ namespace GameServer.Managers
 
             client.UserFile.SetLoginDetails(data);
 
-            client.LoadUserFromFile();
+            client.LoadUserFromFile(client);
 
             if (UserManagerH.CheckIfUserBanned(client)) return;
 
@@ -54,7 +54,7 @@ namespace GameServer.Managers
             {
                 client.UserFile.SetLoginDetails(data);
 
-                UserManagerH.SaveUserFile(client.UserFile);
+                client.UserFile.SaveUserFile();
 
                 InformationDisplayer.DisplayRegister(client);
 
