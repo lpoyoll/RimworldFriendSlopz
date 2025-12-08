@@ -21,7 +21,7 @@ namespace GameServer.Managers
 
         public static void HandleUser(ServerClient client, LoginData data)
         {
-            if (!UserManagerH.CheckLoginData(client, data)) return;
+            client.UserFile.UpdateLoginDetails(data);
 
             if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);
             else RegisterUser(client, data);
@@ -30,31 +30,29 @@ namespace GameServer.Managers
         public static void LoginUser(ServerClient client, LoginData data)
         {
             if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return;
+            else
+            {
+                client.LoadUserFromFile(client);
 
-            client.UserFile.SetLoginDetails(data);
+                if (UserManagerH.CheckIfUserBanned(client)) return;
 
-            client.LoadUserFromFile(client);
+                if (!UserManagerH.CheckWhitelist(client)) return;
 
-            if (UserManagerH.CheckIfUserBanned(client)) return;
+                if (WorldManager.CheckIfWorldExists() && ModManager.CheckIfModConflict(client, data)) return;
 
-            if (!UserManagerH.CheckWhitelist(client)) return;
+                LoginManagerH.RemoveOldClientSessions(client);
 
-            if (WorldManager.CheckIfWorldExists() && ModManager.CheckIfModConflict(client, data)) return;
+                InformationDisplayer.DisplayLogin(client);
 
-            LoginManagerH.RemoveOldClientSessions(client);
-
-            InformationDisplayer.DisplayLogin(client);
-
-            PostLogin(client);
+                PostLogin(client);
+            }
         }
 
         public static void RegisterUser(ServerClient client, LoginData data)
         {
             try
             {
-                client.UserFile.SetLoginDetails(data);
-
-                client.UserFile.SaveUserFile();
+                client.UserFile.UpdateHash();
 
                 InformationDisplayer.DisplayRegister(client);
 
@@ -87,8 +85,10 @@ namespace GameServer.Managers
             {
                 Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
 
-                UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Username == client.UserFile.Username).FirstOrDefault();
-                toFind.UpdateAdmin(true, client);
+                client.UserFile.IsAdmin = true;
+                CommandData commandData = new CommandData();
+                commandData._commandMode = CommandMode.Op;
+                client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
 
                 WorldManager.RequireWorldFile(client);
             }

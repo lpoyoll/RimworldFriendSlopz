@@ -10,10 +10,6 @@ namespace GameServer.Managers
 {
     public static class MapManager
     {
-        //Variables
-
-        public readonly static string fileExtension = ".mpmap";
-
         [HandlesPacket(PacketHeader.MapManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
@@ -27,14 +23,14 @@ namespace GameServer.Managers
         public static void SaveUserMap(ServerClient client, MapFile file)
         {
             file.Username = client.UserFile.Username;
-            Serializer.ObjectBytesToFile(Path.Combine(Master.MapsPath, file.Tile + fileExtension), file);
+            Serializer.ObjectBytesToFile(Path.Combine(Master.MapsPath, file.Tile + CommonValues.DefaultSaveFormat), file);
 
             InformationDisplayer.DisplaySaveMap(client);
         }
 
         public static void DeleteMap(MapFile mapFile)
         {
-            File.Delete(Path.Combine(Master.MapsPath, mapFile.Tile + fileExtension));
+            File.Delete(Path.Combine(Master.MapsPath, mapFile.Tile + CommonValues.DefaultSaveFormat));
             InformationDisplayer.DisplayRemoveMap(mapFile.Tile.ToString());
         }
 
@@ -52,7 +48,7 @@ namespace GameServer.Managers
 
         public static MapFile GetMapFromTile(int mapTileToGet)
         {
-            string path = Path.Combine(Master.MapsPath, mapTileToGet + fileExtension);
+            string path = Path.Combine(Master.MapsPath, mapTileToGet + CommonValues.DefaultSaveFormat);
             if (File.Exists(path)) return Serializer.FileBytesToObject<MapFile>(path);
             else return null;
         }

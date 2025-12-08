@@ -8,15 +8,8 @@ using TCPNetwork.Server;
 
 namespace GameServer.Managers
 {
-
     public static class SaveManager
     {
-        // Variables
-
-        public readonly static string fileExtension = ".mpsave";
-
-        public readonly static string tempFileExtension = ".mpsavetemp";
-
         [HandlesPacket(PacketHeader.SaveManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
@@ -42,23 +35,10 @@ namespace GameServer.Managers
             string[] saves = Directory.GetFiles(Master.SavesPath);
             foreach (string save in saves)
             {
-                if (!save.EndsWith(fileExtension)) continue;
                 if (Path.GetFileNameWithoutExtension(save) == client.UserFile.Username) return true;
             }
 
             return false;
-        }
-
-        public static byte[] GetUserSaveFromUsername(string username)
-        {
-            string[] saves = Directory.GetFiles(Master.SavesPath);
-            foreach (string save in saves)
-            {
-                if (!save.EndsWith(fileExtension)) continue;
-                if (Path.GetFileNameWithoutExtension(save) == username) return File.ReadAllBytes(save);
-            }
-
-            return null;
         }
 
         public static void ResetClientSave(ServerClient client)
@@ -80,7 +60,7 @@ namespace GameServer.Managers
             if (client != null) client.Listener.DisconnectFlag = true;
 
             // Delete save file
-            try { File.Delete(Path.Combine(Master.SavesPath, username + fileExtension)); }
+            try { File.Delete(Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat)); }
             catch { Printer.Warning($"Failed to find {client.UserFile.Username}'s save"); }
 
             // Delete site files
@@ -106,7 +86,7 @@ namespace GameServer.Managers
     {
         public static void SendSaveToClient(ServerClient client)
         {
-            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Username + SaveManager.fileExtension);
+            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Username + CommonValues.DefaultSaveFormat);
 
             InformationDisplayer.DisplayLoadGame(client);
 
@@ -123,8 +103,8 @@ namespace GameServer.Managers
     {
         public static void ReceiveSaveFromClient(ServerClient client, SaveData data)
         {
-            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Username + SaveManager.fileExtension);
-            string tempClientSavePath = Path.Combine(Master.TempPath, client.UserFile.Username + SaveManager.tempFileExtension);
+            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Username + CommonValues.DefaultSaveFormat);
+            string tempClientSavePath = Path.Combine(Master.TempPath, client.UserFile.Username + CommonValues.TempSaveFormat);
 
             File.WriteAllBytes(tempClientSavePath, data._fileBytes);
 

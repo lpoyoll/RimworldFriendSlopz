@@ -7,13 +7,8 @@ using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
-
     public static class CaravanManager
     {
-        //Variables
-
-        public static readonly string fileExtension = ".mpcaravan";
-
         [HandlesPacket(PacketHeader.CaravanManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {

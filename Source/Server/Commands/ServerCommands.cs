@@ -215,7 +215,7 @@ namespace GameServer.Commands
             Printer.Title("----------------------------------------");
             foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
             {
-                Printer.Warning($"{client.ConnectedIP} - {client.UserFile.Username}");
+                Printer.Warning($"{client.CurrentIP} - {client.UserFile.Username}");
             }
             Printer.Title("----------------------------------------");
         }
@@ -255,7 +255,6 @@ namespace GameServer.Commands
                 client.UserFile.UpdateAdmin(true);
                 client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
-            toFind.SaveUserFile();
 
             Printer.Warning($"User '{toFind.Username}' has now admin privileges");
             bool CheckIfIsAlready(UserFile userFile)
@@ -292,7 +291,6 @@ namespace GameServer.Commands
                 client.UserFile.UpdateAdmin(false);
                 client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
             }
-            toFind.SaveUserFile();
 
             Printer.Warning($"User '{toFind.Username}' is no longer an admin");
 
@@ -328,7 +326,7 @@ namespace GameServer.Commands
 
             Printer.Title($"Banned players: [{userFiles.Count()}]");
             Printer.Title("----------------------------------------");
-            foreach (UserFile user in userFiles) Printer.Warning($"{user.Username} - {user.SavedIP}");
+            foreach (UserFile user in userFiles) Printer.Warning($"{user.Username} - {user.LatestIP}");
             Printer.Title("----------------------------------------");
         }
 

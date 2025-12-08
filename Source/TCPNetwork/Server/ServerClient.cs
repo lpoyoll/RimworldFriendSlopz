@@ -10,7 +10,7 @@ namespace TCPNetwork.Server
     [Serializable]
     public class ServerClient
     {
-        public string ConnectedIP { get; set; } = string.Empty;
+        public string CurrentIP { get; set; } = string.Empty;
 
         public UserFile UserFile { get; set; } = null;
 
@@ -19,7 +19,7 @@ namespace TCPNetwork.Server
         public ServerClient(TcpClient tcp)
         {
             if (tcp == null) return;
-            else ConnectedIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
+            else CurrentIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
         }
 
         public void LoadUserFromFile(ServerClient client) 
@@ -32,7 +32,7 @@ namespace TCPNetwork.Server
                 if (file.Username == client.UserFile.Username)
                 {
                     UserFile = file;
-                    UserFile.SavedIP = ConnectedIP;
+                    UserFile.UpdateIP(CurrentIP);
                     break;
                 }
             }

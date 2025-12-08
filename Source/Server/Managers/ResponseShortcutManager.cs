@@ -19,7 +19,7 @@ namespace GameServer.Managers
 
             if (shouldBroadcast)
             {
-                Printer.Warning($"[Illegal action] > {client.UserFile.Username} > {client.ConnectedIP}");
+                Printer.Warning($"[Illegal action] > {client.UserFile.Username} > {client.CurrentIP}");
                 Printer.Warning($"[Illegal reason] > {message}");
             }
         }

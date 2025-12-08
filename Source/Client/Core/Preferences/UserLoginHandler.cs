@@ -96,7 +96,7 @@ namespace GameClient.Core.Preferences
         {
             LoginDataFile file = LoadLoginData();
             file.Username = username;
-            file.Password = password;
+            file.Password = Hasher.GetHashFromString(password);
 
             SaveLoginData(file);
         }

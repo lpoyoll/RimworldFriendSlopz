@@ -13,21 +13,26 @@ namespace TCPNetwork.Server
 {
     public class UserFile
     {
+        //DO NOT USE PRIVATE SET ON THIS VARIABLES
+        //IT WILL CAUSE DESERIALIZATION TO WORK INCORRECTLY
+
         public string Username { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
+
+        public string Hash { get; set; } = string.Empty;
+
+        public string LatestIP { get; set; } = null;
+
+        public string GuildName { get; set; } = null;
 
         public bool IsAdmin { get; set; } = false;
 
         public bool IsBanned { get; set; } = false;
 
-        public string SavedIP { get; set; } = string.Empty;
-
         public double EventProtectionTime { get; set; } = -1;
 
         public double AidProtectionTime { get; set; } = -1;
-
-        public string GuildName { get; set; } = string.Empty;
 
         public List<string> AllyPlayers { get; set; } = new List<string>();
 
@@ -37,9 +42,7 @@ namespace TCPNetwork.Server
 
         private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 
-        public static string fileExtension { get; set; } = ".mpuser";
-
-        public void SetLoginDetails(LoginData data)
+        public void UpdateLoginDetails(LoginData data)
         {
             Username = data._username;
             Password = data._password;
@@ -49,7 +52,7 @@ namespace TCPNetwork.Server
         {
             SavingSemaphore.WaitOne();
 
-            try { Serializer.SerializeToFile(Path.Combine(CommonValues.ServerUsersPath, Username + fileExtension), this); }
+            try { Serializer.SerializeToFile(Path.Combine(CommonValues.ServerUsersPath, Username + CommonValues.DefaultSaveFormat), this); }
             catch (Exception e) { throw new Exception(e.ToString()); }
 
             SavingSemaphore.Release();
@@ -75,17 +78,8 @@ namespace TCPNetwork.Server
             SaveUserFile();
         }
 
-        public void UpdateAdmin(bool mode, ServerClient connectedClient = null)
+        public void UpdateAdmin(bool mode)
         {
-            if (connectedClient != null)
-            {
-                connectedClient.UserFile.IsAdmin = true;
-
-                CommandData commandData = new CommandData();
-                commandData._commandMode = CommandMode.Op;
-                connectedClient.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
-            }
-
             IsAdmin = mode;
             SaveUserFile();
         }
@@ -93,6 +87,24 @@ namespace TCPNetwork.Server
         public void UpdateBan(bool mode)
         {
             IsBanned = mode;
+            SaveUserFile();
+        }
+
+        public void UpdateIP(string IP)
+        {
+            LatestIP = IP;
+            SaveUserFile();
+        }
+
+        public void UpdateSiteConfigs(SiteConfigFile[] configs)
+        {
+            SiteConfigs = configs;
+            SaveUserFile();
+        }
+
+        public void UpdateHash() 
+        { 
+            Hash = Hasher.GetHashFromString($"{Username}:{Password}");
             SaveUserFile();
         }
     }

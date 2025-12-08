@@ -8,11 +8,8 @@ using TCPNetwork.Server;
 
 namespace GameServer.Managers
 {
-
     public static class RoadManager
     {
-        public readonly static string fileExtension = ".mproad";
-
         [HandlesPacket(PacketHeader.RoadManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {

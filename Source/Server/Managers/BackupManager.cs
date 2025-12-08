@@ -7,11 +7,8 @@ using static Shared.CommonEnumerators;
 
 namespace GameServer.Managers
 {
-
     public static class BackupManager
     {
-        public static readonly string fileExtension = ".zip";
-
         private static readonly Semaphore savingSemaphore = new Semaphore(1, 1);
 
         public static void BackupServer()
@@ -21,7 +18,7 @@ namespace GameServer.Managers
             try
             {
                 string backupName = $"Server_{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}_{DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
-                string backupPath = $"{Master.BackupServerPath + Path.DirectorySeparatorChar}{backupName}{fileExtension}";
+                string backupPath = $"{Master.BackupServerPath + Path.DirectorySeparatorChar}{backupName}{CommonValues.CompressedSaveFormat}";
 
                 List<string> toArchive = new List<string>();
                 toArchive.AddRange(Directory.GetFiles(Master.AssetsPath, "*.*", SearchOption.AllDirectories));
@@ -50,7 +47,7 @@ namespace GameServer.Managers
             {
                 string playerArchivedSavePath = Path.Combine(Master.BackupUsersPath, username);
                 if (persistent) playerArchivedSavePath += " - persistent";
-                playerArchivedSavePath += fileExtension;
+                playerArchivedSavePath += CommonValues.CompressedSaveFormat;
 
                 if (File.Exists(playerArchivedSavePath))
                 {
@@ -70,17 +67,17 @@ namespace GameServer.Managers
 
                 List<string> toArchive = new List<string>();
 
-                string userFilePath = Path.Combine(Master.UsersPath, username + UserManagerH.fileExtension);
+                string userFilePath = Path.Combine(Master.UsersPath, username + CommonValues.DefaultSaveFormat);
                 if (File.Exists(userFilePath)) toArchive.Add(userFilePath);
 
-                string userSavePath = Path.Combine(Master.SavesPath, username + SaveManager.fileExtension);
+                string userSavePath = Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat);
                 if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
 
                 SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-                foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + SiteManagerHelper.fileExtension));
+                foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
 
                 SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
-                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + SettlementManager.fileExtension));
+                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));
 
                 CreateArchive(toArchive, playerArchivedSavePath);
 

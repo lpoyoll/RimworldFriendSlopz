@@ -57,18 +57,12 @@ namespace GameServer.Managers
 
     public static class UserManagerH
     {
-        //Variables
-
-        public readonly static string fileExtension = ".mpuser";
-
         public static UserFile GetUserFile(ServerClient client)
         {
             string[] userFiles = Directory.GetFiles(Master.UsersPath);
 
             foreach (string userFile in userFiles)
             {
-                if (!userFile.EndsWith(fileExtension)) continue;
-
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
                 if (file.Username == client.UserFile.Username) return file;
             }
@@ -82,8 +76,6 @@ namespace GameServer.Managers
 
             foreach (string userFile in userFiles)
             {
-                if (!userFile.EndsWith(fileExtension)) continue;
-
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
                 if (file.Username == username) return file;
             }
@@ -96,11 +88,7 @@ namespace GameServer.Managers
             List<UserFile> userFiles = new List<UserFile>();
 
             string[] existingUsers = Directory.GetFiles(Master.UsersPath);
-            foreach (string user in existingUsers)
-            {
-                if (!user.EndsWith(fileExtension)) continue;
-                userFiles.Add(Serializer.SerializeFromFile<UserFile>(user));
-            }
+            foreach (string user in existingUsers) userFiles.Add(Serializer.SerializeFromFile<UserFile>(user));
             return userFiles.ToArray();
         }
 
@@ -126,6 +114,7 @@ namespace GameServer.Managers
             {
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.InvalidLogin);
                 return false;
+
             }
         }
 
@@ -137,21 +126,6 @@ namespace GameServer.Managers
                 Printer.Message($"Banned user '{client.UserFile.Username}' tried to join the server");
                 LoginManagerH.DenyConnectionWithReason(client, LoginResponse.BannedLogin);
                 return true;
-            }
-        }
-
-        public static bool CheckLoginData(ServerClient client, LoginData data)
-        {
-            bool isInvalid = false;
-            if (!StringChecker.CheckIfStringValid(data._username)) isInvalid = true;
-            else if (data._username.Any(char.IsWhiteSpace)) isInvalid = true;
-            else if (data._username.Length > 32) isInvalid = true;
-
-            if (!isInvalid) return true;
-            else
-            {
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.InvalidLogin);
-                return false;
             }
         }
 

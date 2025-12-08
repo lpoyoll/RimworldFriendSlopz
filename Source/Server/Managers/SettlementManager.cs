@@ -8,13 +8,8 @@ using TCPNetwork.Packets;
 
 namespace GameServer.Managers
 {
-
     public static class SettlementManager
     {
-        //Variables
-
-        public readonly static string fileExtension = ".mpsettlement";
-
         [HandlesPacket(PacketHeader.SettlementManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes)
         {
@@ -45,7 +40,7 @@ namespace GameServer.Managers
                 settlementFile.Label = client.UserFile.Username;
                 settlementData._settlementFile = settlementFile;
 
-                Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + fileExtension), settlementFile);
+                Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat), settlementFile);
 
                 settlementData._stepMode = SettlementStepMode.Add;
                 foreach (ServerClient cClient in ServerNetwork.Instance.GetConnectedClientsSafe())
@@ -92,7 +87,7 @@ namespace GameServer.Managers
 
             void Delete()
             {
-                File.Delete(Path.Combine(Master.SettlementsPath, settlementFile.Tile + fileExtension));
+                File.Delete(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));
 
                 InformationDisplayer.DisplayRemoveSettlement(settlementFile.Tile.ToString());
             }
@@ -110,8 +105,6 @@ namespace GameServer.Managers
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
-                if (!settlement.EndsWith(fileExtension)) continue;
-
                 SettlementFile settlementJSON = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementJSON.Tile == tileToCheck) return true;
             }
@@ -124,8 +117,6 @@ namespace GameServer.Managers
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
-                if (!settlement.EndsWith(fileExtension)) continue;
-
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.Tile == tileToGet) return settlementFile;
             }
@@ -138,8 +129,6 @@ namespace GameServer.Managers
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
-                if (!settlement.EndsWith(fileExtension)) continue;
-
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.Username == usernameToGet) return settlementFile;
             }
@@ -152,11 +141,7 @@ namespace GameServer.Managers
             List<SettlementFile> settlementList = new List<SettlementFile>();
 
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
-            foreach (string settlement in settlements)
-            {
-                if (!settlement.EndsWith(fileExtension)) continue;
-                settlementList.Add(Serializer.SerializeFromFile<SettlementFile>(settlement));
-            }
+            foreach (string settlement in settlements) settlementList.Add(Serializer.SerializeFromFile<SettlementFile>(settlement));
 
             return settlementList.ToArray();
         }
@@ -168,8 +153,6 @@ namespace GameServer.Managers
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
-                if (!settlement.EndsWith(fileExtension)) continue;
-
                 SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
                 if (settlementFile.Username == usernameToCheck) settlementList.Add(settlementFile);
             }

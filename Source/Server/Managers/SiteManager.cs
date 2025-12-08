@@ -113,7 +113,7 @@ namespace GameServer.Managers
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.SiteManager, siteData);
 
-            File.Delete(Path.Combine(Master.SitesPath, siteFile.Tile + SiteManagerHelper.fileExtension));
+            File.Delete(Path.Combine(Master.SitesPath, siteFile.Tile + CommonValues.DefaultSaveFormat));
 
             InformationDisplayer.DisplayRemoveSite(siteFile.Tile.ToString());
         }
@@ -225,22 +225,18 @@ namespace GameServer.Managers
                     configFiles.Add(toAdd);
                 }
 
-                client.UserFile.SiteConfigs = configFiles.ToArray();
-
-                client.UserFile.SaveUserFile();
+                client.UserFile.UpdateSiteConfigs(configFiles.ToArray());
             }
         }
     }
 
     public static class SiteManagerHelper
     {
-        public readonly static string fileExtension = ".mpsite";
-
         public static void SaveSite(SiteFile siteFile)
         {
             siteFile.SavingSemaphore.WaitOne();
 
-            try { Serializer.SerializeToFile(Path.Combine(Master.SitesPath, siteFile.Tile + fileExtension), siteFile); }
+            try { Serializer.SerializeToFile(Path.Combine(Master.SitesPath, siteFile.Tile + CommonValues.DefaultSaveFormat), siteFile); }
             catch (Exception e) { Printer.Error(e.ToString()); }
 
             siteFile.SavingSemaphore.Release();
@@ -293,13 +289,10 @@ namespace GameServer.Managers
             try
             {
                 string[] sites = Directory.GetFiles(Master.SitesPath);
-                foreach (string site in sites)
-                {
-                    if (!site.EndsWith(fileExtension)) continue;
-                    sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
-                }
+                foreach (string site in sites) sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
             }
             catch (Exception ex) { Printer.Error($"Sites could not be loaded, either your formatting is wrong in the file 'SiteConfig.json' or you have not updated your sites to the newest version ('Update' command).\n\n{ex.ToString()}"); }
+
             return sitesList.ToArray();
         }
 
@@ -308,8 +301,6 @@ namespace GameServer.Managers
             string[] sites = Directory.GetFiles(Master.SitesPath);
             foreach (string site in sites)
             {
-                if (!site.EndsWith(fileExtension)) continue;
-
                 SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
                 if (siteFile.Tile == tileToCheck) return true;
             }

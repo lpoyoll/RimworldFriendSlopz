@@ -129,7 +129,7 @@ namespace GameServer.Managers
                         toUpdateConnected.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
                         GoodwillManager.UpdateClientGoodwills(toUpdateConnected);
                     }
-                    File.Delete(Path.Combine(Master.FactionsPath, factionFile.Name + GuildManagerH.fileExtension));
+                    File.Delete(Path.Combine(Master.FactionsPath, factionFile.Name + CommonValues.DefaultSaveFormat));
 
                     InformationDisplayer.DisplayRemoveFaction(factionFile.Name);
                 }
@@ -348,17 +348,13 @@ namespace GameServer.Managers
 
     public static class GuildManagerH
     {
-        //Variables
-
-        public readonly static string fileExtension = ".mpfaction";
-
         public static void SaveFactionFile(GuildFile factionFile)
         {
             factionFile.SavingSemaphore.WaitOne();
 
             try
             {
-                string savePath = Path.Combine(Master.FactionsPath, factionFile.Name + fileExtension);
+                string savePath = Path.Combine(Master.FactionsPath, factionFile.Name + CommonValues.DefaultSaveFormat);
                 Serializer.SerializeToFile(savePath, factionFile);
 
                 GuildMember[] guildMembers = GetAllFactionMembers(factionFile);
@@ -392,11 +388,7 @@ namespace GameServer.Managers
             List<GuildFile> factionFiles = new List<GuildFile>();
 
             string[] factions = Directory.GetFiles(Master.FactionsPath);
-            foreach (string faction in factions)
-            {
-                if (!faction.EndsWith(fileExtension)) continue;
-                factionFiles.Add(Serializer.SerializeFromFile<GuildFile>(faction));
-            }
+            foreach (string faction in factions) factionFiles.Add(Serializer.SerializeFromFile<GuildFile>(faction));
 
             return factionFiles.ToArray();
         }
