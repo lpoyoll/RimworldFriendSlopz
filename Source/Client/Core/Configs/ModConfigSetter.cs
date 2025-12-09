@@ -1,5 +1,4 @@
-﻿using GameClient.Core.Preferences;
-using GameClient.Dialogs;
+﻿using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
@@ -9,6 +8,7 @@ using System.IO;
 using UnityEngine;
 using Verse;
 using System.Diagnostics;
+using GameClient.Files;
 
 namespace GameClient.Core.Configs
 {
@@ -110,7 +110,10 @@ namespace GameClient.Core.Configs
             RT_Dialog_YesNo dialog = new RT_Dialog_YesNo("Are you sure you want to RESET your ACCOUNT?",
                 delegate
                 {
-                    UserLoginHandler.DeleteLoginData();
+                    PersistentSettings settings = PersistentSettings.Load();
+                    settings.UserSettings.Reset();
+                    settings.Save();
+
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Account has been reset" }));
                 });
 

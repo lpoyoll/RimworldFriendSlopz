@@ -4,11 +4,11 @@ using Shared;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
-using GameClient.Core.Preferences;
 using GameClient.Managers;
 using System.Collections.Generic;
 using System.Linq;
 using GameClient.Values;
+using GameClient.Misc;
 
 namespace GameClient.Patches.Pages
 {

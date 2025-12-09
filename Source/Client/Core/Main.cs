@@ -1,4 +1,5 @@
-﻿using GameClient.Misc;
+﻿using GameClient.Files;
+using GameClient.Misc;
 using HarmonyLib;
 using Shared;
 using System.Globalization;
@@ -27,6 +28,8 @@ namespace GameClient.Core
 
                 CaravanManagerH.SetCaravanDef();
                 SiteManagerH.SetSiteDefs();
+
+                PersistentSettings.SetFilePath(Path.Combine(Master.AppdataRTPath, "PersistentSettings" + CommonValues.DefaultSaveFormat));
             }
         }
 

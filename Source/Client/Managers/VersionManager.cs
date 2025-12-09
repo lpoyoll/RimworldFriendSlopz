@@ -4,7 +4,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using GameClient.Core;
-using GameClient.Core.Preferences;
 using GameClient.Dialogs;
 using GameClient.Misc;
 using Shared;

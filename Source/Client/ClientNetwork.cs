@@ -1,15 +1,15 @@
-using GameClient.Core.Preferences;
 using GameClient.Dialogs;
+using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
-using TCPNetwork;
-using TCPNetwork.Server;
 using Shared;
 using System;
 using System.Net.Sockets;
-using static Shared.CommonEnumerators;
 using System.Threading.Tasks;
+using TCPNetwork;
+using TCPNetwork.Server;
+using static Shared.CommonEnumerators;
 
 namespace GameClient
 {
@@ -53,9 +53,11 @@ namespace GameClient
         {
             if (TryConnect())
             {
-                ConnectionDataHandler.SaveConnectionData(Ip, Port);
-
                 SessionValues.CurrentNetworkState = ClientNetworkState.Connected;
+
+                PersistentSettings settings = PersistentSettings.Load();
+                settings.ServerSettings.Set(Ip, Port);
+                settings.Save();
 
                 Printer.Message($"Connected to server");
             }

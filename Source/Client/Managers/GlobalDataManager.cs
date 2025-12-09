@@ -1,4 +1,4 @@
-using GameClient.Core.Preferences;
+using GameClient.Files;
 using GameClient.Values;
 using Shared;
 using TCPNetwork.Packets;
@@ -22,7 +22,6 @@ namespace GameClient.Managers
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
             ModManager.ReceiveMods(serverGlobalData);
-            RecentServersHandler.AddServerToList(serverGlobalData._serverValues.ServerName, $"{ClientNetwork.Ip}:{ClientNetwork.Port}");
         }
     }
 }
