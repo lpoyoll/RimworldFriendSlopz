@@ -40,7 +40,20 @@ namespace GameClient.Patches
                 }
             };
 
+            Command_Action command_SiteConfigMenu = new Command_Action
+            {
+                defaultLabel = "Site settings",
+                defaultDesc = "Configure the settings for your sites",
+                icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
+                action = delegate
+                {
+                    if (SessionValues.ActionValues.EnableSites) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                    else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                }
+            };
+
             if (__instance.Faction == Find.FactionManager.OfPlayer) gizmoList.Add(command_PersonalFactionMenu);
+            gizmoList.Add(command_SiteConfigMenu);
 
             __result = gizmoList;
         }
