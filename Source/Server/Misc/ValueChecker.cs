@@ -1,7 +1,7 @@
 ﻿using GameServer.Core;
 using GameServer.Files;
-using TCPNetwork.Server;
 using Shared;
+using TCPNetwork.Files.Client;
 
 namespace GameServer.Misc
 {

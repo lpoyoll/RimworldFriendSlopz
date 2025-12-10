@@ -6,6 +6,7 @@ using Shared.Files.Guild;
 using System;
 using System.Collections.Generic;
 using TCPNetwork.Packets;
+using Verse;
 using static Shared.CommonEnumerators;
 using static Shared.Files.Guild.GuildMember;
 
@@ -39,7 +40,7 @@ namespace GameClient.Managers
                     OnFactionNoPower();
                     break;
 
-                case GuildStepMode.AddMember:
+                case GuildStepMode.Invite:
                     OnFactionGetInvited(data);
                     break;
 
@@ -53,6 +54,14 @@ namespace GameClient.Managers
 
                 case GuildStepMode.MemberList:
                     OnFactionMemberList(data);
+                    break;
+
+                case GuildStepMode.Promote:
+                    OnFactionPromote();
+                    break;
+
+                case GuildStepMode.Demote:
+                    OnFactionDemote();
                     break;
             }
         }
@@ -73,7 +82,7 @@ namespace GameClient.Managers
             {
                 PlayerGuildData playerFactionData = new PlayerGuildData();
                 playerFactionData._stepMode = GuildStepMode.RemoveMember;
-                playerFactionData._dataInt = SessionValues.ChosenSettlement.Tile;
+                playerFactionData._dataInt = Find.AnyPlayerHomeMap.Tile;
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
             };
@@ -115,7 +124,7 @@ namespace GameClient.Managers
 
                     PlayerGuildData playerFactionData = new PlayerGuildData();
                     playerFactionData._stepMode = GuildStepMode.Create;
-                    playerFactionData._file.Name = RT_Dialog_Inputs.DialogInputResults[0];
+                    playerFactionData._guild.Name = RT_Dialog_Inputs.DialogInputResults[0];
 
                     ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
                 }
@@ -180,7 +189,7 @@ namespace GameClient.Managers
             Action r1 = delegate
             {
                 PlayerGuildData playerFactionData = new PlayerGuildData();
-                playerFactionData._stepMode = GuildStepMode.AddMember;
+                playerFactionData._stepMode = GuildStepMode.Invite;
                 playerFactionData._dataInt = SessionValues.ChosenSettlement.Tile;
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
@@ -231,12 +240,12 @@ namespace GameClient.Managers
             {
                 ClientValues.HasFaction = true;
 
-                factionManifest._stepMode = GuildStepMode.AcceptInvite;
+                factionManifest._stepMode = GuildStepMode.AddMember;
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest._file.Name}, accept?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest._guild.Name}, accept?", r1, null);
             RT_Dialog_Base.PushNewDialog(d1);
         }
 
@@ -252,15 +261,25 @@ namespace GameClient.Managers
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You can't do this action as a faction admin!" }));
         }
 
+        private static void OnFactionPromote()
+        {
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been promoted in your faction!" }));
+        }
+
+        private static void OnFactionDemote()
+        {
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been demoted in your faction!" }));
+        }
+
         private static void OnFactionMemberList(PlayerGuildData factionManifest)
         {
             RT_Dialog_Wait.Instance.Close();
 
             List<string> toDisplay = new List<string>();
 
-            for (int i = 0; i < factionManifest._file.GuildMembers.Count; i++)
+            for (int i = 0; i < factionManifest._guild.GuildMembers.Count; i++)
             {
-                GuildMember member = factionManifest._file.GuildMembers[i];
+                GuildMember member = factionManifest._guild.GuildMembers[i];
 
                 toDisplay.Add($"{member.Username} - {(GuildRanks)member.Rank}");
             }

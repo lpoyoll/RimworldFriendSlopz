@@ -6,7 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using TCPNetwork.Server;
+using TCPNetwork.Files.Client;
 using static Shared.CommonEnumerators;
 
 namespace TCPNetwork

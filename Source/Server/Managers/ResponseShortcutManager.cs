@@ -1,8 +1,8 @@
 ﻿using GameServer.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
-using TCPNetwork.Server;
 using TCPNetwork.Packets;
+using TCPNetwork.Files.Client;
 
 namespace GameServer.Managers
 {
@@ -44,7 +44,7 @@ namespace GameServer.Managers
         {
             data._stepMode = GuildStepMode.NoPower;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.GuildManager, data);
         }
     }
 }

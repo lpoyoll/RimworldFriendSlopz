@@ -1,8 +1,8 @@
 ﻿using GameServer.Core;
 using Shared;
 using Shared.Files;
-using TCPNetwork.Server;
 using TCPNetwork.Packets;
+using TCPNetwork.Files.Client;
 
 namespace GameServer.Managers
 {

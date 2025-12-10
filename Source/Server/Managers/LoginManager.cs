@@ -1,9 +1,9 @@
 using GameServer.Core;
 using GameServer.Misc;
 using TCPNetwork.Packets;
-using TCPNetwork.Server;
 using Shared;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Files.Client;
 
 namespace GameServer.Managers
 {

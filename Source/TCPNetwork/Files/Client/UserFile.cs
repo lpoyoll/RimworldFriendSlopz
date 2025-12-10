@@ -4,12 +4,13 @@ using Shared.Files.Guild;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Server
+namespace TCPNetwork.Files.Client
 {
     public class UserFile
     {
@@ -34,9 +35,7 @@ namespace TCPNetwork.Server
 
         public double AidProtectionTime { get; set; } = -1;
 
-        public List<string> AllyPlayers { get; set; } = new List<string>();
-
-        public List<string> EnemyPlayers { get; set; } = new List<string>();
+        public List<PlayerGoodwill> PlayerGoodwills { get; set; } = new List<PlayerGoodwill>();
 
         public SiteConfigFile[] SiteConfigs { get; set; } = Array.Empty<SiteConfigFile>();
 
@@ -93,6 +92,22 @@ namespace TCPNetwork.Server
         public void UpdateIP(string IP)
         {
             LatestIP = IP;
+            SaveUserFile();
+        }
+
+        public void UpdateGoodwill(string username, Goodwill goodwill)
+        {
+            PlayerGoodwill toFind = PlayerGoodwills.FirstOrDefault(fetch => fetch.Name == username);
+            if (toFind != null) toFind.Goodwill = goodwill;
+            else
+            {
+                PlayerGoodwill newGoodwill = new PlayerGoodwill();
+                newGoodwill.Name = username;
+                newGoodwill.Goodwill = goodwill;
+
+                PlayerGoodwills.Add(newGoodwill);
+            }
+
             SaveUserFile();
         }
 

@@ -8,7 +8,7 @@ namespace Shared
 
         public enum WorldObjectMode { Settlement, Site, Caravan }
 
-        public enum ResponseStepMode { IllegalAction, UserUnavailable, Pop }
+        public enum ResponseStepMode { IllegalAction, UserUnavailable, Pop, NoPower }
 
         public enum SaveStepMode { Send, Receive, Reset }
 
@@ -30,7 +30,7 @@ namespace Shared
 
         public enum ModConfigStepMode { Send, Ask }
 
-        public enum GuildStepMode { Create, Delete, NameInUse, NoPower, AddMember, RemoveMember, AcceptInvite, Promote, Demote, AdminProtection, MemberList }
+        public enum GuildStepMode { Create, Delete, NameInUse, NoPower, Invite, RemoveMember, AddMember, Promote, Demote, AdminProtection, MemberList }
 
         public enum Goodwill { Enemy, Neutral, Ally, Faction, Personal }
 

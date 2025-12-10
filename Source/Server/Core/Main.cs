@@ -2,6 +2,7 @@ using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
 using Shared.Files;
+using Shared.Files.Guild;
 using System.Globalization;
 using System.Reflection;
 using static Shared.CommonEnumerators;
@@ -45,6 +46,7 @@ namespace GameServer.Core
             StorytellerValuesFile.Path = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
             SiteValuesFile.Path = Path.Combine(Master.ConfigsPath, "SiteConfig.json");
             ScenarioValuesFile.Path = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
+            GuildFile.GeneralPath = Path.Combine(Master.FactionsPath);
             RoadValuesFile.Path = Path.Combine(Master.ConfigsPath, "RoadConfig.json");
             ModConfigFile.Path = Path.Combine(Master.ConfigsPath, "ModConfig.json");
             DifficultyValuesFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");

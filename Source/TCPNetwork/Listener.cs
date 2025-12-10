@@ -1,5 +1,4 @@
 ﻿using Shared;
-using TCPNetwork.Server;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using System.Threading.Tasks;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
 using TCPNetwork.Packets;
+using TCPNetwork.Files.Client;
 
 namespace TCPNetwork
 {

@@ -8,7 +8,7 @@ using System;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using TCPNetwork;
-using TCPNetwork.Server;
+using TCPNetwork.Files.Client;
 using static Shared.CommonEnumerators;
 
 namespace GameClient

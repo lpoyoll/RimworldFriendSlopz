@@ -5,7 +5,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 
-namespace TCPNetwork.Server
+namespace TCPNetwork.Files.Client
 {
     [Serializable]
     public class ServerClient

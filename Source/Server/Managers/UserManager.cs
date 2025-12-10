@@ -3,10 +3,10 @@ using GameServer.Core;
 using GameServer.Files;
 using GameServer.Misc;
 using TCPNetwork.Packets;
-using TCPNetwork.Server;
 using Shared;
 using Shared.Files;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Files.Client;
 
 namespace GameServer.Managers
 {

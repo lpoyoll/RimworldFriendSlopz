@@ -2,11 +2,11 @@
 using GameServer.Managers;
 using GameServer.Misc;
 using TCPNetwork;
-using TCPNetwork.Server;
 using Shared;
 using System.Net;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
+using TCPNetwork.Files.Client;
 
 namespace GameServer
 {

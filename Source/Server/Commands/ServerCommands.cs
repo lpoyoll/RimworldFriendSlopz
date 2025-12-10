@@ -6,8 +6,8 @@ using GameServer.Files;
 using GameServer.Managers;
 using GameServer.Misc;
 using Shared.Files;
-using TCPNetwork.Server;
 using TCPNetwork.Packets;
+using TCPNetwork.Files.Client;
 
 namespace GameServer.Commands
 {

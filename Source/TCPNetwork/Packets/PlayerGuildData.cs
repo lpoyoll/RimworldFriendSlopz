@@ -8,13 +8,8 @@ namespace TCPNetwork.Packets
     {
         public GuildStepMode _stepMode { get; set; } = GuildStepMode.Create;
 
-        public GuildFile _file { get; set; } = new GuildFile();
+        public GuildFile _guild { get; set; } = new GuildFile();
 
         public int _dataInt { get; set; } = -1;
-
-        public override string ToString()
-        {
-            return $"PlayerGuildData:|{_stepMode}|{_file}|{_dataInt}";
-        }
     }
 }
