@@ -22,11 +22,16 @@ namespace GameServer.Core
             Validator.CheckIfFirstBoot();
             MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
 
-            if (Master.ActionConfigs.EnableSites) SiteManager.UpdateAllSiteInfo();
-
             ServerNetwork _ = new ServerNetwork();
 
-            if (Master.BackupConfig.AutomaticBackups) Threader.GenerateServerThread(Threader.ServerMode.Backup);
+            if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
+
+            if (Master.ActionConfigs.EnableSites)
+            {
+                SiteManagerHelper.SetSitePresets();
+                Task.Run(SiteManager.StartSiteTicker);
+            }
+
             ServerBrowserManager.StartLoops();
 
             while (true) ConsoleManager.ListenForServerCommands();

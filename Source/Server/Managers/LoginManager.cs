@@ -85,7 +85,7 @@ namespace GameServer.Managers
             {
                 Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
 
-                client.UserFile.IsAdmin = true;
+                client.UserFile.UpdateAdmin(true);
                 CommandData commandData = new CommandData();
                 commandData._commandMode = CommandMode.Op;
                 client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);

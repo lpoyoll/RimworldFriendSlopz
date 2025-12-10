@@ -70,8 +70,6 @@ namespace GameServer
             Printer.Warning($"Listening for users at {Ip}:{Port}");
             Printer.Warning("Type 'help' to get a list of available commands");
 
-            Threader.GenerateServerThread(Threader.ServerMode.Sites);
-
             Main_.ChangeTitle();
 
             while (true) TryConnect();

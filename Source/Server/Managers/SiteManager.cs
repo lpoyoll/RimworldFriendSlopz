@@ -122,10 +122,10 @@ namespace GameServer.Managers
         {
             while (true)
             {
+                Thread.Sleep(TimeSpan.FromMinutes(Master.SiteValues.TimeIntervalMinutes));
+
                 try { SiteRewardTick(); }
                 catch (Exception e) { Printer.Error($"Site tick failed, this should never happen. Exception > {e}"); }
-
-                Thread.Sleep(TimeSpan.FromMinutes(Master.SiteValues.TimeIntervalMinutes));
             }
         }
 
@@ -171,34 +171,6 @@ namespace GameServer.Managers
             }
 
             InformationDisplayer.DisplaySiteTick();
-        }
-
-        public static void UpdateAllSiteInfo()
-        {
-            foreach (SiteFile site in SiteManagerHelper.GetAllSites())
-            {
-                foreach (SiteInfoFile config in Master.SiteValues.SiteInfoFiles)
-                {
-                    if (config.DefName == site.Type.DefName)
-                    {
-                        site.Type = config.Clone();
-                        SiteManagerHelper.SaveSite(site);
-                    }
-                }
-            }
-
-            foreach (UserFile file in UserManagerH.GetAllUserFiles())
-            {
-                foreach (SiteConfigFile config in file.SiteConfigs)
-                {
-                    if (!Master.SiteValues.SiteInfoFiles.Any(site => site.Rewards.Any(reward => reward.RewardDef == config.RewardDefName)))
-                    {
-                        Printer.Warning($"{file.Username}'s config was outdated for site {config.DefName}. Updating to new default config.", LogImportanceMode.Verbose);
-                        config.RewardDefName = Master.SiteValues.SiteInfoFiles.Where(S => S.DefName == config.DefName).First().Rewards.First().RewardDef;
-                        file.SaveUserFile();
-                    }
-                }
-            }
         }
 
         public static void ChangeUserSiteConfig(ServerClient client, SiteData data)
@@ -315,18 +287,21 @@ namespace GameServer.Managers
             return null;
         }
 
-        public static void SetSitePresets(SiteValuesFile file)
+        public static void SetSitePresets()
         {
-            List<SiteInfoFile> siteInfoFiles = new List<SiteInfoFile>();
-
-            siteInfoFiles.Add(new SiteInfoFile()
+            if (Master.SiteValues.SiteInfoFiles.Length > 0) return;
+            else
             {
-                DefName = "RTFarmland",
-                DefNameCost = ["Silver"],
-                Cost = [500],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                List<SiteInfoFile> siteInfoFiles = new List<SiteInfoFile>();
+
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTFarmland",
+                    DefNameCost = ["Silver"],
+                    Cost = [500],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "RawRice",
                         RewardAmount = 50
@@ -346,17 +321,17 @@ namespace GameServer.Managers
                         RewardDef = "PsychoidLeaves",
                         RewardAmount = 25
                     }
-                ]
-            });
+                    ]
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTHunterCamp",
-                DefNameCost = ["Silver"],
-                Cost = [500],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTHunterCamp",
+                    DefNameCost = ["Silver"],
+                    Cost = [500],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "Meat_Muffalo",
                         RewardAmount = 125
@@ -377,16 +352,16 @@ namespace GameServer.Managers
                         RewardAmount = 60
                     },
                 ]
-            });
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTQuarry",
-                DefNameCost = ["Silver"],
-                Cost = [500],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTQuarry",
+                    DefNameCost = ["Silver"],
+                    Cost = [500],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "BlocksGranite",
                         RewardAmount = 50
@@ -406,32 +381,32 @@ namespace GameServer.Managers
                         RewardDef = "Plasteel",
                         RewardAmount = 10
                     }
-                ]
-            });
+                    ]
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTSawmill",
-                DefNameCost = ["Silver"],
-                Cost = [300],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTSawmill",
+                    DefNameCost = ["Silver"],
+                    Cost = [300],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "WoodLog",
                         RewardAmount = 100
                     }
-                ]
-            });
+                    ]
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTBank",
-                DefNameCost = ["Silver"],
-                Cost = [750],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTBank",
+                    DefNameCost = ["Silver"],
+                    Cost = [750],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "Silver",
                         RewardAmount = 50
@@ -441,17 +416,17 @@ namespace GameServer.Managers
                         RewardDef = "Gold",
                         RewardAmount = 15
                     }
-                ]
-            });
+                    ]
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTLaboratory",
-                DefNameCost = ["Silver"],
-                Cost = [750],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTLaboratory",
+                    DefNameCost = ["Silver"],
+                    Cost = [750],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "ComponentIndustrial",
                         RewardAmount = 10
@@ -462,31 +437,31 @@ namespace GameServer.Managers
                         RewardAmount = 2
                     },
                 ]
-            });
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTRefinery",
-                DefNameCost = ["Silver"],
-                Cost = [750],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTRefinery",
+                    DefNameCost = ["Silver"],
+                    Cost = [750],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "Chemfuel",
                         RewardAmount = 50
                     }
-                ]
-            });
+                    ]
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTHerbalWorkshop",
-                DefNameCost = ["Silver"],
-                Cost = [750],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTHerbalWorkshop",
+                    DefNameCost = ["Silver"],
+                    Cost = [750],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "MedicineHerbal",
                         RewardAmount = 10
@@ -496,17 +471,17 @@ namespace GameServer.Managers
                         RewardDef = "MedicineIndustrial",
                         RewardAmount = 2
                     }
-                ]
-            });
+                    ]
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTTextileFactory",
-                DefNameCost = ["Silver"],
-                Cost = [750],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTTextileFactory",
+                    DefNameCost = ["Silver"],
+                    Cost = [750],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "Cloth",
                         RewardAmount = 50
@@ -516,17 +491,17 @@ namespace GameServer.Managers
                         RewardDef = "DevilstrandCloth",
                         RewardAmount = 30
                     }
-                ]
-            });
+                    ]
+                });
 
-            siteInfoFiles.Add(new SiteInfoFile()
-            {
-                DefName = "RTFoodProcessor",
-                DefNameCost = ["Silver"],
-                Cost = [750],
-                Rewards =
-                [
-                    new SiteRewardFile()
+                siteInfoFiles.Add(new SiteInfoFile()
+                {
+                    DefName = "RTFoodProcessor",
+                    DefNameCost = ["Silver"],
+                    Cost = [750],
+                    Rewards =
+                    [
+                        new SiteRewardFile()
                     {
                         RewardDef = "MealSurvivalPack",
                         RewardAmount = 10
@@ -536,10 +511,12 @@ namespace GameServer.Managers
                         RewardDef = "MealNutrientPaste",
                         RewardAmount = 30
                     }
-                ]
-            });
+                    ]
+                });
 
-            file.SiteInfoFiles = siteInfoFiles.ToArray();
+                Master.SiteValues.SiteInfoFiles = siteInfoFiles.ToArray();
+                Master.SiteValues.Save();
+            }
         }
     }
 }
