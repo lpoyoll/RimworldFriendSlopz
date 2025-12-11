@@ -59,6 +59,41 @@ namespace GameClient.Patches
         }
     }
 
+    [HarmonyPatch(typeof(Site), nameof(Settlement.GetGizmos))]
+    public static class Patch_Site_GetGizmos
+    {
+        [HarmonyPostfix]
+        public static void DoPost(ref IEnumerable<Gizmo> __result, Site __instance)
+        {
+            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+
+            List<Gizmo> gizmoList = __result.ToList();
+
+            Command_Action command_DestroySite = new Command_Action
+            {
+                defaultLabel = "Destroy site",
+                defaultDesc = "Destroy this site",
+                icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
+                action = delegate
+                {
+                    if (SessionValues.ActionValues.SiteAction.IsEnabled)
+                    {
+                        SessionValues.ChosenSite = __instance;
+                        SiteManager.RequestDestroySite();
+                    }
+                    else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                }
+            };
+
+            if (__instance.Faction == Find.FactionManager.OfPlayer || __instance.Faction == ClientValues.YourOnlineFaction)
+            {
+                gizmoList.Add(command_DestroySite);
+            }
+
+            __result = gizmoList;
+        }
+    }
+
     [HarmonyPatch(typeof(Caravan), nameof(Caravan.GetGizmos))]
     public static class Patch_Caravan_GetGizmos
     {

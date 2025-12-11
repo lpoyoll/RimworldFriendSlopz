@@ -86,23 +86,7 @@ namespace GameServer.Managers
         {
             SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._file.Tile);
             if (siteFile.Username == client.UserFile.Username) DestroySiteFromFile(siteFile);
-            else return;
-        }
-
-        private static void VisitSite(ServerClient client, SiteData siteData)
-        {
-            if (MapManager.CheckIfMapExists(siteData._file.Tile)) siteData._siteMap = MapManager.GetMapFromTile(siteData._file.Tile);
-            else siteData._siteMap = null;
-
-            client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
-        }
-
-        private static void RaidSite(ServerClient client, SiteData siteData)
-        {
-            if (MapManager.CheckIfMapExists(siteData._file.Tile)) siteData._siteMap = MapManager.GetMapFromTile(siteData._file.Tile);
-            else siteData._siteMap = null;
-
-            client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            else ResponseShortcutManager.SendNoPowerPacket(client);
         }
 
         public static void DestroySiteFromFile(SiteFile siteFile)
@@ -131,41 +115,19 @@ namespace GameServer.Managers
 
         public static void SiteRewardTick()
         {
-            SiteFile[] sites = SiteManagerHelper.GetAllSites();
-
-            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
+            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe()) 
             {
-                List<SiteReward> rewards = new List<SiteReward>();
+                SiteFile[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username == client.UserFile.Username ||
+                    (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)).ToArray();
 
-                // Get player specific sites
-                List<SiteFile> sitesToAdd = new List<SiteFile>();
-                if (string.IsNullOrEmpty(client.UserFile.GuildName)) sitesToAdd = sites.ToList().FindAll(fetch => fetch.Username == client.UserFile.Username);
-                else sitesToAdd.AddRange(sites.ToList().FindAll(fetch => fetch.GuildName == client.UserFile.GuildName));
-
-                foreach (SiteFile site in sitesToAdd)
+                if (availableSites.Length > 0)
                 {
-                    SiteReward rewardFile = new SiteReward();
-                    foreach (SiteReward reward in site.Type.Rewards)
-                    {
-                        if (client.UserFile.SiteConfigs.Any(S => S.RewardDefName == reward.DefName))
-                        {
-                            rewardFile.DefName = reward.DefName;
-                            rewardFile.Amount = reward.Amount;
-                        }
-                    }
+                    List<SiteReward> toReward = new List<SiteReward>();
+                    foreach (SiteFile site in availableSites) toReward.Add(client.UserFile.SiteConfigs.First(fetch => fetch.DefName == site.Type.DefName).Reward);
 
-                    if (rewardFile.DefName == "") rewardFile = site.Type.Rewards.First();
-
-                    rewards.Add(rewardFile);
-                }
-
-                if (rewards.Count == 0) continue;
-                else
-                {
                     SiteData siteData = new SiteData();
                     siteData._stepMode = SiteStepMode.Rewards;
-                    siteData._rewardFiles = rewards.ToArray();
-
+                    siteData._rewardFiles = toReward.ToArray();
                     client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
                 }
             }
@@ -176,8 +138,12 @@ namespace GameServer.Managers
         public static void ChangeUserSiteConfig(ServerClient client, SiteData data)
         {
             SiteRewardConfigData config = data._rewardConfig;
-            SiteConfigFile toModify = client.UserFile.SiteConfigs.First(fetch => fetch.DefName == config._siteDef);
-            toModify.RewardDefName = config._rewardDef;
+
+            PlayerSiteConfig toFind = client.UserFile.SiteConfigs.First(fetch => fetch.DefName == config._siteDef);
+            toFind.Reward.DefName = config._rewardDef;
+
+            SiteType type = Master.ActionConfigs.SiteAction.SiteTypes.First(fetch => fetch.DefName == config._siteDef);
+            toFind.Reward.Amount = type.Rewards.First(fetch => fetch.DefName == config._rewardDef).Amount;
 
             client.UserFile.SaveUserFile();
         }
@@ -185,20 +151,7 @@ namespace GameServer.Managers
         public static void SetSiteInfoForClient(ServerClient client)
         {
             if (client.UserFile.SiteConfigs.Length > 0) return;
-            else
-            {
-                List<SiteConfigFile> configFiles = new List<SiteConfigFile>();
-                for (int i = 0; i < Master.ActionConfigs.SiteAction.SiteTypes.Length; i++)
-                {
-                    SiteConfigFile toAdd = new SiteConfigFile();
-                    toAdd.DefName = Master.ActionConfigs.SiteAction.SiteTypes[i].DefName;
-                    toAdd.RewardDefName = Master.ActionConfigs.SiteAction.SiteTypes[i].Rewards.First().DefName;
-
-                    configFiles.Add(toAdd);
-                }
-
-                client.UserFile.UpdateSiteConfigs(configFiles.ToArray());
-            }
+            else client.UserFile.UpdateSiteConfigs(Master.ActionConfigs.SiteAction.SiteTypes);
         }
     }
 

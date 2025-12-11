@@ -1,8 +1,10 @@
 ﻿using Shared;
 using Shared.Files;
 using Shared.Files.Guilds;
+using Shared.Files.Sites;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -31,11 +33,11 @@ namespace TCPNetwork.Files.Client
 
         public bool IsBanned { get; set; } = false;
 
-        public PlayerCooldowns Cooldowns { get; set; } = null;
+        public PlayerCooldown Cooldowns { get; set; } = new PlayerCooldown();
 
-        public List<PlayerGoodwill> PlayerGoodwills { get; set; } = new List<PlayerGoodwill>();
+        public List<PlayerGoodwill> Goodwills { get; set; } = new List<PlayerGoodwill>();
 
-        public SiteConfigFile[] SiteConfigs { get; set; } = Array.Empty<SiteConfigFile>();
+        public PlayerSiteConfig[] SiteConfigs { get; set; } = Array.Empty<PlayerSiteConfig>();
 
         private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 
@@ -83,7 +85,7 @@ namespace TCPNetwork.Files.Client
 
         public void UpdateGoodwill(string username, Goodwill goodwill)
         {
-            PlayerGoodwill toFind = PlayerGoodwills.FirstOrDefault(fetch => fetch.Name == username);
+            PlayerGoodwill toFind = Goodwills.FirstOrDefault(fetch => fetch.Name == username);
             if (toFind != null) toFind.Goodwill = goodwill;
             else
             {
@@ -91,15 +93,26 @@ namespace TCPNetwork.Files.Client
                 newGoodwill.Name = username;
                 newGoodwill.Goodwill = goodwill;
 
-                PlayerGoodwills.Add(newGoodwill);
+                Goodwills.Add(newGoodwill);
             }
 
             SaveUserFile();
         }
 
-        public void UpdateSiteConfigs(SiteConfigFile[] configs)
+        public void UpdateSiteConfigs(SiteType[] configs)
         {
-            SiteConfigs = configs;
+            List<PlayerSiteConfig> newConfigs = new List<PlayerSiteConfig>();
+            foreach (SiteType type in configs)
+            {
+                PlayerSiteConfig newConfig = new PlayerSiteConfig();
+                newConfig.DefName = type.DefName;
+                newConfig.Reward = type.Rewards[0];
+
+                newConfigs.Add(newConfig);
+            }
+
+            SiteConfigs = newConfigs.ToArray();
+
             SaveUserFile();
         }
 

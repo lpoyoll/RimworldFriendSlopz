@@ -54,7 +54,7 @@ namespace GameServer.Managers
                 {
                     ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUsername(settlementFile.Username);
                     
-                    if (!PlayerCooldowns.CheckIfCanAid(target.UserFile, Master.ActionConfigs.AidAction.IsEnabled, Master.ActionConfigs.AidAction.Cooldown))
+                    if (!PlayerCooldown.CheckIfCanAid(target.UserFile, Master.ActionConfigs.AidAction.IsEnabled, Master.ActionConfigs.AidAction.Cooldown))
                     {
                         data._stepMode = AidStepMode.Reject;
                         client.Listener.EnqueuePacket(PacketHeader.AidManager, data);

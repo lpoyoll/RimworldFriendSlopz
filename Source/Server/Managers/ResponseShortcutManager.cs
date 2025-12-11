@@ -40,11 +40,12 @@ namespace GameServer.Managers
             client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
 
-        public static void SendNoPowerPacket(ServerClient client, PlayerGuildData data)
+        public static void SendNoPowerPacket(ServerClient client)
         {
-            data._stepMode = GuildStepMode.NoPower;
+            ResponseShortcutData data = new ResponseShortcutData();
+            data._stepMode = ResponseStepMode.NoPower;
 
-            client.Listener.EnqueuePacket(PacketHeader.GuildManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }
     }
 }

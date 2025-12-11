@@ -30,7 +30,7 @@ namespace Shared
 
         public enum ModConfigStepMode { Send, Ask }
 
-        public enum GuildStepMode { Create, Delete, NameInUse, NoPower, Invite, RemoveMember, AddMember, Promote, Demote, AdminProtection, MemberList }
+        public enum GuildStepMode { Create, Delete, NameInUse, Invite, RemoveMember, AddMember, Promote, Demote, AdminProtection, MemberList }
 
         public enum Goodwill { Enemy, Neutral, Ally, Faction, Personal }
 

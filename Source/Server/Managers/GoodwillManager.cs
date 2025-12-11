@@ -94,10 +94,10 @@ namespace GameServer.Managers
 
         public static Goodwill FindGoodwillFromUsername(UserFile file, string username)
         {
-            if (file.PlayerGoodwills.Count == 0) return Goodwill.Neutral;
+            if (file.Goodwills.Count == 0) return Goodwill.Neutral;
             else
             {
-                PlayerGoodwill toFind = file.PlayerGoodwills.FirstOrDefault(fetch => fetch.Name == username);
+                PlayerGoodwill toFind = file.Goodwills.FirstOrDefault(fetch => fetch.Name == username);
                 if (toFind == null) return Goodwill.Neutral;
                 else if (toFind.Name == file.Username) return Goodwill.Personal;
                 else return toFind.Goodwill;

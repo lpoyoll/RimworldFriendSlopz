@@ -97,7 +97,7 @@ namespace GameServer.Managers
         {
             GuildFile guild = GuildManagerH.GetFactionFromName(client.UserFile.GuildName);
 
-            if (GuildManagerH.GetMemberRank(guild, client.UserFile.Username) != GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
+            if (GuildManagerH.GetMemberRank(guild, client.UserFile.Username) != GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
                 foreach (UserFile userFile in GuildManagerH.GetUsersFromFactionMembers(guild)) userFile.UpdateFaction(null);
@@ -124,7 +124,7 @@ namespace GameServer.Managers
             SettlementFile settlement = SettlementManager.GetSettlementFileFromTile(guildManifest._dataInt);
             ServerClient toAdd = ServerNetwork.Instance.GetConnectedClientFromUsername(settlement.Username);
 
-            if (GuildManagerH.GetMemberRank(guild, client.UserFile.Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client, guildManifest);
+            if (GuildManagerH.GetMemberRank(guild, client.UserFile.Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
                 guildManifest._guild.Name = guild.Name;
@@ -176,7 +176,7 @@ namespace GameServer.Managers
 
             else
             {
-                if (userRank == GuildRanks.Member || userRank == GuildRanks.Moderator) ResponseShortcutManager.SendNoPowerPacket(client, guildManifest);
+                if (userRank == GuildRanks.Member || userRank == GuildRanks.Moderator) ResponseShortcutManager.SendNoPowerPacket(client);
                 else Remove();
             }
 
@@ -207,11 +207,11 @@ namespace GameServer.Managers
             GuildFile guild = GuildManagerH.GetFactionFromName(client.UserFile.GuildName);
 
             GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.UserFile.Username);
-            if (rank == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
+            if (rank == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
                 UserFile toPromoteOffline = UserManagerH.GetUserFileFromName(settlement.Username);
-                if (GuildManagerH.GetMemberRank(guild, toPromoteOffline.Username) != GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
+                if (GuildManagerH.GetMemberRank(guild, toPromoteOffline.Username) != GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
                 else
                 {
                     GuildMember member = GuildManagerH.GetAllFactionMembers(guild).First(fetch => fetch.Username == toPromoteOffline.Username);
@@ -229,11 +229,11 @@ namespace GameServer.Managers
             GuildFile guild = GuildManagerH.GetFactionFromName(client.UserFile.GuildName);
 
             GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.UserFile.Username);
-            if (rank != GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
+            if (rank != GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
                 UserFile toDemoteOffline = UserManagerH.GetUserFileFromName(settlement.Username);
-                if (GuildManagerH.GetMemberRank(guild, toDemoteOffline.Username) == GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client, factionManifest);
+                if (GuildManagerH.GetMemberRank(guild, toDemoteOffline.Username) == GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client);
                 else
                 {
                     GuildMember member = GuildManagerH.GetAllFactionMembers(guild).First(fetch => fetch.Username == toDemoteOffline.Username);

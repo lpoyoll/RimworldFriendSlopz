@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TCPNetwork.Files.Client
 {
-    public class PlayerCooldowns
+    public class PlayerCooldown
     {
         public double EventProtectionTime { get; set; } = -1;
 

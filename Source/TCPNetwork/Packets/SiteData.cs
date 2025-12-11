@@ -14,9 +14,5 @@ namespace TCPNetwork.Packets
         public SiteRewardConfigData _rewardConfig { get; set; } = null;
 
         public SiteReward[] _rewardFiles { get; set; } = null;
-
-        public MapFile _siteMap { get; set; } = null;
-
-        //Override ToString() once rework is done
     }
 }

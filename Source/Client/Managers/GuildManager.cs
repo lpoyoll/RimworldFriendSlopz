@@ -36,10 +36,6 @@ namespace GameClient.Managers
                     OnFactionNameInUse();
                     break;
 
-                case GuildStepMode.NoPower:
-                    OnFactionNoPower();
-                    break;
-
                 case GuildStepMode.Invite:
                     OnFactionGetInvited(data);
                     break;
@@ -226,12 +222,6 @@ namespace GameClient.Managers
         {
             RT_Dialog_Wait.Instance.Close();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "That faction name is already in use!" }));
-        }
-
-        private static void OnFactionNoPower()
-        {
-            RT_Dialog_Wait.Instance.Close();
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You don't have enough power for this action!" }));
         }
 
         private static void OnFactionGetInvited(PlayerGuildData factionManifest)

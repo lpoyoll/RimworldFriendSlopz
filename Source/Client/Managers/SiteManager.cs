@@ -57,21 +57,6 @@ namespace GameClient.Managers
             }
         }
 
-        public static void RequestDestroySite()
-        {
-            Action r1 = delegate
-            {
-                SiteData siteData = new SiteData();
-                siteData._file.Tile = SessionValues.ChosenSite.Tile;
-                siteData._stepMode = SiteStepMode.Destroy;
-
-                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
-            };
-
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
-            RT_Dialog_Base.PushNewDialog(d1);
-        }
-
         public static void RequestSiteBuild(SiteType configFile)
         {
             if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.ChosenCaravan, ThingDefOf.Silver.defName, configFile.Cost))
@@ -91,6 +76,21 @@ namespace GameClient.Managers
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
+        }
+
+        public static void RequestDestroySite()
+        {
+            Action r1 = delegate
+            {
+                SiteData siteData = new SiteData();
+                siteData._file.Tile = SessionValues.ChosenSite.Tile;
+                siteData._stepMode = SiteStepMode.Destroy;
+
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            };
+
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Are you sure you want to destroy this site?", r1, null);
+            RT_Dialog_Base.PushNewDialog(d1);
         }
 
         public static void RequestSiteChangeConfig(SiteType config, string reward)

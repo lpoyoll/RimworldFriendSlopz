@@ -27,6 +27,11 @@ namespace GameClient.Managers
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Player is not currently available!" }));
                     break;
 
+                case CommonEnumerators.ResponseStepMode.NoPower:
+                    RT_Dialog_Wait.Instance.Close();
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You don't have enough power for this action!" }));
+                    break;
+
                 case CommonEnumerators.ResponseStepMode.Pop:
                     RT_Dialog_Wait.Instance.Close();
                     break;

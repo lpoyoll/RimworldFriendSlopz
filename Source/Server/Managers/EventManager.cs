@@ -56,7 +56,7 @@ namespace GameServer.Managers
                 {
                     ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUsername(settlement.Username);
 
-                    if (!PlayerCooldowns.CheckIfCanEvent(target.UserFile, Master.ActionConfigs.EventAction.IsEnabled, Master.ActionConfigs.EventAction.Cooldown))
+                    if (!PlayerCooldown.CheckIfCanEvent(target.UserFile, Master.ActionConfigs.EventAction.IsEnabled, Master.ActionConfigs.EventAction.Cooldown))
                     {
                         eventData._stepMode = EventStepMode.Recover;
                         client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
