@@ -36,7 +36,7 @@ namespace GameServer.Managers
         };
 
         [HandlesPacket(PacketHeader.ChatManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
             ChatData data = Serializer.ConvertBytesToObject<ChatData>(bytes);
 

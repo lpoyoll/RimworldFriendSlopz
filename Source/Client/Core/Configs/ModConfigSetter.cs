@@ -38,6 +38,7 @@ namespace GameClient.Core.Configs
             listingStandard.Label("Debugging");
             if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ModConfigGetter.CurrentVerboseMode}")) ShowVerboseFloatMenu();
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.AppdataPath);
+            if (listingStandard.ButtonTextLabeled("Simulated lag", $"{ModConfigGetter.CurrentSimulatedLag}")) ShowSimulatedLagMenu();
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
@@ -73,6 +74,31 @@ namespace GameClient.Core.Configs
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
                     ModConfigGetter.CurrentVerboseMode = tuple.Item2;
+                });
+
+                list.Add(item);
+            }
+
+            Find.WindowStack.Add(new FloatMenu(list));
+        }
+
+        private void ShowSimulatedLagMenu()
+        {
+            List<FloatMenuOption> list = new List<FloatMenuOption>();
+            List<Tuple<string, ClientValues.EnforcedSimulatedLag>> verboseModes = new List<Tuple<string, ClientValues.EnforcedSimulatedLag>>()
+            {
+                Tuple.Create("None", ClientValues.EnforcedSimulatedLag.None),
+                Tuple.Create("Small", ClientValues.EnforcedSimulatedLag.Small),
+                Tuple.Create("Medium", ClientValues.EnforcedSimulatedLag.Medium),
+                Tuple.Create("Big", ClientValues.EnforcedSimulatedLag.Big),
+                Tuple.Create("ENORMOUS", ClientValues.EnforcedSimulatedLag.ENORMOUS),
+            };
+
+            foreach (Tuple<string, ClientValues.EnforcedSimulatedLag> tuple in verboseModes)
+            {
+                FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
+                {
+                    ModConfigGetter.CurrentSimulatedLag = tuple.Item2;
                 });
 
                 list.Add(item);

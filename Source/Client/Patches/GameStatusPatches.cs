@@ -29,6 +29,8 @@ namespace GameClient.Patches
 
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
+
+                    MainThreadHandler.Instance.DoInitializationMethods();
                 }
             }
         }
@@ -49,6 +51,8 @@ namespace GameClient.Patches
 
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
+
+                    MainThreadHandler.Instance.DoInitializationMethods();
                 }
             }
         }

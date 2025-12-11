@@ -25,6 +25,8 @@ namespace TCPNetwork
 
         public virtual Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; }
 
+        public virtual Action<bool> OnWritePacket { get; set; }
+
         public virtual Action<ServerClient> OnConnect { get; set; }
 
         public virtual Action<ServerClient> OnDisconnect { get; set; }

@@ -45,6 +45,8 @@ namespace GameClient.Values
 
         public static WorldValuesFile WorldFile { get; set; } = null;
 
+        public static bool IsSynchronousHost { get; set; } = true;
+
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
             ActionValues = serverGlobalData._actionValues;
@@ -62,6 +64,8 @@ namespace GameClient.Values
 
             OutgoingManifest = new TransferData();
             IncomingManifest = new TransferData();
+
+            IsSynchronousHost = false;
 
             Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
             Patch_DialogOptions_DoModOptions.executedMessage = false;

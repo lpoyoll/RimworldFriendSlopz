@@ -12,6 +12,10 @@ namespace Shared
 
         public static Dictionary<PacketHeader, MethodInfo> ServerMethodDictionary { get; private set; }
 
+        public static MethodInfo[] InitializerMethods { get; private set; }
+
+        public static MethodInfo[] CheckPerFrameMethods { get; private set; }
+
         public enum AssemblyType { Client, Server }
 
         public static void CacheAllMethods(AssemblyType type)
@@ -19,13 +23,16 @@ namespace Shared
             if (type == AssemblyType.Client)
             {
                 Assembly assembly = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameClient");
-                MethodInfo[] clientMethods = GetPacketHandlerAttributes((Type[])assembly.GetTypes().ToArray());
+                MethodInfo[] clientMethods = GetPacketHandlerAttributes(GetAllGameTypes()).ToArray();
                 ClientMethodDictionary = new Dictionary<PacketHeader, MethodInfo>();
                 for (int i = 0; i < clientMethods.Length; i++)
                 {
                     ClientMethodDictionary.Add(clientMethods[i].GetCustomAttribute<HandlesPacket>().header,
                         clientMethods[i]);
                 }
+
+                InitializerMethods = GetSessionInitializeAttributes(GetAllGameTypes());
+                CheckPerFrameMethods = GetCheckPerFrameAttributes(GetAllGameTypes());
             }
 
             else
@@ -48,6 +55,41 @@ namespace Shared
             {
                 toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
                     .Where(fetch => fetch.GetCustomAttribute<HandlesPacket>() != null).ToList());
+            }
+            return toAdd.ToArray();
+        }
+
+        private static Type[] GetAllGameTypes()
+        {
+            List<Type> allTypes = new List<Type>();
+
+            Assembly toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameClient");
+            allTypes.AddRange(toUse.GetTypes().ToList());
+
+            toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "Synchronous");
+            allTypes.AddRange(toUse.GetTypes().ToList());
+
+            return allTypes.ToArray();
+        }
+
+        private static MethodInfo[] GetSessionInitializeAttributes(Type[] types)
+        {
+            List<MethodInfo> toAdd = new List<MethodInfo>();
+            for (int x = 0; x < types.Length; x++)
+            {
+                toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+                    .Where(fetch => fetch.GetCustomAttribute<ShouldInitializeOnSession>() != null).ToList());
+            }
+            return toAdd.ToArray();
+        }
+
+        private static MethodInfo[] GetCheckPerFrameAttributes(Type[] types)
+        {
+            List<MethodInfo> toAdd = new List<MethodInfo>();
+            for (int x = 0; x < types.Length; x++)
+            {
+                toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+                    .Where(fetch => fetch.GetCustomAttribute<ShouldCheckPerFrame>() != null).ToList());
             }
             return toAdd.ToArray();
         }

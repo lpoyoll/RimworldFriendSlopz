@@ -13,12 +13,15 @@ namespace GameClient.Core.Configs
 
         public static VerboseMode CurrentVerboseMode;
 
+        public static EnforcedSimulatedLag CurrentSimulatedLag;
+
         public override void ExposeData()
         {
             Scribe_Values.Look(ref MuteChatSoundBool, nameof(MuteChatSoundBool));
             Scribe_Values.Look(ref RejectTransfersBool, nameof(RejectTransfersBool));
             Scribe_Values.Look(ref RejectSiteRewardsBool, nameof(RejectSiteRewardsBool));
             Scribe_Values.Look(ref CurrentVerboseMode, nameof(CurrentVerboseMode));
+            Scribe_Values.Look(ref CurrentSimulatedLag, nameof(CurrentSimulatedLag));
 
             base.ExposeData();
         }

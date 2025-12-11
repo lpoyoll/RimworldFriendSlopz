@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using GameClient.Values;
+using Shared;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System;
-using Shared;
+using System.Reflection;
+using UnityEngine;
 
 namespace GameClient.Misc
 {
@@ -24,6 +26,27 @@ namespace GameClient.Misc
         private void Update() 
         { 
             ExecuteAllQueue();
+
+            if (SessionValues.CurrentNetworkState == CommonEnumerators.ClientNetworkState.Connected)
+            {
+                DoPlayerUpdates();
+            }
+        }
+
+        private void DoPlayerUpdates()
+        {
+            foreach (MethodInfo method in MethodGatherer.CheckPerFrameMethods)
+            {
+                method.Invoke(null, null);
+            }
+        }
+
+        public void DoInitializationMethods()
+        {
+            foreach (MethodInfo method in MethodGatherer.InitializerMethods)
+            {
+                method.Invoke(null, null);
+            }
         }
 
         public void Enqueue(Action action) { Enqueue(ActionWrapper(action)); }

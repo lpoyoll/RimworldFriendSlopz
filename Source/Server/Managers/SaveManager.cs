@@ -11,7 +11,7 @@ namespace GameServer.Managers
     public static class SaveManager
     {
         [HandlesPacket(PacketHeader.SaveManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes)
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
             SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
 
