@@ -127,7 +127,7 @@ namespace GameClient.WorldObjects
                 {
                     SessionValues.ChosenSettlement = this;
 
-                    if (SessionValues.ActionValues.EnableAids)
+                    if (SessionValues.ActionValues.AidAction.IsEnabled)
                     {
                         List<string> pawnNames = new List<string>();
                         foreach (Pawn pawn in RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
@@ -147,7 +147,7 @@ namespace GameClient.WorldObjects
                 {
                     SessionValues.ChosenSettlement = this;
 
-                    if (SessionValues.ActionValues.EnableEvents) EventManager.ShowEventMenu();
+                    if (SessionValues.ActionValues.EventAction.IsEnabled) EventManager.ShowEventMenu();
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };

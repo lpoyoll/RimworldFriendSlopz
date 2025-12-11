@@ -2,6 +2,7 @@ using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
 using Shared.Files;
+using Shared.Files.Actions;
 using Shared.Files.Guild;
 using System.Globalization;
 using System.Reflection;
@@ -23,8 +24,6 @@ namespace GameServer.Core
             Validator.CheckIfFirstBoot();
             MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
 
-            ServerNetwork _ = new ServerNetwork();
-
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
             if (Master.ActionConfigs.EnableSites)
@@ -33,8 +32,9 @@ namespace GameServer.Core
                 Task.Run(SiteManager.StartSiteTicker);
             }
 
-            ServerBrowserManager.StartLoops();
+            ServerBrowserManager.StartFeature();
 
+            ServerNetwork _ = new ServerNetwork();
             while (true) ConsoleManager.ListenForServerCommands();
         }
 

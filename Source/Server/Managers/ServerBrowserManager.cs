@@ -12,16 +12,18 @@ namespace GameServer.Managers
     public static class ServerBrowserManager
     {
         private const string MasterServer = "https://rimworldtogether.eragon.dev";
+
         private const int MaxDescriptionLength = 200;
+
         private const int MaxNameLength = 40;
+
         private const int DelayBetweenRequest = 520000;
+
         private const int DelayBetweenErrors = 18000000;
 
         private static HttpClientHandler handler = new HttpClientHandler() { UseProxy = false };
-        private static HttpClient Client = new HttpClient(handler) 
-        {
-            DefaultRequestVersion = HttpVersion.Version11
-        };
+
+        private static HttpClient Client = new HttpClient(handler) { DefaultRequestVersion = HttpVersion.Version11 };
 
         public static void StartFeature()
         {
@@ -72,8 +74,6 @@ namespace GameServer.Managers
                     Printer.Title($"----------------------------------------");
                 }
             }
-
-
         }
 
         private static bool ValidateServerInformation() 

@@ -29,22 +29,6 @@ namespace Shared.Files
 
         public bool SyncLocalSave { get; set; } = true;
 
-        public bool TemporalActivityProtection { get; set; } = false;
-
-        public int TemporalActivityProtectionTime { get; set; } = 3600;
-
-        public bool TemporalEventProtection { get; set; } = true;
-
-        public int TemporalEventProtectionTime { get; set; } = 3600;
-
-        public bool TemporalAidProtection { get; set; } = false;
-
-        public int TemporalAidProtectionTime { get; set; } = 3600;
-
-        public bool TemporalSpyProtection { get; set; } = true;
-
-        public int TemporalSpyProtectionTime { get; set; } = 3600;
-
         public override void Save()
         {
             try { Serializer.SerializeToFile(Path, this); }

@@ -14,7 +14,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.EventManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EnableEvents)
+            if (!Master.ActionConfigs.EventAction.IsEnabled)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -56,7 +56,7 @@ namespace GameServer.Managers
                 {
                     ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUsername(settlement.Username);
 
-                    if (!ValueChecker.CheckIfCanEvent(target.UserFile))
+                    if (!PlayerCooldowns.CheckIfCanEvent(target.UserFile, Master.ActionConfigs.EventAction.IsEnabled, Master.ActionConfigs.EventAction.Cooldown))
                     {
                         eventData._stepMode = EventStepMode.Recover;
                         client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
@@ -72,7 +72,7 @@ namespace GameServer.Managers
 
                         eventData._stepMode = EventStepMode.Receive;
 
-                        target.UserFile.UpdateEventTime();
+                        target.UserFile.Cooldowns.SetEventTimer(TimeConverter.GetCurrentTimeToEpoch(), target.UserFile);
 
                         target.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
                     }

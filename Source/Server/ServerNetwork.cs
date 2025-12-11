@@ -16,7 +16,12 @@ namespace GameServer
 
         public override Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { client, buffer });
+            MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { client, buffer, header });
+        };
+
+        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode)
+        {
+
         };
 
         public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) { Instance.Disconnect(client); };
@@ -80,8 +85,7 @@ namespace GameServer
             TcpClient newTCP = ServerListener.AcceptTcpClient();
 
             ServerClient newServerClient = new ServerClient(newTCP);
-            newServerClient.UserFile = new UserFile();
-            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnDisconnect,
+            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnWritePacket, OnDisconnect,
                 OnMessage, OnWarning, OnError, Listener.ListenerMode.Server);
 
             if (Master.IsClosing)

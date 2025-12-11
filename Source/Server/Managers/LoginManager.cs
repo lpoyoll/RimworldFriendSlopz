@@ -21,6 +21,7 @@ namespace GameServer.Managers
 
         public static void HandleUser(ServerClient client, LoginData data)
         {
+            client.UserFile = new UserFile();
             client.UserFile.UpdateLoginDetails(data);
 
             if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);

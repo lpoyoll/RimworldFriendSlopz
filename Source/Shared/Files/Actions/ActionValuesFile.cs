@@ -1,8 +1,7 @@
-﻿using Shared.Files;
-using System;
+﻿using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Actions
 {
     public class ActionValuesFile : BaseFile
     {
@@ -10,19 +9,13 @@ namespace Shared.Files
 
         public bool EnableActivities { get; set; } = true;
 
-        public bool EnableEvents { get; set; } = true;
-
         public bool EnableSites { get; set; } = true;
 
         public bool EnableRoads { get; set; } = true;
 
         public bool EnableFactions { get; set; } = true;
 
-        public bool EnableAids { get; set; } = true;
-
         public bool EnableTrading { get; set; } = true;
-
-        public bool EnableSpying { get; set; } = true;
 
         public bool EnableCustomScenarios { get; set; } = true;
 
@@ -30,7 +23,9 @@ namespace Shared.Files
 
         public bool EnablePollutionSpread { get; set; } = true;
 
-        public int EnforcedGameSpeed { get; set; } = 0;
+        public EventAction EventAction { get; set; } = new EventAction();
+
+        public AidAction AidAction { get; set; } = new AidAction();
 
         public override void Save()
         {

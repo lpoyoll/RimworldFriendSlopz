@@ -14,7 +14,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.AidManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EnableAids)
+            if (!Master.ActionConfigs.AidAction.IsEnabled)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;
@@ -53,8 +53,8 @@ namespace GameServer.Managers
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
                     ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUsername(settlementFile.Username);
-
-                    if (!ValueChecker.CheckIfCanAid(target.UserFile))
+                    
+                    if (!PlayerCooldowns.CheckIfCanAid(target.UserFile, Master.ActionConfigs.AidAction.IsEnabled, Master.ActionConfigs.AidAction.Cooldown))
                     {
                         data._stepMode = AidStepMode.Reject;
                         client.Listener.EnqueuePacket(PacketHeader.AidManager, data);
@@ -83,7 +83,7 @@ namespace GameServer.Managers
                 SettlementFile settlementFile = SettlementManager.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
-                    client.UserFile.UpdateAidTime();
+                    client.UserFile.Cooldowns.SetAidTimer(TimeConverter.GetCurrentTimeToEpoch(), client.UserFile);
 
                     ServerClient target = ServerNetwork.Instance.GetConnectedClientFromUsername(settlementFile.Username);
                     target.Listener.EnqueuePacket(PacketHeader.AidManager, data);

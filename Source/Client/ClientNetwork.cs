@@ -1,3 +1,4 @@
+using GameClient.Core.Configs;
 using GameClient.Dialogs;
 using GameClient.Files;
 using GameClient.Managers;
@@ -6,6 +7,7 @@ using GameClient.Values;
 using Shared;
 using System;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
@@ -19,10 +21,17 @@ namespace GameClient
 
         public override Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
+            Thread.Sleep(250 * (int)ModConfigGetter.CurrentSimulatedLag);
+
             MainThreadHandler.Instance.Enqueue(delegate
             {
                 MethodGatherer.ClientMethodDictionary[header].Invoke(null, new object[] { buffer });
             });
+        };
+
+        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode)
+        {
+
         };
 
         public override Action<ServerClient> OnDisconnect { get; set; } = delegate { Instance.Disconnect(); };
@@ -81,7 +90,7 @@ namespace GameClient
 
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
-                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnDisconnect,
+                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, 
                     OnMessage, OnWarning, OnError, Listener.ListenerMode.Client);
             }
             catch { return false; }

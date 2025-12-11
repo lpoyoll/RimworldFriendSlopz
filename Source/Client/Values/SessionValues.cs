@@ -8,6 +8,7 @@ using Shared.Files;
 using System.Collections.Generic;
 using Verse;
 using static Shared.CommonEnumerators;
+using Shared.Files.Actions;
 
 namespace GameClient.Values
 {

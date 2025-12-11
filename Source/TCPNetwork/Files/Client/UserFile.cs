@@ -31,9 +31,7 @@ namespace TCPNetwork.Files.Client
 
         public bool IsBanned { get; set; } = false;
 
-        public double EventProtectionTime { get; set; } = -1;
-
-        public double AidProtectionTime { get; set; } = -1;
+        public PlayerCooldowns Cooldowns { get; set; } = null;
 
         public List<PlayerGoodwill> PlayerGoodwills { get; set; } = new List<PlayerGoodwill>();
 
@@ -62,18 +60,6 @@ namespace TCPNetwork.Files.Client
             if (toUpdateWith == null) GuildName = null;
             else GuildName = toUpdateWith.Name;
 
-            SaveUserFile();
-        }
-
-        public void UpdateEventTime()
-        {
-            EventProtectionTime = TimeConverter.GetCurrentTimeToEpoch();
-            SaveUserFile();
-        }
-
-        public void UpdateAidTime()
-        {
-            AidProtectionTime = TimeConverter.GetCurrentTimeToEpoch();
             SaveUserFile();
         }
 
