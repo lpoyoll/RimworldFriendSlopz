@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Shared.Files.Actions
 {
-    public class RoadsAction : BaseAction
+    public class SiteAction : BaseAction
     {
         public bool IsEnabled { get; set; } = true;
 
         public double Cooldown { get; set; } = -1;
 
-        public RoadValuesFile RoadValues { get; set; } = new RoadValuesFile();
+        public SiteInfoFile[] SiteTypes { get; set; } = new SiteInfoFile[0];
     }
 }

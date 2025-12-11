@@ -62,8 +62,6 @@ namespace GameServer.Core
 
         public static ScenarioValuesFile ScenarioValues { get; set; } = null;
 
-        public static RoadValuesFile RoadValues { get; set; } = null;
-
         public static BackupConfigFile BackupConfig { get; set; } = null;
 
         public static ModConfigFile ModConfig { get; set; } = null;

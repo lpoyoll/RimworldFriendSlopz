@@ -26,7 +26,7 @@ namespace GameServer.Core
 
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
-            if (Master.ActionConfigs.EnableSites)
+            if (Master.ActionConfigs.SiteAction.IsEnabled)
             {
                 SiteManagerHelper.SetSitePresets();
                 Task.Run(SiteManager.StartSiteTicker);
@@ -47,7 +47,6 @@ namespace GameServer.Core
             SiteValuesFile.Path = Path.Combine(Master.ConfigsPath, "SiteConfig.json");
             ScenarioValuesFile.Path = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
             GuildFile.GeneralPath = Path.Combine(Master.FactionsPath);
-            RoadValuesFile.Path = Path.Combine(Master.ConfigsPath, "RoadConfig.json");
             ModConfigFile.Path = Path.Combine(Master.ConfigsPath, "ModConfig.json");
             DifficultyValuesFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");
             ServerBrowserConfig.Path = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
@@ -109,7 +108,6 @@ namespace GameServer.Core
             Master.ServerConfig = (ServerConfigFile)ServerConfigFile.Load<ServerConfigFile>();
             Master.ActionConfigs = (ActionValuesFile)ActionValuesFile.Load<ActionValuesFile>();
             Master.SiteValues = (SiteValuesFile)SiteValuesFile.Load<SiteValuesFile>();
-            Master.RoadValues = (RoadValuesFile)RoadValuesFile.Load<RoadValuesFile>();
             Master.Whitelist = (WhitelistConfigFile)WhitelistConfigFile.Load<WhitelistConfigFile>();
             Master.DifficultyValues = (DifficultyValuesFile)DifficultyValuesFile.Load<DifficultyValuesFile>();
             Master.ScenarioValues = (ScenarioValuesFile)ScenarioValuesFile.Load<ScenarioValuesFile>();

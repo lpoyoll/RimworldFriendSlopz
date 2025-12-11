@@ -24,7 +24,7 @@ namespace GameServer.Managers
             globalData._scenarioValues = Master.ScenarioValues;
             globalData._storytellerValues = Master.StorytellerValues;
             globalData._actionValues = Master.ActionConfigs;
-            globalData._roadValues = Master.RoadValues;
+            globalData._roadValues = Master.ActionConfigs.RoadsAction.RoadValues;
             globalData._modConfigs = Master.ModConfig;
 
             if (Master.WorldValues != null)

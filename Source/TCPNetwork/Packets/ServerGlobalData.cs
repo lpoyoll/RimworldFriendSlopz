@@ -4,7 +4,6 @@ using Shared.Files.Actions;
 
 namespace TCPNetwork.Packets
 {
-
     public class ServerGlobalData
     {
         public bool _isClientAdmin { get; set; } = false;

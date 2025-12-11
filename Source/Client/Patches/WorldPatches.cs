@@ -47,7 +47,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
                 action = delegate
                 {
-                    if (SessionValues.ActionValues.EnableSites) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                    if (SessionValues.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
@@ -80,10 +80,7 @@ namespace GameClient.Patches
                     {
                         SessionValues.ChosenCaravan = __instance;
 
-                        if (SessionValues.ActionValues.EnableSites)
-                        {
-                            RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(false));
-                        }
+                        if (SessionValues.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(false));
                         else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };

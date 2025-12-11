@@ -15,7 +15,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.SiteManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EnableSites)
+            if (!Master.ActionConfigs.SiteAction.IsEnabled)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;

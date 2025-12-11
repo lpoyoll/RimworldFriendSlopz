@@ -7,8 +7,6 @@ namespace Shared.Files.Actions
     {
         public static string Path { get; set; } = string.Empty;
 
-        public bool EnableSites { get; set; } = true;
-
         public bool EnableFactions { get; set; } = true;
 
         public bool EnableTrading { get; set; } = true;
@@ -21,11 +19,13 @@ namespace Shared.Files.Actions
 
         public ActivityAction ActivityAction { get; set; } = new ActivityAction();
 
-        public RoadsAction RoadsAction { get; set; } = new RoadsAction();
-
         public EventAction EventAction { get; set; } = new EventAction();
 
         public AidAction AidAction { get; set; } = new AidAction();
+
+        public RoadsAction RoadsAction { get; set; } = new RoadsAction();
+
+        public SiteAction SiteAction { get; set; } = new SiteAction();
 
         public override void Save()
         {
