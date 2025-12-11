@@ -1,6 +1,6 @@
-namespace Shared.Files
+namespace Shared.Files.Sites
 {
-    public class SiteRewardFile
+    public class SiteReward
     {
         public string DefName { get; set; } = string.Empty;
 

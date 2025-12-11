@@ -1,8 +1,9 @@
-﻿using System;
+﻿using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
 using HarmonyLib;
+using System;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -48,6 +49,8 @@ namespace GameClient.Patches
 
                     Printer.Message("Sending save to server", LogImportanceMode.Verbose);
                     SaveManager.SendSaveToServer();
+
+                    RT_Dialog_Wait.Instance.Close();
                 }
             }
             catch (Exception e) { Printer.Error($"{e}"); }

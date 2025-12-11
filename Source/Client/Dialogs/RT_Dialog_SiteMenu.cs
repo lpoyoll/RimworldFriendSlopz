@@ -3,6 +3,8 @@ using UnityEngine;
 using Verse;
 using RimWorld;
 using GameClient.Managers;
+using GameClient.Misc;
+using Verse.Steam;
 
 namespace GameClient.Dialogs
 {

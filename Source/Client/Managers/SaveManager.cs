@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using GameClient.Dialogs;
 using System.Linq;
 using TCPNetwork.Packets;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace GameClient.Managers
 {
@@ -42,16 +44,25 @@ namespace GameClient.Managers
                 LatestSavePath = SaveFilePath;
                 SaveManager.SendSaveToServer();
             }
-            else throw new NotImplementedException();
         }
 
         public static void ForceSave()
         {
             Printer.Warning("Force saving", LogImportanceMode.Verbose);
-            FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
-            FticksSinceSave.SetValue(Current.Game.autosaver, 0);
 
-            GameDataSaveLoader.SaveGame(CustomSaveName);
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Saving your game"));
+
+            Task.Run(delegate
+            {
+                Thread.Sleep(1);
+
+                MainThreadHandler.Instance.Enqueue(delegate
+                {
+                    FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
+                    FticksSinceSave.SetValue(Current.Game.autosaver, 0);
+                    GameDataSaveLoader.SaveGame(CustomSaveName);
+                });
+            });
         }
 
         public static void RequestResetSave()
@@ -121,20 +132,13 @@ namespace GameClient.Managers
         public static void SendSaveToServer()
         {
             byte[] saveBytes;
-            if (string.IsNullOrEmpty(SaveManager.LatestSavePath))
-            {
-                saveBytes = File.ReadAllBytes(SaveManager.SaveFilePath);
-            }
-            else
-            {
-                saveBytes = File.ReadAllBytes(SaveManager.LatestSavePath);
-            }
-
+            if (string.IsNullOrEmpty(SaveManager.LatestSavePath)) saveBytes = File.ReadAllBytes(SaveManager.SaveFilePath);
+            else saveBytes = File.ReadAllBytes(SaveManager.LatestSavePath);
             saveBytes = GZip.CompressBytes(saveBytes);
 
             SaveData data = new SaveData();
-            data._fileBytes = saveBytes;
             data._stepMode = SaveStepMode.Receive;
+            data._fileBytes = saveBytes;
 
             // Set the instructions of the packet
             if (IsIntentionalDisconnect && (IntentionalDisconnectReason == DCReason.SaveQuitToMenu || IntentionalDisconnectReason == DCReason.SaveQuitToOS))

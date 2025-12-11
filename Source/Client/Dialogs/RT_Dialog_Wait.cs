@@ -9,7 +9,7 @@ namespace GameClient.Dialogs
 
         public static RT_Dialog_Base Instance { get; private set; } = null;
 
-        public RT_Dialog_Wait(string description)
+        public RT_Dialog_Wait(string description = "[MISSING MESSAGE]")
         {
             Instance = this;
             this.Title = "WAIT";

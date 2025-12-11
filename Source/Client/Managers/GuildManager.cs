@@ -2,13 +2,13 @@
 using GameClient.Misc;
 using GameClient.Values;
 using Shared;
-using Shared.Files.Guild;
+using Shared.Files.Guilds;
 using System;
 using System.Collections.Generic;
 using TCPNetwork.Packets;
 using Verse;
 using static Shared.CommonEnumerators;
-using static Shared.Files.Guild.GuildMember;
+using static Shared.Files.Guilds.GuildMember;
 
 namespace GameClient.Managers
 {

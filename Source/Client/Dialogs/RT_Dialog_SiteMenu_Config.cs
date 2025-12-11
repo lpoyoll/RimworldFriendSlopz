@@ -6,7 +6,7 @@ using RimWorld;
 using Shared;
 using GameClient.Managers;
 using GameClient.Misc;
-using Shared.Files;
+using Shared.Files.Sites;
 
 namespace GameClient.Dialogs
 {
@@ -16,7 +16,7 @@ namespace GameClient.Dialogs
 
         public SitePartDef SitePartDef { get; private set; }
 
-        public SiteInfoFile ConfigFile { get; private set; }
+        public SiteType ConfigFile { get; private set; }
 
         public Dictionary<ThingDef, int> CostThing { get; private set; } = new Dictionary<ThingDef, int>();
 
@@ -31,7 +31,7 @@ namespace GameClient.Dialogs
             Instance = this;
             SitePartDef = thingChosen;
             this.Title = thingChosen.label;
-            ConfigFile = SiteManager.SiteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();
+            ConfigFile = SiteManager.SiteValues.Where(f => f.DefName == thingChosen.defName).First();
 
             ThingDef cost = DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName);
             if (cost != null) CostThing.Add(cost, ConfigFile.Cost);
@@ -74,7 +74,7 @@ namespace GameClient.Dialogs
             Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), SitePartDef.description);
             num += heightDesc;
 
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces every {SiteManager.SiteValues.TimeIntervalMinutes.ToString()} minutes:");
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces:");
             num += 20f;
             Text.Font = GameFont.Small;
             foreach (ThingDef thing in RewardThing.Keys)
@@ -88,6 +88,7 @@ namespace GameClient.Dialogs
                 }
                 num += 25;
             }
+
             Widgets.EndScrollView();
         }
     }

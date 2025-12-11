@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Files.Sites;
+using System;
 using System.Threading;
 using static Shared.CommonEnumerators;
 
@@ -14,7 +15,7 @@ namespace Shared.Files
 
         public Goodwill Goodwill { get; set; } = new Goodwill();
 
-        public SiteInfoFile Type { get; set; } = new SiteInfoFile();
+        public SiteType Type { get; set; } = new SiteType();
 
         [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
     }

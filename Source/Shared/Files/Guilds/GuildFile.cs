@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 
-namespace Shared.Files.Guild
+namespace Shared.Files.Guilds
 {
     public class GuildFile : BaseFile
     {

@@ -1,7 +1,7 @@
 ﻿using GameServer.Misc;
 using Shared;
 using Shared.Files;
-using Shared.Files.Guild;
+using Shared.Files.Guilds;
 using System.Linq;
 using System.Security.Policy;
 using TCPNetwork.Files.Client;

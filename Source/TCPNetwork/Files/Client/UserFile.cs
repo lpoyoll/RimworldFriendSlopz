@@ -1,6 +1,6 @@
 ﻿using Shared;
 using Shared.Files;
-using Shared.Files.Guild;
+using Shared.Files.Guilds;
 using System;
 using System.Collections.Generic;
 using System.IO;

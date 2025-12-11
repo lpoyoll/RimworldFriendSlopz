@@ -1,6 +1,7 @@
 ﻿using Shared;
 using Shared.Files;
 using Shared.Files.Actions;
+using Shared.Files.Sites;
 
 namespace TCPNetwork.Packets
 {
@@ -12,7 +13,7 @@ namespace TCPNetwork.Packets
 
         public ServerValuesFile _serverValues { get; set; } = null;
 
-        public SiteValuesFile _siteValues { get; set; } = null;
+        public SiteType[] _siteValues { get; set; } = null;
 
         public EventFile[] _eventValues { get; set; } = null;
 

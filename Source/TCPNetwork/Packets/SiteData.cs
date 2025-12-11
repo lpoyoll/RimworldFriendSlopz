@@ -1,4 +1,5 @@
 ﻿using Shared.Files;
+using Shared.Files.Sites;
 using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
@@ -12,7 +13,7 @@ namespace TCPNetwork.Packets
 
         public SiteRewardConfigData _rewardConfig { get; set; } = null;
 
-        public SiteRewardFile[] _rewardFiles { get; set; } = null;
+        public SiteReward[] _rewardFiles { get; set; } = null;
 
         public MapFile _siteMap { get; set; } = null;
 

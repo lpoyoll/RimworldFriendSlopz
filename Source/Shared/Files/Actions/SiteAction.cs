@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Files.Sites;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,30 +15,30 @@ namespace Shared.Files.Actions
 
         public double TimeIntervalMinutes { get; set; } = 30;
 
-        public SiteInfoFile[] SiteTypes { get; set; } = new SiteInfoFile[]
+        public SiteType[] SiteTypes { get; set; } = new SiteType[]
         {
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTFarmland",
                 Cost = 500,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "RawRice",
                         Amount = 50
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "RawCorn",
                         Amount = 50
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "SmokeleafLeaves",
                         Amount = 25
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "PsychoidLeaves",
                         Amount = 25
@@ -45,28 +46,28 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTHunterCamp",
                 Cost = 500,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Meat_Muffalo",
                         Amount = 125
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Meat_Human",
                         Amount = 125
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Leather_Chinchilla",
                         Amount = 60
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Leather_Bear",
                         Amount = 60
@@ -74,28 +75,28 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTQuarry",
                 Cost = 500,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "BlocksGranite",
                         Amount = 50
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "BlocksMarble",
                         Amount = 50
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Steel",
                         Amount = 30
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Plasteel",
                         Amount = 10
@@ -103,13 +104,13 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTSawmill",
                 Cost = 300,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "WoodLog",
                         Amount = 100
@@ -117,18 +118,18 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTBank",
                 Cost = 750,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Silver",
                         Amount = 50
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Gold",
                         Amount = 15
@@ -136,18 +137,18 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTLaboratory",
                 Cost = 750,
                 Rewards =
                     [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "ComponentIndustrial",
                         Amount = 10
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "ComponentSpacer",
                         Amount = 2
@@ -155,13 +156,13 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTRefinery",
                 Cost = 750,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Chemfuel",
                         Amount = 50
@@ -169,18 +170,18 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTHerbalWorkshop",
                 Cost = 750,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "MedicineHerbal",
                         Amount = 10
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "MedicineIndustrial",
                         Amount = 2
@@ -188,18 +189,18 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTTextileFactory",
                 Cost = 750,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "Cloth",
                         Amount = 50
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "DevilstrandCloth",
                         Amount = 30
@@ -207,18 +208,18 @@ namespace Shared.Files.Actions
                 ]
             },
 
-            new SiteInfoFile()
+            new SiteType()
             {
                 DefName = "RTFoodProcessor",
                 Cost = 750,
                 Rewards =
                 [
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "MealSurvivalPack",
                         Amount = 10
                     },
-                    new SiteRewardFile()
+                    new SiteReward()
                     {
                         DefName = "MealNutrientPaste",
                         Amount = 30

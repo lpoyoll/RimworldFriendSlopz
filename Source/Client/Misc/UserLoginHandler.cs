@@ -3,7 +3,6 @@ using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Values;
 using Shared;
-using Steamworks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +10,6 @@ using TCPNetwork.Packets;
 using UnityEngine;
 using Verse;
 using Verse.Steam;
-using static Mono.Security.X509.X520;
 
 namespace GameClient.Misc
 {

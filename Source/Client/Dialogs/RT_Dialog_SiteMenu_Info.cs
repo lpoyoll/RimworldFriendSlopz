@@ -6,7 +6,7 @@ using RimWorld;
 using Shared;
 using GameClient.Managers;
 using GameClient.Misc;
-using Shared.Files;
+using Shared.Files.Sites;
 
 namespace GameClient.Dialogs
 {
@@ -16,7 +16,7 @@ namespace GameClient.Dialogs
 
         public SitePartDef SitePartDef { get; private set; }
 
-        public SiteInfoFile ConfigFile { get; private set; }
+        public SiteType ConfigFile { get; private set; }
 
         public Dictionary<ThingDef, int> CostThing { get; private set; } = new Dictionary<ThingDef, int>();
 
@@ -26,15 +26,20 @@ namespace GameClient.Dialogs
 
         public static RT_Dialog_SiteMenu_Info Instance { get; private set; }
 
-        public RT_Dialog_SiteMenu_Info(SitePartDef thingChosen) //Send chosen site over
+        public RT_Dialog_SiteMenu_Info(SitePartDef thingChosen)
         {
             SitePartDef = thingChosen;
             this.Title = thingChosen.label;
-            ConfigFile = SiteManager.SiteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();
+            Printer.Warning(3);
+            ConfigFile = SiteManager.SiteValues.Where(f => f.DefName == thingChosen.defName).First();
+            Printer.Warning(4);
             Instance = this;
+            Printer.Warning(6);
 
             ThingDef cost = DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName);
             if (cost != null) CostThing.Add(cost, ConfigFile.Cost);
+
+            Printer.Warning(7);
 
             for (int i = 0; i < ConfigFile.Rewards.Length; i++)
             {
@@ -84,7 +89,7 @@ namespace GameClient.Dialogs
             }
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces every {SiteManager.SiteValues.TimeIntervalMinutes} minutes:");
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces:");
             num += 20f;
 
             foreach (ThingDef thing in RewardThing.Keys)
@@ -94,7 +99,7 @@ namespace GameClient.Dialogs
             }
 
             Widgets.EndScrollView();
-            if (Widgets.ButtonText(new Rect(rightColumn.x + 5f, rightColumn.yMax, rightColumn.width - 10f, 40f), "Buy"))
+            if (Widgets.ButtonText(new Rect(rightColumn.x + 5f, rightColumn.yMax, rightColumn.width - 10f, 40f), "Build"))
             {
                 SiteManager.RequestSiteBuild(ConfigFile);
                 RT_Dialog_SiteMenu.Instance.Close();

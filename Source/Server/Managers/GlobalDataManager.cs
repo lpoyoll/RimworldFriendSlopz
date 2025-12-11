@@ -25,6 +25,7 @@ namespace GameServer.Managers
             globalData._actionValues = Master.ActionConfigs;
             globalData._roadValues = Master.ActionConfigs.RoadsAction.RoadValues;
             globalData._modConfigs = Master.ModConfig;
+            globalData._siteValues = Master.ActionConfigs.SiteAction.SiteTypes;
 
             if (Master.WorldValues != null)
             {

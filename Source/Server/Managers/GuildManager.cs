@@ -2,12 +2,12 @@
 using GameServer.Misc;
 using Shared;
 using Shared.Files;
-using Shared.Files.Guild;
+using Shared.Files.Guilds;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
-using static Shared.Files.Guild.GuildMember;
+using static Shared.Files.Guilds.GuildMember;
 
 namespace GameServer.Managers
 {

@@ -13,6 +13,7 @@ using Verse;
 using static Shared.CommonEnumerators;
 using Shared.Files;
 using TCPNetwork.Packets;
+using Shared.Files.Sites;
 
 
 namespace GameClient.Managers
@@ -21,7 +22,7 @@ namespace GameClient.Managers
     {
         public static SitePartDef[] SiteDefs { get; set; }
 
-        public static SiteValuesFile SiteValues { get; set; }
+        public static SiteType[] SiteValues { get; set; }
 
         public static List<Site> PlayerSites { get; set; } = new List<Site>();
 
@@ -71,7 +72,7 @@ namespace GameClient.Managers
             RT_Dialog_Base.PushNewDialog(d1);
         }
 
-        public static void RequestSiteBuild(SiteInfoFile configFile)
+        public static void RequestSiteBuild(SiteType configFile)
         {
             if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.ChosenCaravan, ThingDefOf.Silver.defName, configFile.Cost))
             {
@@ -92,7 +93,7 @@ namespace GameClient.Managers
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for building"));
         }
 
-        public static void RequestSiteChangeConfig(SiteInfoFile config, string reward)
+        public static void RequestSiteChangeConfig(SiteType config, string reward)
         {
             SiteRewardConfigData rewardConfig = new SiteRewardConfigData();
             rewardConfig._siteDef = config.DefName;
@@ -105,10 +106,10 @@ namespace GameClient.Managers
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
 
-        private static void ReceiveSiteRewards(SiteRewardFile[] files)
+        private static void ReceiveSiteRewards(SiteReward[] files)
         {
             List<Thing> rewards = new List<Thing>();
-            foreach (SiteRewardFile reward in files)
+            foreach (SiteReward reward in files)
             {
                 try
                 {
@@ -192,8 +193,6 @@ namespace GameClient.Managers
         private static void OnSiteAccept()
         {
             RT_Dialog_Wait.Instance.Close();
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "The desired site has been built!" }));
-
             SaveManager.ForceSave();
         }
 

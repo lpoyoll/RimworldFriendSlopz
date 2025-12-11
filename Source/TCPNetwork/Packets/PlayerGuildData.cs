@@ -1,4 +1,4 @@
-﻿using Shared.Files.Guild;
+﻿using Shared.Files.Guilds;
 using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets

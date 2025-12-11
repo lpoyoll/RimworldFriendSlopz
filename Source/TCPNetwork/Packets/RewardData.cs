@@ -1,11 +1,11 @@
-using Shared.Files;
+using Shared.Files.Sites;
 
 namespace TCPNetwork.Packets 
 {
 
     public class RewardData 
     {
-        public SiteRewardFile[] _rewardData { get; set; } = null;
+        public SiteReward[] _rewardData { get; set; } = null;
 
         public override string ToString()
         {

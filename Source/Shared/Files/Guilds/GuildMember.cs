@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Shared.Files.Guild
+namespace Shared.Files.Guilds
 {
     public class GuildMember
     {

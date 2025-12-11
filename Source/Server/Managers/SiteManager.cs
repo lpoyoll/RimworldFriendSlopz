@@ -4,8 +4,9 @@ using Shared;
 using static Shared.CommonEnumerators;
 using Shared.Files;
 using TCPNetwork.Packets;
-using Shared.Files.Guild;
+using Shared.Files.Guilds;
 using TCPNetwork.Files.Client;
+using Shared.Files.Sites;
 
 namespace GameServer.Managers
 {
@@ -134,7 +135,7 @@ namespace GameServer.Managers
 
             foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
             {
-                List<SiteRewardFile> rewards = new List<SiteRewardFile>();
+                List<SiteReward> rewards = new List<SiteReward>();
 
                 // Get player specific sites
                 List<SiteFile> sitesToAdd = new List<SiteFile>();
@@ -143,8 +144,8 @@ namespace GameServer.Managers
 
                 foreach (SiteFile site in sitesToAdd)
                 {
-                    SiteRewardFile rewardFile = new SiteRewardFile();
-                    foreach (SiteRewardFile reward in site.Type.Rewards)
+                    SiteReward rewardFile = new SiteReward();
+                    foreach (SiteReward reward in site.Type.Rewards)
                     {
                         if (client.UserFile.SiteConfigs.Any(S => S.RewardDefName == reward.DefName))
                         {
@@ -279,9 +280,9 @@ namespace GameServer.Managers
             return false;
         }
 
-        public static SiteInfoFile GetTypeFromDef(string defName)
+        public static SiteType GetTypeFromDef(string defName)
         {
-            SiteInfoFile site = Master.ActionConfigs.SiteAction.SiteTypes.Where(S => S.DefName == defName).FirstOrDefault();
+            SiteType site = Master.ActionConfigs.SiteAction.SiteTypes.Where(S => S.DefName == defName).FirstOrDefault();
             if (site != null) return site;
             return null;
         }
