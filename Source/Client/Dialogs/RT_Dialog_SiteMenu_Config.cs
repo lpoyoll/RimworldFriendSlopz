@@ -38,9 +38,9 @@ namespace GameClient.Dialogs
 
             for (int i = 0; i < ConfigFile.Rewards.Length; i++)
             {
-                ThingDef reward = DefDatabase<ThingDef>.GetNamedSilentFail(ConfigFile.Rewards[i].RewardDef);
-                if (reward != null) RewardThing.Add(reward, ConfigFile.Rewards[i].RewardAmount);
-                else Printer.Warning($"{ConfigFile.Rewards[i].RewardDef} could not be found and won't be added to the list. Double check the def exists.");
+                ThingDef reward = DefDatabase<ThingDef>.GetNamedSilentFail(ConfigFile.Rewards[i].DefName);
+                if (reward != null) RewardThing.Add(reward, ConfigFile.Rewards[i].Amount);
+                else Printer.Warning($"{ConfigFile.Rewards[i].DefName} could not be found and won't be added to the list. Double check the def exists.");
             }
         }
 

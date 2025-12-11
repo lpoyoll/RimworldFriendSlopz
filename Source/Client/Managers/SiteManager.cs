@@ -112,13 +112,13 @@ namespace GameClient.Managers
             {
                 try
                 {
-                    ThingDef def = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == reward.RewardDef);
+                    ThingDef def = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == reward.DefName);
                     Thing toMake = ThingMaker.MakeThing(def);
-                    toMake.stackCount = reward.RewardAmount;
+                    toMake.stackCount = reward.Amount;
                     toMake.HitPoints = def.BaseMaxHitPoints;
                     rewards.Add(toMake);
 
-                    Printer.Message($"Received {reward.RewardAmount} of {reward.RewardDef}", LogImportanceMode.Verbose);
+                    Printer.Message($"Received {reward.Amount} of {reward.DefName}", LogImportanceMode.Verbose);
                 }
                 catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
             }

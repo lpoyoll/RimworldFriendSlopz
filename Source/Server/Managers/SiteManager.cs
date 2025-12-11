@@ -147,14 +147,14 @@ namespace GameServer.Managers
                     SiteRewardFile rewardFile = new SiteRewardFile();
                     foreach (SiteRewardFile reward in site.Type.Rewards)
                     {
-                        if (client.UserFile.SiteConfigs.Any(S => S.RewardDefName == reward.RewardDef))
+                        if (client.UserFile.SiteConfigs.Any(S => S.RewardDefName == reward.DefName))
                         {
-                            rewardFile.RewardDef = reward.RewardDef;
-                            rewardFile.RewardAmount = reward.RewardAmount;
+                            rewardFile.DefName = reward.DefName;
+                            rewardFile.Amount = reward.Amount;
                         }
                     }
 
-                    if (rewardFile.RewardDef == "") rewardFile = site.Type.Rewards.First();
+                    if (rewardFile.DefName == "") rewardFile = site.Type.Rewards.First();
 
                     rewards.Add(rewardFile);
                 }
@@ -192,7 +192,7 @@ namespace GameServer.Managers
                 {
                     SiteConfigFile toAdd = new SiteConfigFile();
                     toAdd.DefName = Master.ActionConfigs.SiteAction.SiteTypes[i].DefName;
-                    toAdd.RewardDefName = Master.ActionConfigs.SiteAction.SiteTypes[i].Rewards.First().RewardDef;
+                    toAdd.RewardDefName = Master.ActionConfigs.SiteAction.SiteTypes[i].Rewards.First().DefName;
 
                     configFiles.Add(toAdd);
                 }

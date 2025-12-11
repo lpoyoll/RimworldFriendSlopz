@@ -24,23 +24,23 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "RawRice",
-                        RewardAmount = 50
+                        DefName = "RawRice",
+                        Amount = 50
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "RawCorn",
-                        RewardAmount = 50
+                        DefName = "RawCorn",
+                        Amount = 50
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "SmokeleafLeaves",
-                        RewardAmount = 25
+                        DefName = "SmokeleafLeaves",
+                        Amount = 25
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "PsychoidLeaves",
-                        RewardAmount = 25
+                        DefName = "PsychoidLeaves",
+                        Amount = 25
                     }
                 ]
             },
@@ -53,23 +53,23 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "Meat_Muffalo",
-                        RewardAmount = 125
+                        DefName = "Meat_Muffalo",
+                        Amount = 125
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "Meat_Human",
-                        RewardAmount = 125
+                        DefName = "Meat_Human",
+                        Amount = 125
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "Leather_Chinchilla",
-                        RewardAmount = 60
+                        DefName = "Leather_Chinchilla",
+                        Amount = 60
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "Leather_Bear",
-                        RewardAmount = 60
+                        DefName = "Leather_Bear",
+                        Amount = 60
                     },
                 ]
             },
@@ -82,23 +82,23 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "BlocksGranite",
-                        RewardAmount = 50
+                        DefName = "BlocksGranite",
+                        Amount = 50
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "BlocksMarble",
-                        RewardAmount = 50
+                        DefName = "BlocksMarble",
+                        Amount = 50
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "Steel",
-                        RewardAmount = 30
+                        DefName = "Steel",
+                        Amount = 30
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "Plasteel",
-                        RewardAmount = 10
+                        DefName = "Plasteel",
+                        Amount = 10
                     }
                 ]
             },
@@ -111,8 +111,8 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "WoodLog",
-                        RewardAmount = 100
+                        DefName = "WoodLog",
+                        Amount = 100
                     }
                 ]
             },
@@ -125,13 +125,13 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "Silver",
-                        RewardAmount = 50
+                        DefName = "Silver",
+                        Amount = 50
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "Gold",
-                        RewardAmount = 15
+                        DefName = "Gold",
+                        Amount = 15
                     }
                 ]
             },
@@ -144,13 +144,13 @@ namespace Shared.Files.Actions
                     [
                     new SiteRewardFile()
                     {
-                        RewardDef = "ComponentIndustrial",
-                        RewardAmount = 10
+                        DefName = "ComponentIndustrial",
+                        Amount = 10
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "ComponentSpacer",
-                        RewardAmount = 2
+                        DefName = "ComponentSpacer",
+                        Amount = 2
                     },
                 ]
             },
@@ -163,8 +163,8 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "Chemfuel",
-                        RewardAmount = 50
+                        DefName = "Chemfuel",
+                        Amount = 50
                     }
                 ]
             },
@@ -177,13 +177,13 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "MedicineHerbal",
-                        RewardAmount = 10
+                        DefName = "MedicineHerbal",
+                        Amount = 10
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "MedicineIndustrial",
-                        RewardAmount = 2
+                        DefName = "MedicineIndustrial",
+                        Amount = 2
                     }
                 ]
             },
@@ -196,13 +196,13 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "Cloth",
-                        RewardAmount = 50
+                        DefName = "Cloth",
+                        Amount = 50
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "DevilstrandCloth",
-                        RewardAmount = 30
+                        DefName = "DevilstrandCloth",
+                        Amount = 30
                     }
                 ]
             },
@@ -215,13 +215,13 @@ namespace Shared.Files.Actions
                 [
                     new SiteRewardFile()
                     {
-                        RewardDef = "MealSurvivalPack",
-                        RewardAmount = 10
+                        DefName = "MealSurvivalPack",
+                        Amount = 10
                     },
                     new SiteRewardFile()
                     {
-                        RewardDef = "MealNutrientPaste",
-                        RewardAmount = 30
+                        DefName = "MealNutrientPaste",
+                        Amount = 30
                     }
                 ]
             }
