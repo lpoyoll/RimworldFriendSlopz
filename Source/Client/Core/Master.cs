@@ -18,14 +18,6 @@ namespace GameClient.Core
 
         public static string ModScriptsPath { get; set; }
 
-        public static string ConnectionDataPath { get; set; }
-
-        public static string LoginDataPath { get; set; }
-
-        public static string ClientPreferencesPath { get; set; }
-
-        public static string RecentServersPath { get; set; }
-
         public static string SavesFolderPath { get; set; }
 
         // Values

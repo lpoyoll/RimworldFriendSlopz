@@ -49,12 +49,11 @@ namespace GameClient.Managers
         public static void ForceSave()
         {
             Printer.Warning("Force saving", LogImportanceMode.Verbose);
-
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Saving your game"));
 
             Task.Run(delegate
             {
-                Thread.Sleep(1);
+                Thread.Sleep(100);
 
                 MainThreadHandler.Instance.Enqueue(delegate
                 {

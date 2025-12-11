@@ -63,11 +63,6 @@ namespace GameClient.Core
             Master.ModScriptsPath = Path.Combine(Master.ModMainPath, "Scripts");
             Master.ModAssemblyPath = Path.Combine(Master.ModMainPath, "Current", "Assemblies");
 
-            Master.ConnectionDataPath = Path.Combine(Master.AppdataRTPath, "ConnectionData.json");
-            Master.ClientPreferencesPath = Path.Combine(Master.AppdataRTPath, "Preferences.json");
-            Master.RecentServersPath = Path.Combine(Master.AppdataRTPath, "RecentServers.json");
-            Master.LoginDataPath = Path.Combine(Master.AppdataRTPath, "LoginData.json");
-
             if (!Directory.Exists(Master.AppdataRTPath)) Directory.CreateDirectory(Master.AppdataRTPath);
             if (!Directory.Exists(Master.AppdataTempPath)) Directory.CreateDirectory(Master.AppdataTempPath);
         }
