@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Shared.Files.Actions
 {
-    public class AidAction : BaseAction
+    public class RoadsAction : BaseAction
     {
         public bool IsEnabled { get; set; } = true;
 
-        public double Cooldown { get; set; } = 3600;
+        public double Cooldown { get; set; } = -1;
     }
 }

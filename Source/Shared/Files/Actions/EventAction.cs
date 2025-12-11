@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shared.Files.Actions
 {
-    public class EventAction
+    public class EventAction : BaseAction
     {
         public bool IsEnabled { get; set; } = true;
 

@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Shared.Files.Actions
 {
-    public class AidAction : BaseAction
+    public class BaseAction
     {
-        public bool IsEnabled { get; set; } = true;
 
-        public double Cooldown { get; set; } = 3600;
     }
 }

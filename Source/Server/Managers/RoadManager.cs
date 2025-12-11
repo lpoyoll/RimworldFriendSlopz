@@ -13,7 +13,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.RoadManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EnableRoads)
+            if (!Master.ActionConfigs.RoadsAction.IsEnabled)
             {
                 ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
                 return;

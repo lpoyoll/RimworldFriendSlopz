@@ -7,11 +7,7 @@ namespace Shared.Files.Actions
     {
         public static string Path { get; set; } = string.Empty;
 
-        public bool EnableActivities { get; set; } = true;
-
         public bool EnableSites { get; set; } = true;
-
-        public bool EnableRoads { get; set; } = true;
 
         public bool EnableFactions { get; set; } = true;
 
@@ -22,6 +18,10 @@ namespace Shared.Files.Actions
         public bool EnableNPCDestruction { get; set; } = false;
 
         public bool EnablePollutionSpread { get; set; } = true;
+
+        public ActivityAction ActivityAction { get; set; } = new ActivityAction();
+
+        public RoadsAction RoadsAction { get; set; } = new RoadsAction();
 
         public EventAction EventAction { get; set; } = new EventAction();
 
