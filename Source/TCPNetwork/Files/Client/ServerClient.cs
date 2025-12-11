@@ -7,7 +7,6 @@ using System.Net.Sockets;
 
 namespace TCPNetwork.Files.Client
 {
-    [Serializable]
     public class ServerClient
     {
         public string CurrentIP { get; set; } = string.Empty;

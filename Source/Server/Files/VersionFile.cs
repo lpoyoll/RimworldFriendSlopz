@@ -2,9 +2,8 @@
 
 namespace GameServer.Files
 {
-    [Serializable]
     public class VersionFile
     {
-        public string Version = CommonValues.ExecutableVersion;
+        public string Version { get; set; } = CommonValues.ExecutableVersion;
     }
 }

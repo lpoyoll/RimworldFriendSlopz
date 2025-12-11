@@ -3,7 +3,6 @@ using Shared.Misc;
 
 namespace Shared
 {
-    [Serializable]
     public class RiverDetails
     {
         public string RiverDefName { get; set; }
@@ -11,11 +10,12 @@ namespace Shared
         public int FromTile { get; set; }
 
         public int ToTile { get; set; }
+
         public RiverDetails(int fromTile, int toTile, string defname)
         {
+            RiverDefName = Pools.StringPool.GetOrAddString(defname);
             FromTile = fromTile;
             ToTile = toTile;
-            RiverDefName = Pools.StringPool.GetOrAddString(defname);
         }
     }
 }

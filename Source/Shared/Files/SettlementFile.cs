@@ -3,7 +3,6 @@ using static Shared.CommonEnumerators;
 
 namespace Shared.Files
 {
-    [Serializable]
     public class SettlementFile
     {
         public int Tile { get; set; } = -1;

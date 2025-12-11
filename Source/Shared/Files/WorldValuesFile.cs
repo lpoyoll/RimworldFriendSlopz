@@ -4,7 +4,6 @@ using System.IO;
 
 namespace Shared.Files
 {
-    [Serializable]
     public class WorldValuesFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;

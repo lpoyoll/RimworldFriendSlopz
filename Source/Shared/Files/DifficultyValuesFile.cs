@@ -7,7 +7,6 @@ using Shared.Misc;
 
 namespace Shared.Files
 {
-    [Serializable]
     public class DifficultyValuesFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;

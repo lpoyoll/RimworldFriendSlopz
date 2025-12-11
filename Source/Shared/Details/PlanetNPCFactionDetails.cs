@@ -2,7 +2,6 @@ using System;
 
 namespace Shared
 {
-    [Serializable]
     public class PlanetNPCFactionDetails
     {   
         public float[] Color;
