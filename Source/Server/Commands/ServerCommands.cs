@@ -2,7 +2,6 @@ using Shared;
 using static Shared.CommonEnumerators;
 using static GameServer.Commands.ConsoleCommandActions;
 using GameServer.Core;
-using GameServer.Files;
 using GameServer.Managers;
 using GameServer.Misc;
 using Shared.Files;

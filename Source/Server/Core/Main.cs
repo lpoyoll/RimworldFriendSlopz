@@ -17,11 +17,17 @@ namespace GameServer.Core
             Console.ForegroundColor = ConsoleColor.White;
 
             SetPaths();
+
+            if (!File.Exists(ServerConfigFile.Path))
+            {
+                Printer.Error("If this is your first time installing Rimworld Together, please take a look around the configuration files " +
+                    "and our wiki > https://github.com/RimWorld-Together/Rimworld-Together/wiki");
+            }
+
             LoadFiles();
             SetCulture();
             LoadResources();
 
-            Validator.CheckIfFirstBoot();
             MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
 
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
@@ -49,7 +55,6 @@ namespace GameServer.Core
             WhitelistConfigFile.Path = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
             BackupConfigFile.Path = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
             ChatConfigFile.Path = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
-
             CommonValues.ServerUsersPath = Master.UsersPath;
 
             if (!Directory.Exists(Master.AssetsPath)) Directory.CreateDirectory(Master.AssetsPath);
@@ -91,7 +96,6 @@ namespace GameServer.Core
             Printer.Title($"----------------------------------------");
 
             LoadFiles();
-
             EventManagerH.LoadAllEvents();
             
             GC.Collect();

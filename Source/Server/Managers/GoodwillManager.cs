@@ -1,5 +1,4 @@
-﻿using GameServer.Files;
-using GameServer.Misc;
+﻿using GameServer.Misc;
 using Shared;
 using Shared.Files;
 using Shared.Files.Guild;

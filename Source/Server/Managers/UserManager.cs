@@ -1,6 +1,5 @@
 ﻿using GameServer.Commands;
 using GameServer.Core;
-using GameServer.Files;
 using GameServer.Misc;
 using TCPNetwork.Packets;
 using Shared;
