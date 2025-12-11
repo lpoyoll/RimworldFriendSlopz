@@ -122,7 +122,7 @@ namespace GameServer.Managers
         {
             while (true)
             {
-                Thread.Sleep(TimeSpan.FromMinutes(Master.SiteValues.TimeIntervalMinutes));
+                Thread.Sleep(TimeSpan.FromMinutes(Master.ActionConfigs.SiteAction.TimeIntervalMinutes));
 
                 try { SiteRewardTick(); }
                 catch (Exception e) { Printer.Error($"Site tick failed, this should never happen. Exception > {e}"); }
@@ -188,11 +188,11 @@ namespace GameServer.Managers
             else
             {
                 List<SiteConfigFile> configFiles = new List<SiteConfigFile>();
-                for (int i = 0; i < Master.SiteValues.SiteInfoFiles.Length; i++)
+                for (int i = 0; i < Master.ActionConfigs.SiteAction.SiteTypes.Length; i++)
                 {
                     SiteConfigFile toAdd = new SiteConfigFile();
-                    toAdd.DefName = Master.SiteValues.SiteInfoFiles[i].DefName;
-                    toAdd.RewardDefName = Master.SiteValues.SiteInfoFiles[i].Rewards.First().RewardDef;
+                    toAdd.DefName = Master.ActionConfigs.SiteAction.SiteTypes[i].DefName;
+                    toAdd.RewardDefName = Master.ActionConfigs.SiteAction.SiteTypes[i].Rewards.First().RewardDef;
 
                     configFiles.Add(toAdd);
                 }
@@ -282,240 +282,17 @@ namespace GameServer.Managers
 
         public static SiteInfoFile GetTypeFromDef(string defName)
         {
-            SiteInfoFile site = Master.SiteValues.SiteInfoFiles.Where(S => S.DefName == defName).FirstOrDefault();
+            SiteInfoFile site = Master.ActionConfigs.SiteAction.SiteTypes.Where(S => S.DefName == defName).FirstOrDefault();
             if (site != null) return site;
             return null;
         }
 
         public static void SetSitePresets()
         {
-            if (Master.SiteValues.SiteInfoFiles.Length > 0) return;
+            if (Master.ActionConfigs.SiteAction.SiteTypes.Length > 0) return;
             else
             {
-                List<SiteInfoFile> siteInfoFiles = new List<SiteInfoFile>();
 
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTFarmland",
-                    DefNameCost = ["Silver"],
-                    Cost = [500],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "RawRice",
-                        RewardAmount = 50
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "RawCorn",
-                        RewardAmount = 50
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "SmokeleafLeaves",
-                        RewardAmount = 25
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "PsychoidLeaves",
-                        RewardAmount = 25
-                    }
-                    ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTHunterCamp",
-                    DefNameCost = ["Silver"],
-                    Cost = [500],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "Meat_Muffalo",
-                        RewardAmount = 125
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "Meat_Human",
-                        RewardAmount = 125
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "Leather_Chinchilla",
-                        RewardAmount = 60
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "Leather_Bear",
-                        RewardAmount = 60
-                    },
-                ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTQuarry",
-                    DefNameCost = ["Silver"],
-                    Cost = [500],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "BlocksGranite",
-                        RewardAmount = 50
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "BlocksMarble",
-                        RewardAmount = 50
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "Steel",
-                        RewardAmount = 30
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "Plasteel",
-                        RewardAmount = 10
-                    }
-                    ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTSawmill",
-                    DefNameCost = ["Silver"],
-                    Cost = [300],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "WoodLog",
-                        RewardAmount = 100
-                    }
-                    ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTBank",
-                    DefNameCost = ["Silver"],
-                    Cost = [750],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "Silver",
-                        RewardAmount = 50
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "Gold",
-                        RewardAmount = 15
-                    }
-                    ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTLaboratory",
-                    DefNameCost = ["Silver"],
-                    Cost = [750],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "ComponentIndustrial",
-                        RewardAmount = 10
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "ComponentSpacer",
-                        RewardAmount = 2
-                    },
-                ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTRefinery",
-                    DefNameCost = ["Silver"],
-                    Cost = [750],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "Chemfuel",
-                        RewardAmount = 50
-                    }
-                    ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTHerbalWorkshop",
-                    DefNameCost = ["Silver"],
-                    Cost = [750],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "MedicineHerbal",
-                        RewardAmount = 10
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "MedicineIndustrial",
-                        RewardAmount = 2
-                    }
-                    ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTTextileFactory",
-                    DefNameCost = ["Silver"],
-                    Cost = [750],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "Cloth",
-                        RewardAmount = 50
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "DevilstrandCloth",
-                        RewardAmount = 30
-                    }
-                    ]
-                });
-
-                siteInfoFiles.Add(new SiteInfoFile()
-                {
-                    DefName = "RTFoodProcessor",
-                    DefNameCost = ["Silver"],
-                    Cost = [750],
-                    Rewards =
-                    [
-                        new SiteRewardFile()
-                    {
-                        RewardDef = "MealSurvivalPack",
-                        RewardAmount = 10
-                    },
-                    new SiteRewardFile()
-                    {
-                        RewardDef = "MealNutrientPaste",
-                        RewardAmount = 30
-                    }
-                    ]
-                });
-
-                Master.SiteValues.SiteInfoFiles = siteInfoFiles.ToArray();
-                Master.SiteValues.Save();
             }
         }
     }

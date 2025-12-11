@@ -26,11 +26,7 @@ namespace GameServer.Core
 
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
-            if (Master.ActionConfigs.SiteAction.IsEnabled)
-            {
-                SiteManagerHelper.SetSitePresets();
-                Task.Run(SiteManager.StartSiteTicker);
-            }
+            if (Master.ActionConfigs.SiteAction.IsEnabled) Task.Run(SiteManager.StartSiteTicker);
 
             ServerBrowserManager.StartFeature();
 
@@ -107,7 +103,6 @@ namespace GameServer.Core
         {
             Master.ServerConfig = (ServerConfigFile)ServerConfigFile.Load<ServerConfigFile>();
             Master.ActionConfigs = (ActionValuesFile)ActionValuesFile.Load<ActionValuesFile>();
-            Master.SiteValues = (SiteValuesFile)SiteValuesFile.Load<SiteValuesFile>();
             Master.Whitelist = (WhitelistConfigFile)WhitelistConfigFile.Load<WhitelistConfigFile>();
             Master.DifficultyValues = (DifficultyValuesFile)DifficultyValuesFile.Load<DifficultyValuesFile>();
             Master.ScenarioValues = (ScenarioValuesFile)ScenarioValuesFile.Load<ScenarioValuesFile>();

@@ -4,16 +4,8 @@ namespace Shared.Files
     {
         public string DefName { get; set; } = string.Empty;
 
-        public string[] DefNameCost { get; set; } = null;
-
-        public int[] Cost { get; set; } = null;
+        public int Cost { get; set; } = -1;
 
         public SiteRewardFile[] Rewards { get; set; } = null;
-
-        public SiteInfoFile Clone() 
-        {
-            byte[] data = Serializer.ConvertObjectToBytes(this);
-            return Serializer.ConvertBytesToObject<SiteInfoFile>(data);
-        }
     }
 }

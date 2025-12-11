@@ -73,20 +73,14 @@ namespace GameClient.Managers
 
         public static void RequestSiteBuild(SiteInfoFile configFile)
         {
-            for (int i = 0; i < configFile.DefNameCost.Length; i++)
+            if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.ChosenCaravan, ThingDefOf.Silver.defName, configFile.Cost))
             {
-                if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.ChosenCaravan, configFile.DefNameCost[i], configFile.Cost[i]))
-                {
-                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver!" }));
-                    return;
-                }
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver!" }));
+                return;
             }
 
-            for (int i = 0; i < configFile.DefNameCost.Length; i++)
-            {
-                RimworldManager.RemoveThingFromCaravan(SessionValues.ChosenCaravan,
-                    DefDatabase<ThingDef>.GetNamed(configFile.DefNameCost[i]), configFile.Cost[i]);
-            }
+            RimworldManager.RemoveThingFromCaravan(SessionValues.ChosenCaravan,
+                DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName), configFile.Cost);
 
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.Build;

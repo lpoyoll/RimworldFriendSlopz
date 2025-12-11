@@ -19,7 +19,6 @@ namespace GameServer.Managers
             globalData._serverValues.ServerName = Master.ServerConfig.Name;
 
             globalData._eventValues = EventManagerH.LoadedEvents;
-            globalData._siteValues = Master.SiteValues;
             globalData._difficultyValues = Master.DifficultyValues;
             globalData._scenarioValues = Master.ScenarioValues;
             globalData._storytellerValues = Master.StorytellerValues;

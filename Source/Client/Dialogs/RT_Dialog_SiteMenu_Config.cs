@@ -26,37 +26,21 @@ namespace GameClient.Dialogs
 
         public static RT_Dialog_Base Instance { get; private set; } = null;
 
-        public RT_Dialog_SiteMenu_Config(SitePartDef thingChosen) //Send chosen site over
+        public RT_Dialog_SiteMenu_Config(SitePartDef thingChosen)
         {
             Instance = this;
             SitePartDef = thingChosen;
             this.Title = thingChosen.label;
             ConfigFile = SiteManager.SiteValues.SiteInfoFiles.Where(f => f.DefName == thingChosen.defName).First();
 
-            for (int i = 0; i < ConfigFile.DefNameCost.Length; i++)
-            {
-                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(ConfigFile.DefNameCost[i]);
-                if (toAdd != null) CostThing.Add(toAdd, ConfigFile.Cost[i]);
-                else Printer.Warning($"{ConfigFile.DefNameCost[i]} could not be found and won't be added to the list. Double check the def exists.");
-            }
+            ThingDef cost = DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName);
+            if (cost != null) CostThing.Add(cost, ConfigFile.Cost);
 
             for (int i = 0; i < ConfigFile.Rewards.Length; i++)
             {
-                ThingDef toAdd = DefDatabase<ThingDef>.GetNamedSilentFail(ConfigFile.Rewards[i].RewardDef);
-                if (toAdd != null) RewardThing.Add(toAdd, ConfigFile.Rewards[i].RewardAmount);
+                ThingDef reward = DefDatabase<ThingDef>.GetNamedSilentFail(ConfigFile.Rewards[i].RewardDef);
+                if (reward != null) RewardThing.Add(reward, ConfigFile.Rewards[i].RewardAmount);
                 else Printer.Warning($"{ConfigFile.Rewards[i].RewardDef} could not be found and won't be added to the list. Double check the def exists.");
-            }
-
-            if (RewardThing.Keys.Count == 0)
-            {
-                Printer.Error($"Could not load any rewards for the sites. Please double check your configs to make sure they are valid");
-                IsInvalid = true; // Apparently you can't "this.Close() in the constructor
-            }
-
-            if (CostThing.Keys.Count == 0)
-            {
-                Printer.Error($"Could not load any cost for the sites. Please double check your configs to make sure they are valid");
-                IsInvalid = true; // Apparently you can't "this.Close() in the constructor
             }
         }
 

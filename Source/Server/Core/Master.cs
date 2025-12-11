@@ -48,8 +48,6 @@ namespace GameServer.Core
 
         public static WhitelistConfigFile Whitelist { get; set; } = null;
 
-        public static SiteValuesFile SiteValues { get; set; } = null;
-
         public static WorldValuesFile WorldValues { get; set; } = null;
 
         public static ServerConfigFile ServerConfig { get; set; } = null;
