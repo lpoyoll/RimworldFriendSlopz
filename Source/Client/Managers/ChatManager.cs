@@ -105,7 +105,7 @@ namespace GameClient.Managers
             {
                 Semaphore.WaitOne();
 
-                ChatClockTask ??= Threader.GenerateThread(Threader.Mode.Chat);
+                ChatClockTask ??= Task.Run(ChatManager.ChatClock);
 
                 Semaphore.Release();
             }

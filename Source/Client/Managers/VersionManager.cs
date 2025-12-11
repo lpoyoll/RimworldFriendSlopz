@@ -1,16 +1,17 @@
-﻿using System;
+﻿using GameClient.Core;
+using GameClient.Dialogs;
+using GameClient.Misc;
+using Shared;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using GameClient.Core;
-using GameClient.Dialogs;
-using GameClient.Misc;
-using Shared;
-using Verse;
-using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using UnityEngine;
+using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
@@ -73,7 +74,9 @@ namespace GameClient.Managers
                     if (File.Exists(copyPath)) File.Delete(copyPath);
                     File.Copy(scriptPath, copyPath);
 
-                    CMDExecuter.StartCMDWindow($"\"\"{copyPath}\"");
+                    ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
+                    processInfo.UseShellExecute = false;
+                    Process.Start(processInfo);
 
                     Application.Quit();
                 };
