@@ -4,6 +4,7 @@ using Shared;
 using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Details.Planet;
 
 namespace GameServer.Managers
 {
@@ -29,10 +30,10 @@ namespace GameServer.Managers
             {
                 bool isNewPollutedTile = false;
 
-                PollutionDetails toSearch = Master.WorldValues.PollutedTiles.FirstOrDefault(T => T.Tile == data._pollutionData.Tile);
+                PollutionDetail toSearch = Master.WorldValues.PollutedTiles.FirstOrDefault(T => T.Tile == data._pollutionData.Tile);
                 if (toSearch == null)
                 {
-                    toSearch = new PollutionDetails();
+                    toSearch = new PollutionDetail();
                     isNewPollutedTile = true;
                 }
 
@@ -41,7 +42,7 @@ namespace GameServer.Managers
 
                 if (isNewPollutedTile)
                 {
-                    List<PollutionDetails> existingPollutedTiles = Master.WorldValues.PollutedTiles.ToList();
+                    List<PollutionDetail> existingPollutedTiles = Master.WorldValues.PollutedTiles.ToList();
                     existingPollutedTiles.Add(toSearch);
                     Master.WorldValues.PollutedTiles = existingPollutedTiles.ToArray();
                 }

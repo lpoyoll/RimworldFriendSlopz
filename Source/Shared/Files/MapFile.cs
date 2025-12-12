@@ -1,3 +1,5 @@
+using Shared.Files.Configs;
+
 namespace Shared.Files
 {
     public class MapFile
@@ -12,9 +14,9 @@ namespace Shared.Files
 
         public string CurWeatherDefName { get; set; } = string.Empty;
 
-        public ModConfigFile Mods { get; set; } = null;
+        public ModsConfigFile Mods { get; set; } = null;
 
-        public MapTileDetails[] Tiles { get; set; } = new MapTileDetails[0];
+        public MapTileDetail[] Tiles { get; set; } = new MapTileDetail[0];
 
         public string[] FactionThings { get; set; } = null;
 

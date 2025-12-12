@@ -1,16 +1,16 @@
-using Shared.Files;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class StorytellerValuesFile : BaseFile
+    public class WhitelistConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
-        public bool EnforceStoryteller { get; set; } = false;
+        public bool UseWhitelist { get; set; } = false;
 
-        public string StorytellerDefname { get; set; } = string.Empty;
+        public List<string> WhitelistedUsers { get; set; } = new List<string>() { };
 
         public override void Save()
         {
@@ -23,7 +23,7 @@ namespace Shared.Files
             if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                StorytellerValuesFile file = new StorytellerValuesFile();
+                WhitelistConfigFile file = new WhitelistConfigFile();
                 Serializer.SerializeToFile(Path, file);
                 return file;
             }

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Shared.Files.Actions
 {
-    public class ActionValuesFile : BaseFile
+    public class ActionsConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
@@ -38,7 +38,7 @@ namespace Shared.Files.Actions
             if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                ActionValuesFile file = new ActionValuesFile();
+                ActionsConfigFile file = new ActionsConfigFile();
                 Serializer.SerializeToFile(Path, file);
                 return file;
             }

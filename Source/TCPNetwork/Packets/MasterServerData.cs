@@ -1,4 +1,4 @@
-using Shared.Files;
+using Shared.Files.Configs;
 
 namespace TCPNetwork.Packets
 {
@@ -13,7 +13,7 @@ namespace TCPNetwork.Packets
 
         public string _description { get; set; } = string.Empty;
 
-        public ModConfigFile _config { get; set; } = null;
+        public ModsConfigFile _config { get; set; } = null;
 
         public int _maximumPlayerCount { get; set; } = -1;
 

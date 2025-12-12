@@ -1,6 +1,6 @@
 ﻿using Shared;
-using Shared.Files;
 using Shared.Files.Actions;
+using Shared.Files.Configs;
 
 namespace GameServer.Core
 {
@@ -48,25 +48,25 @@ namespace GameServer.Core
 
         public static WhitelistConfigFile Whitelist { get; set; } = null;
 
-        public static WorldValuesFile WorldValues { get; set; } = null;
+        public static PlanetConfigFile WorldValues { get; set; } = null;
 
         public static ServerConfigFile ServerConfig { get; set; } = null;
 
-        public static ActionValuesFile ActionConfigs { get; set; } = null;
+        public static ActionsConfigFile ActionConfigs { get; set; } = null;
 
-        public static DifficultyValuesFile DifficultyValues { get; set; } = null;
+        public static DifficultyConfigFile DifficultyValues { get; set; } = null;
 
-        public static StorytellerValuesFile StorytellerValues { get; set; } = null;
+        public static StorytellerConfigFile StorytellerValues { get; set; } = null;
 
-        public static ScenarioValuesFile ScenarioValues { get; set; } = null;
+        public static ScenarioConfigFile ScenarioValues { get; set; } = null;
 
-        public static BackupConfigFile BackupConfig { get; set; } = null;
+        public static BackupsConfigFile BackupConfig { get; set; } = null;
 
-        public static ModConfigFile ModConfig { get; set; } = null;
+        public static ModsConfigFile ModConfig { get; set; } = null;
 
         public static ChatConfigFile ChatConfig { get; set; } = null;
 
-        public static ServerBrowserConfig ServerBrowserConfig { get; set; } = null;
+        public static ServerBrowserConfigFile ServerBrowserConfig { get; set; } = null;
 
         //Booleans
 

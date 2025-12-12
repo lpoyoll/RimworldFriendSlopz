@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Files.Configs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,6 @@ namespace Shared.Files.Actions
 
         public double Cooldown { get; set; } = -1;
 
-        public RoadValuesFile RoadValues { get; set; } = new RoadValuesFile();
+        public RoadsConfigFile RoadValues { get; set; } = new RoadsConfigFile();
     }
 }

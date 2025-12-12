@@ -5,6 +5,7 @@ using static Shared.CommonEnumerators;
 using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Details.Planet;
 
 namespace GameServer.Managers
 {
@@ -36,7 +37,7 @@ namespace GameServer.Managers
             }
         }
 
-        public static void RemoveNPCSettlement(ServerClient client, PlanetNPCSettlementDetails settlement)
+        public static void RemoveNPCSettlement(ServerClient client, NPCSettlementDetail settlement)
         {
             if (!NPCSettlementManagerHelper.CheckIfSettlementFromTileExists(settlement.Tile))
             {
@@ -53,15 +54,15 @@ namespace GameServer.Managers
             }
         }
 
-        private static void DeleteSettlement(PlanetNPCSettlementDetails settlement)
+        private static void DeleteSettlement(NPCSettlementDetail settlement)
         {
-            List<PlanetNPCSettlementDetails> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
+            List<NPCSettlementDetail> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
             finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.Tile));
             Master.WorldValues.NPCSettlements = finalSettlements.ToArray();
             Master.WorldValues.Save();
         }
 
-        private static void BroadcastSettlementDeletion(PlanetNPCSettlementDetails settlement)
+        private static void BroadcastSettlementDeletion(NPCSettlementDetail settlement)
         {
             NPCSettlementData data = new NPCSettlementData();
             data._stepMode = SettlementStepMode.Remove;
@@ -75,7 +76,7 @@ namespace GameServer.Managers
     {
         public static bool CheckIfSettlementFromTileExists(int tile)
         {
-            foreach (PlanetNPCSettlementDetails settlement in Master.WorldValues.NPCSettlements.ToArray())
+            foreach (NPCSettlementDetail settlement in Master.WorldValues.NPCSettlements.ToArray())
             {
                 if (settlement.Tile == tile) return true;
             }
@@ -83,7 +84,7 @@ namespace GameServer.Managers
             return false;
         }
 
-        public static PlanetNPCSettlementDetails GetSettlementFromTile(int tile)
+        public static NPCSettlementDetail GetSettlementFromTile(int tile)
         {
             return Master.WorldValues.NPCSettlements.FirstOrDefault(fetch => fetch.Tile == tile); ;
         }

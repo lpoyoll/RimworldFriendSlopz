@@ -1,8 +1,8 @@
 using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
-using Shared.Files;
 using Shared.Files.Actions;
+using Shared.Files.Configs;
 using Shared.Files.Guilds;
 using System.Globalization;
 using System.Reflection;
@@ -43,16 +43,16 @@ namespace GameServer.Core
         public static void SetPaths()
         {
             ServerConfigFile.Path = Path.Combine(Master.ConfigsPath, "ServerConfig.json");
-            ActionValuesFile.Path = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
-            WorldValuesFile.Path = Path.Combine(Master.WorldPath, "WorldValuesFile.json");
-            StorytellerValuesFile.Path = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
-            ScenarioValuesFile.Path = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
+            ActionsConfigFile.Path = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
+            PlanetConfigFile.Path = Path.Combine(Master.WorldPath, "WorldValuesFile.json");
+            StorytellerConfigFile.Path = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
+            ScenarioConfigFile.Path = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
             GuildFile.GeneralPath = Path.Combine(Master.FactionsPath);
-            ModConfigFile.Path = Path.Combine(Master.ConfigsPath, "ModConfig.json");
-            DifficultyValuesFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");
-            ServerBrowserConfig.Path = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
+            ModsConfigFile.Path = Path.Combine(Master.ConfigsPath, "ModConfig.json");
+            DifficultyConfigFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");
+            ServerBrowserConfigFile.Path = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
             WhitelistConfigFile.Path = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
-            BackupConfigFile.Path = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
+            BackupsConfigFile.Path = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
             ChatConfigFile.Path = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
             CommonValues.ServerUsersPath = Master.UsersPath;
 
@@ -105,16 +105,16 @@ namespace GameServer.Core
         private static void LoadFiles()
         {
             Master.ServerConfig = (ServerConfigFile)ServerConfigFile.Load<ServerConfigFile>();
-            Master.ActionConfigs = (ActionValuesFile)ActionValuesFile.Load<ActionValuesFile>();
+            Master.ActionConfigs = (ActionsConfigFile)ActionsConfigFile.Load<ActionsConfigFile>();
             Master.Whitelist = (WhitelistConfigFile)WhitelistConfigFile.Load<WhitelistConfigFile>();
-            Master.DifficultyValues = (DifficultyValuesFile)DifficultyValuesFile.Load<DifficultyValuesFile>();
-            Master.ScenarioValues = (ScenarioValuesFile)ScenarioValuesFile.Load<ScenarioValuesFile>();
-            Master.StorytellerValues = (StorytellerValuesFile)StorytellerValuesFile.Load<StorytellerValuesFile>();
-            Master.BackupConfig = (BackupConfigFile)BackupConfigFile.Load<BackupConfigFile>();
-            Master.ModConfig = (ModConfigFile)ModConfigFile.Load<ModConfigFile>();
+            Master.DifficultyValues = (DifficultyConfigFile)DifficultyConfigFile.Load<DifficultyConfigFile>();
+            Master.ScenarioValues = (ScenarioConfigFile)ScenarioConfigFile.Load<ScenarioConfigFile>();
+            Master.StorytellerValues = (StorytellerConfigFile)StorytellerConfigFile.Load<StorytellerConfigFile>();
+            Master.BackupConfig = (BackupsConfigFile)BackupsConfigFile.Load<BackupsConfigFile>();
+            Master.ModConfig = (ModsConfigFile)ModsConfigFile.Load<ModsConfigFile>();
             Master.ChatConfig = (ChatConfigFile)ChatConfigFile.Load<ChatConfigFile>();
-            Master.WorldValues = (WorldValuesFile)WorldValuesFile.Load<WorldValuesFile>();
-            Master.ServerBrowserConfig = (ServerBrowserConfig)ServerBrowserConfig.Load<ServerBrowserConfig>();
+            Master.WorldValues = (PlanetConfigFile)PlanetConfigFile.Load<PlanetConfigFile>();
+            Master.ServerBrowserConfig = (ServerBrowserConfigFile)ServerBrowserConfigFile.Load<ServerBrowserConfigFile>();
         }
 
         public static void ChangeTitle()

@@ -1,21 +1,15 @@
-﻿using Shared;
-using Shared.Files;
 using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class ChatConfigFile : BaseFile
+    public class StorytellerConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
-        public bool EnableMoTD { get; set; } = false;
+        public bool EnforceStoryteller { get; set; } = false;
 
-        public string MessageOfTheDay { get; set; } = "Remember to drink water";
-
-        public bool LoginNotifications { get; set; } = false;
-
-        public bool DisconnectNotifications { get; set; } = false;
+        public string StorytellerDefname { get; set; } = string.Empty;
 
         public override void Save()
         {
@@ -28,7 +22,7 @@ namespace Shared.Files
             if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                ChatConfigFile file = new ChatConfigFile();
+                StorytellerConfigFile file = new StorytellerConfigFile();
                 Serializer.SerializeToFile(Path, file);
                 return file;
             }

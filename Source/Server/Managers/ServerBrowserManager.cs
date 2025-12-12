@@ -4,8 +4,8 @@ using GameServer.Core;
 using GameServer.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
-using Shared.Files;
 using TCPNetwork.Packets;
+using Shared.Files.Configs;
 
 namespace GameServer.Managers
 {
@@ -79,7 +79,7 @@ namespace GameServer.Managers
         private static bool ValidateServerInformation() 
         {
             ServerConfigFile serverInfo = Master.ServerConfig;
-            ServerBrowserConfig serverBrowserInfo = Master.ServerBrowserConfig;
+            ServerBrowserConfigFile serverBrowserInfo = Master.ServerBrowserConfig;
 
             if (serverInfo.Description.Length > MaxDescriptionLength) 
             {

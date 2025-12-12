@@ -2,9 +2,9 @@
 using GameServer.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
-using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Files.Configs;
 
 namespace GameServer.Managers
 {
@@ -26,7 +26,7 @@ namespace GameServer.Managers
             }
         }
 
-        private static void SaveModConfig(ServerClient client, ModConfigFile file)
+        private static void SaveModConfig(ServerClient client, ModsConfigFile file)
         {
             if (Master.WorldValues != null && !client.UserFile.IsAdmin)
             {

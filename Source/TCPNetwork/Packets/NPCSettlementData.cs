@@ -1,4 +1,4 @@
-using Shared;
+using Shared.Details.Planet;
 using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
@@ -7,7 +7,7 @@ namespace TCPNetwork.Packets
     {
         public SettlementStepMode _stepMode { get; set; } = SettlementStepMode.Add;
 
-        public PlanetNPCSettlementDetails _settlementData { get; set; } = new PlanetNPCSettlementDetails();
+        public NPCSettlementDetail _settlementData { get; set; } = new NPCSettlementDetail();
 
         public override string ToString()
         {

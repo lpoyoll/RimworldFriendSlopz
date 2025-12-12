@@ -2,10 +2,10 @@
 using GameServer.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
-using Shared.Files;
 using Shared.Misc;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Files.Configs;
 
 namespace GameServer.Managers
 {
@@ -35,7 +35,7 @@ namespace GameServer.Managers
             }
         }
 
-        private static void SetScenario(ServerClient client, ScenarioValuesFile file)
+        private static void SetScenario(ServerClient client, ScenarioConfigFile file)
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
@@ -51,7 +51,7 @@ namespace GameServer.Managers
             }
         }
 
-        private static void SetStoryteller(ServerClient client, StorytellerValuesFile file)
+        private static void SetStoryteller(ServerClient client, StorytellerConfigFile file)
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
@@ -67,7 +67,7 @@ namespace GameServer.Managers
             }
         }
 
-        private static void SetDifficulty(ServerClient client, DifficultyValuesFile file, bool fixXml = false)
+        private static void SetDifficulty(ServerClient client, DifficultyConfigFile file, bool fixXml = false)
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {

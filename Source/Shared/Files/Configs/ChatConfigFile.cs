@@ -1,21 +1,19 @@
-﻿using Shared;
-using Shared.Files;
-using System;
+﻿using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class BackupConfigFile : BaseFile
+    public class ChatConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
-        public bool AutomaticBackups { get; set; } = true;
+        public bool EnableMoTD { get; set; } = false;
 
-        public float IntervalHours { get; set; } = 24f;
+        public string MessageOfTheDay { get; set; } = "Remember to drink water";
 
-        public bool AutomaticDeletion { get; set; } = true;
+        public bool LoginNotifications { get; set; } = false;
 
-        public int Amount { get; set; } = 3;
+        public bool DisconnectNotifications { get; set; } = false;
 
         public override void Save()
         {
@@ -28,7 +26,7 @@ namespace Shared.Files
             if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                BackupConfigFile file = new BackupConfigFile();
+                ChatConfigFile file = new ChatConfigFile();
                 Serializer.SerializeToFile(Path, file);
                 return file;
             }

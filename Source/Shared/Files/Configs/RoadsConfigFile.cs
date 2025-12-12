@@ -1,10 +1,9 @@
-﻿using Shared.Files;
-using System;
+﻿using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class RoadValuesFile
+    public class RoadsConfigFile
     {
         public bool AllowDirtPath { get; set; } = true;
 

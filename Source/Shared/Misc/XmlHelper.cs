@@ -6,12 +6,11 @@ namespace Shared.Misc
 {
     public static class XmlHelper
     {
-        public static string PrettyXml(string xml) => XDocument.Parse(xml).ToString();
+        public static string PrettyXml(string xml) { return XDocument.Parse(xml).ToString(); }
 
         public static void WriteXmlToFile(string xml, string path, bool shouldPretty)
         {
-            if(shouldPretty)
-                xml = PrettyXml(xml);
+            if (shouldPretty) xml = PrettyXml(xml);
             File.WriteAllText(path, xml);
         }
 

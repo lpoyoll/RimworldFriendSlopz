@@ -9,8 +9,8 @@ using System.Linq;
 using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
-using Shared.Files;
 using TCPNetwork.Packets;
+using Shared.Files.Configs;
 
 namespace GameClient.Managers
 {
@@ -35,7 +35,7 @@ namespace GameClient.Managers
             SessionValues.DifficultyFile = data._difficultyValues;
         }
 
-        public static void SetScenario(ScenarioValuesFile file)
+        public static void SetScenario(ScenarioConfigFile file)
         {
             if (!file.EnforceScenario) return;
             else
@@ -46,7 +46,7 @@ namespace GameClient.Managers
             }
         }
 
-        public static void SetDifficulty(DifficultyValuesFile file, bool bypass = false)
+        public static void SetDifficulty(DifficultyConfigFile file, bool bypass = false)
         {
             if (!file.EnforceDifficulty && !bypass) return;
             else
@@ -56,7 +56,7 @@ namespace GameClient.Managers
             }
         }
 
-        public static void SetStoryteller(StorytellerValuesFile file, bool bypassCheck = false)
+        public static void SetStoryteller(StorytellerConfigFile file, bool bypassCheck = false)
         {
             if (!file.EnforceStoryteller && !bypassCheck) return;
             else
@@ -71,7 +71,7 @@ namespace GameClient.Managers
 
         public static void SendCurrentScenario(bool isEnforced)
         {
-            ScenarioValuesFile file = new ScenarioValuesFile();
+            ScenarioConfigFile file = new ScenarioConfigFile();
             file.EnforceScenario = isEnforced;
             file.ScenarioName = Current.Game.Scenario.name;
 
@@ -84,7 +84,7 @@ namespace GameClient.Managers
 
         public static void SendCurrentStoryteller(bool isEnforced)
         {
-            StorytellerValuesFile file = new StorytellerValuesFile();
+            StorytellerConfigFile file = new StorytellerConfigFile();
             file.EnforceStoryteller = isEnforced;
             file.StorytellerDefname = Current.Game.storyteller.def.defName;
 
@@ -97,7 +97,7 @@ namespace GameClient.Managers
 
         public static void SendCurrentDifficulty(bool isEnforced)
         {
-            DifficultyValuesFile file = new DifficultyValuesFile();
+            DifficultyConfigFile file = new DifficultyConfigFile();
             if(isEnforced)
                 file.ScribeData = ScribeManager.SerializeToString(Current.Game.storyteller.difficulty, ScribeManager.SerializableType.Other);
 

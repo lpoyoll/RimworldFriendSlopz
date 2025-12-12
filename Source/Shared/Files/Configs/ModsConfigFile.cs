@@ -1,10 +1,9 @@
-using Shared.Files;
 using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class ModConfigFile : BaseFile
+    public class ModsConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
@@ -35,7 +34,7 @@ namespace Shared.Files
             if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                ModConfigFile file = new ModConfigFile();
+                ModsConfigFile file = new ModsConfigFile();
                 Serializer.SerializeToFile(Path, file);
                 return file;
             }

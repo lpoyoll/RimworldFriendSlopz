@@ -1,4 +1,4 @@
-﻿using Shared.Files;
+﻿using Shared.Files.Configs;
 using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
@@ -11,7 +11,7 @@ namespace TCPNetwork.Packets
 
         public string _password { get; set; } = string.Empty;
 
-        public ModConfigFile _runningMods { get; set; } = null;
+        public ModsConfigFile _runningMods { get; set; } = null;
 
         public LoginResponse _tryResponse { get; set; } = LoginResponse.InvalidLogin;
 

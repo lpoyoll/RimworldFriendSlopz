@@ -4,7 +4,6 @@ using GameClient.Values;
 using TCPNetwork.Packets;
 using RimWorld;
 using Shared;
-using Shared.Files;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,6 +12,7 @@ using Verse;
 using Verse.Steam;
 using static Shared.CommonEnumerators;
 using static UnityEngine.GraphicsBuffer;
+using Shared.Files.Configs;
 
 namespace GameClient.Managers
 {
@@ -106,7 +106,7 @@ namespace GameClient.Managers
             return configsToFetch.ToArray();
         }
 
-        public static ModConfigFile GetRunningModList()
+        public static ModsConfigFile GetRunningModList()
         {
             List<string> loadedMods = new List<string>();
             ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
@@ -119,7 +119,7 @@ namespace GameClient.Managers
 
             loadedMods.Sort();
 
-            ModConfigFile configFile = new ModConfigFile();
+            ModsConfigFile configFile = new ModsConfigFile();
             configFile.UnsortedMods = loadedMods.ToArray();
             return configFile;
         }
@@ -132,9 +132,9 @@ namespace GameClient.Managers
                 loginData._extraDetails.ToArray()));
         }
 
-        public static ModConfigFile SortModsIntoCategories(string[] modNames, int[] categoryIndexes)
+        public static ModsConfigFile SortModsIntoCategories(string[] modNames, int[] categoryIndexes)
         {
-            ModConfigFile configFile = new ModConfigFile();
+            ModsConfigFile configFile = new ModsConfigFile();
             List<string> requiredMods = new List<string>();
             List<string> optionalMods = new List<string>();
             List<string> forbiddenMods = new List<string>();

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
+using Shared.Details.Planet;
 
 namespace GameClient.Managers
 {
@@ -33,15 +34,15 @@ namespace GameClient.Managers
             }
         }
 
-        public static void AddSettlements(PlanetNPCSettlementDetails[] settlements)
+        public static void AddSettlements(NPCSettlementDetail[] settlements)
         {
-            foreach (PlanetNPCSettlementDetails settlement in settlements)
+            foreach (NPCSettlementDetail settlement in settlements)
             {
                 SpawnSingleSettlement(settlement);
             }
         }
 
-        public static void SpawnSingleSettlement(PlanetNPCSettlementDetails toAdd)
+        public static void SpawnSingleSettlement(NPCSettlementDetail toAdd)
         {
             if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
             else
@@ -98,7 +99,7 @@ namespace GameClient.Managers
             foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
         }
 
-        public static void RemoveNPCSettlementFromPacket(PlanetNPCSettlementDetails data)
+        public static void RemoveNPCSettlementFromPacket(NPCSettlementDetail data)
         {
             Settlement toRemove = Find.World.worldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data.Tile &&
                 fetch.Faction != Faction.OfPlayer);
@@ -148,7 +149,7 @@ namespace GameClient.Managers
 
     public static class NPCManagerH
     {
-        public static PlanetNPCSettlementDetails[] tempNPCSettlements;
+        public static NPCSettlementDetail[] tempNPCSettlements;
 
         public static Settlement lastRemovedSettlement;
 

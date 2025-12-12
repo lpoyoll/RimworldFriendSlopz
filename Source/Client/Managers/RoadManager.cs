@@ -11,6 +11,7 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
+using Shared.Details.Planet;
 
 namespace GameClient.Managers
 {
@@ -26,7 +27,7 @@ namespace GameClient.Managers
             switch (data._stepMode)
             {
                 case RoadStepMode.Add:
-                    AddRoadSimple(data._details.FromTile, data._details.ToTile, RoadManagerHelper.GetRoadDefFromDefName(data._details.RoadDefName), true);
+                    AddRoadSimple(data._details.FromTile, data._details.ToTile, RoadManagerHelper.GetRoadDefFromDefName(data._details.DefName), true);
                     break;
 
                 case RoadStepMode.Remove:
@@ -40,10 +41,10 @@ namespace GameClient.Managers
             RoadData data = new RoadData();
             data._stepMode = RoadStepMode.Add;
 
-            data._details = new RoadDetails();
+            data._details = new RoadDetail();
             data._details.FromTile = tileAID;
             data._details.ToTile = tileBID;
-            data._details.RoadDefName = roadDef.defName;
+            data._details.DefName = roadDef.defName;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
@@ -53,20 +54,20 @@ namespace GameClient.Managers
             RoadData data = new RoadData();
             data._stepMode = RoadStepMode.Remove;
 
-            data._details = new RoadDetails();
+            data._details = new RoadDetail();
             data._details.FromTile = tileAID;
             data._details.ToTile = tileBID;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.RoadManager, data);
         }
 
-        public static void AddRoads(RoadDetails[] details, bool forceRefresh)
+        public static void AddRoads(RoadDetail[] details, bool forceRefresh)
         {
             if (details == null) return;
 
-            foreach (RoadDetails detail in details)
+            foreach (RoadDetail detail in details)
             {
-                AddRoadSimple(detail.FromTile, detail.ToTile, RoadManagerHelper.GetRoadDefFromDefName(detail.RoadDefName), forceRefresh);
+                AddRoadSimple(detail.FromTile, detail.ToTile, RoadManagerHelper.GetRoadDefFromDefName(detail.DefName), forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
@@ -158,7 +159,7 @@ namespace GameClient.Managers
 
     public static class RoadManagerHelper
     {
-        public static RoadDetails[] tempRoadDetails;
+        public static RoadDetail[] tempRoadDetails;
 
         public static RoadDef[] allowedRoadDefs;
 
@@ -327,19 +328,19 @@ namespace GameClient.Managers
                 selectableTilesLabels.ToArray(), r1));
         }
 
-        public static RoadDetails[] GetPlanetRoads()
+        public static RoadDetail[] GetPlanetRoads()
         {
-            List<RoadDetails> toGet = new List<RoadDetails>();
+            List<RoadDetail> toGet = new List<RoadDetail>();
             foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
             {
                 if (tile.Roads != null)
                 {
                     foreach (SurfaceTile.RoadLink link in tile.Roads)
                     {
-                        RoadDetails details = new RoadDetails();
+                        RoadDetail details = new RoadDetail();
                         details.FromTile = tile.tile;
                         details.ToTile = link.neighbor;
-                        details.RoadDefName = link.road.defName;
+                        details.DefName = link.road.defName;
 
                         if (!CheckIfExists(details.FromTile, details.ToTile)) toGet.Add(details);
                     }
@@ -349,7 +350,7 @@ namespace GameClient.Managers
 
             bool CheckIfExists(int tileA, int tileB)
             {
-                foreach (RoadDetails details in toGet)
+                foreach (RoadDetail details in toGet)
                 {
                     if (details.FromTile == tileA && details.ToTile == tileB) return true;
                     else if (details.FromTile == tileB && details.ToTile == tileA) return true;

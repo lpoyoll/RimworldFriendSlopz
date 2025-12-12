@@ -1,10 +1,9 @@
-using Shared.Files;
 using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class ScenarioValuesFile : BaseFile
+    public class ScenarioConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
@@ -23,7 +22,7 @@ namespace Shared.Files
             if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                ScenarioValuesFile file = new ScenarioValuesFile();
+                ScenarioConfigFile file = new ScenarioConfigFile();
                 Serializer.SerializeToFile(Path, file);
                 return file;
             }

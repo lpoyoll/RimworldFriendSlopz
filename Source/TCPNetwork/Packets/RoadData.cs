@@ -1,4 +1,4 @@
-using Shared;
+using Shared.Details.Planet;
 using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
@@ -8,7 +8,7 @@ namespace TCPNetwork.Packets
     {
         public RoadStepMode _stepMode { get; set; } = RoadStepMode.Add;
 
-        public RoadDetails _details { get; set; } = null;
+        public RoadDetail _details { get; set; } = null;
 
         public override string ToString()
         {

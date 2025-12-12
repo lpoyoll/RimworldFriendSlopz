@@ -4,11 +4,11 @@ using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using Shared.Files;
 using System.Collections.Generic;
 using Verse;
 using static Shared.CommonEnumerators;
 using Shared.Files.Actions;
+using Shared.Files.Configs;
 
 namespace GameClient.Values
 {
@@ -34,17 +34,17 @@ namespace GameClient.Values
 
         public static TransferData IncomingManifest { get; set; } = new TransferData();
 
-        public static ActionValuesFile ActionValues { get; set; } = null;
+        public static ActionsConfigFile ActionValues { get; set; } = null;
 
-        public static ModConfigFile ConfigFile { get; set; } = null;
+        public static ModsConfigFile ConfigFile { get; set; } = null;
 
-        public static ScenarioValuesFile ScenarioFile { get; set; } = null;
+        public static ScenarioConfigFile ScenarioFile { get; set; } = null;
 
-        public static StorytellerValuesFile StorytellerFile { get; set; } = null;
+        public static StorytellerConfigFile StorytellerFile { get; set; } = null;
 
-        public static DifficultyValuesFile DifficultyFile { get; set; } = null;
+        public static DifficultyConfigFile DifficultyFile { get; set; } = null;
 
-        public static WorldValuesFile WorldFile { get; set; } = null;
+        public static PlanetConfigFile WorldFile { get; set; } = null;
 
         public static bool IsSynchronousHost { get; set; } = true;
 

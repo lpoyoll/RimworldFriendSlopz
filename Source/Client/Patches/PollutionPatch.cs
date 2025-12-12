@@ -9,6 +9,7 @@ using System.Reflection.Emit;
 using Verse;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
+using Shared.Details.Planet;
 
 namespace GameClient.Patches
 {
@@ -54,7 +55,7 @@ namespace GameClient.Patches
                 else if (addedByServer) addedByServer = false;
                 else
                 {
-                    PollutionDetails pollution = new PollutionDetails();
+                    PollutionDetail pollution = new PollutionDetail();
                     pollution.Tile = lastPollutedTile;
                     pollution.Quantity = pollutionAmount;
 

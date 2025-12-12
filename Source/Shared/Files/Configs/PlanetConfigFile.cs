@@ -1,10 +1,10 @@
-﻿using Shared.Files;
+﻿using Shared.Details.Planet;
 using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class WorldValuesFile : BaseFile
+    public class PlanetConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
@@ -24,15 +24,15 @@ namespace Shared.Files
 
         public float Pollution { get; set; } = -1f;
 
-        public PlanetFeatureDetails[] Features { get; set; } = null;
+        public FeatureDetail[] Features { get; set; } = null;
 
-        public RoadDetails[] Roads { get; set; } = null;
+        public RoadDetail[] Roads { get; set; } = null;
 
-        public PollutionDetails[] PollutedTiles { get; set; } = null;
+        public PollutionDetail[] PollutedTiles { get; set; } = null;
 
-        public PlanetNPCFactionDetails[] NPCFactions { get; set; } = null;
+        public NPCFactionDetail[] NPCFactions { get; set; } = null;
 
-        public PlanetNPCSettlementDetails[] NPCSettlements { get; set; } = null;
+        public NPCSettlementDetail[] NPCSettlements { get; set; } = null;
 
         public override void Save()
         {

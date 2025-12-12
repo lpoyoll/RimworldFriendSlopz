@@ -1,4 +1,4 @@
-using Shared.Files;
+using Shared.Files.Configs;
 using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
@@ -8,7 +8,7 @@ namespace TCPNetwork.Packets
     {
         public ModConfigStepMode _stepMode { get; set; } = ModConfigStepMode.Send;
 
-        public ModConfigFile _configFile { get; set; } = null;
+        public ModsConfigFile _configFile { get; set; } = null;
 
         public override string ToString()
         {

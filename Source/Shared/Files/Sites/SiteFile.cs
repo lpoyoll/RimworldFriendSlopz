@@ -1,9 +1,8 @@
-﻿using Shared.Files.Sites;
-using System;
+﻿using System;
 using System.Threading;
 using static Shared.CommonEnumerators;
 
-namespace Shared.Files
+namespace Shared.Files.Sites
 {
     public class SiteFile
     {

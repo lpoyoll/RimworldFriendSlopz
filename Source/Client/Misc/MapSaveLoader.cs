@@ -67,13 +67,13 @@ namespace GameClient.Misc
         {
             try
             {
-                List<MapTileDetails> toGet = new List<MapTileDetails>();
+                List<MapTileDetail> toGet = new List<MapTileDetail>();
 
                 for (int z = 0; z < map.Size.z; ++z)
                 {
                     for (int x = 0; x < map.Size.x; ++x)
                     {
-                        MapTileDetails component = new MapTileDetails();
+                        MapTileDetail component = new MapTileDetail();
                         IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
                         component.DefName = map.terrainGrid.TerrainAt(vectorToCheck).defName;
                         component.IsPolluted = map.pollutionGrid.IsPolluted(vectorToCheck);
@@ -199,7 +199,7 @@ namespace GameClient.Misc
                 {
                     for (int x = 0; x < map.Size.x; ++x)
                     {
-                        MapTileDetails component = mapFile.Tiles[index];
+                        MapTileDetail component = mapFile.Tiles[index];
                         IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
                         try

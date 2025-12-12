@@ -1,9 +1,7 @@
-﻿using Shared;
-using Shared.Files;
-using System;
+﻿using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
     public class ServerConfigFile : BaseFile
     {

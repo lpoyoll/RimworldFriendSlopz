@@ -1,18 +1,19 @@
-﻿using Shared;
-using Shared.Files;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class WhitelistConfigFile : BaseFile
+    public class BackupsConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
-        public bool UseWhitelist { get; set; } = false;
+        public bool AutomaticBackups { get; set; } = true;
 
-        public List<string> WhitelistedUsers { get; set; } = new List<string>() { };
+        public float IntervalHours { get; set; } = 24f;
+
+        public bool AutomaticDeletion { get; set; } = true;
+
+        public int Amount { get; set; } = 3;
 
         public override void Save()
         {
@@ -25,7 +26,7 @@ namespace Shared.Files
             if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                WhitelistConfigFile file = new WhitelistConfigFile();
+                BackupsConfigFile file = new BackupsConfigFile();
                 Serializer.SerializeToFile(Path, file);
                 return file;
             }

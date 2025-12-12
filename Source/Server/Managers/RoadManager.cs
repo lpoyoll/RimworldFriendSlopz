@@ -5,6 +5,7 @@ using static Shared.CommonEnumerators;
 using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Details.Planet;
 
 namespace GameServer.Managers
 {
@@ -56,7 +57,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            foreach (RoadDetails existingRoad in Master.WorldValues.Roads)
+            foreach (RoadDetail existingRoad in Master.WorldValues.Roads)
             {
                 if (existingRoad.FromTile == data._details.FromTile && existingRoad.ToTile == data._details.ToTile)
                 {
@@ -75,15 +76,15 @@ namespace GameServer.Managers
                 else continue;
             }
 
-            void BroadcastDeletion(RoadDetails toRemove)
+            void BroadcastDeletion(RoadDetail toRemove)
             {
                 ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.RoadManager, data);
             }
         }
 
-        private static void SaveRoad(RoadDetails details, ServerClient client = null)
+        private static void SaveRoad(RoadDetail details, ServerClient client = null)
         {
-            List<RoadDetails> currentRoads = Master.WorldValues.Roads.ToList();
+            List<RoadDetail> currentRoads = Master.WorldValues.Roads.ToList();
             currentRoads.Add(details);
 
             Master.WorldValues.Roads = currentRoads.ToArray();
@@ -92,9 +93,9 @@ namespace GameServer.Managers
             InformationDisplayer.DisplayAddRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
 
-        private static void DeleteRoad(RoadDetails details, ServerClient client = null)
+        private static void DeleteRoad(RoadDetail details, ServerClient client = null)
         {
-            List<RoadDetails> currentRoads = Master.WorldValues.Roads.ToList();
+            List<RoadDetail> currentRoads = Master.WorldValues.Roads.ToList();
             currentRoads.Remove(details);
 
             Master.WorldValues.Roads = currentRoads.ToArray();
@@ -106,9 +107,9 @@ namespace GameServer.Managers
 
     public static class RoadManagerHelper
     {
-        public static bool CheckIfRoadExists(RoadDetails details)
+        public static bool CheckIfRoadExists(RoadDetail details)
         {
-            foreach (RoadDetails existingRoad in Master.WorldValues.Roads)
+            foreach (RoadDetail existingRoad in Master.WorldValues.Roads)
             {
                 if (existingRoad.FromTile == details.FromTile && existingRoad.ToTile == details.ToTile) return true;
                 else if (existingRoad.FromTile == details.ToTile && existingRoad.ToTile == details.FromTile) return true;

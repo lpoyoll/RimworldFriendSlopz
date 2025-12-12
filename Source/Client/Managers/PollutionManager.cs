@@ -5,6 +5,7 @@ using RimWorld.Planet;
 using Shared;
 using System.Collections.Generic;
 using Verse;
+using Shared.Details.Planet;
 namespace GameClient.Managers
 {
     public static class PollutionManager
@@ -20,11 +21,11 @@ namespace GameClient.Managers
             }
         }
 
-        public static void AddPollutedTiles(PollutionDetails[] details, bool forceRefresh)
+        public static void AddPollutedTiles(PollutionDetail[] details, bool forceRefresh)
         {
             if (details == null) return;
 
-            foreach (PollutionDetails detail in details)
+            foreach (PollutionDetail detail in details)
             {
                 AddPollutedTileSimple(detail, forceRefresh);
             }
@@ -33,13 +34,13 @@ namespace GameClient.Managers
             if (!forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
         }
 
-        public static void AddPollutedTileOrganic(PollutionDetails details)
+        public static void AddPollutedTileOrganic(PollutionDetail details)
         {
             PollutionPatch.PatchAddPollution.addedByServer = true;
             WorldPollutionUtility.PolluteWorldAtTile(details.Tile, details.Quantity);
         }
 
-        public static void AddPollutedTileSimple(PollutionDetails details, bool forceRefresh)
+        public static void AddPollutedTileSimple(PollutionDetail details, bool forceRefresh)
         {
             SurfaceTile toPollute = Find.WorldGrid[details.Tile];
             toPollute.pollution = details.Quantity;
@@ -62,21 +63,21 @@ namespace GameClient.Managers
 
     public static class PollutionManagerHelper
     {
-        public static PollutionDetails[] tempPollutionDetails;
+        public static PollutionDetail[] tempPollutionDetails;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
             tempPollutionDetails = serverGlobalData._pollutedTiles;
         }
 
-        public static PollutionDetails[] GetPlanetPollutedTiles()
+        public static PollutionDetail[] GetPlanetPollutedTiles()
         {
-            List<PollutionDetails> toGet = new List<PollutionDetails>();
+            List<PollutionDetail> toGet = new List<PollutionDetail>();
             foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
             {
                 if (tile.pollution != 0)
                 {
-                    PollutionDetails details = new PollutionDetails();
+                    PollutionDetail details = new PollutionDetail();
                     details.Tile = tile.tile;
                     details.Quantity = tile.pollution;
 

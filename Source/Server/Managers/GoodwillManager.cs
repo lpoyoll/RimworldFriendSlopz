@@ -2,6 +2,7 @@
 using Shared;
 using Shared.Files;
 using Shared.Files.Guilds;
+using Shared.Files.Sites;
 using System.Linq;
 using System.Security.Policy;
 using TCPNetwork.Files.Client;

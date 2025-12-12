@@ -2,9 +2,9 @@
 using GameServer.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
-using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Files.Configs;
 
 namespace GameServer.Managers
 {
@@ -26,7 +26,7 @@ namespace GameServer.Managers
             }
         }
 
-        public static bool CheckIfWorldExists() { return File.Exists(WorldValuesFile.Path); }
+        public static bool CheckIfWorldExists() { return File.Exists(PlanetConfigFile.Path); }
 
         public static void RequireWorldFile(ServerClient client)
         {
@@ -39,7 +39,7 @@ namespace GameServer.Managers
         public static void SendWorld(ServerClient client)
         {
             WorldData data = new WorldData();
-            WorldValuesFile file = Serializer.FileBytesToObject<WorldValuesFile>(WorldValuesFile.Path);
+            PlanetConfigFile file = Serializer.FileBytesToObject<PlanetConfigFile>(PlanetConfigFile.Path);
 
             data._fileBytes = Serializer.ConvertObjectToBytes(file);
             data._stepMode = WorldStepMode.Sent;
@@ -49,8 +49,8 @@ namespace GameServer.Managers
 
         public static void ReceiveWorld(ServerClient client, WorldData data)
         {
-            WorldValuesFile file = Serializer.ConvertBytesToObject<WorldValuesFile>(data._fileBytes);
-            Serializer.ObjectBytesToFile(WorldValuesFile.Path, file);
+            PlanetConfigFile file = Serializer.ConvertBytesToObject<PlanetConfigFile>(data._fileBytes);
+            Serializer.ObjectBytesToFile(PlanetConfigFile.Path, file);
             Master.WorldValues = file;
 
             InformationDisplayer.DisplaySetWorld(client);

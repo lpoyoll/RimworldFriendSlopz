@@ -3,6 +3,7 @@ using Shared;
 using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Files.Sites;
 
 namespace GameServer.Managers
 {
@@ -12,11 +13,9 @@ namespace GameServer.Managers
         {
             ServerGlobalData globalData = new ServerGlobalData();
 
+            globalData._serverName = Master.ServerConfig.Name;
             globalData._isClientAdmin = client.UserFile.IsAdmin;
-            globalData._isClientFactionMember = !string.IsNullOrEmpty(client.UserFile.GuildName);
-
-            globalData._serverValues = new ServerValuesFile();
-            globalData._serverValues.ServerName = Master.ServerConfig.Name;
+            globalData._isClientFactionMember = GuildManagerH.GetFactionFromName(client.UserFile.GuildName) != null;
 
             globalData._eventValues = EventManagerH.LoadedEvents;
             globalData._difficultyValues = Master.DifficultyValues;

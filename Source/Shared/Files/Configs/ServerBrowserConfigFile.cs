@@ -1,11 +1,9 @@
-﻿using Shared;
-using Shared.Files;
-using System;
+﻿using System;
 using System.IO;
 
-namespace Shared.Files
+namespace Shared.Files.Configs
 {
-    public class ServerBrowserConfig : BaseFile
+    public class ServerBrowserConfigFile : BaseFile
     {
         public static string Path { get; set; } = string.Empty;
 
@@ -26,7 +24,7 @@ namespace Shared.Files
             if (File.Exists(Path)) return Serializer.SerializeFromFile<T>(Path);
             else
             {
-                ServerBrowserConfig file = new ServerBrowserConfig();
+                ServerBrowserConfigFile file = new ServerBrowserConfigFile();
                 Serializer.SerializeToFile(Path, file);
                 return file;
             }

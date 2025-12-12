@@ -1,10 +1,10 @@
-using Shared;
+using Shared.Details.Planet;
 
 namespace TCPNetwork.Packets
 {
     public class PollutionData 
     {
-        public PollutionDetails _pollutionData { get; set; } = new PollutionDetails();
+        public PollutionDetail _pollutionData { get; set; } = new PollutionDetail();
 
         public override string ToString()
         {

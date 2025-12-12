@@ -1,5 +1,4 @@
-﻿using Shared.Files;
-using Shared.Files.Sites;
+﻿using Shared.Files.Sites;
 using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
