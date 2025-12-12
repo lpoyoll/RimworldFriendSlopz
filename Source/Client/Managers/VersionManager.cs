@@ -31,7 +31,7 @@ namespace GameClient.Managers
                     break;
 
                 case VersionData.VersionStep.Pass:
-                    UserLoginHandler.UseLoginData();
+                    LoginManager.UseLoginData();
                     break;
             }
         }
