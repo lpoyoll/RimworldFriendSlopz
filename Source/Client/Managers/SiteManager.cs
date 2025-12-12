@@ -44,10 +44,6 @@ namespace GameClient.Managers
                     OnSiteAccept();
                     break;
 
-                case SiteStepMode.Deny:
-                    OnSiteDeny();
-                    break;
-
                 case SiteStepMode.Build:
                     SpawnSingleSite(data._file);
                     break;
@@ -197,14 +193,9 @@ namespace GameClient.Managers
 
         private static void OnSiteAccept()
         {
+            RimworldManager.GenerateLetter("Site built", $"You've built a site!", LetterDefOf.PositiveEvent);
             RT_Dialog_Wait.Instance.Close();
             SaveManager.ForceSave();
-        }
-
-        private static void OnSiteDeny()
-        {
-            RT_Dialog_Wait.Instance.Close();
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "The current action is not available!" }));
         }
 
         [TriggerOnSessionStart]
