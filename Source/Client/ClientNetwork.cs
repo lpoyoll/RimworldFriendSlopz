@@ -34,7 +34,11 @@ namespace GameClient
 
         };
 
-        public override Action<ServerClient> OnDisconnect { get; set; } = delegate { Instance.Disconnect(); };
+        public override Action<ServerClient> OnDisconnect { get; set; } = delegate 
+        {
+            Instance.Disconnect();
+            MainThreadHandler.Instance.DoOnEndMethods();
+        };
 
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
         {

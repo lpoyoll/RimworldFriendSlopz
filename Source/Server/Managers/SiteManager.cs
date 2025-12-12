@@ -42,6 +42,9 @@ namespace GameServer.Managers
                     ChangeUserSiteConfig(client, data);
                     break;
 
+                case SiteStepMode.Rewards:
+                    SendRewardsToPlayer(client);
+                    break;
             }
         }
 
@@ -101,37 +104,21 @@ namespace GameServer.Managers
             InformationDisplayer.DisplayRemoveSite(siteFile.Tile.ToString());
         }
 
-        public static void StartSiteTicker()
+        public static void SendRewardsToPlayer(ServerClient client)
         {
-            while (true)
+            SiteFile[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username == client.UserFile.Username ||
+                (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)).ToArray();
+
+            if (availableSites.Length > 0)
             {
-                Thread.Sleep(TimeSpan.FromMinutes(Master.ActionConfigs.SiteAction.TimeIntervalMinutes));
+                List<SiteReward> toReward = new List<SiteReward>();
+                foreach (SiteFile site in availableSites) toReward.Add(client.UserFile.SiteConfigs.First(fetch => fetch.DefName == site.Type.DefName).Reward);
 
-                try { SiteRewardTick(); }
-                catch (Exception e) { Printer.Error($"Site tick failed, this should never happen. Exception > {e}"); }
+                SiteData siteData = new SiteData();
+                siteData._stepMode = SiteStepMode.Rewards;
+                siteData._rewardFiles = toReward.ToArray();
+                client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
             }
-        }
-
-        public static void SiteRewardTick()
-        {
-            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe()) 
-            {
-                SiteFile[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username == client.UserFile.Username ||
-                    (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)).ToArray();
-
-                if (availableSites.Length > 0)
-                {
-                    List<SiteReward> toReward = new List<SiteReward>();
-                    foreach (SiteFile site in availableSites) toReward.Add(client.UserFile.SiteConfigs.First(fetch => fetch.DefName == site.Type.DefName).Reward);
-
-                    SiteData siteData = new SiteData();
-                    siteData._stepMode = SiteStepMode.Rewards;
-                    siteData._rewardFiles = toReward.ToArray();
-                    client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
-                }
-            }
-
-            InformationDisplayer.DisplaySiteTick();
         }
 
         public static void ChangeUserSiteConfig(ServerClient client, SiteData data)

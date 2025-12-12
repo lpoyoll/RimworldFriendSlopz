@@ -13,7 +13,7 @@ namespace Shared.Files.Actions
 
         public double Cooldown { get; set; } = -1;
 
-        public double TimeIntervalMinutes { get; set; } = 30;
+        public double TimeInterval { get; set; } = 1800000;
 
         public SiteType[] SiteTypes { get; set; } = new SiteType[]
         {

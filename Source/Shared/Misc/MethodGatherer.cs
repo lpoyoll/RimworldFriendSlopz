@@ -12,9 +12,11 @@ namespace Shared
 
         public static Dictionary<PacketHeader, MethodInfo> ServerMethodDictionary { get; private set; }
 
-        public static MethodInfo[] InitializerMethods { get; private set; }
+        public static MethodInfo[] OnStartMethods { get; private set; }
 
-        public static MethodInfo[] CheckPerFrameMethods { get; private set; }
+        public static MethodInfo[] OnEndMethods { get; private set; }
+
+        public static MethodInfo[] PerFrameMethods { get; private set; }
 
         public enum AssemblyType { Client, Server }
 
@@ -31,8 +33,9 @@ namespace Shared
                         clientMethods[i]);
                 }
 
-                InitializerMethods = GetSessionInitializeAttributes(GetAllGameTypes());
-                CheckPerFrameMethods = GetCheckPerFrameAttributes(GetAllGameTypes());
+                OnStartMethods = GetSessionStartMethods(GetAllGameTypes());
+                OnEndMethods = GetSessionEndMethods(GetAllGameTypes());
+                PerFrameMethods = GetPerFrameMethods(GetAllGameTypes());
             }
 
             else
@@ -73,25 +76,39 @@ namespace Shared
             return allTypes.ToArray();
         }
 
-        private static MethodInfo[] GetSessionInitializeAttributes(Type[] types)
+        private static MethodInfo[] GetSessionStartMethods(Type[] types)
         {
             List<MethodInfo> toAdd = new List<MethodInfo>();
             for (int x = 0; x < types.Length; x++)
             {
                 toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(fetch => fetch.GetCustomAttribute<ShouldInitializeOnSession>() != null).ToList());
+                    .Where(fetch => fetch.GetCustomAttribute<TriggerOnSessionStart>() != null).ToList());
             }
+
             return toAdd.ToArray();
         }
 
-        private static MethodInfo[] GetCheckPerFrameAttributes(Type[] types)
+        private static MethodInfo[] GetSessionEndMethods(Type[] types)
         {
             List<MethodInfo> toAdd = new List<MethodInfo>();
             for (int x = 0; x < types.Length; x++)
             {
                 toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(fetch => fetch.GetCustomAttribute<ShouldCheckPerFrame>() != null).ToList());
+                    .Where(fetch => fetch.GetCustomAttribute<TriggerOnSessionEnd>() != null).ToList());
             }
+
+            return toAdd.ToArray();
+        }
+
+        private static MethodInfo[] GetPerFrameMethods(Type[] types)
+        {
+            List<MethodInfo> toAdd = new List<MethodInfo>();
+            for (int x = 0; x < types.Length; x++)
+            {
+                toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+                    .Where(fetch => fetch.GetCustomAttribute<TriggerPerFrame>() != null).ToList());
+            }
+
             return toAdd.ToArray();
         }
     }

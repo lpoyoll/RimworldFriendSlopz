@@ -30,7 +30,7 @@ namespace GameClient.Patches
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
 
-                    MainThreadHandler.Instance.DoInitializationMethods();
+                    MainThreadHandler.Instance.DoOnStartMethods();
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace GameClient.Patches
                     ClientValues.ForcePermadeath();
                     ClientValues.ToggleReadyToPlay(true);
 
-                    MainThreadHandler.Instance.DoInitializationMethods();
+                    MainThreadHandler.Instance.DoOnStartMethods();
                 }
             }
         }

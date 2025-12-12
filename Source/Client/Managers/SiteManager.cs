@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using GameClient.Dialogs;
+﻿using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
@@ -9,10 +6,15 @@ using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
+using Shared.Files.Sites;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using TCPNetwork.Packets;
 using Verse;
 using static Shared.CommonEnumerators;
-using TCPNetwork.Packets;
-using Shared.Files.Sites;
 
 
 namespace GameClient.Managers
@@ -24,6 +26,10 @@ namespace GameClient.Managers
         public static SiteType[] SiteValues { get; set; }
 
         public static List<Site> PlayerSites { get; set; } = new List<Site>();
+
+        private static CancellationTokenSource Token { get; set; } = new CancellationTokenSource();
+
+        public static double RewardDelay { get; set; } = -1;
 
         [HandlesPacket(PacketHeader.SiteManager)]
         private static void ParsePacket(byte[] bytes)
@@ -200,6 +206,44 @@ namespace GameClient.Managers
             RT_Dialog_Wait.Instance.Close();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "The current action is not available!" }));
         }
+
+        [TriggerOnSessionStart]
+        private static void StartTickingSites()
+        {
+            Token = new CancellationTokenSource();
+            double currentRewardDelay = 0;
+            int tickDuration = 100;
+            Task.Run(async () =>
+            {
+                while (!Token.Token.IsCancellationRequested)
+                {
+                    Printer.Warning(1);
+
+                    if (currentRewardDelay >= RewardDelay)
+                    {
+                        MainThreadHandler.Instance.Enqueue(AskForSiteRewards);
+                        currentRewardDelay = 0;
+                    }
+
+                    else
+                    {
+                        await Task.Delay(tickDuration, Token.Token);
+                        currentRewardDelay += tickDuration;
+                    }
+                }
+            });
+        }
+
+        [TriggerOnSessionEnd]
+        private static void StopTickingSites() { Token.Cancel(); }
+
+        public static void AskForSiteRewards()
+        {
+            SiteData siteData = new SiteData();
+            siteData._stepMode = SiteStepMode.Rewards;
+
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+        }
     }
 }
 
@@ -209,8 +253,9 @@ public static class SiteManagerH
 
     public static void SetValues(ServerGlobalData serverGlobalData)
     {
-        SiteManager.SiteValues = serverGlobalData._siteValues;
         tempSites = serverGlobalData._playerSites;
+        SiteManager.SiteValues = serverGlobalData._siteValues;
+        SiteManager.RewardDelay = serverGlobalData._actionValues.SiteAction.TimeInterval;
     }
 
     public static void SetSiteDefs()

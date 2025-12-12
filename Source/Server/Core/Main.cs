@@ -32,8 +32,6 @@ namespace GameServer.Core
 
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
-            if (Master.ActionConfigs.SiteAction.IsEnabled) Task.Run(SiteManager.StartSiteTicker);
-
             ServerBrowserManager.StartFeature();
 
             ServerNetwork _ = new ServerNetwork();

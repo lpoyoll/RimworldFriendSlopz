@@ -64,10 +64,6 @@ namespace GameServer.Commands
             "Shows all currently loaded mods",
             ModListCommandAction);
 
-        public static readonly CommandBase DoSiteRewards = new CommandBase("dositerewards", 0,
-            "Forces site rewards to run",
-            DoSiteRewardsCommandAction);
-
         public static readonly CommandBase EventCommand = new CommandBase("event", 2,
             "Sends a command to the selecter players",
             EventCommandAction);
@@ -142,7 +138,6 @@ namespace GameServer.Commands
             ClearCommand,
             DeepListCommand,
             DeopCommand,
-            DoSiteRewards,
             EventAllCommand,
             EventCommand,
             EventListCommand,
@@ -351,12 +346,6 @@ namespace GameServer.Commands
             Printer.Title("----------------------------------------");
             foreach (string str in Master.ModConfig.ForbiddenMods) Printer.Warning($"{str}");
             Printer.Title("----------------------------------------");
-        }
-
-        public static void DoSiteRewardsCommandAction()
-        {
-            Printer.Title($"Forced site rewards");
-            SiteManager.SiteRewardTick();
         }
 
         public static void EventCommandAction()

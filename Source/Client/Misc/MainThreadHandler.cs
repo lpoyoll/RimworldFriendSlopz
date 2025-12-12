@@ -29,21 +29,29 @@ namespace GameClient.Misc
 
             if (SessionValues.CurrentNetworkState == CommonEnumerators.ClientNetworkState.Connected)
             {
-                DoPlayerUpdates();
+                DoPerFrameMethods();
             }
         }
 
-        private void DoPlayerUpdates()
+        public void DoOnStartMethods()
         {
-            foreach (MethodInfo method in MethodGatherer.CheckPerFrameMethods)
+            foreach (MethodInfo method in MethodGatherer.OnStartMethods)
             {
                 method.Invoke(null, null);
             }
         }
 
-        public void DoInitializationMethods()
+        public void DoOnEndMethods()
         {
-            foreach (MethodInfo method in MethodGatherer.InitializerMethods)
+            foreach (MethodInfo method in MethodGatherer.OnEndMethods)
+            {
+                method.Invoke(null, null);
+            }
+        }
+
+        private void DoPerFrameMethods()
+        {
+            foreach (MethodInfo method in MethodGatherer.PerFrameMethods)
             {
                 method.Invoke(null, null);
             }
