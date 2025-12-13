@@ -1,5 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
+using RimWorld;
 using Shared;
 using Shared.Files.Guilds;
 using System;
@@ -230,6 +231,8 @@ namespace GameClient.Managers
                 factionManifest._stepMode = GuildStepMode.AddMember;
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
+
+                RimworldManager.GenerateLetter("Joined guild", "You have joined a guild!", LetterDefOf.PositiveEvent);
             };
 
             RT_Dialog_YesNo d1 = new RT_Dialog_YesNo($"Invited to {factionManifest._guild.Name}, accept?", r1, null);

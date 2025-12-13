@@ -99,9 +99,7 @@ namespace GameClient.Managers
 
         public static void GenerateLetter(string title, string description, LetterDef letterType)
         {
-            Find.LetterStack.ReceiveLetter(title,
-                description,
-                letterType);
+            Find.LetterStack.ReceiveLetter(title, description, letterType);
         }
 
         public static void PlaceThingIntoMap(Thing thing, Map map, ThingPlaceMode placeMode = ThingPlaceMode.Direct, bool useSpot = false, bool byDropPod = false)
