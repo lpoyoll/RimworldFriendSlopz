@@ -85,7 +85,7 @@ namespace GameClient.Managers
 
             Action r1 = delegate
             {
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for faction deletion"));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for guild deletion"));
 
                 PlayerGuildData playerFactionData = new PlayerGuildData();
                 playerFactionData._stepMode = GuildStepMode.Delete;
@@ -93,11 +93,11 @@ namespace GameClient.Managers
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
             };
 
-            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to LEAVE your faction?", r2, null);
+            RT_Dialog_YesNo d3 = new RT_Dialog_YesNo("Are you sure you want to LEAVE your guild?", r2, null);
 
-            RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("Are you sure you want to DELETE your faction?", r1, null);
+            RT_Dialog_YesNo d2 = new RT_Dialog_YesNo("Are you sure you want to DELETE your guild?", r1, null);
 
-            RT_Dialog_Buttons d1 = new RT_Dialog_Buttons("Faction Management", "Manage your faction from here",
+            RT_Dialog_Buttons d1 = new RT_Dialog_Buttons("Guild Management", "Manage your guild from here",
                 new string[] { "Members", "Delete", "Leave" },
                 new Action[] { delegate { r3(); }, delegate { RT_Dialog_Base.PushNewDialog(d2); }, delegate { RT_Dialog_Base.PushNewDialog(d3); } },
                 null);
@@ -111,12 +111,12 @@ namespace GameClient.Managers
             {
                 if (string.IsNullOrWhiteSpace(RT_Dialog_Inputs.DialogInputResults[0]) || RT_Dialog_Inputs.DialogInputResults[0].Length > 32)
                 {
-                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Faction name is invalid! Please try again!" }));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Guild name is invalid! Please try again!" }));
                 }
 
                 else
                 {
-                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for faction creation"));
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for guild creation"));
 
                     PlayerGuildData playerFactionData = new PlayerGuildData();
                     playerFactionData._stepMode = GuildStepMode.Create;
@@ -125,10 +125,10 @@ namespace GameClient.Managers
                     ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
                 }
             };
-            RT_Dialog_Inputs d2 = new RT_Dialog_Inputs("New Faction Name", new string[] { "Input the name of your new faction" }, new bool[] { false }, r2);
+            RT_Dialog_Inputs d2 = new RT_Dialog_Inputs("New Guild Name", new string[] { "Input the name of your new guild" }, new bool[] { false }, r2);
 
             Action r1 = delegate { RT_Dialog_Base.PushNewDialog(d2); };
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You are not a member of any faction! Create one?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("You are not a member of any guild! Create one?", r1, null);
 
             RT_Dialog_Base.PushNewDialog(d1);
         }
@@ -191,7 +191,7 @@ namespace GameClient.Managers
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
             };
 
-            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to invite this player to your faction?", r1, null);
+            RT_Dialog_YesNo d1 = new RT_Dialog_YesNo("Do you want to invite this player to your guild?", r1, null);
             RT_Dialog_Base.PushNewDialog(d1);
         }
 
@@ -201,7 +201,7 @@ namespace GameClient.Managers
 
             string[] messages = new string[]
             {
-                "Your faction has been created!",
+                "Your guild has been created!",
                 "You can now access its menu through the same button"
             };
 
@@ -215,13 +215,13 @@ namespace GameClient.Managers
             ClientValues.HasFaction = false;
 
             if (!ClientValues.IsInTransfer) RT_Dialog_Wait.Instance.Close();
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your faction has been deleted!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Your guild has been deleted!" }));
         }
 
         private static void OnFactionNameInUse()
         {
             RT_Dialog_Wait.Instance.Close();
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "That faction name is already in use!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "That guild name is already in use!" }));
         }
 
         private static void OnFactionGetInvited(PlayerGuildData factionManifest)
@@ -243,22 +243,22 @@ namespace GameClient.Managers
         {
             ClientValues.HasFaction = false;
 
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been kicked from your faction!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been kicked from your guild!" }));
         }
 
         private static void OnFactionAdminProtection()
         {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You can't do this action as a faction admin!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You can't do this action as a guild admin!" }));
         }
 
         private static void OnFactionPromote()
         {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been promoted in your faction!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been promoted in your guild!" }));
         }
 
         private static void OnFactionDemote()
         {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been demoted in your faction!" }));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You have been demoted in your guild!" }));
         }
 
         private static void OnFactionMemberList(PlayerGuildData factionManifest)
@@ -275,7 +275,7 @@ namespace GameClient.Managers
             }
 
             RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members",
-                "All faction members are depicted here", toDisplay.ToArray());
+                "All guild members are depicted here", toDisplay.ToArray());
 
             RT_Dialog_Base.PushNewDialog(d1);
         }
