@@ -152,15 +152,12 @@ namespace GameClient.Managers
 
         public static void OnEventReceived(EventData eventData)
         {
-            if (SessionHandler.IsReadyToPlay)
-            {
-                Map targetMap;
-                if (eventData._toTile != -1) targetMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == eventData._toTile).Map;
-                else targetMap = Find.AnyPlayerHomeMap;
+            Map targetMap;
+            if (eventData._toTile != -1) targetMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == eventData._toTile).Map;
+            else targetMap = Find.AnyPlayerHomeMap;
 
-                IncidentDef eventToTrigger = DefDatabase<IncidentDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == eventData._eventFile.DefName);
-                if (eventToTrigger != null) TriggerEvent(eventToTrigger, targetMap);
-            }
+            IncidentDef eventToTrigger = DefDatabase<IncidentDef>.AllDefs.FirstOrDefault(fetch => fetch.defName == eventData._eventFile.DefName);
+            if (eventToTrigger != null) TriggerEvent(eventToTrigger, targetMap);
         }
 
         public static void OnEventSent()

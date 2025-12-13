@@ -46,7 +46,6 @@ namespace GameClient.Managers
 
         public static void AddCaravan(CaravanFile file)
         {
-            if (!SessionHandler.IsReadyToPlay) return;
             if (file.Username == SessionHandler.Username) return;
 
             try
@@ -71,7 +70,6 @@ namespace GameClient.Managers
 
         private static void RemoveCaravan(CaravanFile file)
         {
-            if (!SessionHandler.IsReadyToPlay) return;
             if (file.Username == SessionHandler.Username) return;
 
             try
@@ -95,7 +93,6 @@ namespace GameClient.Managers
 
         private static void MoveCaravan(CaravanFile file)
         {
-            if (!SessionHandler.IsReadyToPlay) return;
             if (file.Username == SessionHandler.Username) return;
 
             try

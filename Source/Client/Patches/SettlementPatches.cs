@@ -62,11 +62,12 @@ namespace GameClient.Patches
         {
             if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
             {
-                if (!SessionHandler.IsReadyToPlay) return;
                 if (!SessionHandler.ActionValues.EnableNPCDestruction) return;
-
-                if (__instance.Faction == Faction.OfPlayer) return;
-                else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
+                else
+                {
+                    if (__instance.Faction == Faction.OfPlayer) return;
+                    else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
+                }
             }
         }
     }

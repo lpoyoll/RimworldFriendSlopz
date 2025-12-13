@@ -5,6 +5,7 @@ using GameClient.Managers;
 using GameClient.Misc;
 using Shared;
 using System;
+using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,10 +23,14 @@ namespace GameClient
         {
             Thread.Sleep(250 * (int)ModConfigGetter.CurrentSimulatedLag);
 
-            MainThreadHandler.Instance.Enqueue(delegate
+            if (!SessionHandler.IsReadyToPlay && !Listener.BypassReadyPackets.Contains(header)) return;
+            else
             {
-                MethodGatherer.ClientMethodDictionary[header].Invoke(null, new object[] { buffer });
-            });
+                MainThreadHandler.Instance.Enqueue(delegate
+                {
+                    MethodGatherer.ClientMethodDictionary[header].Invoke(null, new object[] { buffer });
+                });
+            }
         };
 
         public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode)

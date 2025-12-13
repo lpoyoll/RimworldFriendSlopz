@@ -235,7 +235,7 @@ namespace GameClient.Managers
             {
                 SessionHandler.IncomingManifest = transferData;
 
-                if (!SessionHandler.IsReadyToPlay || SessionHandler.IsInTransfer || ModConfigGetter.RejectTransfersBool)
+                if (!SessionHandler.IsInTransfer || ModConfigGetter.RejectTransfersBool)
                 {
                     RejectRequest(transferData._transferMode, false);
                 }

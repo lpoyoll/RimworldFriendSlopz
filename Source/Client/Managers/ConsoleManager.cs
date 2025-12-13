@@ -62,12 +62,8 @@ namespace GameClient.Managers
 
         private static void OnForceSaveCommand()
         {
-            if (!SessionHandler.IsReadyToPlay) DisconnectionManager.DisconnectToMenu();
-            else
-            {
-                DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
-                SaveManager.ForceSave();
-            }
+            DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
+            SaveManager.ForceSave();
         }
     }
 }

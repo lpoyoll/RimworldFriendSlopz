@@ -43,7 +43,23 @@ namespace TCPNetwork
 
         public static readonly string DefaultParserMethodName = "ParsePacket";
 
-        public static readonly PacketHeader[] IgnoredLogPackets = { PacketHeader.KeepAliveManager };
+        public static readonly PacketHeader[] BypassReadyPackets =
+        {
+            PacketHeader.LoginManager,
+            PacketHeader.KeepAliveManager,
+            PacketHeader.VersionManager,
+            PacketHeader.SaveManager,
+            PacketHeader.WorldManager,
+            PacketHeader.GlobalDataManager,
+            PacketHeader.RecountManager,
+            PacketHeader.ChatManager
+        };
+
+
+        public static readonly PacketHeader[] IgnoreLogPackets = 
+        { 
+            PacketHeader.KeepAliveManager 
+        };
 
         public static readonly int KeepAliveCooldown = 3000;
 
@@ -73,7 +89,7 @@ namespace TCPNetwork
         {
             if (ClosingFlag) return;
             
-            if (!IgnoredLogPackets.Contains(header)) OnMessage($"[Packet] Sent packet > {header}", LogImportanceMode.Verbose);
+            if (!IgnoreLogPackets.Contains(header)) OnMessage($"[Packet] Sent packet > {header}", LogImportanceMode.Verbose);
             else OnMessage($"[Packet] > Sent packet {header}", LogImportanceMode.Extreme);
             
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
@@ -108,7 +124,7 @@ namespace TCPNetwork
                         buffer = new byte[BitConverter.ToInt32(buffer, 0)];
                         ReadFullPacket(buffer);
 
-                        if (!IgnoredLogPackets.Contains(header)) OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
+                        if (!IgnoreLogPackets.Contains(header)) OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
                         else OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
                         try { OnReadPacket(header, buffer, TargetClient); }
