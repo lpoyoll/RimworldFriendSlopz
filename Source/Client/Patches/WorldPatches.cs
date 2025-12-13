@@ -26,9 +26,9 @@ namespace GameClient.Patches
 
             Command_Action command_PersonalFactionMenu = new Command_Action
             {
-                defaultLabel = "Faction Menu",
-                defaultDesc = "Access your faction menu",
-                icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
+                defaultLabel = "Guild Menu",
+                defaultDesc = "Access your guild menu",
+                icon = ContentFinder<Texture2D>.Get("Commands/Guild"),
                 action = delegate
                 {
                     if (SessionValues.ActionValues.EnableFactions)
@@ -44,7 +44,7 @@ namespace GameClient.Patches
             {
                 defaultLabel = "Site settings",
                 defaultDesc = "Configure the settings for your sites",
-                icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
+                icon = ContentFinder<Texture2D>.Get("Commands/Config"),
                 action = delegate
                 {
                     if (SessionValues.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
@@ -73,7 +73,7 @@ namespace GameClient.Patches
             {
                 defaultLabel = "Destroy site",
                 defaultDesc = "Destroy this site",
-                icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
+                icon = ContentFinder<Texture2D>.Get("Commands/Site"),
                 action = delegate
                 {
                     if (SessionValues.ActionValues.SiteAction.IsEnabled)
@@ -110,7 +110,7 @@ namespace GameClient.Patches
                 {
                     defaultLabel = "Build a Site",
                     defaultDesc = "Build an utility site for your faction",
-                    icon = ContentFinder<Texture2D>.Get("Commands/FSite"),
+                    icon = ContentFinder<Texture2D>.Get("Commands/Site"),
                     action = delegate
                     {
                         SessionValues.ChosenCaravan = __instance;

@@ -274,7 +274,7 @@ namespace GameClient.Managers
                 toDisplay.Add($"{member.Username} - {(GuildRanks)member.Rank}");
             }
 
-            RT_Dialog_Listing d1 = new RT_Dialog_Listing("Faction Members",
+            RT_Dialog_Listing d1 = new RT_Dialog_Listing("Guild Members",
                 "All guild members are depicted here", toDisplay.ToArray());
 
             RT_Dialog_Base.PushNewDialog(d1);

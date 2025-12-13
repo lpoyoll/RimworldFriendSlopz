@@ -88,9 +88,9 @@ namespace GameClient.WorldObjects
 
             Command_Action command_FactionMenu = new Command_Action
             {
-                defaultLabel = "Faction Menu",
-                defaultDesc = "Access your faction menu",
-                icon = ContentFinder<Texture2D>.Get("Commands/FactionMenu"),
+                defaultLabel = "Guild Menu",
+                defaultDesc = "Access your guild menu",
+                icon = ContentFinder<Texture2D>.Get("Commands/Guild"),
                 action = delegate
                 {
                     SessionValues.ChosenSettlement = this;
