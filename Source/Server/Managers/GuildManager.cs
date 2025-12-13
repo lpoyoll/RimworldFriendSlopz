@@ -128,8 +128,12 @@ namespace GameServer.Managers
             if (GuildManagerH.GetMemberRank(guild, client.UserFile.Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
-                guildManifest._guild.Name = guild.Name;
-                toAdd.Listener.EnqueuePacket(PacketHeader.GuildManager, guildManifest);
+                if (toAdd.UserFile.GuildName != null) return;
+                else
+                {
+                    guildManifest._guild.Name = guild.Name;
+                    toAdd.Listener.EnqueuePacket(PacketHeader.GuildManager, guildManifest);
+                }
             }
         }
 
@@ -230,7 +234,7 @@ namespace GameServer.Managers
             else
             {
                 UserFile toDemoteOffline = UserManagerH.GetUserFileFromName(settlement.Username);
-                if (GuildManagerH.GetMemberRank(guild, toDemoteOffline.Username) == GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client);
+                if (GuildManagerH.GetMemberRank(guild, toDemoteOffline.Username) != GuildRanks.Moderator) ResponseShortcutManager.SendNoPowerPacket(client);
                 else
                 {
                     GuildMember member = GuildManagerH.GetAllFactionMembers(guild).First(fetch => fetch.Username == toDemoteOffline.Username);
