@@ -77,7 +77,7 @@ namespace GameServer.Managers
             else if (guild == null) return FindGoodwillFromUsername(client.UserFile, settlement.Username);
             else
             {
-                if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == settlement.Username) != null) return Goodwill.Faction;
+                if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == settlement.Username) != null) return Goodwill.Guild;
                 else return FindGoodwillFromUsername(client.UserFile, settlement.Username);
             }
         }
@@ -90,7 +90,7 @@ namespace GameServer.Managers
             else if (guild == null) return FindGoodwillFromUsername(client.UserFile, site.Username);
             else
             {
-                if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == site.Username) != null) return Goodwill.Faction;
+                if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == site.Username) != null) return Goodwill.Guild;
                 else return FindGoodwillFromUsername(client.UserFile, site.Username);
             }
         }

@@ -32,7 +32,7 @@ namespace Shared
 
         public enum GuildStepMode { Create, Delete, NameInUse, Invite, RemoveMember, AddMember, Promote, Demote, AdminProtection, MemberList }
 
-        public enum Goodwill { Enemy, Neutral, Ally, Faction, Personal }
+        public enum Goodwill { Enemy, Neutral, Ally, Guild, Personal }
 
         public enum GoodwillTarget { Settlement, Site }
 

@@ -77,7 +77,7 @@ namespace GameClient.Managers
                     factionToUse = SessionHandler.AllyFaction;
                     break;
 
-                case Goodwill.Faction:
+                case Goodwill.Guild:
                     factionToUse = SessionHandler.GuildFaction;
                     break;
 

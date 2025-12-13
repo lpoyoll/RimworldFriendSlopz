@@ -96,6 +96,7 @@ namespace GameClient.Managers
 
             if (_.Faction == SessionHandler.EnemyFaction) file.Goodwill = Goodwill.Enemy;
             else if (_.Faction == SessionHandler.AllyFaction) file.Goodwill = Goodwill.Ally;
+            else if (_.Faction == SessionHandler.GuildFaction) file.Goodwill = Goodwill.Guild;
             else file.Goodwill = Goodwill.Neutral;
 
             RemoveSingleSettlement(file);
