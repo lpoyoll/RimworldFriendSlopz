@@ -14,7 +14,7 @@ timeout /t 5
 
 ::Go to default folder
 cd Mods
-cd Rimworld-Together
+cd 3005289691
 
 ::Go to temp folder
 cd "Temp"
