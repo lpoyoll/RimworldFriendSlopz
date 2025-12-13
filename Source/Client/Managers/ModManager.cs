@@ -13,6 +13,7 @@ using Verse.Steam;
 using static Shared.CommonEnumerators;
 using static UnityEngine.GraphicsBuffer;
 using Shared.Files.Configs;
+using static Shared.Files.Configs.ModsConfigFile;
 
 namespace GameClient.Managers
 {

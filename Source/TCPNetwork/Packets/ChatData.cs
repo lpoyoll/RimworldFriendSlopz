@@ -4,17 +4,12 @@ namespace TCPNetwork.Packets
 {
     public class ChatData
     {
-        public UserColor _usernameColor { get; set; } = UserColor.Normal;
+        public ChatColor _usernameColor { get; set; } = ChatColor.Normal;
 
-        public MessageColor _messageColor { get; set; } = MessageColor.Normal;
+        public ChatColor _messageColor { get; set; } = ChatColor.Normal;
 
         public string _username { get; set; } = string.Empty;
 
         public string _message { get; set; } = string.Empty;
-
-        public override string ToString()
-        {
-            return $"ChatData:|{_usernameColor}|{_messageColor}|{_username}|{_message}";
-        }
     }
 }

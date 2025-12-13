@@ -9,7 +9,7 @@ namespace Shared.Files.Guilds
 {
     public class GuildFile : BaseFile
     {
-        public static string GeneralPath { get; set; } = string.Empty;
+        public static string SavePath { get; set; } = string.Empty;
 
         public string Name { get; set; } = string.Empty;
 
@@ -43,13 +43,13 @@ namespace Shared.Files.Guilds
             Save();
         }
 
-        public void Delete() { File.Delete(Path.Combine(GeneralPath, Name + CommonValues.DefaultSaveFormat)); }
+        public void Delete() { File.Delete(Path.Combine(SavePath, Name + CommonValues.DefaultSaveFormat)); }
 
         public override void Save()
         {
             SavingSemaphore.WaitOne();
 
-            string savePath = Path.Combine(GeneralPath, Name + CommonValues.DefaultSaveFormat);
+            string savePath = Path.Combine(SavePath, Name + CommonValues.DefaultSaveFormat);
             Serializer.SerializeToFile(savePath, this);
 
             SavingSemaphore.Release();

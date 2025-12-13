@@ -26,9 +26,6 @@ namespace GameClient.Core
                 CreateUnityDispatcher();
                 MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Client);
 
-                CaravanManagerH.SetCaravanDef();
-                SiteManagerH.SetSiteDefs();
-
                 PersistentSettings.SetFilePath(Path.Combine(Master.AppdataRTPath, "PersistentSettings" + CommonValues.DefaultSaveFormat));
             }
         }

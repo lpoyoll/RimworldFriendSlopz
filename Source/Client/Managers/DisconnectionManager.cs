@@ -84,7 +84,6 @@ namespace GameClient.Managers
         {
             ClientValues.CleanValues();
             SessionValues.CleanValues();
-            ChatManager.CleanChat();
 
             RT_Dialog_Wait.Instance.Close();
 

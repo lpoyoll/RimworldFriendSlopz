@@ -51,15 +51,11 @@ namespace GameServer.Managers
 
         public static void RegisterUser(ServerClient client, LoginData data)
         {
-            try
-            {
-                client.UserFile.UpdateHash();
+            client.UserFile.UpdateHash();
 
-                InformationDisplayer.DisplayRegister(client);
+            InformationDisplayer.DisplayRegister(client);
 
-                LoginUser(client, data);
-            }
-            catch { LoginManagerH.DenyConnectionWithReason(client, LoginResponse.RegisterError); }
+            LoginUser(client, data);
         }
 
         private static void PostLogin(ServerClient client)
@@ -70,7 +66,7 @@ namespace GameServer.Managers
 
             GlobalDataManager.SendServerGlobalData(client);
 
-            foreach (string str in ChatManager.defaultJoinMessages) ChatManager.SendConsoleMessage(client, str);
+            foreach (string str in ChatManager.DefaultJoinMessages) ChatManager.SendConsoleMessage(client, str);
 
             if (Master.ChatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
 
@@ -107,7 +103,7 @@ namespace GameServer.Managers
                 {
                     if (toFind.UserFile.Username == client.UserFile.Username)
                     {
-                        DenyConnectionWithReason(toFind, LoginResponse.ExtraLogin);
+                        DenyConnectionWithReason(toFind, LoginResponse.Duplicate);
                     }
                 }
             }
@@ -118,8 +114,8 @@ namespace GameServer.Managers
             LoginData loginData = new LoginData();
             loginData._tryResponse = response;
 
-            if (response == LoginResponse.WrongMods) loginData._extraDetails = (List<string>)extraDetails;
-            else if (response == LoginResponse.WrongVersion) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
+            if (response == LoginResponse.Mods) loginData._extraDetails = (List<string>)extraDetails;
+            else if (response == LoginResponse.Version) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
 
             client.Listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
             client.Listener.DisconnectFlag = true;

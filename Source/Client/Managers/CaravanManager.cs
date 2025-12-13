@@ -1,8 +1,8 @@
-﻿using GameClient.Managers;
+﻿using GameClient.Defs;
+using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
 using GameClient.WorldObjects;
-using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -10,6 +10,7 @@ using Shared.Files;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TCPNetwork.Packets;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -17,10 +18,6 @@ namespace GameClient.Managers
 {
     public static class CaravanManager
     {
-        //Variables
-
-        public static WorldObjectDef OnlineCaravanDef { get; set; }
-
         public static List<Caravan> PlayerCaravans { get; private set; } = new List<Caravan>();
 
         public static List<CaravanFile> GuestCaravans { get; private set; } = new List<CaravanFile>();
@@ -64,7 +61,7 @@ namespace GameClient.Managers
                 {
                     GuestCaravans.Add(file);
 
-                    RTCaravan onlineCaravan = (RTCaravan)WorldObjectMaker.MakeWorldObject(OnlineCaravanDef);
+                    RTCaravan onlineCaravan = (RTCaravan)WorldObjectMaker.MakeWorldObject(RTWorldObjectDefOf.RTCaravan);
                     onlineCaravan.Tile = file.Tile;
                     onlineCaravan.SetFaction(ClientValues.NeutralPlayer);
                     Find.World.worldObjects.AllWorldObjects.Add(onlineCaravan);
@@ -181,7 +178,7 @@ public static class CaravanManagerH
         List<RTCaravan> onlineCaravans = new List<RTCaravan>();
         foreach (WorldObject wo in Find.World.worldObjects.AllWorldObjects)
         {
-            if (wo.def == CaravanManager.OnlineCaravanDef) onlineCaravans.Add((RTCaravan)wo);
+            if (wo.def == RTWorldObjectDefOf.RTCaravan) onlineCaravans.Add((RTCaravan)wo);
         }
 
         return onlineCaravans.ToArray();
@@ -191,11 +188,6 @@ public static class CaravanManagerH
     {
         return CaravanManager.GuestCaravans.FirstOrDefault(fetch => fetch.Username == file.Username
             && fetch.ID == file.ID);
-    }
-
-    public static void SetCaravanDef()
-    {
-        CaravanManager.OnlineCaravanDef = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTCaravan");
     }
 
     public static void SetAllPlayerCaravans()

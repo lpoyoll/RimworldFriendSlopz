@@ -1,4 +1,5 @@
-﻿using GameClient.Dialogs;
+﻿using GameClient.Defs;
+using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Values;
@@ -21,8 +22,6 @@ namespace GameClient.Managers
 {
     public static class SiteManager
     {
-        public static SitePartDef[] SiteDefs { get; set; }
-
         public static SiteType[] SiteValues { get; set; }
 
         public static List<Site> PlayerSites { get; set; } = new List<Site>();
@@ -163,7 +162,7 @@ namespace GameClient.Managers
             {
                 try
                 {
-                    SitePartDef siteDef = SiteDefs.First(fetch => fetch.defName == toAdd.Type.DefName);
+                    SitePartDef siteDef = RTSitePartDefs.Defs.First(fetch => fetch.defName == toAdd.Type.DefName);
                     Site site = SiteMaker.MakeSite(sitePart: siteDef,
                         tile: toAdd.Tile,
                         threatPoints: 1000,
@@ -245,23 +244,6 @@ public static class SiteManagerH
         tempSites = serverGlobalData._playerSites;
         SiteManager.SiteValues = serverGlobalData._siteValues;
         SiteManager.RewardDelay = serverGlobalData._actionValues.SiteAction.TimeInterval;
-    }
-
-    public static void SetSiteDefs()
-    {
-        SiteManager.SiteDefs = new SitePartDef[]
-        {
-            RTSitePartDefOf.RTFarmland,
-            RTSitePartDefOf.RTHunterCamp,
-            RTSitePartDefOf.RTQuarry,
-            RTSitePartDefOf.RTSawmill,
-            RTSitePartDefOf.RTBank,
-            RTSitePartDefOf.RTLaboratory,
-            RTSitePartDefOf.RTRefinery,
-            RTSitePartDefOf.RTHerbalWorkshop,
-            RTSitePartDefOf.RTTextileFactory,
-            RTSitePartDefOf.RTFoodProcessor
-        };
     }
 }
 

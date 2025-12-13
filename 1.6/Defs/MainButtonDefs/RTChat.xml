@@ -9,6 +9,6 @@
     <defaultHotKey>Backspace</defaultHotKey>
     <validWithoutMap>true</validWithoutMap>
     <minimized>True</minimized>
-    <iconPath>UI/ChatIconOff</iconPath>
+    <iconPath>UI/ChatOff</iconPath>
   </MainButtonDef>
 </Defs>

@@ -8,6 +8,7 @@ using TCPNetwork.Packets;
 using RimWorld;
 using Shared;
 using Verse;
+using GameClient.Defs;
 
 namespace GameClient.Values
 {

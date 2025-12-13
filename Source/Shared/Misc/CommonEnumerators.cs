@@ -48,13 +48,9 @@ namespace Shared
 
         public enum SaveMode { Disconnect, Autosave, Strict }
 
-        public enum UserColor { Normal, Admin, Console, Private, Discord, Server }
+        public enum ChatColor { Normal, Admin, Console, Private, Discord, Server }
 
-        public enum MessageColor { Normal, Admin, Console, Private, Discord, Server }
-
-        public enum ModType { Required, Optional, Forbidden };
-
-        public enum LoginResponse { InvalidLogin, BannedLogin, RegisterError, ExtraLogin, WrongMods, WrongVersion, ServerFull, Whitelist, NoWorld }
+        public enum LoginResponse { Invalid, Ban, Duplicate, Mods, Version, Full, Whitelist, NoWorld }
     }
 }
 

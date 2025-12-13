@@ -105,7 +105,7 @@ namespace GameServer.Managers
                 else
                 {
                     InformationDisplayer.DisplayModMismatch(client.UserFile.Username);
-                    LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongMods, conflictingMods);
+                    LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingMods);
                     return true;
                 }
             }

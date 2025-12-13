@@ -95,7 +95,7 @@ namespace GameServer
 
             else if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
             {
-                LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.ServerFull);
+                LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.Full);
             }
 
             else if (Master.WorldValues == null && ServerNetwork.Instance.GetConnectedClientsSafe().Length > 0)

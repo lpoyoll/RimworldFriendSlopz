@@ -26,7 +26,7 @@ namespace GameServer.Managers
             }
         }
 
-        public static bool CheckIfWorldExists() { return File.Exists(PlanetConfigFile.Path); }
+        public static bool CheckIfWorldExists() { return File.Exists(PlanetConfigFile.SavePath); }
 
         public static void RequireWorldFile(ServerClient client)
         {
@@ -39,7 +39,7 @@ namespace GameServer.Managers
         public static void SendWorld(ServerClient client)
         {
             WorldData data = new WorldData();
-            PlanetConfigFile file = Serializer.FileBytesToObject<PlanetConfigFile>(PlanetConfigFile.Path);
+            PlanetConfigFile file = Serializer.FileBytesToObject<PlanetConfigFile>(PlanetConfigFile.SavePath);
 
             data._fileBytes = Serializer.ConvertObjectToBytes(file);
             data._stepMode = WorldStepMode.Sent;
@@ -50,7 +50,7 @@ namespace GameServer.Managers
         public static void ReceiveWorld(ServerClient client, WorldData data)
         {
             PlanetConfigFile file = Serializer.ConvertBytesToObject<PlanetConfigFile>(data._fileBytes);
-            Serializer.ObjectBytesToFile(PlanetConfigFile.Path, file);
+            Serializer.ObjectBytesToFile(PlanetConfigFile.SavePath, file);
             Master.WorldValues = file;
 
             InformationDisplayer.DisplaySetWorld(client);

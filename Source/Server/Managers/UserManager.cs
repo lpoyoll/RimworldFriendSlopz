@@ -112,7 +112,7 @@ namespace GameServer.Managers
             if (toFind != null) return true;
             else
             {
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.InvalidLogin);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Invalid);
                 return false;
 
             }
@@ -124,7 +124,7 @@ namespace GameServer.Managers
             else
             {
                 Printer.Message($"Banned user '{client.UserFile.Username}' tried to join the server");
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.BannedLogin);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Ban);
                 return true;
             }
         }

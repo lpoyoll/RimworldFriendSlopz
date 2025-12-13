@@ -24,7 +24,7 @@ namespace GameServer.Managers
 
             else
             {
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.WrongVersion);
+                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Version);
                 InformationDisplayer.DisplayVersionMismatch(client);
             }
         }

@@ -1,45 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using GameClient.Core.Configs;
+using GameClient.Defs;
 using GameClient.Misc;
 using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using Shared;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using TCPNetwork.Packets;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
-using TCPNetwork.Packets;
 
 namespace GameClient.Managers
 {
     [StaticConstructorOnStartup]
     public static class ChatManager
     {
-        public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
         private static MainButtonDef ChatButtonDef { get; set; } = DefDatabase<MainButtonDef>.GetNamed("Chat");
 
-        //Data
-        public static string CurrentChatInput { get; set; } = "";
+        public static string CurrentChatInput { get; set; } = string.Empty;
+
         public static List<string> ChatMessageCache { get; set; } = new List<string>();
 
-        //Booleans
-        public static bool IsChatTabOpen { get; set; }
-        public static bool IsChatIconActive { get; set; }
-        public static bool ShouldScrollChat { get; set; }
+        public static bool IsChatTabOpen { get; set; } = false;
+
+        public static bool ShouldScrollChat { get; set; } = false;
+
+        //No accessors zone
+
+        public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
+
         public static bool ChatAutoscroll = true;
 
-        //Chat clock
-        private static Task ChatClockTask { get; set; }
-        private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
-
-        //Icons
-        public static int ChatIconIndex { get; set; }
-        public static List<Texture2D> ChatIcons { get; set; } = new List<Texture2D>();
+        //No accessors zone
 
         [HandlesPacket(PacketHeader.ChatManager)]
         private static void ParsePacket(byte[] bytes)
@@ -48,25 +47,12 @@ namespace GameClient.Managers
 
             Printer.Warning(data, LogImportanceMode.Extreme);
 
-            bool hasBeenTagged = false;
-            if (ChatManagerHelper.GetMessageWords(data._message).Contains($"@{ClientValues.Username}"))
-            {
-                hasBeenTagged = true;
-                data._message = data._message.Replace($"@{ClientValues.Username}", $"<color=red>@{ClientValues.Username}</color>");
-            }
-
             AddMessageToChat(data._username, data._message, data._usernameColor, data._messageColor);
-
-            if (!ClientValues.IsReadyToPlay) return;
-
-            if (!IsChatTabOpen) ToggleChatIcon(true);
-
-            if (hasBeenTagged) ChatSounds.SystemChatDing.PlayOneShotOnCamera();
         }
 
         public static void SendMessage(string messageToSend)
         {
-            ChatSounds.OwnChatDing.PlayOneShotOnCamera();
+            RTChatDefSounds.ChatSend.PlayOneShotOnCamera();
 
             ChatData chatData = new ChatData();
             chatData._username = ClientValues.Username;
@@ -75,94 +61,55 @@ namespace GameClient.Managers
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
-        public static void AddMessageToChat(string username, string message, UserColor userColor, MessageColor messageColor)
+        public static void AddMessageToChat(string username, string message, ChatColor userColor, ChatColor messageColor)
         {
             if (ChatMessageCache.Count() > 100) ChatMessageCache.RemoveAt(0);
 
-            ChatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerHelper.userColorDictionary[userColor]}{username}</color>: " +
-                $"{ChatManagerHelper.messageColorDictionary[messageColor]}{ChatManagerHelper.ParseMessage(message)}</color>");
+            if (ChatManagerH.CheckIfHasBeenTagged(message)) message = message.Replace($"@{ClientValues.Username}", $"<color=red>@{ClientValues.Username}</color>");
+
+            ChatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerH.messageColorDictionary[userColor]}{username}</color>: " +
+                $"{ChatManagerH.messageColorDictionary[messageColor]}{ChatManagerH.ParseMessage(message)}</color>");
 
             if (ChatAutoscroll) ClientValues.ToggleChatScroll(true);
+
+            if (!IsChatTabOpen)
+            {
+                ToggleChatIcon(true);
+
+                if (!ModConfigGetter.MuteChatSoundBool) RTChatDefSounds.ChatReceive.PlayOneShotOnCamera();
+            }
         }
 
-        public static void CleanChat()
+        [TriggerOnSessionEnd]
+        private static void CleanChat()
         {
-            CurrentChatInput = "";
+            CurrentChatInput = string.Empty;
             ChatMessageCache = new List<string>();
-
             IsChatTabOpen = false;
-            IsChatIconActive = false;
-            ChatAutoscroll = true;
         }
 
         public static void ToggleChatIcon(bool mode)
         {
-            if (!ClientValues.IsReadyToPlay) return;
-
-            IsChatIconActive = mode;
-
-            if (mode)
-            {
-                Semaphore.WaitOne();
-
-                ChatClockTask ??= Task.Run(ChatManager.ChatClock);
-
-                Semaphore.Release();
-            }
-        }
-
-        public static void UpdateChatIcon()
-        {
-            ChatIconIndex++;
-            if (ChatIconIndex > ChatIcons.Count) ChatIconIndex = 0;
-            AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(ChatButtonDef, ChatIcons[ChatIconIndex]);
-        }
-
-        private static void TurnOffChatIcon() { AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(ChatButtonDef, ChatIcons[0]); }
-
-        public static void ChatClock()
-        {
-            while (IsChatIconActive)
-            {
-                MainThreadHandler.Instance.Enqueue(UpdateChatIcon);
-
-                Thread.Sleep(250);
-            }
-
-            ChatIconIndex = 0;
-
-            MainThreadHandler.Instance.Enqueue(TurnOffChatIcon);
-
-            ChatClockTask = null;
+            if (mode) AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(ChatButtonDef, RTChatDefs.ChatOn);
+            else AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(ChatButtonDef, RTChatDefs.ChatOff);
         }
     }
 
-    public static class ChatManagerHelper
+    public static class ChatManagerH
     {
-        public static Dictionary<UserColor, string> userColorDictionary = new Dictionary<UserColor, string>()
+        public static Dictionary<ChatColor, string> messageColorDictionary = new Dictionary<ChatColor, string>()
         {
-            { UserColor.Normal, "<color=white>" },
-            { UserColor.Admin, "<color=red>" },
-            { UserColor.Console, "<color=yellow>" },
-            { UserColor.Private, "<color=#3ae0dd>" },
-            { UserColor.Discord, "<color=#9656ce>" },
-            { UserColor.Server, "<color=#6d90c9>"}
+            { ChatColor.Normal, "<color=white>" },
+            { ChatColor.Admin, "<color=red>" },
+            { ChatColor.Console, "<color=yellow>" },
+            { ChatColor.Private, "<color=#3ae0dd>" },
+            { ChatColor.Discord, "<color=white>" },
+            { ChatColor.Server, " <color=white>" }
         };
 
-        public static Dictionary<MessageColor, string> messageColorDictionary = new Dictionary<MessageColor, string>()
-        {
-            { MessageColor.Normal, "<color=white>" },
-            { MessageColor.Admin, "<color=white>" },
-            { MessageColor.Console, "<color=yellow>" },
-            { MessageColor.Private, "<color=#3ae0dd>" },
-            { MessageColor.Discord, "<color=white>" },
-            { MessageColor.Server, " <color=white>" }
-        };
+        public static string[] GetMessageWords(string message) { return message.Split(' '); }
 
-        public static string[] GetMessageWords(string message)
-        {
-            return message.Split(' ');
-        }
+        public static bool CheckIfHasBeenTagged(string message) { return GetMessageWords(message).Contains($"@{ClientValues.Username}"); }
 
         public static string ParseMessage(string message, bool fromBroadcast = false)
         {
@@ -241,30 +188,5 @@ namespace GameClient.Managers
 
             return message;
         }
-    }
-
-    [StaticConstructorOnStartup]
-    public static class ChatIcons
-    {
-        static ChatIcons()
-        {
-            ChatManager.ChatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
-            ChatManager.ChatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOn"));
-            ChatManager.ChatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconMid"));
-            ChatManager.ChatIcons.Add(ContentFinder<Texture2D>.Get("UI/ChatIconOff"));
-        }
-    }
-
-    //TODO
-    //Apply different sounds depending on the message type, since right now only "Own" and "System" play
-
-    [DefOf]
-    public static class ChatSounds
-    {
-        public static SoundDef OwnChatDing;
-        public static SoundDef AllyChatDing;
-        public static SoundDef NeutralChatDing;
-        public static SoundDef HostileChatDing;
-        public static SoundDef SystemChatDing;
     }
 }

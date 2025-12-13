@@ -12,22 +12,22 @@ namespace GameServer.Managers
 
     public static class ChatManager
     {
-        private static readonly Semaphore logSemaphore = new Semaphore(1, 1);
+        private static Semaphore LogSemaphore = new Semaphore(1, 1);
 
-        private static readonly Semaphore commandSemaphore = new Semaphore(1, 1);
+        private static Semaphore CommandSemaphore { get; set; } = new Semaphore(1, 1);
 
-        private static readonly string systemName = "CONSOLE";
+        private static string SystemName { get; set; } = "CONSOLE";
 
-        private static readonly string notificationName = "SERVER";
+        private static string NotificationName { get; set; } = "SERVER";
 
-        public static readonly string[] defaultJoinMessages = new string[]
+        public static string[] DefaultJoinMessages { get; set; } = new string[]
         {
             "Welcome to the global chat!",
             "Please be considerate with others and have fun!",
             "Use '/help' to check all the available commands."
         };
 
-        public static readonly string[] defaultTextTools = new string[]
+        public static string[] DefaultTextTools { get; set; } = new string[]
         {
             "List of available text tools:",
             "'b' inside brackets - Followed by the text you want to turn [b]bold",
@@ -48,7 +48,7 @@ namespace GameServer.Managers
 
         private static void ExecuteChatCommand(ServerClient client, string[] command)
         {
-            commandSemaphore.WaitOne();
+            CommandSemaphore.WaitOne();
 
             CommandBase toFind = ChatManagerHelper.GetCommandFromName(command[0]);
             if (toFind == null) SendConsoleMessage(client, "Command was not found.");
@@ -64,18 +64,16 @@ namespace GameServer.Managers
 
             ChatManagerHelper.ShowChatInConsole(client.UserFile.Username, chatCommand);
 
-            commandSemaphore.Release();
+            CommandSemaphore.Release();
         }
 
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
-            if (Master.ServerConfig == null) return;
-
             ChatData chatData = new ChatData();
             chatData._username = client.UserFile.Username;
             chatData._message = message;
-            chatData._usernameColor = client.UserFile.IsAdmin ? UserColor.Admin : UserColor.Normal;
-            chatData._messageColor = client.UserFile.IsAdmin ? MessageColor.Admin : MessageColor.Normal;
+            chatData._usernameColor = client.UserFile.IsAdmin ? ChatColor.Admin : ChatColor.Normal;
+            chatData._messageColor = ChatColor.Normal;
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
@@ -88,8 +86,8 @@ namespace GameServer.Managers
             ChatData chatData = new ChatData();
             chatData._username = client;
             chatData._message = message;
-            chatData._usernameColor = UserColor.Discord;
-            chatData._messageColor = MessageColor.Discord;
+            chatData._usernameColor = ChatColor.Discord;
+            chatData._messageColor = ChatColor.Discord;
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
@@ -100,10 +98,10 @@ namespace GameServer.Managers
         public static void BroadcastConsoleMessage(string message)
         {
             ChatData chatData = new ChatData();
-            chatData._username = systemName;
+            chatData._username = SystemName;
             chatData._message = message;
-            chatData._usernameColor = UserColor.Console;
-            chatData._messageColor = MessageColor.Console;
+            chatData._usernameColor = ChatColor.Console;
+            chatData._messageColor = ChatColor.Console;
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
@@ -114,10 +112,10 @@ namespace GameServer.Managers
         public static void BroadcastServerNotification(string message)
         {
             ChatData chatData = new ChatData();
-            chatData._username = notificationName;
+            chatData._username = NotificationName;
             chatData._message = message;
-            chatData._usernameColor = UserColor.Server;
-            chatData._messageColor = MessageColor.Server;
+            chatData._usernameColor = ChatColor.Server;
+            chatData._messageColor = ChatColor.Server;
 
             ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
@@ -128,10 +126,10 @@ namespace GameServer.Managers
         public static void SendConsoleMessage(ServerClient client, string message)
         {
             ChatData chatData = new ChatData();
-            chatData._username = systemName;
+            chatData._username = SystemName;
             chatData._message = message;
-            chatData._usernameColor = UserColor.Console;
-            chatData._messageColor = MessageColor.Console;
+            chatData._usernameColor = ChatColor.Console;
+            chatData._messageColor = ChatColor.Console;
 
             client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
@@ -139,17 +137,17 @@ namespace GameServer.Managers
         public static void SendServerMessage(ServerClient client, string message)
         {
             ChatData chatData = new ChatData();
-            chatData._username = notificationName;
+            chatData._username = NotificationName;
             chatData._message = message;
-            chatData._usernameColor = UserColor.Server;
-            chatData._messageColor = MessageColor.Server;
+            chatData._usernameColor = ChatColor.Server;
+            chatData._messageColor = ChatColor.Server;
 
             client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
         private static void WriteToLogs(string username, string message)
         {
-            logSemaphore.WaitOne();
+            LogSemaphore.WaitOne();
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | [" + username + "]: " + message);
@@ -162,7 +160,7 @@ namespace GameServer.Managers
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
 
-            logSemaphore.Release();
+            LogSemaphore.Release();
         }
     }
 

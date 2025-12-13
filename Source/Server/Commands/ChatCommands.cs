@@ -63,7 +63,7 @@ namespace GameServer.Commands
             if (TargetClient == null) return;
             else
             {
-                foreach (string str in ChatManager.defaultTextTools)
+                foreach (string str in ChatManager.DefaultTextTools)
                 {
                     ChatManager.SendConsoleMessage(TargetClient, str);
                 }
@@ -103,8 +103,8 @@ namespace GameServer.Commands
                         {
                             ChatData chatData = new ChatData();
                             chatData._message = message;
-                            chatData._usernameColor = UserColor.Private;
-                            chatData._messageColor = MessageColor.Private;
+                            chatData._usernameColor = ChatColor.Private;
+                            chatData._messageColor = ChatColor.Private;
 
                             //Send to sender
                             chatData._username = $">> {toFind.UserFile.Username}";

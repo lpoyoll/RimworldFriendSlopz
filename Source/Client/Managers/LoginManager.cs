@@ -23,27 +23,23 @@ namespace GameClient.Managers
 
             switch (data._tryResponse)
             {
-                case LoginResponse.InvalidLogin:
-                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Login details are invalid! Please try again!" }));
+                case LoginResponse.Invalid:
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Login details are invalid!", "Please try again or reset your account!" }));
                     break;
 
-                case LoginResponse.BannedLogin:
+                case LoginResponse.Ban:
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You are banned from this server!" }));
                     break;
 
-                case LoginResponse.RegisterError:
-                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "There was an error registering! Please try again!" }));
-                    break;
-
-                case LoginResponse.ExtraLogin:
+                case LoginResponse.Duplicate:
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You connected from another place!" }));
                     break;
 
-                case LoginResponse.WrongMods:
+                case LoginResponse.Mods:
                     ModManagerH.GetConflictingMods(bytes);
                     break;
 
-                case LoginResponse.ServerFull:
+                case LoginResponse.Full:
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server is full!" }));
                     break;
 
@@ -51,7 +47,7 @@ namespace GameClient.Managers
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server is whitelisted!" }));
                     break;
 
-                case LoginResponse.WrongVersion:
+                case LoginResponse.Version:
                     RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"Mod version mismatch! Expected version '{data._extraDetails[0]}'" }));
                     break;
 

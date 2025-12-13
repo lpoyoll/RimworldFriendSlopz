@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GameClient.Defs;
 using GameClient.Managers;
 using GameClient.Values;
 using GameClient.WorldObjects;

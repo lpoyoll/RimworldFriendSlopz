@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Defs>
   <SoundDef>
-    <defName>OwnChatDing</defName>    
+    <defName>ChatSend</defName>    
     <maxSimultaneous>1</maxSimultaneous>  
     <subSounds>
       <li>
         <onCamera>True</onCamera>      
         <grains>
           <li Class="AudioGrain_Clip">
-            <clipPath>Chat/OwnChat</clipPath>
+            <clipPath>Chat/Send</clipPath>
           </li>
         </grains>      
         <volumeRange>16</volumeRange>
@@ -18,14 +18,14 @@
   </SoundDef>
 
   <SoundDef>
-    <defName>AllyChatDing</defName>    
+    <defName>ChatReceive</defName>    
     <maxSimultaneous>1</maxSimultaneous>  
     <subSounds>
       <li>
         <onCamera>True</onCamera>      
         <grains>
           <li Class="AudioGrain_Clip">
-            <clipPath>Chat/AllyChat</clipPath>
+            <clipPath>Chat/Receive</clipPath>
           </li>
         </grains>      
         <volumeRange>16</volumeRange>
@@ -33,56 +33,4 @@
       </li>
     </subSounds>
   </SoundDef>
-
-  <SoundDef>
-    <defName>NeutralChatDing</defName>    
-    <maxSimultaneous>1</maxSimultaneous>  
-    <subSounds>
-      <li>
-        <onCamera>True</onCamera>      
-        <grains>
-          <li Class="AudioGrain_Clip">
-            <clipPath>Chat/NeutralChat</clipPath>
-          </li>
-        </grains>      
-        <volumeRange>16</volumeRange>
-        <repeatMode>NeverTwice</repeatMode>
-      </li>
-    </subSounds>
-  </SoundDef>
-
-  <SoundDef>
-    <defName>HostileChatDing</defName>    
-    <maxSimultaneous>1</maxSimultaneous>  
-    <subSounds>
-      <li>
-        <onCamera>True</onCamera>      
-        <grains>
-          <li Class="AudioGrain_Clip">
-            <clipPath>Chat/HostileChat</clipPath>
-          </li>
-        </grains>      
-        <volumeRange>16</volumeRange>
-        <repeatMode>NeverTwice</repeatMode>
-      </li>
-    </subSounds>
-  </SoundDef>
-
-  <SoundDef>
-    <defName>SystemChatDing</defName>    
-    <maxSimultaneous>1</maxSimultaneous>  
-    <subSounds>
-      <li>
-        <onCamera>True</onCamera>      
-        <grains>
-          <li Class="AudioGrain_Clip">
-            <clipPath>Chat/SystemChat</clipPath>
-          </li>
-        </grains>      
-        <volumeRange>16</volumeRange>
-        <repeatMode>NeverTwice</repeatMode>
-      </li>
-    </subSounds>
-  </SoundDef>
-
 </Defs>

@@ -8,18 +8,18 @@ namespace Shared.Files.Configs
 {
     public class DifficultyConfigFile : BaseFile
     {
-        public static string Path { get; set; } = string.Empty;
+        public static string SavePath { get; set; } = string.Empty;
 
         public string ScribeData { get; set; } = string.Empty;
 
         [JsonIgnore] [IgnoreMember] public bool EnforceDifficulty => !string.IsNullOrEmpty(ScribeData);
 
-        public override void Save() { XmlHelper.WriteXmlToFile(ScribeData, Path, true); }
+        public override void Save() { XmlHelper.WriteXmlToFile(ScribeData, SavePath, true); }
 
         public static object Load<T>()
         {
             DifficultyConfigFile file = new DifficultyConfigFile();
-            if (File.Exists(Path)) file.ScribeData = XmlHelper.ReadXmlFromFile(Path);
+            if (File.Exists(SavePath)) file.ScribeData = XmlHelper.ReadXmlFromFile(SavePath);
             return file;
         }
     }

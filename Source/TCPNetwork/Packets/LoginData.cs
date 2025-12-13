@@ -13,7 +13,7 @@ namespace TCPNetwork.Packets
 
         public ModsConfigFile _runningMods { get; set; } = null;
 
-        public LoginResponse _tryResponse { get; set; } = LoginResponse.InvalidLogin;
+        public LoginResponse _tryResponse { get; set; } = LoginResponse.Invalid;
 
         public List<string> _extraDetails { get; set; } = new List<string>();
     }

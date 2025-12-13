@@ -18,7 +18,7 @@ namespace GameServer.Core
 
             SetPaths();
 
-            if (!File.Exists(ServerConfigFile.Path))
+            if (!File.Exists(ServerConfigFile.SavePath))
             {
                 Printer.Error("If this is your first time installing Rimworld Together, please take a look around the configuration files " +
                     "and our wiki > https://github.com/RimWorld-Together/Rimworld-Together/wiki");
@@ -40,21 +40,22 @@ namespace GameServer.Core
 
         public static void SetPaths()
         {
-            ServerConfigFile.Path = Path.Combine(Master.ConfigsPath, "ServerConfig.json");
-            ActionsConfigFile.Path = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
-            PlanetConfigFile.Path = Path.Combine(Master.WorldPath, "WorldValuesFile.json");
-            StorytellerConfigFile.Path = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
-            ScenarioConfigFile.Path = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
-            GuildFile.GeneralPath = Path.Combine(Master.GuildsPath);
-            ModsConfigFile.Path = Path.Combine(Master.ConfigsPath, "ModConfig.json");
-            DifficultyConfigFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");
-            ServerBrowserConfigFile.Path = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
-            WhitelistConfigFile.Path = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
-            BackupsConfigFile.Path = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
-            ChatConfigFile.Path = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
+            ServerConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ServerConfig.json");
+            ActionsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
+            PlanetConfigFile.SavePath = Path.Combine(Master.WorldPath, "WorldValuesFile.json");
+            StorytellerConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
+            ScenarioConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
+            ModsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ModConfig.json");
+            DifficultyConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");
+            ServerBrowserConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
+            WhitelistConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
+            BackupsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
+            ChatConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
 
             CommonValues.ServerUsersPath = Master.UsersPath;
             CommonValues.ServerSitesPath = Master.SitesPath;
+
+            GuildFile.SavePath = Path.Combine(Master.GuildsPath);
 
             if (!Directory.Exists(Master.AssetsPath)) Directory.CreateDirectory(Master.AssetsPath);
             if (!Directory.Exists(Master.ConfigsPath)) Directory.CreateDirectory(Master.ConfigsPath);
