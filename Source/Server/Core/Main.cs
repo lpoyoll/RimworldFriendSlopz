@@ -52,7 +52,9 @@ namespace GameServer.Core
             WhitelistConfigFile.Path = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
             BackupsConfigFile.Path = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
             ChatConfigFile.Path = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
+
             CommonValues.ServerUsersPath = Master.UsersPath;
+            CommonValues.ServerSitesPath = Master.SitesPath;
 
             if (!Directory.Exists(Master.AssetsPath)) Directory.CreateDirectory(Master.AssetsPath);
             if (!Directory.Exists(Master.ConfigsPath)) Directory.CreateDirectory(Master.ConfigsPath);

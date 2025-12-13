@@ -51,7 +51,7 @@ namespace GameServer.Managers
 
         public static void ConfirmNewSite(ServerClient client, SiteFile siteFile)
         {
-            SiteManagerHelper.SaveSite(siteFile);
+            siteFile.SaveSite();
 
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.Build;
@@ -152,23 +152,6 @@ namespace GameServer.Managers
 
     public static class SiteManagerHelper
     {
-        public static void SaveSite(SiteFile siteFile)
-        {
-            siteFile.SavingSemaphore.WaitOne();
-
-            try { Serializer.SerializeToFile(Path.Combine(Master.SitesPath, siteFile.Tile + CommonValues.DefaultSaveFormat), siteFile); }
-            catch (Exception e) { Printer.Error(e.ToString()); }
-
-            siteFile.SavingSemaphore.Release();
-        }
-
-        public static void UpdateFaction(SiteFile siteFile, GuildFile toUpdateWith)
-        {
-            if (toUpdateWith == null) siteFile.GuildName = null;
-            else siteFile.GuildName = toUpdateWith.Name;
-            SaveSite(siteFile);
-        }
-
         public static SiteFile[] GetAllSitesFromUsername(string username)
         {
             List<SiteFile> sitesList = new List<SiteFile>();
@@ -233,15 +216,6 @@ namespace GameServer.Managers
             SiteType site = Master.ActionConfigs.SiteAction.SiteTypes.Where(S => S.DefName == defName).FirstOrDefault();
             if (site != null) return site;
             return null;
-        }
-
-        public static void SetSitePresets()
-        {
-            if (Master.ActionConfigs.SiteAction.SiteTypes.Length > 0) return;
-            else
-            {
-
-            }
         }
     }
 }

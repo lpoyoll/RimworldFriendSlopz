@@ -86,7 +86,7 @@ namespace GameServer.Managers
 
                 client.UserFile.UpdateFaction(factionFile);
 
-                foreach (SiteFile site in SiteManagerHelper.GetAllSitesFromUsername(client.UserFile.Username)) SiteManagerHelper.UpdateFaction(site, factionFile);
+                foreach (SiteFile site in SiteManagerHelper.GetAllSitesFromUsername(client.UserFile.Username)) site.UpdateFaction(factionFile);
 
                 client.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
 
@@ -103,7 +103,7 @@ namespace GameServer.Managers
             {
                 foreach (UserFile userFile in GuildManagerH.GetUsersFromFactionMembers(guild)) userFile.UpdateFaction(null);
 
-                foreach (SiteFile site in GuildManagerH.GetFactionSites(guild)) SiteManagerHelper.UpdateFaction(site, null);
+                foreach (SiteFile site in GuildManagerH.GetFactionSites(guild)) site.UpdateFaction(null);
 
                 factionManifest._stepMode = GuildStepMode.Delete;
                 foreach (ServerClient toUpdateConnected in GuildManagerH.GetConnectedFactionMembers(guild))
@@ -146,7 +146,7 @@ namespace GameServer.Managers
 
                 client.UserFile.UpdateFaction(guild);
 
-                foreach (SiteFile site in SiteManagerHelper.GetAllSitesFromUsername(client.UserFile.Username)) SiteManagerHelper.UpdateFaction(site, guild);
+                foreach (SiteFile site in SiteManagerHelper.GetAllSitesFromUsername(client.UserFile.Username)) site.UpdateFaction(guild);
 
                 foreach (ServerClient sc in GuildManagerH.GetConnectedFactionMembers(guild)) GoodwillManager.UpdateClientGoodwills(sc);
             }
@@ -196,7 +196,7 @@ namespace GameServer.Managers
 
                 guild.RemoveMember(guild.GuildMembers.First(fetch => fetch.Username == toRemoveOffline.Username));
 
-                foreach (SiteFile site in SiteManagerHelper.GetAllSitesFromUsername(toRemoveOffline.Username)) SiteManagerHelper.UpdateFaction(site, null);
+                foreach (SiteFile site in SiteManagerHelper.GetAllSitesFromUsername(toRemoveOffline.Username)) site.UpdateFaction(null);
 
                 foreach (ServerClient member in GuildManagerH.GetConnectedFactionMembers(guild)) GoodwillManager.UpdateClientGoodwills(member);
             }
