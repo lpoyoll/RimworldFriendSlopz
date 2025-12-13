@@ -208,8 +208,6 @@ namespace GameClient.Managers
             {
                 while (!Token.Token.IsCancellationRequested)
                 {
-                    Printer.Warning(1);
-
                     if (currentRewardDelay >= RewardDelay)
                     {
                         MainThreadHandler.Instance.Enqueue(AskForSiteRewards);

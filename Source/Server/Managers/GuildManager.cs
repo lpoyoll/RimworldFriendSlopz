@@ -161,10 +161,6 @@ namespace GameServer.Managers
 
             GuildRanks userRank = GuildManagerH.GetMemberRank(guild, client.UserFile.Username);
 
-            Printer.Warning(userRank);
-            Printer.Warning(settlement.Username);
-            Printer.Warning(client.UserFile.Username);
-
             if (settlement.Username == client.UserFile.Username)
             {
                 if (userRank != GuildRanks.Admin) Remove();
