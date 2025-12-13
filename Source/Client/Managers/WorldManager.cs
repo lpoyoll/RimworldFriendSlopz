@@ -77,7 +77,7 @@ namespace GameClient.Managers
 
             WorldData data = new WorldData();
             data._stepMode = WorldStepMode.Sent;
-            data._fileBytes = Serializer.ConvertObjectToBytes(SessionHandler.WorldFile);
+            data._fileBytes = Serializer.ConvertObjectToBytes(SessionHandler.CurrentWorld);
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.WorldManager, data);
 
@@ -100,21 +100,21 @@ namespace GameClient.Managers
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, 
             OverallPopulation population, LandmarkDensity density, List<FactionDef> factions, float pollution)
         {
-            SessionHandler.WorldFile = new PlanetConfigFile();
-            SessionHandler.WorldFile.SeedString = seedString;
-            SessionHandler.WorldFile.PersistentRandomValue = GenText.StableStringHash(seedString);
-            SessionHandler.WorldFile.PlanetCoverage = planetCoverage;
-            SessionHandler.WorldFile.Rainfall = (int)rainfall;
-            SessionHandler.WorldFile.Temperature = (int)temperature;
-            SessionHandler.WorldFile.Population = (int)population;
-            SessionHandler.WorldFile.LandmarkDensity = (int)density;
-            SessionHandler.WorldFile.Pollution = pollution;
-            SessionHandler.WorldFile.NPCFactions = WorldManagerH.GetNPCFactionsFromDef(factions.ToArray());
+            SessionHandler.CurrentWorld = new PlanetConfigFile();
+            SessionHandler.CurrentWorld.SeedString = seedString;
+            SessionHandler.CurrentWorld.PersistentRandomValue = GenText.StableStringHash(seedString);
+            SessionHandler.CurrentWorld.PlanetCoverage = planetCoverage;
+            SessionHandler.CurrentWorld.Rainfall = (int)rainfall;
+            SessionHandler.CurrentWorld.Temperature = (int)temperature;
+            SessionHandler.CurrentWorld.Population = (int)population;
+            SessionHandler.CurrentWorld.LandmarkDensity = (int)density;
+            SessionHandler.CurrentWorld.Pollution = pollution;
+            SessionHandler.CurrentWorld.NPCFactions = WorldManagerH.GetNPCFactionsFromDef(factions.ToArray());
         }
 
         private static void SetValuesFromServer(WorldData data)
         {
-            SessionHandler.WorldFile = Serializer.ConvertBytesToObject<PlanetConfigFile>(data._fileBytes);
+            SessionHandler.CurrentWorld = Serializer.ConvertBytesToObject<PlanetConfigFile>(data._fileBytes);
         }
 
         public static void GenerateNormalWorld()
@@ -124,17 +124,17 @@ namespace GameClient.Managers
                 Find.GameInitData.ResetWorldRelatedMapInitData();
 
                 Rand.EnsureStateStackEmpty();
-                Rand.PushState(SessionHandler.WorldFile.PersistentRandomValue);
+                Rand.PushState(SessionHandler.CurrentWorld.PersistentRandomValue);
 
                 Current.Game.World = WorldGenerator.GenerateWorld(
-                    SessionHandler.WorldFile.PlanetCoverage,
-                    SessionHandler.WorldFile.SeedString,
-                    (OverallRainfall)SessionHandler.WorldFile.Rainfall,
-                    (OverallTemperature)SessionHandler.WorldFile.Temperature,
-                    (OverallPopulation)SessionHandler.WorldFile.Population,
-                    (LandmarkDensity)SessionHandler.WorldFile.LandmarkDensity,
-                    WorldManagerH.GetFactionDefsFromNPCFaction(SessionHandler.WorldFile.NPCFactions),
-                    SessionHandler.WorldFile.Pollution);
+                    SessionHandler.CurrentWorld.PlanetCoverage,
+                    SessionHandler.CurrentWorld.SeedString,
+                    (OverallRainfall)SessionHandler.CurrentWorld.Rainfall,
+                    (OverallTemperature)SessionHandler.CurrentWorld.Temperature,
+                    (OverallPopulation)SessionHandler.CurrentWorld.Population,
+                    (LandmarkDensity)SessionHandler.CurrentWorld.LandmarkDensity,
+                    WorldManagerH.GetFactionDefsFromNPCFaction(SessionHandler.CurrentWorld.NPCFactions),
+                    SessionHandler.CurrentWorld.Pollution);
 
                 LongEventHandler.ExecuteWhenFinished(delegate
                 {
@@ -178,9 +178,9 @@ namespace GameClient.Managers
             WorldFeature[] worldFeatures = Find.WorldFeatures.features.ToArray();
             foreach (WorldFeature feature in worldFeatures) Find.WorldFeatures.features.Remove(feature);
 
-            for (int i = 0; i < SessionHandler.WorldFile.Features.Length; i++)
+            for (int i = 0; i < SessionHandler.CurrentWorld.Features.Length; i++)
             {
-                FeatureDetail planetFeature = SessionHandler.WorldFile.Features[i];
+                FeatureDetail planetFeature = SessionHandler.CurrentWorld.Features[i];
 
                 try
                 {
@@ -206,13 +206,13 @@ namespace GameClient.Managers
         {
             Faction[] planetFactions = Find.World.factionManager.AllFactions.ToArray();
 
-            for (int i = 0; i < SessionHandler.WorldFile.NPCFactions.Length; i++)
+            for (int i = 0; i < SessionHandler.CurrentWorld.NPCFactions.Length; i++)
             {
                 try
                 {
-                    NPCFactionDetail faction = SessionHandler.WorldFile.NPCFactions[i];
+                    NPCFactionDetail faction = SessionHandler.CurrentWorld.NPCFactions[i];
 
-                    Faction toModify = planetFactions.First(fetch => fetch.def.defName == SessionHandler.WorldFile.NPCFactions[i].DefName);
+                    Faction toModify = planetFactions.First(fetch => fetch.def.defName == SessionHandler.CurrentWorld.NPCFactions[i].DefName);
 
                     toModify.Name = faction.Name;
 
@@ -221,7 +221,7 @@ namespace GameClient.Managers
                         faction.Color[2],
                         faction.Color[3]);
                 }
-                catch (Exception e) { Printer.Warning($"Failed set planet faction from def '{SessionHandler.WorldFile.NPCFactions[i].DefName}'. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed set planet faction from def '{SessionHandler.CurrentWorld.NPCFactions[i].DefName}'. Reason: {e}"); }
             }
         }
     }
@@ -231,11 +231,11 @@ namespace GameClient.Managers
         public static void PopulateWorldValues()
         {
             Printer.Warning("Populating world values", LogImportanceMode.Verbose);
-            SessionHandler.WorldFile.Features = GetPlanetFeatures();
-            SessionHandler.WorldFile.Roads = RoadManagerHelper.GetPlanetRoads();
-            SessionHandler.WorldFile.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
-            SessionHandler.WorldFile.NPCSettlements = GetPlanetNPCSettlements();
-            SessionHandler.WorldFile.NPCFactions = GetPlanetNPCFactions();
+            SessionHandler.CurrentWorld.Features = GetPlanetFeatures();
+            SessionHandler.CurrentWorld.Roads = RoadManagerHelper.GetPlanetRoads();
+            SessionHandler.CurrentWorld.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
+            SessionHandler.CurrentWorld.NPCSettlements = GetPlanetNPCSettlements();
+            SessionHandler.CurrentWorld.NPCFactions = GetPlanetNPCFactions();
         }
 
         public static NPCFactionDetail[] GetNPCFactionsFromDef(FactionDef[] factionDefs)
@@ -323,7 +323,7 @@ namespace GameClient.Managers
                     Printer.Warning($"Loaded {newFaction.defName}", LogImportanceMode.Verbose);
                 }
 
-                SessionHandler.WorldFile.NPCFactions = serverFactions.ToArray();
+                SessionHandler.CurrentWorld.NPCFactions = serverFactions.ToArray();
             }
 
             return defList;

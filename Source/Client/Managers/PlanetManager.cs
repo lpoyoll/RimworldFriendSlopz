@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using GameClient.Defs;
 using GameClient.Misc;
 using RimWorld;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -14,7 +16,7 @@ namespace GameClient.Managers
 
         public static void BuildPlanet()
         {
-            SessionHandler.FindPlayerFactionsInWorld();
+            PlanetManagerHelper.GetPlayerFactionsInWorld();
             PlanetManagerHelper.GetMapGenerators();
 
             //This step gets skiped if it's the first time building the planet
@@ -172,6 +174,22 @@ namespace GameClient.Managers
 
             WorldObjectDef site = WorldObjectDefOf.Site;
             site.mapGenerator = emptyGenerator;
+        }
+
+        public static void GetPlayerFactionsInWorld()
+        {
+            Faction[] factions = Find.FactionManager.AllFactions.ToArray();
+
+            SessionHandler.EnemyFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTEnemy.defName);
+            SessionHandler.AllyFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTAlly.defName);
+            SessionHandler.NeutralFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTNeutral.defName);
+            SessionHandler.GuildFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTFaction.defName);
+
+            SessionHandler.PlayerFactions.Clear();
+            SessionHandler.PlayerFactions.Add(SessionHandler.EnemyFaction);
+            SessionHandler.PlayerFactions.Add(SessionHandler.AllyFaction);
+            SessionHandler.PlayerFactions.Add(SessionHandler.NeutralFaction);
+            SessionHandler.PlayerFactions.Add(SessionHandler.GuildFaction);
         }
     }
 }

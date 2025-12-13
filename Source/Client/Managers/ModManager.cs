@@ -45,20 +45,20 @@ namespace GameClient.Managers
 
         public static void ReceiveMods(ServerGlobalData data)
         {
-            SessionHandler.ConfigFile = data._modConfigs;
+            SessionHandler.CurrentModConfig = data._modConfigs;
 
-            if (!SessionHandler.ConfigFile.EnforcedConfigs) return;
+            if (!SessionHandler.CurrentModConfig.EnforcedConfigs) return;
             else
             {
                 Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
 
-                for (int i = 0; i < SessionHandler.ConfigFile.ModFileNames.Length; i++)
+                for (int i = 0; i < SessionHandler.CurrentModConfig.ModFileNames.Length; i++)
                 {
-                    string filePath = GenFilePaths.ConfigFolderPath + Path.DirectorySeparatorChar + SessionHandler.ConfigFile.ModFileNames[i];
+                    string filePath = GenFilePaths.ConfigFolderPath + Path.DirectorySeparatorChar + SessionHandler.CurrentModConfig.ModFileNames[i];
                     if (File.Exists(filePath)) File.Delete(filePath);
-                    File.WriteAllText(filePath, SessionHandler.ConfigFile.ModConfigs[i]);
+                    File.WriteAllText(filePath, SessionHandler.CurrentModConfig.ModConfigs[i]);
 
-                    Printer.Warning($"Loaded > {SessionHandler.ConfigFile.ModFileNames[i]}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Loaded > {SessionHandler.CurrentModConfig.ModFileNames[i]}", LogImportanceMode.Verbose);
                 }
             }
         }

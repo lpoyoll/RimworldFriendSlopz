@@ -1,4 +1,5 @@
 using GameClient.Defs;
+using GameClient.Managers;
 using GameClient.Patches.Pages;
 using GameClient.WorldObjects;
 using RimWorld;
@@ -34,17 +35,17 @@ namespace GameClient.Misc
 
         public static TransferData IncomingManifest { get; set; } = new TransferData();
 
-        public static ActionsConfigFile ActionValues { get; set; } = null;
+        public static ActionsConfigFile CurrentActionValues { get; set; } = null;
 
-        public static ModsConfigFile ConfigFile { get; set; } = null;
+        public static ModsConfigFile CurrentModConfig { get; set; } = null;
 
-        public static ScenarioConfigFile ScenarioFile { get; set; } = null;
+        public static ScenarioConfigFile CurrentScenario { get; set; } = null;
 
-        public static StorytellerConfigFile StorytellerFile { get; set; } = null;
+        public static StorytellerConfigFile CurrentStoryteller { get; set; } = null;
 
-        public static DifficultyConfigFile DifficultyFile { get; set; } = null;
+        public static DifficultyConfigFile CurrentDifficulty { get; set; } = null;
 
-        public static PlanetConfigFile WorldFile { get; set; } = null;
+        public static PlanetConfigFile CurrentWorld { get; set; } = null;
 
         public static bool IsAdmin { get; set; } = false;
 
@@ -76,23 +77,7 @@ namespace GameClient.Misc
         {
             IsAdmin = serverGlobalData._isClientAdmin;
             HasFaction = serverGlobalData._isClientFactionMember;
-            ActionValues = serverGlobalData._actionValues;
-        }
-
-        public static void FindPlayerFactionsInWorld(bool shouldFix = true)
-        {
-            Faction[] factions = Find.FactionManager.AllFactions.ToArray();
-
-            EnemyFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTEnemy.defName);
-            AllyFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTAlly.defName);
-            NeutralFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTNeutral.defName);
-            GuildFaction = factions.First(fetch => fetch.def.defName == RTFactionDefOf.RTFaction.defName);
-
-            PlayerFactions.Clear();
-            PlayerFactions.Add(EnemyFaction);
-            PlayerFactions.Add(AllyFaction);
-            PlayerFactions.Add(NeutralFaction);
-            PlayerFactions.Add(GuildFaction);
+            CurrentActionValues = serverGlobalData._actionValues;
         }
 
         public static void ToggleActivity(ActivityType type) { latestActivity = type; }
@@ -123,6 +108,7 @@ namespace GameClient.Misc
             IsSavingGame = false;
             IsUsingScriber = false;
             LastTradeStep = TradeMode.None;
+            ChatManager.ShouldScrollChat = true;
 
             Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
             Patch_DialogOptions_DoModOptions.executedMessage = false;

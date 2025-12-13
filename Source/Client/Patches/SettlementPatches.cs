@@ -62,7 +62,7 @@ namespace GameClient.Patches
         {
             if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
             {
-                if (!SessionHandler.ActionValues.EnableNPCDestruction) return;
+                if (!SessionHandler.CurrentActionValues.EnableNPCDestruction) return;
                 else
                 {
                     if (__instance.Faction == Faction.OfPlayer) return;

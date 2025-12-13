@@ -29,9 +29,9 @@ namespace GameClient.Managers
 
         public static void SetValues(ServerGlobalData data)
         {
-            SessionHandler.ScenarioFile = data._scenarioValues;
-            SessionHandler.StorytellerFile = data._storytellerValues;
-            SessionHandler.DifficultyFile = data._difficultyValues;
+            SessionHandler.CurrentScenario = data._scenarioValues;
+            SessionHandler.CurrentStoryteller = data._storytellerValues;
+            SessionHandler.CurrentDifficulty = data._difficultyValues;
         }
 
         public static void SetScenario(ScenarioConfigFile file)

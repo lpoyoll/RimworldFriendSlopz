@@ -51,7 +51,7 @@ namespace GameClient.Patches
             public static void DoPost(float pollutionAmount)
             {
                 if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-                else if (!SessionHandler.ActionValues.EnablePollutionSpread) return;
+                else if (!SessionHandler.CurrentActionValues.EnablePollutionSpread) return;
                 else if (addedByServer) addedByServer = false;
                 else
                 {

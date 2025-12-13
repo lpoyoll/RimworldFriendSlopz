@@ -96,7 +96,7 @@ namespace GameClient.WorldObjects
                 {
                     SessionHandler.ChosenSettlement = this;
 
-                    if (SessionHandler.ActionValues.EnableFactions)
+                    if (SessionHandler.CurrentActionValues.EnableFactions)
                     {
                         if (SessionHandler.ChosenSettlement.Faction == SessionHandler.GuildFaction) GuildManager.OnFactionOpenOnMember();
                         else GuildManager.OnFactionOpenOnNonMember();
@@ -128,7 +128,7 @@ namespace GameClient.WorldObjects
                 {
                     SessionHandler.ChosenSettlement = this;
 
-                    if (SessionHandler.ActionValues.AidAction.IsEnabled)
+                    if (SessionHandler.CurrentActionValues.AidAction.IsEnabled)
                     {
                         List<string> pawnNames = new List<string>();
                         foreach (Pawn pawn in RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
@@ -148,7 +148,7 @@ namespace GameClient.WorldObjects
                 {
                     SessionHandler.ChosenSettlement = this;
 
-                    if (SessionHandler.ActionValues.EventAction.IsEnabled) EventManager.ShowEventMenu();
+                    if (SessionHandler.CurrentActionValues.EventAction.IsEnabled) EventManager.ShowEventMenu();
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
@@ -247,7 +247,7 @@ namespace GameClient.WorldObjects
                     SessionHandler.ChosenSettlement = this;
                     SessionHandler.ChosenCaravan = caravan;
 
-                    if (!SessionHandler.ActionValues.EnableTrading)
+                    if (!SessionHandler.CurrentActionValues.EnableTrading)
                     {
                         RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                         return;

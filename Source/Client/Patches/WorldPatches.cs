@@ -31,7 +31,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Guild"),
                 action = delegate
                 {
-                    if (SessionHandler.ActionValues.EnableFactions)
+                    if (SessionHandler.CurrentActionValues.EnableFactions)
                     {
                         if (SessionHandler.HasFaction) GuildManager.OnFactionOpen();
                         else GuildManager.OnNoFactionOpen();
@@ -47,7 +47,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Config"),
                 action = delegate
                 {
-                    if (SessionHandler.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                    if (SessionHandler.CurrentActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
@@ -76,7 +76,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Site"),
                 action = delegate
                 {
-                    if (SessionHandler.ActionValues.SiteAction.IsEnabled)
+                    if (SessionHandler.CurrentActionValues.SiteAction.IsEnabled)
                     {
                         SessionHandler.ChosenSite = __instance;
                         SiteManager.RequestDestroySite();
@@ -115,7 +115,7 @@ namespace GameClient.Patches
                     {
                         SessionHandler.ChosenCaravan = __instance;
 
-                        if (SessionHandler.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(false));
+                        if (SessionHandler.CurrentActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(false));
                         else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
@@ -129,7 +129,7 @@ namespace GameClient.Patches
                     {
                         SessionHandler.ChosenCaravan = __instance;
 
-                        if (SessionHandler.ActionValues.RoadsAction.IsEnabled)
+                        if (SessionHandler.CurrentActionValues.RoadsAction.IsEnabled)
                         {
                             List<PlanetTile> neighborTiles = new List<PlanetTile>();
                             Find.WorldGrid.GetTileNeighbors(SessionHandler.ChosenCaravan.Tile, neighborTiles);

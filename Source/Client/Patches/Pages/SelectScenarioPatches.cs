@@ -23,7 +23,7 @@ namespace GameClient.Patches.Pages
         {
             if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
-            if (!SessionHandler.IsGeneratingFreshWorld && SessionHandler.ScenarioFile.EnforceScenario)
+            if (!SessionHandler.IsGeneratingFreshWorld && SessionHandler.CurrentScenario.EnforceScenario)
             {
                 if (executedMessage) return true;
                 else
@@ -32,7 +32,7 @@ namespace GameClient.Patches.Pages
                     {
                         Scenario scenario = (Scenario)typeof(Page_SelectScenario).GetField("curScen", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
                         Page_SelectScenario.BeginScenarioConfiguration(scenario, __instance);
-                        GameParameterManager.SetScenario(SessionHandler.ScenarioFile);
+                        GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
 
                         RT_Dialog_Base.PushNewDialog(__instance.next);
                         __instance.Close();
@@ -74,7 +74,7 @@ namespace GameClient.Patches.Pages
         public static bool DoPre()
         {
             if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.ActionValues.EnableCustomScenarios) return true;
+            else if (SessionHandler.CurrentActionValues.EnableCustomScenarios) return true;
             else
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
@@ -94,7 +94,7 @@ namespace GameClient.Patches.Pages
         public static bool DoPre(Rect rect, ref Scenario ___curScen)
         {
             if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            if (SessionHandler.ActionValues.EnableCustomScenarios) return true;
+            if (SessionHandler.CurrentActionValues.EnableCustomScenarios) return true;
 
             if (curScen != null) ___curScen = curScen;
             rect.xMax += 2f;

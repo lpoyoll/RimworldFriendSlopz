@@ -45,15 +45,15 @@ namespace GameClient.Patches.Pages
 
             if (!SessionHandler.IsGeneratingFreshWorld)
             {
-                if (SessionHandler.StorytellerFile.EnforceStoryteller)
+                if (SessionHandler.CurrentStoryteller.EnforceStoryteller)
                 {
                     if (executedMessage) return true;
                     else
                     {
                         Action toDo = delegate
                         {
-                            GameParameterManager.SetStoryteller(SessionHandler.StorytellerFile);
-                            GameParameterManager.SetDifficulty(SessionHandler.DifficultyFile, true);
+                            GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
+                            GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty, true);
                             RT_Dialog_Base.PushNewDialog(__instance.next);
                             __instance.Close();
 
@@ -84,12 +84,12 @@ namespace GameClient.Patches.Pages
                 return true;
             }
 
-            if (SessionHandler.DifficultyFile.EnforceDifficulty || SessionHandler.StorytellerFile.EnforceStoryteller)
+            if (SessionHandler.CurrentDifficulty.EnforceDifficulty || SessionHandler.CurrentStoryteller.EnforceStoryteller)
             {
                 Action toDo = delegate
                 {
-                    GameParameterManager.SetStoryteller(SessionHandler.StorytellerFile);
-                    GameParameterManager.SetDifficulty(SessionHandler.DifficultyFile);
+                    GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
+                    GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
                 };
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));

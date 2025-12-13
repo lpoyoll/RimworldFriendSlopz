@@ -34,7 +34,7 @@ namespace GameClient.Managers
 
         public static void RequestActivity(ActivityType type, int targetTile)
         {
-            if (!SessionHandler.ActionValues.ActivityAction.IsEnabled)
+            if (!SessionHandler.CurrentActionValues.ActivityAction.IsEnabled)
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 return;

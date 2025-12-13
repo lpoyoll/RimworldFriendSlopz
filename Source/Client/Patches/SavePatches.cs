@@ -23,9 +23,9 @@ namespace GameClient.Patches
                 SessionHandler.ForcePermadeath();
                 SessionHandler.ManageDevOptions();
 
-                GameParameterManager.SetScenario(SessionHandler.ScenarioFile);
-                GameParameterManager.SetStoryteller(SessionHandler.StorytellerFile);
-                GameParameterManager.SetDifficulty(SessionHandler.DifficultyFile);
+                GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
+                GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
+                GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
                 SaveManager.LatestSavePath = filePath;

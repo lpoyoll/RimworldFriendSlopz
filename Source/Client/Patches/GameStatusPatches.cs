@@ -44,9 +44,9 @@ namespace GameClient.Patches
                 {
                     PlanetManager.BuildPlanet();
 
-                    GameParameterManager.SetScenario(SessionHandler.ScenarioFile);
-                    GameParameterManager.SetStoryteller(SessionHandler.StorytellerFile);
-                    GameParameterManager.SetDifficulty(SessionHandler.DifficultyFile);
+                    GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
+                    GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
+                    GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
 
                     SessionHandler.ForcePermadeath();
                     SessionHandler.IsReadyToPlay = true;

@@ -15,7 +15,7 @@ namespace GameClient.Patches.Pages
         public static bool DoPre(Dialog_Options __instance)
         {
             if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!SessionHandler.ConfigFile.EnforcedConfigs) return true;
+            else if (!SessionHandler.CurrentModConfig.EnforcedConfigs) return true;
             else if (SessionHandler.IsAdmin) return true;
             else
             {
