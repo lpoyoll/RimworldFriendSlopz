@@ -30,16 +30,11 @@ namespace GameClient.Dialogs
         {
             SitePartDef = thingChosen;
             this.Title = thingChosen.label;
-            Printer.Warning(3);
             ConfigFile = SiteManager.SiteValues.Where(f => f.DefName == thingChosen.defName).First();
-            Printer.Warning(4);
             Instance = this;
-            Printer.Warning(6);
 
             ThingDef cost = DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName);
             if (cost != null) CostThing.Add(cost, ConfigFile.Cost);
-
-            Printer.Warning(7);
 
             for (int i = 0; i < ConfigFile.Rewards.Length; i++)
             {
