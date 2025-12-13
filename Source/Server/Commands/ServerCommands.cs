@@ -128,7 +128,7 @@ namespace GameServer.Commands
             "Forces the garbage collector to collect",
             ForceGCClearCommandAction);
 
-        public static readonly CommandBase SiteRewardsCommand = new CommandBase("forceRewards", 0,
+        public static readonly CommandBase SiteRewardsCommand = new CommandBase("forcerewards", 0,
             "Forces every connected user to get site rewards",
             ForceSiteRewardsCommandAction);
 
