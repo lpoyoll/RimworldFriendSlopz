@@ -130,7 +130,7 @@ namespace GameClient.Managers
             SaveManager.ForceSave();
 
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", 
-                new string[] { "Some configurations might require a reconnection to apply" }));
+                new string[] { "Some configurations might require a server restart to apply" }));
         }
     }
 }
