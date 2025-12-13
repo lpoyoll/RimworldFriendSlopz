@@ -2,6 +2,7 @@
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.Patches.Tabs;
+using GameClient.WorldObjects;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -102,8 +103,9 @@ namespace GameClient.Patches
         {
             if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
             {
-                Site presentSite = Find.World.worldObjects.Sites.ToList().Find(x => x.Tile == __instance.Tile);
-                Settlement presentSettlement = Find.World.worldObjects.Settlements.ToList().Find(x => x.Tile == __instance.Tile);
+                bool hasSomethingOnTop = Find.World.worldObjects.AllWorldObjects.FirstOrDefault(fetch => fetch.Tile == __instance.Tile 
+                    && fetch is not Caravan) != null;
+
                 List<Gizmo> gizmoList = __result.ToList();
 
                 Command_Action Command_BuildSite = new Command_Action
@@ -141,10 +143,8 @@ namespace GameClient.Patches
                     }
                 };
 
-                if (presentSettlement == null && presentSite == null) gizmoList.Add(Command_BuildSite);
-
+                if (!hasSomethingOnTop) gizmoList.Add(Command_BuildSite);
                 gizmoList.Add(Command_BuildRoad);
-
                 __result = gizmoList;
             }
         }
