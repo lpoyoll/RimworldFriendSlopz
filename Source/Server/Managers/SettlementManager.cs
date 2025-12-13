@@ -15,8 +15,6 @@ namespace GameServer.Managers
         {
             PlayerSettlementData data = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case SettlementStepMode.Add:

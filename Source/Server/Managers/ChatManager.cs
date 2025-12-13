@@ -40,8 +40,6 @@ namespace GameServer.Managers
         {
             ChatData data = Serializer.ConvertBytesToObject<ChatData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             if (data._message.StartsWith("/")) ExecuteChatCommand(client, data._message.Split(' '));
             else BroadcastChatMessage(client, data._message);
         }

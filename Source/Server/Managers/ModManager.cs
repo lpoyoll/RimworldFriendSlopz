@@ -16,8 +16,6 @@ namespace GameServer.Managers
         {
             ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case ModConfigStepMode.Send:

@@ -141,15 +141,9 @@ namespace TCPNetwork
                 }
             }
 
-            catch (System.ObjectDisposedException e)
-            {
-                OnWarning(e, LogImportanceMode.Extreme);
-                DisconnectFlag = true;
-            }
-
             catch (Exception e)
             {
-                OnWarning(e, LogImportanceMode.Verbose);
+                OnWarning(e, LogImportanceMode.Extreme);
                 DisconnectFlag = true;
             }
         }

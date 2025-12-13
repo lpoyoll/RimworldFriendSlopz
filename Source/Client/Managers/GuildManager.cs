@@ -19,8 +19,6 @@ namespace GameClient.Managers
         {
             PlayerGuildData data = Serializer.ConvertBytesToObject<PlayerGuildData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case GuildStepMode.Create:

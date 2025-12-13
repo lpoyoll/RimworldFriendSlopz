@@ -19,8 +19,6 @@ namespace GameClient.Managers
         {
             EventData data = Serializer.ConvertBytesToObject<EventData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case EventStepMode.Send:

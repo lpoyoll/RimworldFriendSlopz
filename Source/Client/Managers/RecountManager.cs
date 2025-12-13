@@ -20,8 +20,6 @@ namespace GameClient.Managers
         {
             PlayerRecountData data = Serializer.ConvertBytesToObject<PlayerRecountData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             CurrentPlayers = data._currentPlayerCount;
             CurrentPlayerNames = data._currentPlayerNames;
         }

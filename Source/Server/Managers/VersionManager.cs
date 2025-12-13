@@ -14,8 +14,6 @@ namespace GameServer.Managers
         {
             VersionData data = Serializer.ConvertBytesToObject<VersionData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             if (data._version == CommonValues.ExecutableVersion)
             {
                 data._step = VersionData.VersionStep.Pass;

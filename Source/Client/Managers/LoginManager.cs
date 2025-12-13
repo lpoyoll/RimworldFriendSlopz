@@ -18,8 +18,6 @@ namespace GameClient.Managers
         {
             LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._tryResponse)
             {
                 case LoginResponse.Invalid:

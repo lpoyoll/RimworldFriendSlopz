@@ -15,8 +15,6 @@ namespace GameServer.Managers
         {
             MapData data = Serializer.ConvertBytesToObject<MapData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             SaveUserMap(client, data._mapFile);
         }
 

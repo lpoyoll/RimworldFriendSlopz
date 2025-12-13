@@ -28,8 +28,6 @@ namespace GameClient.Managers
                 }
                 AllServersPacket data = Serializer.SerializeFromString<AllServersPacket>(response);
 
-                Printer.Warning(data, LogImportanceMode.Extreme);
-
                 return data._serverInfos;
             }
             catch (Exception ex)

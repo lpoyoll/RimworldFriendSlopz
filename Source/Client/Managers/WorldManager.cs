@@ -43,8 +43,6 @@ namespace GameClient.Managers
         {
             WorldData data = Serializer.ConvertBytesToObject<WorldData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case WorldStepMode.AskFor:
@@ -322,7 +320,7 @@ namespace GameClient.Managers
                 else
                 {
                     defList.Add(newFaction);
-                    Printer.Warning($"Loaded {newFaction.defName}", LogImportanceMode.Extreme);
+                    Printer.Warning($"Loaded {newFaction.defName}", LogImportanceMode.Verbose);
                 }
 
                 SessionHandler.WorldFile.NPCFactions = serverFactions.ToArray();

@@ -22,8 +22,6 @@ namespace GameClient.Managers
         {
             VersionData data = Serializer.ConvertBytesToObject<VersionData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._step)
             {
                 case VersionData.VersionStep.Ask:

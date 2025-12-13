@@ -17,8 +17,6 @@ namespace GameClient.Managers
         {
             CommandData data = Serializer.ConvertBytesToObject<CommandData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._commandMode)
             {
                 case CommandMode.Op:

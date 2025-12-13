@@ -16,8 +16,6 @@ namespace GameServer.Managers
         {
             WorldData data = Serializer.ConvertBytesToObject<WorldData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case WorldStepMode.Sent:

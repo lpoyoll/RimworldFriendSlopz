@@ -34,8 +34,6 @@ namespace GameClient.Managers
         {
             SiteData data = Serializer.ConvertBytesToObject<SiteData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case SiteStepMode.Accept:

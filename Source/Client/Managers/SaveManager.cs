@@ -35,8 +35,6 @@ namespace GameClient.Managers
         {
             SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             if (data._stepMode == SaveStepMode.Receive) SaveManager.ReceiveSaveFromServer(data);
             else if (data._stepMode == SaveStepMode.Send)
             {

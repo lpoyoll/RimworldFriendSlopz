@@ -14,8 +14,6 @@ namespace GameServer.Managers
         {
             LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             HandleUser(client, data);
         }
 

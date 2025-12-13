@@ -23,8 +23,6 @@ namespace GameClient.Managers
         {
             FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             ChangeStructureGoodwill(data);
             RT_Dialog_Wait.Instance.Close();
         }

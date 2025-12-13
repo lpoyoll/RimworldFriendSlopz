@@ -23,8 +23,6 @@ namespace GameServer.Managers
 
             TransferData data = Serializer.ConvertBytesToObject<TransferData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             switch (data._stepMode)
             {
                 case TransferStepMode.TradeRequest:

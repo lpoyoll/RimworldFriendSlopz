@@ -44,8 +44,6 @@ namespace GameClient.Managers
         {
             ChatData data = Serializer.ConvertBytesToObject<ChatData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             AddMessageToChat(data._username, data._message, data._usernameColor, data._messageColor);
         }
 

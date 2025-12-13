@@ -20,8 +20,6 @@ namespace GameServer.Managers
         {
             FactionGoodwillData data = Serializer.ConvertBytesToObject<FactionGoodwillData>(bytes);
 
-            Printer.Warning(data, LogImportanceMode.Extreme);
-
             ChangeUserGoodwills(client, data);
         }
 
