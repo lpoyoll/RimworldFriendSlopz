@@ -29,44 +29,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Lib.Harmony" Version="2.3.6">
+		<PackageReference Include="Krafs.Rimworld.Ref" Version="1.6.4633" />
+		<PackageReference Include="Lib.Harmony" Version="2.4.2">
 			<ExcludeAssets>runtime</ExcludeAssets>
 		</PackageReference>
 		<PackageReference Include="MessagePack" Version="3.1.4" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="Assembly-CSharp">
-	    <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\Assembly-CSharp.dll</HintPath>
-	    <Private>False</Private>
-	  </Reference>
-	  <Reference Include="com.rlabrecque.steamworks.net">
-	    <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\com.rlabrecque.steamworks.net.dll</HintPath>
-	    <Private>False</Private>
-	  </Reference>
 	  <Reference Include="Newtonsoft.Json">
 	    <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
 	    <Private>True</Private>
-	  </Reference>
-	  <Reference Include="UnityEngine">
-	    <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.dll</HintPath>
-	    <Private>False</Private>
-	  </Reference>
-	  <Reference Include="UnityEngine.CoreModule">
-	    <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
-	    <Private>False</Private>
-	  </Reference>
-	  <Reference Include="UnityEngine.IMGUIModule">
-	    <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
-	    <Private>False</Private>
-	  </Reference>
-	  <Reference Include="UnityEngine.InputLegacyModule">
-	    <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
-	    <Private>False</Private>
-	  </Reference>
-	  <Reference Include="UnityEngine.TextRenderingModule">
-	    <HintPath>..\..\..\..\RimWorldWin64_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
-	    <Private>False</Private>
 	  </Reference>
 	</ItemGroup>
 
