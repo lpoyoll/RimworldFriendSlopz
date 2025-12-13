@@ -97,25 +97,20 @@ namespace GameServer.Commands
                     if (toFind == null) ChatManager.SendConsoleMessage(TargetClient, "User was not found.");
                     else
                     {
-                        //Don't allow players to send wispers to themselves
-                        if (toFind == TargetClient) ChatManager.SendConsoleMessage(TargetClient, "Can't send a whisper to yourself.");
-                        else
-                        {
-                            ChatData chatData = new ChatData();
-                            chatData._message = message;
-                            chatData._usernameColor = ChatColor.Private;
-                            chatData._messageColor = ChatColor.Private;
+                        ChatData chatData = new ChatData();
+                        chatData._message = message;
+                        chatData._usernameColor = ChatColor.Private;
+                        chatData._messageColor = ChatColor.Private;
 
-                            //Send to sender
-                            chatData._username = $">> {toFind.UserFile.Username}";
-                            TargetClient.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+                        //Send to sender
+                        chatData._username = $"Whisper to: {toFind.UserFile.Username}";
+                        TargetClient.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
-                            //Send to recipient
-                            chatData._username = $"<< {TargetClient.UserFile.Username}";
-                            toFind.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+                        //Send to recipient
+                        chatData._username = $"Whisper from: {TargetClient.UserFile.Username}";
+                        toFind.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
-                            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
-                        }
+                        ChatManagerHelper.ShowChatInConsole(chatData._username, message);
                     }
                 }
             }
