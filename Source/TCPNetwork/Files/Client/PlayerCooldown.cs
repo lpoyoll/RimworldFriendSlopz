@@ -35,7 +35,7 @@ namespace TCPNetwork.Files.Client
         public static bool CheckIfCanAid(UserFile file, bool isEnabled, double baseTimer)
         {
             if (!isEnabled) return false;
-            else if (!TimeConverter.CheckForEpochTimer(file.Cooldowns.EventProtectionTime, baseTimer * 1000)) return false;
+            else if (!TimeConverter.CheckForEpochTimer(file.Cooldowns.AidProtectionTime, baseTimer * 1000)) return false;
             else return true;
         }
     }
