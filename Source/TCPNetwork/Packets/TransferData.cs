@@ -25,10 +25,5 @@ namespace TCPNetwork.Packets
         public List<string> _animals { get; set; } = new List<string>();
 
         public List<string> _things { get; set; } = new List<string>();
-
-        public override string ToString()
-        {
-            return $"TransferData:|{_stepMode}|{_transferMode}|{_fromTile}|{_toTile}|{_humans?.Count ?? 0}|{_animals?.Count ?? 0}|{_things?.Count ?? 0}";
-        }
     }
 }

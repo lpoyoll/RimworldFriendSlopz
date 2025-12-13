@@ -233,11 +233,7 @@ namespace GameClient.Managers
             {
                 SessionHandler.IncomingManifest = transferData;
 
-                if (!SessionHandler.IsInTransfer || ModConfigGetter.RejectTransfersBool)
-                {
-                    RejectRequest(transferData._transferMode, false);
-                }
-
+                if (SessionHandler.IsInTransfer || ModConfigGetter.RejectTransfersBool) RejectRequest(transferData._transferMode, false);
                 else
                 {
                     Action r1 = delegate
