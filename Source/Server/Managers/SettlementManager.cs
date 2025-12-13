@@ -37,7 +37,7 @@ namespace GameServer.Managers
                 SettlementFile settlementFile = new SettlementFile();
                 settlementFile.Tile = settlementData._settlementFile.Tile;
                 settlementFile.Username = client.UserFile.Username;
-                settlementFile.Label = client.UserFile.Username;
+                settlementFile.Username = client.UserFile.Username;
                 settlementData._settlementFile = settlementFile;
 
                 Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat), settlementFile);

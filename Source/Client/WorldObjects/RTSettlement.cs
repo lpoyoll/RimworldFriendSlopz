@@ -174,8 +174,7 @@ namespace GameClient.WorldObjects
                 action = delegate
                 {
                     SessionValues.ChosenSettlement = this;
-                    SessionValues.ChosenSettlement.Destroy();
-                    Find.WorldObjects.Add(SessionValues.ChosenSettlement);
+                    SettlementManager.RegenSettlement(SessionValues.ChosenSettlement);
                 }
             };
 

@@ -105,12 +105,7 @@ namespace GameClient.Managers
 
             else if (SessionValues.latestActivity == ActivityType.Zoom)
             {
-                Pawn pawn = PawnGenerator.GeneratePawn(PawnKindDefOf.Colonist, Faction.OfPlayer);
-                Caravan caravan = CaravanMaker.MakeCaravan(new Pawn[] { pawn }, Faction.OfPlayer, map.Tile, true);
-                CaravanEnterMapUtility.Enter(caravan, map, CaravanEnterMode.Edge);
-
                 CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
-                pawn.Destroy();
             }
         }
     }

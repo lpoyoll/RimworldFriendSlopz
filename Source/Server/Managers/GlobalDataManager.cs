@@ -53,7 +53,7 @@ namespace GameServer.Managers
                 {
                     file.Tile = settlement.Tile;
                     file.Username = settlement.Username;
-                    file.Label = settlement.Label;
+                    file.Username = settlement.Username;
                     file.Goodwill = GoodwillManager.GetSettlementGoodwill(client, settlement);
 
                     tempList.Add(file);

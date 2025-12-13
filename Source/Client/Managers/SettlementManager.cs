@@ -1,16 +1,17 @@
-﻿using RimWorld.Planet;
+﻿using GameClient.Misc;
+using GameClient.Values;
+using GameClient.WorldObjects;
 using RimWorld;
+using RimWorld.Planet;
+using Shared;
+using Shared.Files;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Verse;
-using Shared;
-using static Shared.CommonEnumerators;
-using GameClient.Misc;
-using GameClient.Values;
-using Shared.Files;
-using GameClient.WorldObjects;
 using TCPNetwork.Packets;
+using Verse;
+using Verse.Noise;
+using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
@@ -67,7 +68,7 @@ namespace GameClient.Managers
                 WorldObjectDef def = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSettlement");
                 RTSettlement settlement = (RTSettlement)WorldObjectMaker.MakeWorldObject(def);
                 settlement.Tile = toAdd.Tile;
-                settlement.Name = $"{toAdd.Label}'s settlement";
+                settlement.Name = $"{toAdd.Username}'s settlement";
                 settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
 
                 PlayerSettlements.Add(settlement);
@@ -83,14 +84,25 @@ namespace GameClient.Managers
                 RTSettlement toGet = (RTSettlement)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == toRemove.Tile && 
                     ClientValues.PlayerFactions.Contains(fetch.Faction));
 
-                if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
-                {
-                    if (PlayerSettlements.Contains(toGet)) PlayerSettlements.Remove(toGet);
-                    Find.WorldObjects.Remove(toGet);
-                }
-                else Printer.Warning($"Ignored removal of settlement at {toGet.Tile} because player was inside");
+                PlayerSettlements.Remove(toGet); 
+                Find.WorldObjects.Remove(toGet);
+                toGet.Destroy();
             }
             catch (Exception e) { Printer.Error($"Failed to remove settlement at {toRemove.Tile}. Reason: {e}"); }
+        }
+
+        public static void RegenSettlement(RTSettlement _)
+        {
+            SettlementFile file = new SettlementFile();
+            file.Tile = _.Tile;
+            file.Username = _.Label.Replace("'s settlement", "");
+
+            if (_.Faction == ClientValues.EnemyPlayer) file.Goodwill = Goodwill.Enemy;
+            else if (_.Faction == ClientValues.AllyPlayer) file.Goodwill = Goodwill.Ally;
+            else file.Goodwill = Goodwill.Neutral;
+
+            RemoveSingleSettlement(file);
+            SpawnSingleSettlement(file);
         }
 
         public static void SendNewPlayerSettlement(int settlementTile)

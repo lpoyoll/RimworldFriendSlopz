@@ -8,8 +8,6 @@ namespace Shared.Files
         public int Tile { get; set; } = -1;
 
         public string Username { get; set; } = string.Empty;
-
-        public string Label { get; set; } = string.Empty;
         
         public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
     }
