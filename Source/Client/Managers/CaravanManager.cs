@@ -46,8 +46,6 @@ namespace GameClient.Managers
 
         public static void AddCaravan(CaravanFile file)
         {
-            if (file.Username == SessionHandler.Username) return;
-
             try
             {
                 if (CaravanManagerH.GetExistingCaravanFromFile(file) != null)
@@ -70,8 +68,6 @@ namespace GameClient.Managers
 
         private static void RemoveCaravan(CaravanFile file)
         {
-            if (file.Username == SessionHandler.Username) return;
-
             try
             {
                 CaravanFile toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
@@ -93,8 +89,6 @@ namespace GameClient.Managers
 
         private static void MoveCaravan(CaravanFile file)
         {
-            if (file.Username == SessionHandler.Username) return;
-
             try
             {
                 CaravanFile toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
