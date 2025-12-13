@@ -28,6 +28,3 @@ jobs:
         run: make build-server
       - name: Build Client
         run: make build-client
-      - name: Build Synchronous
-        run: make build-synchronous
-
