@@ -11,8 +11,8 @@ using Verse;
 using Verse.Steam;
 using static Shared.CommonEnumerators;
 using static UnityEngine.GraphicsBuffer;
-using Shared.Files.Configs;
-using static Shared.Files.Configs.ModsConfigFile;
+using static Shared.Files.Configs.Mods.ModsConfigFile;
+using Shared.Files.Configs.Mods;
 
 namespace GameClient.Managers
 {
@@ -33,8 +33,16 @@ namespace GameClient.Managers
 
         public static void OpenModManagerMenu(bool isFirstEdit = false)
         {
-            Action toDo = delegate { AskForSyncConfigs(isFirstEdit); };
-            string[] keys = ModManagerH.GetRunningModList().UnsortedMods;
+            Action toDo = delegate 
+            {
+                GameParameterManager.SendCurrentModConfigs(false);
+                if (isFirstEdit) GameParameterManager.SetFirstTimeSetup();
+            };
+
+            List<string> modNames = new List<string>();
+            foreach (ModConfig config in ModManagerH.GetRunningModList().ModConfigs) modNames.Add(config.FileName);
+
+            string[] keys = modNames.ToArray();
             string[] values = new string[] { "Required", "Optional", "Forbidden" };
 
             RT_Dialog_ListingWithTuple dialog = new RT_Dialog_ListingWithTuple("Mod Manager", "Manage mods for the server", 
@@ -43,140 +51,55 @@ namespace GameClient.Managers
             RT_Dialog_Base.PushNewDialog(dialog);
         }
 
-        public static void ReceiveMods(ServerGlobalData data)
+        public static void ReceiveModConfigs(ServerGlobalData data)
         {
             SessionHandler.CurrentModConfig = data._modConfigs;
 
-            if (!SessionHandler.CurrentModConfig.EnforcedConfigs) return;
+            if (!SessionHandler.CurrentModConfig.IsEnforced) return;
             else
             {
                 Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
-
-                for (int i = 0; i < SessionHandler.CurrentModConfig.ModFileNames.Length; i++)
-                {
-                    string filePath = GenFilePaths.ConfigFolderPath + Path.DirectorySeparatorChar + SessionHandler.CurrentModConfig.ModFileNames[i];
-                    if (File.Exists(filePath)) File.Delete(filePath);
-                    File.WriteAllText(filePath, SessionHandler.CurrentModConfig.ModConfigs[i]);
-
-                    Printer.Warning($"Loaded > {SessionHandler.CurrentModConfig.ModFileNames[i]}", LogImportanceMode.Verbose);
-                }
+                Printer.Warning("Currently doing nothing with the configs", LogImportanceMode.Verbose);
             }
-        }
-
-        private static void AskForSyncConfigs(bool isFirstEdit)
-        {
-            Action toDoYes = delegate 
-            { 
-                GameParameterManager.SendCurrentModConfigs(true);
-                if (isFirstEdit) GameParameterManager.SetFirstTimeSetup();
-            };
-
-            Action toDoNo = delegate 
-            { 
-                GameParameterManager.SendCurrentModConfigs(false);
-                if (isFirstEdit) GameParameterManager.SetFirstTimeSetup();
-            };
-
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Do you want to enforce the mod settings?", toDoYes, toDoNo));
         }
     }
 
     public static class ModManagerH
     {
-        public static string[] GetAllModConfigs()
-        {
-            ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
-            string[] existingModConfigs = Directory.GetFiles(GenFilePaths.ConfigFolderPath);
-
-            List<string> configsToFetch = new List<string>();
-            foreach (ModContentPack mod in runningMods)
-            {
-                try
-                {
-                    string toGet = $"Mod_{mod.ModMetaData.GetPublishedFileId()}";
-                    string toFetch = existingModConfigs.FirstOrDefault(fetch => fetch.Contains(toGet));
-                    if (toFetch.Contains(toGet)) configsToFetch.Add(toFetch);
-                    else Printer.Warning($"Config file for {mod.Name} did not exist, skipping");
-                }
-                catch { continue; }
-            }
-
-            return configsToFetch.ToArray();
-        }
-
         public static ModsConfigFile GetRunningModList()
         {
-            List<string> loadedMods = new List<string>();
+            ModsConfigFile configFile = new ModsConfigFile();
+
             ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
             foreach (ModContentPack mod in runningMods)
             {
-                string id = mod.PackageId;
-                id = id.Replace("steam_", "");
-                loadedMods.Add(id);
+                ModConfig newConfig = new ModConfig();
+                newConfig.FileName = mod.Name.Replace("steam_", "");
+
+                configFile.ModConfigs.Add(newConfig);
             }
 
-            loadedMods.Sort();
-
-            ModsConfigFile configFile = new ModsConfigFile();
-            configFile.UnsortedMods = loadedMods.ToArray();
             return configFile;
         }
 
-        public static void GetConflictingMods(byte[] bytes)
+        public static void GetConflictingMods(LoginData data)
         {
-            LoginData loginData = Serializer.ConvertBytesToObject<LoginData>(bytes);
-
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Listing("Mod Conflicts", "The following mods are conflicting with the server",
-                loginData._extraDetails.ToArray()));
+                data._extraDetails.ToArray()));
         }
 
         public static ModsConfigFile SortModsIntoCategories(string[] modNames, int[] categoryIndexes)
         {
             ModsConfigFile configFile = new ModsConfigFile();
-            List<string> requiredMods = new List<string>();
-            List<string> optionalMods = new List<string>();
-            List<string> forbiddenMods = new List<string>();
-            List<ulong> steamIds = new List<ulong>();
 
             for (int i = 0; i < modNames.Length; i++)
             {
-                string id = modNames[i].Replace("steam_", "");
-                switch ((ModType)categoryIndexes[i])
-                {
-                    case ModType.Required:
-                        requiredMods.Add(id);
-                        break;
+                ModConfig newConfig = new ModConfig();
+                newConfig.FileName = modNames[i].Replace("steam_", "");
+                newConfig.Type = (ModType)categoryIndexes[i];
 
-                    case ModType.Optional:
-                        optionalMods.Add(id);
-                        break;
-
-                    case ModType.Forbidden:
-                        forbiddenMods.Add(id);
-                        break;
-                }
-
-                ModMetaData mod = ModLister.GetActiveModWithIdentifier(modNames[i]);
-                if (mod.OnSteamWorkshop) 
-                {
-                    Printer.Warning($"Mod {mod.PackageId} was on steam!", LogImportanceMode.Verbose);
-                    WorkshopItemHook hook = mod.GetWorkshopItemHook();
-                    steamIds.Add(hook.PublishedFileId.m_PublishedFileId);
-                    Printer.Warning($"{hook.PublishedFileId.m_PublishedFileId}", LogImportanceMode.Verbose);
-                }
-
-                else 
-                {
-                    Printer.Warning($"Mod {mod.PackageId} was not on steam!", LogImportanceMode.Verbose);
-                    steamIds.Add(0);
-                }
+                configFile.ModConfigs.Add(newConfig);
             }
-
-            configFile.UnsortedMods = modNames;
-            configFile.RequiredMods = requiredMods.ToArray();
-            configFile.OptionalMods = optionalMods.ToArray();
-            configFile.ForbiddenMods = forbiddenMods.ToArray();
-            configFile.AllModIds = steamIds.ToArray();
 
             return configFile;
         }

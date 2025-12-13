@@ -4,7 +4,7 @@ using Shared;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
-using Shared.Files.Configs;
+using Shared.Files.Configs.Mods;
 
 namespace GameServer.Managers
 {
@@ -42,56 +42,43 @@ namespace GameServer.Managers
 
         public static bool CheckIfModConflict(ServerClient client, LoginData loginData)
         {
-            List<string> conflictingMods = new List<string>();
-            List<string> conflictingNames = new List<string>();
-            string[] clientMods = loginData._runningMods.UnsortedMods;
+            List<string> conflictingModNames = new List<string>();
 
-            //Check for required mods
-
-            if (Master.ModConfig.RequiredMods.Length > 0)
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required))
             {
-                foreach (string str in Master.ModConfig.RequiredMods)
+                ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
+                if (toFind == null)
                 {
-                    if (!clientMods.Contains(str))
-                    {
-                        conflictingMods.Add($"[Required] > {str}");
-                        conflictingNames.Add(str);
-                        continue;
-                    }
-                }
-
-                //Check for optional mods
-
-                foreach (string str in clientMods)
-                {
-                    if (conflictingNames.Contains(str)) continue;
-                    else if (!Master.ModConfig.RequiredMods.Contains(str) && !Master.ModConfig.OptionalMods.Contains(str))
-                    {
-                        conflictingMods.Add($"[Disallowed] > {str}");
-                        conflictingNames.Add(str);
-                        continue;
-                    }
+                    conflictingModNames.Add($"[Required] > {config.FileName}");
+                    continue;
                 }
             }
 
-            //Check for forbidden mods
-
-            if (Master.ModConfig.ForbiddenMods.Length > 0)
+            foreach (ModConfig config in loginData._runningMods.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Optional))
             {
-                foreach (string str in Master.ModConfig.ForbiddenMods)
+                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName &&
+                    fetch.Type == config.Type);
+
+                if (toFind == null)
                 {
-                    if (conflictingNames.Contains(str)) continue;
-                    else if (clientMods.Contains(str))
-                    {
-                        conflictingMods.Add($"[Forbidden] > {str}");
-                        conflictingNames.Add(str);
-                    }
+                    conflictingModNames.Add($"[Disallowed] > {config.FileName}");
+                    continue;
+                }
+            }
+
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden))
+            {
+                ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
+                if (toFind != null)
+                {
+                    conflictingModNames.Add($"[Forbidden] > {config.FileName}");
+                    continue;
                 }
             }
 
             //Check for final conflicting count
 
-            if (conflictingMods.Count == 0) return false;
+            if (conflictingModNames.Count == 0) return false;
             else
             {
                 if (client.UserFile.IsAdmin)
@@ -103,7 +90,7 @@ namespace GameServer.Managers
                 else
                 {
                     InformationDisplayer.DisplayModMismatch(client.UserFile.Username);
-                    LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingMods);
+                    LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
                     return true;
                 }
             }

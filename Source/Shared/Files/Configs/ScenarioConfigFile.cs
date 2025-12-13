@@ -7,9 +7,9 @@ namespace Shared.Files.Configs
     {
         public static string SavePath { get; set; } = string.Empty;
 
-        public bool EnforceScenario { get; set; } = false;
+        public bool IsEnforced { get; set; } = false;
 
-        public string ScenarioName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         public override void Save()
         {

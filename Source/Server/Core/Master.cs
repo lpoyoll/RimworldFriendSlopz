@@ -1,6 +1,7 @@
 ﻿using Shared;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
+using Shared.Files.Configs.Mods;
 
 namespace GameServer.Core
 {

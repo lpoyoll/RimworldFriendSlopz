@@ -36,10 +36,10 @@ namespace GameClient.Managers
 
         public static void SetScenario(ScenarioConfigFile file)
         {
-            if (!file.EnforceScenario) return;
+            if (!file.IsEnforced) return;
             else
             {
-                Scenario toFind = ScenarioLister.AllScenarios().FirstOrDefault(fetch => fetch.name == file.ScenarioName);
+                Scenario toFind = ScenarioLister.AllScenarios().FirstOrDefault(fetch => fetch.name == file.Name);
                 if (toFind != null) Current.Game.Scenario = toFind;
                 else Current.Game.Scenario = ScenarioLister.AllScenarios().ToArray()[0];
             }
@@ -47,7 +47,7 @@ namespace GameClient.Managers
 
         public static void SetDifficulty(DifficultyConfigFile file, bool bypass = false)
         {
-            if (!file.EnforceDifficulty && !bypass) return;
+            if (!file.IsEnforced && !bypass) return;
             else
             {
                 Current.Game.storyteller.difficultyDef = DifficultyDefOf.Rough;
@@ -57,10 +57,10 @@ namespace GameClient.Managers
 
         public static void SetStoryteller(StorytellerConfigFile file, bool bypassCheck = false)
         {
-            if (!file.EnforceStoryteller && !bypassCheck) return;
+            if (!file.IsEnforced && !bypassCheck) return;
             else
             {
-                StorytellerDef storytellerDef = DefDatabase<StorytellerDef>.AllDefs.First(fetch => fetch.defName == file.StorytellerDefname);
+                StorytellerDef storytellerDef = DefDatabase<StorytellerDef>.AllDefs.First(fetch => fetch.defName == file.DefName);
                 DifficultyDef difficultyDef = Current.Game.storyteller.difficultyDef == null ? DifficultyDefOf.Easy : Current.Game.storyteller.difficultyDef;
                 Difficulty difficulty = Current.Game.storyteller.difficulty == null ? new Difficulty(difficultyDef) : Current.Game.storyteller.difficulty;
 
@@ -71,12 +71,12 @@ namespace GameClient.Managers
         public static void SendCurrentScenario(bool isEnforced)
         {
             ScenarioConfigFile file = new ScenarioConfigFile();
-            file.EnforceScenario = isEnforced;
-            file.ScenarioName = Current.Game.Scenario.name;
+            file.Name = Current.Game.Scenario.name;
+            file.IsEnforced = isEnforced;
 
             GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Scenario;
-            data._scenario = file;
+            data._bytes = Serializer.ConvertObjectToBytes(file);
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
@@ -84,12 +84,12 @@ namespace GameClient.Managers
         public static void SendCurrentStoryteller(bool isEnforced)
         {
             StorytellerConfigFile file = new StorytellerConfigFile();
-            file.EnforceStoryteller = isEnforced;
-            file.StorytellerDefname = Current.Game.storyteller.def.defName;
+            file.DefName = Current.Game.storyteller.def.defName;
+            file.IsEnforced = isEnforced;
 
             GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Storyteller;
-            data._storyteller = file;
+            data._bytes = Serializer.ConvertObjectToBytes(file);
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
@@ -97,12 +97,13 @@ namespace GameClient.Managers
         public static void SendCurrentDifficulty(bool isEnforced)
         {
             DifficultyConfigFile file = new DifficultyConfigFile();
-            if(isEnforced)
-                file.ScribeData = ScribeManager.SerializeToString(Current.Game.storyteller.difficulty, ScribeManager.SerializableType.Other);
+            file.IsEnforced = isEnforced;
+            file.ScribeData = ScribeManager.SerializeToString(Current.Game.storyteller.difficulty, 
+                ScribeManager.SerializableType.Other);
 
             GameParameterData data = new GameParameterData();
             data._stepMode = GenStepMode.Difficulty;
-            data._difficulty = file;
+            data._bytes = Serializer.ConvertObjectToBytes(file);
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.GameParameterManager, data);
         }
@@ -111,20 +112,9 @@ namespace GameClient.Managers
         {
             ModConfigData data = new ModConfigData();
             data._stepMode = ModConfigStepMode.Send;
+            data._configFile.IsEnforced = isEnforced;
             data._configFile = ModManagerH.SortModsIntoCategories(RT_Dialog_ListingWithTuple.DialogTupleListingResultString,
                 RT_Dialog_ListingWithTuple.DialogTupleListingResultInt);
-
-            List<string> modFileNames = new List<string>();
-            List<string> modConfigs = new List<string>();
-            foreach (string str in ModManagerH.GetAllModConfigs())
-            {
-                modFileNames.Add(Path.GetFileName(str));
-                modConfigs.Add(File.ReadAllText(str));
-            }
-
-            data._configFile.ModFileNames = modFileNames.ToArray();
-            data._configFile.ModConfigs = modConfigs.ToArray();
-            data._configFile.EnforcedConfigs = isEnforced;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ModManager, data);
         }

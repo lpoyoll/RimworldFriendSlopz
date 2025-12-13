@@ -7,6 +7,7 @@ using GameServer.Misc;
 using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using Shared.Files.Configs.Mods;
 
 namespace GameServer.Commands
 {
@@ -337,20 +338,29 @@ namespace GameServer.Commands
 
         public static void ModListCommandAction()
         {
-            Printer.Title($"Required Mods: [{Master.ModConfig.RequiredMods.Length}]");
+            ModConfig[] required = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required).ToArray();
+            Printer.Title($"Required Mods: {required.Length}");
             Printer.Title("----------------------------------------");
-            foreach (string str in Master.ModConfig.RequiredMods) Printer.Warning($"{str}");
-            Printer.Title("----------------------------------------");
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required))
+            {
+                Printer.Warning(config.FileName);
+            }
 
-            Printer.Title($"Optional Mods: [{Master.ModConfig.OptionalMods.Length}]");
+            ModConfig[] optional = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Optional).ToArray();
+            Printer.Title($"Optional Mods: {optional.Length}");
             Printer.Title("----------------------------------------");
-            foreach (string str in Master.ModConfig.OptionalMods) Printer.Warning($"{str}");
-            Printer.Title("----------------------------------------");
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Optional))
+            {
+                Printer.Warning(config.FileName);
+            }
 
-            Printer.Title($"Forbidden Mods: [{Master.ModConfig.ForbiddenMods.Length}]");
+            ModConfig[] forbidden = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden).ToArray();
+            Printer.Title($"Forbidden Mods: {forbidden.Length}");
             Printer.Title("----------------------------------------");
-            foreach (string str in Master.ModConfig.ForbiddenMods) Printer.Warning($"{str}");
-            Printer.Title("----------------------------------------");
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden))
+            {
+                Printer.Warning(config.FileName);
+            }
         }
 
         public static void EventCommandAction()
@@ -571,7 +581,6 @@ namespace GameServer.Commands
         public static void ClearCommandAction()
         {
             Console.Clear();
-
             Printer.Title("[Cleared console]");
         }
 
@@ -584,6 +593,7 @@ namespace GameServer.Commands
         public static void ForceSiteRewardsCommandAction()
         {
             SiteManager.SendRewardsToEveryPlayer();
+            Printer.Title("[Forced rewards]");
         }
 
         public static void ThrowUserNotFoundError()

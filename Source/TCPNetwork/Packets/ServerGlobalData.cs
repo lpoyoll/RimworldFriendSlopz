@@ -2,6 +2,7 @@
 using Shared.Files;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
+using Shared.Files.Configs.Mods;
 using Shared.Files.Sites;
 
 namespace TCPNetwork.Packets

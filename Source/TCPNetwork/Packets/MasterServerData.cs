@@ -1,4 +1,4 @@
-using Shared.Files.Configs;
+using Shared.Files.Configs.Mods;
 
 namespace TCPNetwork.Packets
 {

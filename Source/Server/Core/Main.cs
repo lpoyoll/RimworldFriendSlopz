@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
+using Shared.Files.Configs.Mods;
 using Shared.Files.Guilds;
 using System.Globalization;
 using System.Reflection;
@@ -46,7 +47,7 @@ namespace GameServer.Core
             StorytellerConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
             ScenarioConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
             ModsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ModConfig.json");
-            DifficultyConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");
+            DifficultyConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
             ServerBrowserConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
             WhitelistConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
             BackupsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "BackupConfig.json");

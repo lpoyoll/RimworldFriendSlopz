@@ -1,29 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
-namespace Shared.Files.Configs
+namespace Shared.Files.Configs.Mods
 {
     public class ModsConfigFile : BaseFile
     {
-        public enum ModType { Required, Optional, Forbidden };
-
         public static string SavePath { get; set; } = string.Empty;
 
-        public string[] UnsortedMods { get; set; } = new string[0];
+        public enum ModType { Required, Optional, Forbidden };
 
-        public ulong[] AllModIds { get; set; } = new ulong[0];
+        public bool IsEnforced { get; set; } = false;
 
-        public string[] RequiredMods { get; set; } = new string[0];
-
-        public string[] OptionalMods { get; set; } = new string[0];
-
-        public string[] ForbiddenMods { get; set; } = new string[0];
-
-        public bool EnforcedConfigs { get; set; } = false;
-
-        public string[] ModFileNames { get; set; } = new string[0];
-
-        public string[] ModConfigs { get; set; } = new string[0];
+        public List<ModConfig> ModConfigs { get; set; } = new List<ModConfig>();
 
         public override void Save()
         {

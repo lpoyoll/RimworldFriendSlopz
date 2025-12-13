@@ -20,20 +20,20 @@ namespace GameServer.Managers
             switch (data._stepMode)
             {
                 case GenStepMode.Scenario:
-                    SetScenario(client, data._scenario);
+                    SetScenario(client, data._bytes);
                     break;
 
                 case GenStepMode.Storyteller:
-                    SetStoryteller(client, data._storyteller);
+                    SetStoryteller(client, data._bytes);
                     break;
 
                 case GenStepMode.Difficulty:
-                    SetDifficulty(client, data._difficulty, true);
+                    SetDifficulty(client, data._bytes);
                     break;
             }
         }
 
-        private static void SetScenario(ServerClient client, ScenarioConfigFile file)
+        private static void SetScenario(ServerClient client, byte[] bytes)
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
@@ -43,13 +43,15 @@ namespace GameServer.Managers
 
             else
             {
+                ScenarioConfigFile file = Serializer.ConvertBytesToObject<ScenarioConfigFile>(bytes);
+
                 Master.ScenarioValues = file;
                 Master.ScenarioValues.Save();
                 InformationDisplayer.DisplaySetScenario(client.UserFile.Username);
             }
         }
 
-        private static void SetStoryteller(ServerClient client, StorytellerConfigFile file)
+        private static void SetStoryteller(ServerClient client, byte[] bytes)
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
@@ -59,13 +61,15 @@ namespace GameServer.Managers
 
             else
             {
+                StorytellerConfigFile file = Serializer.ConvertBytesToObject<StorytellerConfigFile>(bytes);
+
                 Master.StorytellerValues = file;
                 Master.StorytellerValues.Save();
                 InformationDisplayer.DisplaySetStoryteller(client.UserFile.Username);
             }
         }
 
-        private static void SetDifficulty(ServerClient client, DifficultyConfigFile file, bool fixXml = false)
+        private static void SetDifficulty(ServerClient client, byte[] bytes)
         {
             if (!client.UserFile.IsAdmin && Master.WorldValues != null)
             {
@@ -75,11 +79,11 @@ namespace GameServer.Managers
 
             else
             {
+                DifficultyConfigFile file = Serializer.ConvertBytesToObject<DifficultyConfigFile>(bytes);
+
                 Master.DifficultyValues = file;
-
-                if (fixXml) Master.DifficultyValues.ScribeData = XmlHelper.PrettyXml(Master.DifficultyValues.ScribeData);
-
                 Master.DifficultyValues.Save();
+
                 InformationDisplayer.DisplaySetDifficulty(client.UserFile.Username);
             }
         }

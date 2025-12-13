@@ -7,6 +7,7 @@ using RimWorld.Planet;
 using Shared;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
+using Shared.Files.Configs.Mods;
 using System.Collections.Generic;
 using System.Linq;
 using TCPNetwork.Packets;

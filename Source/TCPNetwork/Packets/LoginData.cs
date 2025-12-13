@@ -1,4 +1,4 @@
-﻿using Shared.Files.Configs;
+﻿using Shared.Files.Configs.Mods;
 using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 

@@ -23,7 +23,7 @@ namespace GameClient.Patches.Pages
         {
             if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
-            if (!SessionHandler.IsGeneratingFreshWorld && SessionHandler.CurrentScenario.EnforceScenario)
+            if (!SessionHandler.IsGeneratingFreshWorld && SessionHandler.CurrentScenario.IsEnforced)
             {
                 if (executedMessage) return true;
                 else

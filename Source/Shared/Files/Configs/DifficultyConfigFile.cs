@@ -10,17 +10,25 @@ namespace Shared.Files.Configs
     {
         public static string SavePath { get; set; } = string.Empty;
 
+        public bool IsEnforced { get; set; } = false;
+
         public string ScribeData { get; set; } = string.Empty;
 
-        [JsonIgnore] [IgnoreMember] public bool EnforceDifficulty => !string.IsNullOrEmpty(ScribeData);
-
-        public override void Save() { XmlHelper.WriteXmlToFile(ScribeData, SavePath, true); }
+        public override void Save()
+        {
+            try { Serializer.SerializeToFile(SavePath, this); }
+            catch (Exception e) { throw new Exception(e.ToString()); }
+        }
 
         public static object Load<T>()
         {
-            DifficultyConfigFile file = new DifficultyConfigFile();
-            if (File.Exists(SavePath)) file.ScribeData = XmlHelper.ReadXmlFromFile(SavePath);
-            return file;
+            if (File.Exists(SavePath)) return Serializer.SerializeFromFile<T>(SavePath);
+            else
+            {
+                DifficultyConfigFile file = new DifficultyConfigFile();
+                Serializer.SerializeToFile(SavePath, file);
+                return file;
+            }
         }
     }
 }

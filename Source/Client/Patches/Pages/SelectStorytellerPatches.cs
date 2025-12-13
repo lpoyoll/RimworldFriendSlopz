@@ -45,7 +45,7 @@ namespace GameClient.Patches.Pages
 
             if (!SessionHandler.IsGeneratingFreshWorld)
             {
-                if (SessionHandler.CurrentStoryteller.EnforceStoryteller)
+                if (SessionHandler.CurrentStoryteller.IsEnforced)
                 {
                     if (executedMessage) return true;
                     else
@@ -84,7 +84,7 @@ namespace GameClient.Patches.Pages
                 return true;
             }
 
-            if (SessionHandler.CurrentDifficulty.EnforceDifficulty || SessionHandler.CurrentStoryteller.EnforceStoryteller)
+            if (SessionHandler.CurrentDifficulty.IsEnforced || SessionHandler.CurrentStoryteller.IsEnforced)
             {
                 Action toDo = delegate
                 {

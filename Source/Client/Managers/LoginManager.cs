@@ -33,7 +33,7 @@ namespace GameClient.Managers
                     break;
 
                 case LoginResponse.Mods:
-                    ModManagerH.GetConflictingMods(bytes);
+                    ModManagerH.GetConflictingMods(data);
                     break;
 
                 case LoginResponse.Full:
