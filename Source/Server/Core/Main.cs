@@ -45,7 +45,7 @@ namespace GameServer.Core
             PlanetConfigFile.Path = Path.Combine(Master.WorldPath, "WorldValuesFile.json");
             StorytellerConfigFile.Path = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
             ScenarioConfigFile.Path = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
-            GuildFile.GeneralPath = Path.Combine(Master.FactionsPath);
+            GuildFile.GeneralPath = Path.Combine(Master.GuildsPath);
             ModsConfigFile.Path = Path.Combine(Master.ConfigsPath, "ModConfig.json");
             DifficultyConfigFile.Path = Path.Combine(Master.ConfigsPath, "DifficultyConfig.xml");
             ServerBrowserConfigFile.Path = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
@@ -71,7 +71,7 @@ namespace GameServer.Core
             if (!Directory.Exists(Master.SavesPath)) Directory.CreateDirectory(Master.SavesPath);
             if (!Directory.Exists(Master.MapsPath)) Directory.CreateDirectory(Master.MapsPath);
             if (!Directory.Exists(Master.SitesPath)) Directory.CreateDirectory(Master.SitesPath);
-            if (!Directory.Exists(Master.FactionsPath)) Directory.CreateDirectory(Master.FactionsPath);
+            if (!Directory.Exists(Master.GuildsPath)) Directory.CreateDirectory(Master.GuildsPath);
             if (!Directory.Exists(Master.SettlementsPath)) Directory.CreateDirectory(Master.SettlementsPath);
             if (!Directory.Exists(Master.EventsPath)) Directory.CreateDirectory(Master.EventsPath);
             if (!Directory.Exists(Master.WorldPath)) Directory.CreateDirectory(Master.WorldPath);

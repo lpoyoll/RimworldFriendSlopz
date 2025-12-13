@@ -259,7 +259,7 @@ namespace GameServer.Managers
         {
             List<GuildFile> factionFiles = new List<GuildFile>();
 
-            foreach (string faction in Directory.GetFiles(Master.FactionsPath)) factionFiles.Add(Serializer.SerializeFromFile<GuildFile>(faction));
+            foreach (string faction in Directory.GetFiles(Master.GuildsPath)) factionFiles.Add(Serializer.SerializeFromFile<GuildFile>(faction));
 
             return factionFiles.ToArray();
         }

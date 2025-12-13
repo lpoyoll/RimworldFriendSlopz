@@ -34,7 +34,7 @@ namespace GameServer.Core
 
         public static string SitesPath { get; set; } = Path.Combine(Master.AssetsPath, "Sites");
 
-        public static string FactionsPath { get; set; } = Path.Combine(Master.AssetsPath, "Factions");
+        public static string GuildsPath { get; set; } = Path.Combine(Master.AssetsPath, "Guilds");
 
         public static string SettlementsPath { get; set; } = Path.Combine(Master.AssetsPath, "Settlements");
 
