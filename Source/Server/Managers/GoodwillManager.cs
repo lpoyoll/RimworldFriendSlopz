@@ -6,7 +6,7 @@ using Shared.Files.Sites;
 using System.Linq;
 using System.Security.Policy;
 using TCPNetwork.Files.Client;
-using TCPNetwork.Packets;
+using TCPNetwork.Packets.Goodwills;
 using static Shared.CommonEnumerators;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -41,30 +41,34 @@ namespace GameServer.Managers
             }
 
             client.UserFile.UpdateGoodwill(data._username, data._goodwill);
+            UpdateClientGoodwills(client);
+        }
 
-            //Goodwill from settlements
+        public static void UpdateClientGoodwills(ServerClient client)
+        {
+            SettlementFile[] settlements = SettlementManager.GetAllSettlements().Where(fetch => fetch.Username != client.UserFile.Username).ToArray();
+            SiteFile[] sites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username != client.UserFile.Username).ToArray();
 
-            List<Goodwill> tempSettlementList = new List<Goodwill>();
-            SettlementFile[] settlements = SettlementManager.GetAllSettlements().Where(fetch => fetch.Username == data._username).ToArray();
+            FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
             foreach (SettlementFile settlement in settlements)
             {
-                data._settlementTiles.Add(settlement.Tile);
-                tempSettlementList.Add(GetSettlementGoodwill(client, settlement));
+                SettlementGoodwill goodwill = new SettlementGoodwill();
+                goodwill.Tile = settlement.Tile;
+                goodwill.Goodwill = GetSettlementGoodwill(client, settlement);
+
+                factionGoodwillData._settlements.Add(goodwill);
             }
-            data._settlementGoodwills = tempSettlementList.ToArray();
 
-            //Goodwill from sites
-
-            List<Goodwill> tempSiteList = new List<Goodwill>();
-            SiteFile[] sites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username == data._username).ToArray();
             foreach (SiteFile site in sites)
             {
-                data._siteTiles.Add(site.Tile);
-                tempSiteList.Add(GetSiteGoodwill(client, site));
-            }
-            data._siteGoodwills = tempSiteList.ToArray();
+                SiteGoodwill goodwill = new SiteGoodwill();
+                goodwill.Tile = site.Tile;
+                goodwill.Goodwill = GetSiteGoodwill(client, site);
 
-            client.Listener.EnqueuePacket(PacketHeader.GoodWillManager, data);
+                factionGoodwillData._sites.Add(goodwill);
+            }
+
+            client.Listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
         }
 
         public static Goodwill GetSettlementGoodwill(ServerClient client, SettlementFile settlement)
@@ -72,7 +76,7 @@ namespace GameServer.Managers
             GuildFile guild = GuildManagerH.GetFactionFromName(client.UserFile.GuildName);
 
             if (client.UserFile.Username == settlement.Username) return Goodwill.Personal;
-            if (guild == null) return FindGoodwillFromUsername(client.UserFile, settlement.Username);
+            else if (guild == null) return FindGoodwillFromUsername(client.UserFile, settlement.Username);
             else
             {
                 if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == settlement.Username) != null) return Goodwill.Faction;
@@ -103,34 +107,6 @@ namespace GameServer.Managers
                 else if (toFind.Name == file.Username) return Goodwill.Personal;
                 else return toFind.Goodwill;
             }
-        }
-
-        public static void UpdateClientGoodwills(ServerClient client)
-        {
-            SettlementFile[] settlements = SettlementManager.GetAllSettlements();
-
-            FactionGoodwillData factionGoodwillData = new FactionGoodwillData();
-            SiteFile[] sites = SiteManagerHelper.GetAllSites();
-
-            List<Goodwill> tempList = new List<Goodwill>();
-            foreach (SettlementFile settlement in settlements)
-            {
-                if (settlement.Username == client.UserFile.Username) continue;
-
-                factionGoodwillData._settlementTiles.Add(settlement.Tile);
-                tempList.Add(GetSettlementGoodwill(client, settlement));
-            }
-            factionGoodwillData._settlementGoodwills = tempList.ToArray();
-
-            tempList = new List<Goodwill>();
-            foreach (SiteFile site in sites)
-            {
-                factionGoodwillData._siteTiles.Add(site.Tile);
-                tempList.Add(GetSiteGoodwill(client, site));
-            }
-            factionGoodwillData._siteGoodwills = tempList.ToArray();
-
-            client.Listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
         }
     }
 }

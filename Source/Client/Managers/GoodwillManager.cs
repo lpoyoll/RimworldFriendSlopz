@@ -2,7 +2,6 @@
 using GameClient.Misc;
 using GameClient.Values;
 using GameClient.WorldObjects;
-using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -11,6 +10,7 @@ using System.Linq;
 using Verse;
 using static Shared.CommonEnumerators;
 using static UnityEngine.GraphicsBuffer;
+using TCPNetwork.Packets.Goodwills;
 
 
 namespace GameClient.Managers
@@ -95,54 +95,40 @@ namespace GameClient.Managers
             ChangeSiteGoodwills(data);
         }
 
-        //Changes a settlement goodwill from a request
-
         private static void ChangeSettlementGoodwills(FactionGoodwillData factionGoodwillData)
         {
-            List<RTSettlement> toChange = new List<RTSettlement>();
-            foreach (int settlementTile in factionGoodwillData._settlementTiles)
+            foreach (SettlementGoodwill _ in factionGoodwillData._settlements)
             {
-                RTSettlement settlement = (RTSettlement)Find.WorldObjects.AllWorldObjects.First(x => x.Tile == settlementTile);
+                RTSettlement settlement = (RTSettlement)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == _.Tile && fetch is RTSettlement);
                 if (settlement.Faction == Faction.OfPlayer) continue;
-                else toChange.Add(settlement);
-            }
+                else
+                {
+                    SettlementManager.PlayerSettlements.Remove(settlement);
+                    Find.WorldObjects.Remove(settlement);
 
-            for (int i = 0; i < toChange.Count(); i++)
-            {
-                SettlementManager.PlayerSettlements.Remove(toChange[i]);
-                Find.WorldObjects.Remove(toChange[i]);
+                    WorldObjectDef def = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSettlement");
+                    RTSettlement newSettlement = (RTSettlement)WorldObjectMaker.MakeWorldObject(def);
+                    newSettlement.Tile = settlement.Tile;
+                    newSettlement.Name = settlement.Name;
+                    newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(_.Goodwill));
 
-                WorldObjectDef def = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSettlement");
-                RTSettlement newSettlement = (RTSettlement)WorldObjectMaker.MakeWorldObject(def);
-                newSettlement.Tile = toChange[i].Tile;
-                newSettlement.Name = toChange[i].Name;
-                newSettlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._settlementGoodwills[i]));
-
-                SettlementManager.PlayerSettlements.Add(newSettlement);
-                Find.WorldObjects.Add(newSettlement);
+                    SettlementManager.PlayerSettlements.Add(newSettlement);
+                    Find.WorldObjects.Add(newSettlement);
+                }
             }
         }
 
-        //Changes a site goodwill from a request
-
         private static void ChangeSiteGoodwills(FactionGoodwillData factionGoodwillData)
         {
-            List<Site> toChange = new List<Site>();
-            foreach (int siteTile in factionGoodwillData._siteTiles) 
+            foreach (SiteGoodwill _ in factionGoodwillData._sites) 
             {
-                toChange.Add((Site)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == siteTile &&
-                    ClientValues.PlayerFactions.Contains(fetch.Faction)));
-            }
+                Site site = (Site)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == _.Tile && fetch is Site);
 
-            for (int i = 0; i < toChange.Count(); i++)
-            {
-                SiteManager.PlayerSites.Remove(toChange[i]);
-                Find.WorldObjects.Remove(toChange[i]);
+                SiteManager.PlayerSites.Remove(site);
+                Find.WorldObjects.Remove(site);
 
-                Site newSite = SiteMaker.MakeSite(sitePart: toChange[i].MainSitePartDef,
-                            tile: toChange[i].Tile,
-                            threatPoints: 1000,
-                            faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(factionGoodwillData._siteGoodwills[i]));
+                Site newSite = SiteMaker.MakeSite(sitePart: site.MainSitePartDef, tile: site.Tile, threatPoints: 1000, 
+                    faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(_.Goodwill));
 
                 SiteManager.PlayerSites.Add(newSite);
                 Find.WorldObjects.Add(newSite);
