@@ -6,6 +6,7 @@ using TCPNetwork.Packets;
 using Shared.Files.Guilds;
 using TCPNetwork.Files.Client;
 using Shared.Files.Sites;
+using TCPNetwork;
 
 namespace GameServer.Managers
 {
@@ -102,6 +103,14 @@ namespace GameServer.Managers
             File.Delete(Path.Combine(Master.SitesPath, siteFile.Tile + CommonValues.DefaultSaveFormat));
 
             InformationDisplayer.DisplayRemoveSite(siteFile.Tile.ToString());
+        }
+
+        public static void SendRewardsToEveryPlayer()
+        {
+            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
+            {
+                SendRewardsToPlayer(client);
+            }
         }
 
         public static void SendRewardsToPlayer(ServerClient client)

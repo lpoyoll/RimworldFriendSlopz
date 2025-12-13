@@ -124,9 +124,13 @@ namespace GameServer.Commands
             "Clears the console output",
             ClearCommandAction);
 
-        public static readonly CommandBase DebugGCClear = new CommandBase("debuggcclear", 0,
+        public static readonly CommandBase DebugGCClearCommand = new CommandBase("debuggcclear", 0,
             "Forces the garbage collector to collect",
             ForceGCClearCommandAction);
+
+        public static readonly CommandBase SiteRewardsCommand = new CommandBase("forceRewards", 0,
+            "Forces every connected user to get site rewards",
+            ForceSiteRewardsCommandAction);
 
         public static List<CommandBase> Commands = new List<CommandBase>
         {
@@ -158,7 +162,8 @@ namespace GameServer.Commands
             WhitelistAddCommand,
             WhitelistCommand,
             WhitelistRemoveCommand,
-            DebugGCClear
+            DebugGCClearCommand,
+            SiteRewardsCommand
         };
     }
 
@@ -574,6 +579,11 @@ namespace GameServer.Commands
         {
             GC.Collect();
             Printer.Warning($"Currently reporting {GC.GetTotalMemory(false)}");
+        }
+
+        public static void ForceSiteRewardsCommandAction()
+        {
+            SiteManager.SendRewardsToEveryPlayer();
         }
 
         public static void ThrowUserNotFoundError()
