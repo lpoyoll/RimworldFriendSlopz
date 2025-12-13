@@ -5,6 +5,7 @@ using System.Reflection;
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
+using Rimworld_Together_Master_Server.Data;
 using TCPNetwork.Packets;
 using Shared;
 using UnityEngine;
