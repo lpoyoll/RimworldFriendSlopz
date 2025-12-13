@@ -1,7 +1,6 @@
 ﻿using GameClient.Defs;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Values;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
@@ -47,8 +46,8 @@ namespace GameClient.Managers
 
         public static void AddCaravan(CaravanFile file)
         {
-            if (!ClientValues.IsReadyToPlay) return;
-            if (file.Username == ClientValues.Username) return;
+            if (!SessionHandler.IsReadyToPlay) return;
+            if (file.Username == SessionHandler.Username) return;
 
             try
             {
@@ -63,7 +62,7 @@ namespace GameClient.Managers
 
                     RTCaravan onlineCaravan = (RTCaravan)WorldObjectMaker.MakeWorldObject(RTWorldObjectDefOf.RTCaravan);
                     onlineCaravan.Tile = file.Tile;
-                    onlineCaravan.SetFaction(ClientValues.NeutralPlayer);
+                    onlineCaravan.SetFaction(SessionHandler.NeutralFaction);
                     Find.World.worldObjects.AllWorldObjects.Add(onlineCaravan);
                 }
             }
@@ -72,8 +71,8 @@ namespace GameClient.Managers
 
         private static void RemoveCaravan(CaravanFile file)
         {
-            if (!ClientValues.IsReadyToPlay) return;
-            if (file.Username == ClientValues.Username) return;
+            if (!SessionHandler.IsReadyToPlay) return;
+            if (file.Username == SessionHandler.Username) return;
 
             try
             {
@@ -96,8 +95,8 @@ namespace GameClient.Managers
 
         private static void MoveCaravan(CaravanFile file)
         {
-            if (!ClientValues.IsReadyToPlay) return;
-            if (file.Username == ClientValues.Username) return;
+            if (!SessionHandler.IsReadyToPlay) return;
+            if (file.Username == SessionHandler.Username) return;
 
             try
             {
@@ -126,7 +125,7 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.Username = ClientValues.Username;
+            data._caravanFile.Username = SessionHandler.Username;
             data._caravanFile.ID = caravan.ID;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.CaravanManager, data);
@@ -138,7 +137,7 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Remove;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.Username = ClientValues.Username;
+            data._caravanFile.Username = SessionHandler.Username;
             data._caravanFile.ID = caravan.ID;
 
             PlayerCaravans.Remove(caravan);
@@ -152,7 +151,7 @@ namespace GameClient.Managers
             data._stepMode = CaravanStepMode.Move;
             data._caravanFile = new CaravanFile();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.Username = ClientValues.Username;
+            data._caravanFile.Username = SessionHandler.Username;
             data._caravanFile.ID = caravan.ID;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.CaravanManager, data);

@@ -1,7 +1,7 @@
 ﻿using GameClient.Dialogs;
-using GameClient.Values;
 using TCPNetwork.Packets;
 using Shared;
+using GameClient.Misc;
 
 namespace GameClient.Managers
 {
@@ -30,7 +30,7 @@ namespace GameClient.Managers
 
             InformationData data = new InformationData();
             data._stepMode = InformationData.InfoStepMode.Connection;
-            data._settlementTile = SessionValues.ChosenSettlement.Tile;
+            data._settlementTile = SessionHandler.ChosenSettlement.Tile;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.InformationManager, data);
         }
@@ -41,7 +41,7 @@ namespace GameClient.Managers
 
             InformationData data = new InformationData();
             data._stepMode = InformationData.InfoStepMode.Wealth;
-            data._settlementTile = SessionValues.ChosenSettlement.Tile;
+            data._settlementTile = SessionHandler.ChosenSettlement.Tile;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.InformationManager, data);
         }

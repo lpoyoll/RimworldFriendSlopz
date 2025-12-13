@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 using GameClient.Managers;
-using GameClient.Values;
+using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine.SceneManagement;
@@ -73,9 +73,9 @@ namespace GameClient.Patches.Pages
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
 
-                if (!ClientValues.IsGeneratingFreshWorld)
+                if (!SessionHandler.IsGeneratingFreshWorld)
                 {
                     WorldManager.SetPlanetFeatures();
                     WorldManager.SetPlanetFactions();

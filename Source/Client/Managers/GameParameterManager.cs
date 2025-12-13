@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Values;
 using RimWorld;
 using Shared;
 using System.Collections.Generic;
@@ -30,9 +29,9 @@ namespace GameClient.Managers
 
         public static void SetValues(ServerGlobalData data)
         {
-            SessionValues.ScenarioFile = data._scenarioValues;
-            SessionValues.StorytellerFile = data._storytellerValues;
-            SessionValues.DifficultyFile = data._difficultyValues;
+            SessionHandler.ScenarioFile = data._scenarioValues;
+            SessionHandler.StorytellerFile = data._storytellerValues;
+            SessionHandler.DifficultyFile = data._difficultyValues;
         }
 
         public static void SetScenario(ScenarioConfigFile file)

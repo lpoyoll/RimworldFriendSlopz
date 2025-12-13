@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Values;
 using HarmonyLib;
 using System;
 using Verse;
@@ -17,16 +16,16 @@ namespace GameClient.Patches
         {
             try
             {
-                if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-                if (ClientValues.IsSavingGame) return false;
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+                if (SessionHandler.IsSavingGame) return false;
 
-                ClientValues.ToggleSavingGame(true);
-                ClientValues.ForcePermadeath();
-                ClientValues.ManageDevOptions();
+                SessionHandler.IsSavingGame = true;
+                SessionHandler.ForcePermadeath();
+                SessionHandler.ManageDevOptions();
 
-                GameParameterManager.SetScenario(SessionValues.ScenarioFile);
-                GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
+                GameParameterManager.SetScenario(SessionHandler.ScenarioFile);
+                GameParameterManager.SetStoryteller(SessionHandler.StorytellerFile);
+                GameParameterManager.SetDifficulty(SessionHandler.DifficultyFile);
 
                 string filePath = GenFilePaths.FilePathForSavedGame(fileName);
                 SaveManager.LatestSavePath = filePath;
@@ -42,7 +41,7 @@ namespace GameClient.Patches
                 }
                 catch (Exception e) { Printer.Error("Exception while saving game: " + e); }
 
-                if (SessionValues.CurrentNetworkState.Equals(ClientNetworkState.Connected))
+                if (SessionHandler.CurrentNetworkState.Equals(ClientNetworkState.Connected))
                 {
                     Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
                     MapManager.SendPlayerMapsToServer();
@@ -55,7 +54,7 @@ namespace GameClient.Patches
             }
             catch (Exception e) { Printer.Error($"{e}"); }
 
-            ClientValues.ToggleSavingGame(false);
+            SessionHandler.IsSavingGame = false;
 
             return false;
         }

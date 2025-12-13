@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Values;
 using TCPNetwork.Packets;
 using RimWorld;
 using Shared;
@@ -48,20 +47,20 @@ namespace GameClient.Managers
 
         public static void ReceiveMods(ServerGlobalData data)
         {
-            SessionValues.ConfigFile = data._modConfigs;
+            SessionHandler.ConfigFile = data._modConfigs;
 
-            if (!SessionValues.ConfigFile.EnforcedConfigs) return;
+            if (!SessionHandler.ConfigFile.EnforcedConfigs) return;
             else
             {
                 Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
 
-                for (int i = 0; i < SessionValues.ConfigFile.ModFileNames.Length; i++)
+                for (int i = 0; i < SessionHandler.ConfigFile.ModFileNames.Length; i++)
                 {
-                    string filePath = GenFilePaths.ConfigFolderPath + Path.DirectorySeparatorChar + SessionValues.ConfigFile.ModFileNames[i];
+                    string filePath = GenFilePaths.ConfigFolderPath + Path.DirectorySeparatorChar + SessionHandler.ConfigFile.ModFileNames[i];
                     if (File.Exists(filePath)) File.Delete(filePath);
-                    File.WriteAllText(filePath, SessionValues.ConfigFile.ModConfigs[i]);
+                    File.WriteAllText(filePath, SessionHandler.ConfigFile.ModConfigs[i]);
 
-                    Printer.Warning($"Loaded > {SessionValues.ConfigFile.ModFileNames[i]}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Loaded > {SessionHandler.ConfigFile.ModFileNames[i]}", LogImportanceMode.Verbose);
                 }
             }
         }

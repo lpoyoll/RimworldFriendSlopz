@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Files;
 using GameClient.Misc;
-using GameClient.Values;
 using Shared;
 using System;
 using System.Collections.Generic;
@@ -59,7 +58,7 @@ namespace GameClient.Managers
 
         public static void UseLoginData()
         {
-            if (SessionValues.CurrentNetworkState != CommonEnumerators.ClientNetworkState.Connected) return;
+            if (SessionHandler.CurrentNetworkState != CommonEnumerators.ClientNetworkState.Connected) return;
             else
             {
                 LoginData data = new LoginData();
@@ -77,7 +76,7 @@ namespace GameClient.Managers
                     data._password = settings.UserSettings.Password;
                 }
 
-                ClientValues.Username = data._username;
+                SessionHandler.Username = data._username;
                 data._runningMods = ModManagerH.GetRunningModList();
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.LoginManager, data);
             }

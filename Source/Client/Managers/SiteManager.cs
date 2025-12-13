@@ -2,7 +2,6 @@
 using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Values;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
@@ -59,18 +58,18 @@ namespace GameClient.Managers
 
         public static void RequestSiteBuild(SiteType configFile)
         {
-            if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionValues.ChosenCaravan, ThingDefOf.Silver.defName, configFile.Cost))
+            if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionHandler.ChosenCaravan, ThingDefOf.Silver.defName, configFile.Cost))
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver!" }));
                 return;
             }
 
-            RimworldManager.RemoveThingFromCaravan(SessionValues.ChosenCaravan,
+            RimworldManager.RemoveThingFromCaravan(SessionHandler.ChosenCaravan,
                 DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName), configFile.Cost);
 
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.Build;
-            siteData._file.Tile = SessionValues.ChosenCaravan.Tile;
+            siteData._file.Tile = SessionHandler.ChosenCaravan.Tile;
             siteData._file.Type.DefName = configFile.DefName;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
@@ -83,7 +82,7 @@ namespace GameClient.Managers
             Action r1 = delegate
             {
                 SiteData siteData = new SiteData();
-                siteData._file.Tile = SessionValues.ChosenSite.Tile;
+                siteData._file.Tile = SessionHandler.ChosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
@@ -144,7 +143,7 @@ namespace GameClient.Managers
         {
             PlayerSites.Clear();
 
-            Site[] sites = Find.WorldObjects.Sites.Where(fetch => ClientValues.PlayerFactions.Contains(fetch.Faction) ||
+            Site[] sites = Find.WorldObjects.Sites.Where(fetch => SessionHandler.PlayerFactions.Contains(fetch.Faction) ||
                 fetch.Faction == Faction.OfPlayer).ToArray();
 
             foreach (Site toRemove in sites)

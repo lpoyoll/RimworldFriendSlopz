@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Values;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
@@ -35,16 +34,16 @@ namespace GameClient.Managers
         public static void TryRequestGoodwill(Goodwill type, GoodwillTarget target)
         {
             int tileToUse = 0;
-            if (target == GoodwillTarget.Settlement) tileToUse = SessionValues.ChosenSettlement.Tile;
-            else if (target == GoodwillTarget.Site) tileToUse = SessionValues.ChosenSite.Tile;
+            if (target == GoodwillTarget.Settlement) tileToUse = SessionHandler.ChosenSettlement.Tile;
+            else if (target == GoodwillTarget.Site) tileToUse = SessionHandler.ChosenSite.Tile;
 
             Faction factionToUse = null;
-            if (target == GoodwillTarget.Settlement) factionToUse = SessionValues.ChosenSettlement.Faction;
-            else if (target == GoodwillTarget.Site) factionToUse = SessionValues.ChosenSite.Faction;
+            if (target == GoodwillTarget.Settlement) factionToUse = SessionHandler.ChosenSettlement.Faction;
+            else if (target == GoodwillTarget.Site) factionToUse = SessionHandler.ChosenSite.Faction;
 
             if (type == Goodwill.Enemy)
             {
-                if (factionToUse == ClientValues.EnemyPlayer)
+                if (factionToUse == SessionHandler.EnemyFaction)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as enemy!" });
                     RT_Dialog_Base.PushNewDialog(d1);
@@ -54,7 +53,7 @@ namespace GameClient.Managers
 
             else if (type == Goodwill.Neutral)
             {
-                if (factionToUse == ClientValues.NeutralPlayer)
+                if (factionToUse == SessionHandler.NeutralFaction)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as neutral!" });
                     RT_Dialog_Base.PushNewDialog(d1);
@@ -64,7 +63,7 @@ namespace GameClient.Managers
 
             else if (type == Goodwill.Ally)
             {
-                if (factionToUse == ClientValues.AllyPlayer)
+                if (factionToUse == SessionHandler.AllyFaction)
                 {
                     RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "Chosen settlement is already marked as ally!" });
                     RT_Dialog_Base.PushNewDialog(d1);

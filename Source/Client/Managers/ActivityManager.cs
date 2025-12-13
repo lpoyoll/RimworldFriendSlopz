@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
 using GameClient.Patches;
-using GameClient.Values;
 using GameClient.WorldObjects;
 using TCPNetwork.Packets;
 using RimWorld;
@@ -37,13 +36,13 @@ namespace GameClient.Managers
 
         public static void RequestActivity(ActivityType type, int targetTile)
         {
-            if (!SessionValues.ActionValues.ActivityAction.IsEnabled)
+            if (!SessionHandler.ActionValues.ActivityAction.IsEnabled)
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 return;
             }
 
-            SessionValues.ToggleActivity(type);
+            SessionHandler.ToggleActivity(type);
 
             SendRequest(targetTile);
         }
@@ -77,33 +76,33 @@ namespace GameClient.Managers
         {
             Map map = null;
 
-            if (SessionValues.latestActivity == ActivityType.Raid)
+            if (SessionHandler.latestActivity == ActivityType.Raid)
             {
                 map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, true);
             }
 
-            else if (SessionValues.latestActivity == ActivityType.Zoom)
+            else if (SessionHandler.latestActivity == ActivityType.Zoom)
             {
                 map = MapSaveLoader.StringToMap(mapFile, true, true, true, true, true, true, false);
             }
 
             Faction faction;
-            if (SessionValues.latestActivity == ActivityType.Raid) faction = ClientValues.EnemyPlayer;
-            else faction = ClientValues.NeutralPlayer;
+            if (SessionHandler.latestActivity == ActivityType.Raid) faction = SessionHandler.EnemyFaction;
+            else faction = SessionHandler.NeutralFaction;
 
             RimworldManager.SetMapFactions(map, faction);
 
             RimworldManager.SetMapLord(map, faction);
 
-            if (SessionValues.latestActivity == ActivityType.Raid)
+            if (SessionHandler.latestActivity == ActivityType.Raid)
             {
-                CaravanEnterMapUtility.Enter(SessionValues.ChosenCaravan, SessionValues.ChosenSettlement.Map, 
+                CaravanEnterMapUtility.Enter(SessionHandler.ChosenCaravan, SessionHandler.ChosenSettlement.Map, 
                     CaravanEnterMode.Edge, CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
 
                 CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
             }
 
-            else if (SessionValues.latestActivity == ActivityType.Zoom)
+            else if (SessionHandler.latestActivity == ActivityType.Zoom)
             {
                 CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
             }

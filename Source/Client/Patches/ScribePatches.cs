@@ -4,7 +4,6 @@ using System.IO;
 using System.Xml;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Values;
 using HarmonyLib;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -17,8 +16,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ScribeSaver __instance, ref XmlWriter ___writer, string documentElementName)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.IsUsingScriber) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.IsUsingScriber) return true;
             else
             {
                 try
@@ -54,8 +53,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ScribeLoader __instance, string filePath)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.IsUsingScriber) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.IsUsingScriber) return true;
             else
             {
                 try
@@ -93,7 +92,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref Dictionary<Pawn, PawnTextureAtlasFrameSet> ___frameAssignments, ref List<Pawn> ___tmpPawnsToFree, ref List<PawnTextureAtlasFrameSet> ___freeFrameSets)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 try
@@ -132,7 +131,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else return false;
         }
     }
@@ -143,7 +142,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(DebugLoadIDsSavingErrorsChecker __instance)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 __instance.Clear();
@@ -158,7 +157,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ILoadReferenceable reffable, ref Dictionary<string, ILoadReferenceable> ___allObjectsByLoadID, ref Dictionary<int, ILoadReferenceable> ___allThingsByThingID)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 try { ___allObjectsByLoadID.Add(reffable.GetUniqueLoadID(), reffable); }
@@ -180,8 +179,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.IsUsingScriber) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.IsUsingScriber) return true;
             else return false;
         }
     }
@@ -192,8 +191,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.IsUsingScriber) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.IsUsingScriber) return true;
             else return false;
         }
     }

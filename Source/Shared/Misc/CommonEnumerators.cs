@@ -51,6 +51,12 @@ namespace Shared
         public enum ChatColor { Normal, Admin, Console, Private, Discord, Server }
 
         public enum LoginResponse { Invalid, Ban, Duplicate, Mods, Version, Full, Whitelist, NoWorld }
+
+        public enum TradeMode { None, Sending, Receiving }
+
+        public enum VerboseMode { None, Verbose, Extreme }
+
+        public enum EnforcedSimulatedLag { None, Small, Medium, Big, ENORMOUS }
     }
 }
 

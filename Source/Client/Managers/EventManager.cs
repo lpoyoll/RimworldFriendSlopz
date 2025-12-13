@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Values;
 using RimWorld;
 using Shared;
 using Verse;
@@ -130,7 +129,7 @@ namespace GameClient.Managers
                 EventData eventData = new EventData();
                 eventData._stepMode = EventStepMode.Send;
                 eventData._fromTile = toGetSilverFrom.Tile;
-                eventData._toTile = SessionValues.ChosenSettlement.Tile;
+                eventData._toTile = SessionHandler.ChosenSettlement.Tile;
                 eventData._eventFile = EventManagerH.EnabledEvents[RT_Dialog_ScrollButtons.SelectedScrollButton];
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.EventManager, eventData);
@@ -143,7 +142,7 @@ namespace GameClient.Managers
         {
             IncidentParms parms = StorytellerUtility.DefaultParmsNow(eventToTrigger.category, targetMap);
             parms.customLetterLabel = $"Event - {eventToTrigger.LabelCap}";
-            parms.faction = ClientValues.NeutralPlayer;
+            parms.faction = SessionHandler.NeutralFaction;
             parms.target = targetMap;
 
             eventToTrigger.Worker.TryExecute(parms);
@@ -153,7 +152,7 @@ namespace GameClient.Managers
 
         public static void OnEventReceived(EventData eventData)
         {
-            if (ClientValues.IsReadyToPlay)
+            if (SessionHandler.IsReadyToPlay)
             {
                 Map targetMap;
                 if (eventData._toTile != -1) targetMap = Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == eventData._toTile).Map;

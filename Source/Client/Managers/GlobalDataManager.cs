@@ -1,5 +1,5 @@
 using GameClient.Files;
-using GameClient.Values;
+using GameClient.Misc;
 using Shared;
 using TCPNetwork.Packets;
 
@@ -12,8 +12,7 @@ namespace GameClient.Managers
         {
             ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<ServerGlobalData>(bytes);
 
-            ClientValues.SetValues(serverGlobalData);
-            SessionValues.SetValues(serverGlobalData);
+            SessionHandler.SetValues(serverGlobalData);
             EventManagerH.SetValues(serverGlobalData);
             GameParameterManager.SetValues(serverGlobalData);
             PlayerSettlementManagerHelper.SetValues(serverGlobalData);

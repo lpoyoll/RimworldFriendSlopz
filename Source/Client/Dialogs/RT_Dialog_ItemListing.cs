@@ -1,5 +1,4 @@
 ﻿using GameClient.Managers;
-using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
@@ -9,6 +8,7 @@ using UnityEngine;
 using Verse;
 using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
+using GameClient.Misc;
 
 namespace GameClient.Dialogs
 {
@@ -29,7 +29,7 @@ namespace GameClient.Dialogs
             this.Title = "Item Listing";
             Instance = this;
 
-            ClientValues.ToggleTransfer(true);
+            SessionHandler.IsInTransfer = true;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -97,7 +97,7 @@ namespace GameClient.Dialogs
 
         private void Accept()
         {
-            ClientValues.ToggleTradeStep(ClientValues.TradeMode.Receiving);
+            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.Receiving;
 
             if (TransferMode == TransferMode.Gift)
             {
@@ -124,9 +124,9 @@ namespace GameClient.Dialogs
 
             else if (TransferMode == TransferMode.Rebound)
             {
-                SessionValues.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
+                SessionHandler.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionValues.IncomingManifest);
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.IncomingManifest);
 
                 TransferManager.GetTransferedItemsToCaravan(ListedThings);
 

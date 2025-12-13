@@ -11,7 +11,6 @@ using System.Xml.XPath;
 using System;
 using GameClient.Core;
 using GameClient.Misc;
-using GameClient.Values;
 using System.Collections.Generic;
 using GameClient.Dialogs;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace GameClient.Managers
     {
         public static string LatestSavePath { get; set; } = string.Empty;
 
-        public static string CustomSaveName => $"MP - {ClientNetwork.Ip} - {ClientNetwork.Port} - {ClientValues.Username}";
+        public static string CustomSaveName => $"MP - {ClientNetwork.Ip} - {ClientNetwork.Port} - {SessionHandler.Username}";
 
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 

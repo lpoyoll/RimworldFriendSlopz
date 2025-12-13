@@ -1,8 +1,9 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Managers;
-using GameClient.Values;
+using GameClient.Misc;
 using RimWorld;
 using RimWorld.Planet;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,7 +58,7 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
+                    SessionHandler.ChosenSettlement = this;
 
                     Action r1 = delegate
                     {
@@ -93,11 +94,11 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Guild"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
+                    SessionHandler.ChosenSettlement = this;
 
-                    if (SessionValues.ActionValues.EnableFactions)
+                    if (SessionHandler.ActionValues.EnableFactions)
                     {
-                        if (SessionValues.ChosenSettlement.Faction == ClientValues.YourOnlineFaction) GuildManager.OnFactionOpenOnMember();
+                        if (SessionHandler.ChosenSettlement.Faction == SessionHandler.GuildFaction) GuildManager.OnFactionOpenOnMember();
                         else GuildManager.OnFactionOpenOnNonMember();
                     }
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
@@ -111,7 +112,7 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("UI/Commands/FormCaravan"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
+                    SessionHandler.ChosenSettlement = this;
 
                     Dialog_FormCaravan d1 = new Dialog_FormCaravan(this.Map, mapAboutToBeRemoved: true);
                     RT_Dialog_Base.PushNewDialog(d1);
@@ -125,9 +126,9 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Aid"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
+                    SessionHandler.ChosenSettlement = this;
 
-                    if (SessionValues.ActionValues.AidAction.IsEnabled)
+                    if (SessionHandler.ActionValues.AidAction.IsEnabled)
                     {
                         List<string> pawnNames = new List<string>();
                         foreach (Pawn pawn in RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
@@ -145,9 +146,9 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Event"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
+                    SessionHandler.ChosenSettlement = this;
 
-                    if (SessionValues.ActionValues.EventAction.IsEnabled) EventManager.ShowEventMenu();
+                    if (SessionHandler.ActionValues.EventAction.IsEnabled) EventManager.ShowEventMenu();
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
@@ -159,10 +160,10 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/View"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
+                    SessionHandler.ChosenSettlement = this;
 
                     ActivityManager.RequestActivity(ActivityType.Zoom,
-                        SessionValues.ChosenSettlement.Tile);
+                        SessionHandler.ChosenSettlement.Tile);
                 }
             };
 
@@ -173,8 +174,8 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/View"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
-                    SettlementManager.RegenSettlement(SessionValues.ChosenSettlement);
+                    SessionHandler.ChosenSettlement = this;
+                    SettlementManager.RegenSettlement(SessionHandler.ChosenSettlement);
                 }
             };
 
@@ -185,7 +186,7 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Info"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
+                    SessionHandler.ChosenSettlement = this;
                     InformationManager.AskForInformation();
                 }
             };
@@ -197,7 +198,7 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Wealth"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
+                    SessionHandler.ChosenSettlement = this;
                     InformationManager.AskForWealth();
                 }
             };
@@ -212,7 +213,7 @@ namespace GameClient.WorldObjects
             else gizmos.Add(command_StopZoom);
 
             if (this.Map != null) gizmos.Add(command_Caravan);
-            if (ClientValues.HasFaction) gizmos.Add(command_FactionMenu);
+            if (SessionHandler.HasFaction) gizmos.Add(command_FactionMenu);
 
             return gizmos;
         }
@@ -228,11 +229,11 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Raid"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
-                    SessionValues.ChosenCaravan = caravan;
+                    SessionHandler.ChosenSettlement = this;
+                    SessionHandler.ChosenCaravan = caravan;
 
                     ActivityManager.RequestActivity(ActivityType.Raid,
-                        SessionValues.ChosenSettlement.Tile);
+                        SessionHandler.ChosenSettlement.Tile);
                 }
             };
 
@@ -243,10 +244,10 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Transfer"),
                 action = delegate
                 {
-                    SessionValues.ChosenSettlement = this;
-                    SessionValues.ChosenCaravan = caravan;
+                    SessionHandler.ChosenSettlement = this;
+                    SessionHandler.ChosenCaravan = caravan;
 
-                    if (!SessionValues.ActionValues.EnableTrading)
+                    if (!SessionHandler.ActionValues.EnableTrading)
                     {
                         RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                         return;
@@ -255,11 +256,11 @@ namespace GameClient.WorldObjects
                     else
                     {
                         Settlement settlement = Find.World.worldObjects.Settlements.First(fetch => fetch.Faction != Faction.OfPlayer);
-                        Pawn negotiator = RimworldManager.GetIfSocialPawnInCaravan(SessionValues.ChosenCaravan);
+                        Pawn negotiator = RimworldManager.GetIfSocialPawnInCaravan(SessionHandler.ChosenCaravan);
 
                         if (negotiator != null)
                         {
-                            ClientValues.ToggleTradeStep(ClientValues.TradeMode.Sending);
+                            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.Sending;
                             Find.WindowStack.Add(new Dialog_Trade(negotiator, settlement));
                         }
 

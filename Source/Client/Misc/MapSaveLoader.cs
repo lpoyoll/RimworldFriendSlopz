@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameClient.Managers;
-using GameClient.Values;
 using RimWorld;
 using Shared;
 using Shared.Files;
@@ -42,7 +41,7 @@ namespace GameClient.Misc
         public static Map StringToMap(MapFile mapFile, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, 
             bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false)
         {
-            Map map = SetEmptyMap(mapFile, SessionValues.ChosenSettlement.Tile);
+            Map map = SetEmptyMap(mapFile, SessionHandler.ChosenSettlement.Tile);
 
             SetMapTerrain(mapFile, map);
 
@@ -268,7 +267,7 @@ namespace GameClient.Misc
                 {
                     try
                     {
-                        if (thing.def.CanHaveFaction) thing.SetFaction(ClientValues.NeutralPlayer);
+                        if (thing.def.CanHaveFaction) thing.SetFaction(SessionHandler.NeutralFaction);
                         GenPlace.TryPlaceThing(thing, thing.Position, map, ThingPlaceMode.Direct, rot: thing.Rotation);
                     }
                     catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
@@ -288,7 +287,7 @@ namespace GameClient.Misc
                         try
                         {
                             Pawn human = ScribeManager.StringtoHuman(pawn);
-                            human.SetFaction(ClientValues.NeutralPlayer);
+                            human.SetFaction(SessionHandler.NeutralFaction);
 
                             GenSpawn.Spawn(human, human.Position, map, human.Rotation);
                         }
@@ -323,7 +322,7 @@ namespace GameClient.Misc
                         try
                         {
                             Pawn animal = (Pawn)ScribeManager.SerializeFromString<Pawn>(pawn);
-                            animal.SetFaction(ClientValues.NeutralPlayer);
+                            animal.SetFaction(SessionHandler.NeutralFaction);
 
                             GenSpawn.Spawn(animal, animal.Position, map, animal.Rotation);
                         }

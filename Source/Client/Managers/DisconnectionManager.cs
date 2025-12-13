@@ -1,7 +1,6 @@
 using Verse;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Values;
 
 namespace GameClient.Managers
 {
@@ -82,9 +81,6 @@ namespace GameClient.Managers
 
         public static void DisconnectToMenu()
         {
-            ClientValues.CleanValues();
-            SessionValues.CleanValues();
-
             RT_Dialog_Wait.Instance.Close();
 
             if (Current.ProgramState != ProgramState.Entry)

@@ -1,7 +1,6 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Defs;
 using GameClient.Misc;
-using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using Shared;
@@ -55,7 +54,7 @@ namespace GameClient.Managers
             RTChatDefSounds.ChatSend.PlayOneShotOnCamera();
 
             ChatData chatData = new ChatData();
-            chatData._username = ClientValues.Username;
+            chatData._username = SessionHandler.Username;
             chatData._message = messageToSend;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.ChatManager, chatData);
@@ -65,12 +64,12 @@ namespace GameClient.Managers
         {
             if (ChatMessageCache.Count() > 100) ChatMessageCache.RemoveAt(0);
 
-            if (ChatManagerH.CheckIfHasBeenTagged(message)) message = message.Replace($"@{ClientValues.Username}", $"<color=red>@{ClientValues.Username}</color>");
+            if (ChatManagerH.CheckIfHasBeenTagged(message)) message = message.Replace($"@{SessionHandler.Username}", $"<color=red>@{SessionHandler.Username}</color>");
 
             ChatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerH.messageColorDictionary[userColor]}{username}</color>: " +
                 $"{ChatManagerH.messageColorDictionary[messageColor]}{ChatManagerH.ParseMessage(message)}</color>");
 
-            if (ChatAutoscroll) ClientValues.ToggleChatScroll(true);
+            if (ChatAutoscroll) ShouldScrollChat = true;
 
             if (!IsChatTabOpen)
             {
@@ -109,7 +108,7 @@ namespace GameClient.Managers
 
         public static string[] GetMessageWords(string message) { return message.Split(' '); }
 
-        public static bool CheckIfHasBeenTagged(string message) { return GetMessageWords(message).Contains($"@{ClientValues.Username}"); }
+        public static bool CheckIfHasBeenTagged(string message) { return GetMessageWords(message).Contains($"@{SessionHandler.Username}"); }
 
         public static string ParseMessage(string message, bool fromBroadcast = false)
         {

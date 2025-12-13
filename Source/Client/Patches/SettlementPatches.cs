@@ -1,5 +1,5 @@
 ﻿using GameClient.Managers;
-using GameClient.Values;
+using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -19,7 +19,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Caravan caravan)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
             {
                 SettlementManager.SendNewPlayerSettlement(caravan.Tile);
 
@@ -34,7 +34,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Map map)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
             {
                 SettlementManager.SendNewPlayerSettlement(map.Tile);
 
@@ -49,7 +49,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Settlement settlement)
         {
-            if (SessionValues.CurrentNetworkState != ClientNetworkState.Connected) return;
+            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return;
             else SettlementManager.AbandonSettlement(settlement.Tile);
         }
     }
@@ -60,10 +60,10 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Settlement __instance)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
             {
-                if (!ClientValues.IsReadyToPlay) return;
-                if (!SessionValues.ActionValues.EnableNPCDestruction) return;
+                if (!SessionHandler.IsReadyToPlay) return;
+                if (!SessionHandler.ActionValues.EnableNPCDestruction) return;
 
                 if (__instance.Faction == Faction.OfPlayer) return;
                 else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);

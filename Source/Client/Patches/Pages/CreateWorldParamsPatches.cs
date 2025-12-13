@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using GameClient.Defs;
 using GameClient.Managers;
-using GameClient.Values;
+using GameClient.Misc;
 using GameClient.WorldObjects;
 using HarmonyLib;
 using RimWorld;
@@ -20,8 +20,8 @@ namespace GameClient.Patches.Pages
             [HarmonyPrefix]
             public static bool DoPre(Rect rect, Page_CreateWorldParams __instance, string ___seedString, float ___planetCoverage, OverallRainfall ___rainfall, OverallTemperature ___temperature, OverallPopulation ___population, LandmarkDensity ___landmarkDensity, List<FactionDef> ___factions, float ___pollution)
             {
-                if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-                if (!ClientValues.IsGeneratingFreshWorld) return true;
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+                if (!SessionHandler.IsGeneratingFreshWorld) return true;
 
                 Vector2 buttonSize = new Vector2(150f, 38f);
                 Vector2 buttonLocation = new Vector2(rect.xMax - buttonSize.x, rect.yMax - buttonSize.y);
@@ -50,8 +50,8 @@ namespace GameClient.Patches.Pages
             [HarmonyPrefix]
             public static bool DoPre(Page_CreateWorldParams __instance)
             {
-                if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-                if (ClientValues.IsGeneratingFreshWorld) return true;
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+                if (SessionHandler.IsGeneratingFreshWorld) return true;
 
                 __instance.Close();
 

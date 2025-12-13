@@ -1,7 +1,7 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.Patches.Tabs;
-using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -20,7 +20,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Settlement __instance)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
 
             List<Gizmo> gizmoList = __result.ToList();
 
@@ -31,9 +31,9 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Guild"),
                 action = delegate
                 {
-                    if (SessionValues.ActionValues.EnableFactions)
+                    if (SessionHandler.ActionValues.EnableFactions)
                     {
-                        if (ClientValues.HasFaction) GuildManager.OnFactionOpen();
+                        if (SessionHandler.HasFaction) GuildManager.OnFactionOpen();
                         else GuildManager.OnNoFactionOpen();
                     }
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
@@ -47,7 +47,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Config"),
                 action = delegate
                 {
-                    if (SessionValues.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
+                    if (SessionHandler.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(true));
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
@@ -65,7 +65,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result, Site __instance)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
 
             List<Gizmo> gizmoList = __result.ToList();
 
@@ -76,16 +76,16 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Site"),
                 action = delegate
                 {
-                    if (SessionValues.ActionValues.SiteAction.IsEnabled)
+                    if (SessionHandler.ActionValues.SiteAction.IsEnabled)
                     {
-                        SessionValues.ChosenSite = __instance;
+                        SessionHandler.ChosenSite = __instance;
                         SiteManager.RequestDestroySite();
                     }
                     else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
 
-            if (__instance.Faction == Find.FactionManager.OfPlayer || __instance.Faction == ClientValues.YourOnlineFaction)
+            if (__instance.Faction == Find.FactionManager.OfPlayer || __instance.Faction == SessionHandler.GuildFaction)
             {
                 gizmoList.Add(command_DestroySite);
             }
@@ -100,7 +100,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<Gizmo> __result, Caravan __instance)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && RimworldManager.CheckIfPlayerHasMap())
             {
                 Site presentSite = Find.World.worldObjects.Sites.ToList().Find(x => x.Tile == __instance.Tile);
                 Settlement presentSettlement = Find.World.worldObjects.Settlements.ToList().Find(x => x.Tile == __instance.Tile);
@@ -113,9 +113,9 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Site"),
                     action = delegate
                     {
-                        SessionValues.ChosenCaravan = __instance;
+                        SessionHandler.ChosenCaravan = __instance;
 
-                        if (SessionValues.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(false));
+                        if (SessionHandler.ActionValues.SiteAction.IsEnabled) RT_Dialog_Base.PushNewDialog(new RT_Dialog_SiteMenu(false));
                         else RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }
                 };
@@ -127,12 +127,12 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Road"),
                     action = delegate
                     {
-                        SessionValues.ChosenCaravan = __instance;
+                        SessionHandler.ChosenCaravan = __instance;
 
-                        if (SessionValues.ActionValues.RoadsAction.IsEnabled)
+                        if (SessionHandler.ActionValues.RoadsAction.IsEnabled)
                         {
                             List<PlanetTile> neighborTiles = new List<PlanetTile>();
-                            Find.WorldGrid.GetTileNeighbors(SessionValues.ChosenCaravan.Tile, neighborTiles);
+                            Find.WorldGrid.GetTileNeighbors(SessionHandler.ChosenCaravan.Tile, neighborTiles);
 
                             SurfaceTile selectedTile = (SurfaceTile)Find.WorldGrid[__instance.Tile];
                             RoadManagerHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), selectedTile.Roads != null);
@@ -156,7 +156,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement)
         {
-            if (ClientValues.PlayerFactions.Contains(settlement.Faction))
+            if (SessionHandler.PlayerFactions.Contains(settlement.Faction))
             {
                 List<FloatMenuOption> floatMenuList = __result.ToList();
 
@@ -173,7 +173,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(ref IEnumerable<Gizmo> __result)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
 
             List<Gizmo> gizmoList = __result.ToList();
             List<Gizmo> removeList = new List<Gizmo>();
@@ -194,7 +194,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(WorldInspectPane __instance, ref IEnumerable<InspectTabBase> __result)
         {
-            if (SessionValues.CurrentNetworkState != ClientNetworkState.Connected) return false;
+            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return false;
             else
             {
                 if (Find.WorldSelector.NumSelectedObjects == 1)
@@ -223,8 +223,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Pawn pawn)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!ClientValues.PlayerFactions.Contains(pawn.Faction)) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.PlayerFactions.Contains(pawn.Faction)) return true;
             else return false;
         }
     }

@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Values;
 using TCPNetwork.Packets;
 using RimWorld;
 using Shared;
@@ -44,15 +43,15 @@ namespace GameClient.Managers
 
         private static void OnOpCommand()
         {
-            ClientValues.IsAdmin = true;
-            ClientValues.ManageDevOptions();
+            SessionHandler.IsAdmin = true;
+            SessionHandler.ManageDevOptions();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are now an admin!" }));
         }
 
         private static void OnDeopCommand()
         {
-            ClientValues.IsAdmin = false;
-            ClientValues.ManageDevOptions();
+            SessionHandler.IsAdmin = false;
+            SessionHandler.ManageDevOptions();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are no longer an admin!" }));
         }
 
@@ -63,7 +62,7 @@ namespace GameClient.Managers
 
         private static void OnForceSaveCommand()
         {
-            if (!ClientValues.IsReadyToPlay) DisconnectionManager.DisconnectToMenu();
+            if (!SessionHandler.IsReadyToPlay) DisconnectionManager.DisconnectToMenu();
             else
             {
                 DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);

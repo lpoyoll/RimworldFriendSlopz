@@ -4,7 +4,6 @@ using Verse;
 using System.Collections.Generic;
 using System.Linq;
 using GameClient.Managers;
-using GameClient.Values;
 
 namespace GameClient.Patches.Tabs
 {
@@ -174,7 +173,7 @@ namespace GameClient.Patches.Tabs
         private void ScrollToLastMessage()
         {
             scrollPositionChat.Set(scrollPositionChat.x, scrollPositionChat.y + Mathf.Infinity);
-            ClientValues.ToggleChatScroll(false);
+            ChatManager.ShouldScrollChat = false;
         }
 
         private void DrawCustomRow(Rect rect, string message)

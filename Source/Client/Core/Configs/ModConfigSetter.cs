@@ -1,14 +1,14 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Values;
+using Shared;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 using Verse;
-using System.Diagnostics;
-using GameClient.Files;
 
 namespace GameClient.Core.Configs
 {
@@ -62,14 +62,14 @@ namespace GameClient.Core.Configs
         private void ShowVerboseFloatMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            List<Tuple<string, ClientValues.VerboseMode>> verboseModes = new List<Tuple<string, ClientValues.VerboseMode>>()
+            List<Tuple<string, CommonEnumerators.VerboseMode>> verboseModes = new List<Tuple<string, CommonEnumerators.VerboseMode>>()
             {
-                Tuple.Create("None", ClientValues.VerboseMode.None),
-                Tuple.Create("Verbose", ClientValues.VerboseMode.Verbose),
-                Tuple.Create("Extreme", ClientValues.VerboseMode.Extreme)
+                Tuple.Create("None", CommonEnumerators.VerboseMode.None),
+                Tuple.Create("Verbose", CommonEnumerators.VerboseMode.Verbose),
+                Tuple.Create("Extreme", CommonEnumerators.VerboseMode.Extreme)
             };
 
-            foreach (Tuple<string, ClientValues.VerboseMode> tuple in verboseModes)
+            foreach (Tuple<string, CommonEnumerators.VerboseMode> tuple in verboseModes)
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
@@ -85,16 +85,16 @@ namespace GameClient.Core.Configs
         private void ShowSimulatedLagMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            List<Tuple<string, ClientValues.EnforcedSimulatedLag>> verboseModes = new List<Tuple<string, ClientValues.EnforcedSimulatedLag>>()
+            List<Tuple<string, CommonEnumerators.EnforcedSimulatedLag>> verboseModes = new List<Tuple<string, CommonEnumerators.EnforcedSimulatedLag>>()
             {
-                Tuple.Create("None", ClientValues.EnforcedSimulatedLag.None),
-                Tuple.Create("Small", ClientValues.EnforcedSimulatedLag.Small),
-                Tuple.Create("Medium", ClientValues.EnforcedSimulatedLag.Medium),
-                Tuple.Create("Big", ClientValues.EnforcedSimulatedLag.Big),
-                Tuple.Create("ENORMOUS", ClientValues.EnforcedSimulatedLag.ENORMOUS),
+                Tuple.Create("None", CommonEnumerators.EnforcedSimulatedLag.None),
+                Tuple.Create("Small", CommonEnumerators.EnforcedSimulatedLag.Small),
+                Tuple.Create("Medium", CommonEnumerators.EnforcedSimulatedLag.Medium),
+                Tuple.Create("Big", CommonEnumerators.EnforcedSimulatedLag.Big),
+                Tuple.Create("ENORMOUS", CommonEnumerators.EnforcedSimulatedLag.ENORMOUS),
             };
 
-            foreach (Tuple<string, ClientValues.EnforcedSimulatedLag> tuple in verboseModes)
+            foreach (Tuple<string, CommonEnumerators.EnforcedSimulatedLag> tuple in verboseModes)
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {

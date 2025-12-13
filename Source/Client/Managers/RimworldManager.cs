@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameClient.Misc;
-using GameClient.Values;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -227,12 +226,12 @@ namespace GameClient.Managers
         {
             //We don't wanna change to neutral faction because it's the default one
 
-            if (targetFaction == ClientValues.NeutralPlayer) return;
+            if (targetFaction == SessionHandler.NeutralFaction) return;
             else
             {
                 foreach (Pawn pawn in map.mapPawns.AllPawns.ToArray())
                 {
-                    if (pawn.Faction == ClientValues.NeutralPlayer)
+                    if (pawn.Faction == SessionHandler.NeutralFaction)
                     {
                         pawn.SetFaction(targetFaction);
                     }
@@ -240,7 +239,7 @@ namespace GameClient.Managers
 
                 foreach (Thing thing in map.listerThings.AllThings.ToArray())
                 {
-                    if (thing.Faction == ClientValues.NeutralPlayer)
+                    if (thing.Faction == SessionHandler.NeutralFaction)
                     {
                         if (thing.def.CanHaveFaction) thing.SetFaction(targetFaction);
                     }

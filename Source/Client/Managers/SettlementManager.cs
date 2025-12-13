@@ -1,5 +1,4 @@
 ﻿using GameClient.Misc;
-using GameClient.Values;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
@@ -81,8 +80,8 @@ namespace GameClient.Managers
         {
             try
             {
-                RTSettlement toGet = (RTSettlement)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == toRemove.Tile && 
-                    ClientValues.PlayerFactions.Contains(fetch.Faction));
+                RTSettlement toGet = (RTSettlement)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == toRemove.Tile &&
+                    SessionHandler.PlayerFactions.Contains(fetch.Faction));
 
                 PlayerSettlements.Remove(toGet); 
                 Find.WorldObjects.Remove(toGet);
@@ -97,8 +96,8 @@ namespace GameClient.Managers
             file.Tile = _.Tile;
             file.Username = _.Label.Replace("'s settlement", "");
 
-            if (_.Faction == ClientValues.EnemyPlayer) file.Goodwill = Goodwill.Enemy;
-            else if (_.Faction == ClientValues.AllyPlayer) file.Goodwill = Goodwill.Ally;
+            if (_.Faction == SessionHandler.EnemyFaction) file.Goodwill = Goodwill.Enemy;
+            else if (_.Faction == SessionHandler.AllyFaction) file.Goodwill = Goodwill.Ally;
             else file.Goodwill = Goodwill.Neutral;
 
             RemoveSingleSettlement(file);

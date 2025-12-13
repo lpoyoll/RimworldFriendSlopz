@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using GameClient.Values;
+using GameClient.Misc;
 using RimWorld;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -14,11 +14,11 @@ namespace GameClient.Managers
 
         public static void BuildPlanet()
         {
-            ClientValues.FindPlayerFactionsInWorld();
+            SessionHandler.FindPlayerFactionsInWorld();
             PlanetManagerHelper.GetMapGenerators();
 
             //This step gets skiped if it's the first time building the planet
-            if (ClientValues.IsGeneratingFreshWorld) return;
+            if (SessionHandler.IsGeneratingFreshWorld) return;
             else
             {
                 SettlementManager.ClearAllSettlements();
@@ -64,19 +64,19 @@ namespace GameClient.Managers
             switch (goodwill)
             {
                 case Goodwill.Enemy:
-                    factionToUse = ClientValues.EnemyPlayer;
+                    factionToUse = SessionHandler.EnemyFaction;
                     break;
 
                 case Goodwill.Neutral:
-                    factionToUse = ClientValues.NeutralPlayer;
+                    factionToUse = SessionHandler.NeutralFaction;
                     break;
 
                 case Goodwill.Ally:
-                    factionToUse = ClientValues.AllyPlayer;
+                    factionToUse = SessionHandler.AllyFaction;
                     break;
 
                 case Goodwill.Faction:
-                    factionToUse = ClientValues.YourOnlineFaction;
+                    factionToUse = SessionHandler.GuildFaction;
                     break;
 
                 case Goodwill.Personal:

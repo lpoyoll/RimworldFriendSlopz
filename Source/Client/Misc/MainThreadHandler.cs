@@ -1,5 +1,4 @@
-﻿using GameClient.Values;
-using Shared;
+﻿using Shared;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -27,7 +26,7 @@ namespace GameClient.Misc
         { 
             ExecuteAllQueue();
 
-            if (SessionValues.CurrentNetworkState == CommonEnumerators.ClientNetworkState.Connected)
+            if (SessionHandler.CurrentNetworkState == CommonEnumerators.ClientNetworkState.Connected)
             {
                 DoPerFrameMethods();
             }

@@ -1,6 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Managers;
-using GameClient.Values;
+using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using System;
@@ -16,7 +16,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -45,7 +45,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && ClientValues.IsAdmin)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && SessionHandler.IsAdmin)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -62,7 +62,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && ClientValues.IsAdmin)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing && SessionHandler.IsAdmin)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 4, buttonSize.x, buttonSize.y), "Admin menu")) { }
@@ -78,7 +78,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 
@@ -103,7 +103,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected && Current.ProgramState == ProgramState.Playing)
             {
                 Vector2 buttonSize = new Vector2(170f, 45f);
 

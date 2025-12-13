@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Values;
 using RimWorld;
 using Shared;
 using System;
@@ -52,7 +51,7 @@ namespace GameClient.Managers
             AidData aidData = new AidData();
             aidData._stepMode = AidStepMode.Send;
             aidData._fromTile = Find.AnyPlayerHomeMap.Tile;
-            aidData._toTile = SessionValues.ChosenSettlement.Tile;
+            aidData._toTile = SessionHandler.ChosenSettlement.Tile;
 
             Pawn toGet = RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)[RT_Dialog_ListingWithButton.DialogButtonListingResultInt];
             aidData._humanData = ScribeManager.HumanToString(toGet);

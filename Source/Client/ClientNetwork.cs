@@ -3,7 +3,6 @@ using GameClient.Dialogs;
 using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
-using GameClient.Values;
 using Shared;
 using System;
 using System.Net.Sockets;
@@ -66,7 +65,7 @@ namespace GameClient
         {
             if (TryConnect())
             {
-                SessionValues.CurrentNetworkState = ClientNetworkState.Connected;
+                SessionHandler.CurrentNetworkState = ClientNetworkState.Connected;
 
                 PersistentSettings settings = PersistentSettings.Load();
                 settings.ServerSettings.Set(Ip, Port);
@@ -86,11 +85,11 @@ namespace GameClient
 
         public bool TryConnect()
         {
-            if (SessionValues.CurrentNetworkState != ClientNetworkState.Disconnected) return false;
+            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return false;
 
             try
             {
-                SessionValues.CurrentNetworkState = ClientNetworkState.Connecting;
+                SessionHandler.CurrentNetworkState = ClientNetworkState.Connecting;
 
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
@@ -106,7 +105,7 @@ namespace GameClient
         {
             Printer.Warning($"Disconnecting from server...", LogImportanceMode.Verbose);
 
-            SessionValues.CurrentNetworkState = ClientNetworkState.Disconnected;
+            SessionHandler.CurrentNetworkState = ClientNetworkState.Disconnected;
 
             if (ClientListener != null)
             {

@@ -1,7 +1,7 @@
 ﻿using System;
 using GameClient.Dialogs;
 using GameClient.Managers;
-using GameClient.Values;
+using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -16,13 +16,13 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(ref DifficultyDef ___difficulty, ref Difficulty ___difficultyValues)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
             else
             {
                 Find.GameInitData.permadeathChosen = true;
                 Find.GameInitData.permadeath = true;
 
-                if (!ClientValues.IsGeneratingFreshWorld)
+                if (!SessionHandler.IsGeneratingFreshWorld)
                 {
                     ___difficulty = DifficultyDefOf.Rough;
                     ___difficultyValues = new Difficulty(___difficulty);
@@ -41,19 +41,19 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStoryteller __instance)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
-            if (!ClientValues.IsGeneratingFreshWorld)
+            if (!SessionHandler.IsGeneratingFreshWorld)
             {
-                if (SessionValues.StorytellerFile.EnforceStoryteller)
+                if (SessionHandler.StorytellerFile.EnforceStoryteller)
                 {
                     if (executedMessage) return true;
                     else
                     {
                         Action toDo = delegate
                         {
-                            GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                            GameParameterManager.SetDifficulty(SessionValues.DifficultyFile, true);
+                            GameParameterManager.SetStoryteller(SessionHandler.StorytellerFile);
+                            GameParameterManager.SetDifficulty(SessionHandler.DifficultyFile, true);
                             RT_Dialog_Base.PushNewDialog(__instance.next);
                             __instance.Close();
 
@@ -76,20 +76,20 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
-            if (ClientValues.IsAdmin)
+            if (SessionHandler.IsAdmin)
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Difficulty settings overriden due to being an admin" }));
                 return true;
             }
 
-            if (SessionValues.DifficultyFile.EnforceDifficulty || SessionValues.StorytellerFile.EnforceStoryteller)
+            if (SessionHandler.DifficultyFile.EnforceDifficulty || SessionHandler.StorytellerFile.EnforceStoryteller)
             {
                 Action toDo = delegate
                 {
-                    GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                    GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
+                    GameParameterManager.SetStoryteller(SessionHandler.StorytellerFile);
+                    GameParameterManager.SetDifficulty(SessionHandler.DifficultyFile);
                 };
 
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));

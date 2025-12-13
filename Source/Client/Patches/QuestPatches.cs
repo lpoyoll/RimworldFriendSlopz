@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using GameClient.Values;
+using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using static Shared.CommonEnumerators;
@@ -13,9 +13,9 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Quest quest)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
-            foreach (Faction faction in ClientValues.PlayerFactions)
+            foreach (Faction faction in SessionHandler.PlayerFactions)
             {
                 if (quest.InvolvedFactions.Contains(faction))
                 {

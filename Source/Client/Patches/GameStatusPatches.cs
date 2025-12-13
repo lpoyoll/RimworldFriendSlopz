@@ -1,5 +1,4 @@
 ﻿using GameClient.Managers;
-using GameClient.Values;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -20,15 +19,15 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void ModifyPost(Game __instance)
             {
-                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     SettlementManager.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
 
-                    if (!ClientValues.IsGeneratingFreshWorld) SaveManager.ForceSave();
+                    if (!SessionHandler.IsGeneratingFreshWorld) SaveManager.ForceSave();
                     else ModManager.OpenModManagerMenu(true);
 
-                    ClientValues.ForcePermadeath();
-                    ClientValues.ToggleReadyToPlay(true);
+                    SessionHandler.ForcePermadeath();
+                    SessionHandler.IsReadyToPlay = true;
 
                     MainThreadHandler.Instance.DoOnStartMethods();
                 }
@@ -41,16 +40,16 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void GetIDFromExistingGame()
             {
-                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected)
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
                 {
                     PlanetManager.BuildPlanet();
 
-                    GameParameterManager.SetScenario(SessionValues.ScenarioFile);
-                    GameParameterManager.SetStoryteller(SessionValues.StorytellerFile);
-                    GameParameterManager.SetDifficulty(SessionValues.DifficultyFile);
+                    GameParameterManager.SetScenario(SessionHandler.ScenarioFile);
+                    GameParameterManager.SetStoryteller(SessionHandler.StorytellerFile);
+                    GameParameterManager.SetDifficulty(SessionHandler.DifficultyFile);
 
-                    ClientValues.ForcePermadeath();
-                    ClientValues.ToggleReadyToPlay(true);
+                    SessionHandler.ForcePermadeath();
+                    SessionHandler.IsReadyToPlay = true;
 
                     MainThreadHandler.Instance.DoOnStartMethods();
                 }
@@ -63,7 +62,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (SessionValues.CurrentNetworkState == ClientNetworkState.Connected) ClientValues.ManageDevOptions();
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected) SessionHandler.ManageDevOptions();
                 else return;
             }
         }

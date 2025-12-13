@@ -1,5 +1,5 @@
 ﻿using Verse;
-using static GameClient.Values.ClientValues;
+using static Shared.CommonEnumerators;
 
 namespace GameClient.Core.Configs
 {

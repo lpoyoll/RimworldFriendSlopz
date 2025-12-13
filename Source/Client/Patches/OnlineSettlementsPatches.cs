@@ -1,4 +1,4 @@
-﻿using GameClient.Values;
+﻿using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
@@ -14,8 +14,8 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Settlement factionBase)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (ClientValues.PlayerFactions.Contains(factionBase.Faction)) return false;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (SessionHandler.PlayerFactions.Contains(factionBase.Faction)) return false;
             else return true;
         }
     }
@@ -26,8 +26,8 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            if (!ClientValues.PlayerFactions.Contains(map.Parent.Faction)) return;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+            if (!SessionHandler.PlayerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
         }
@@ -39,8 +39,8 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            if (!ClientValues.PlayerFactions.Contains(map.Parent.Faction)) return;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+            if (!SessionHandler.PlayerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
         }
@@ -52,9 +52,9 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Site site, ref int __result)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
-            if (ClientValues.PlayerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
+            if (SessionHandler.PlayerFactions.Contains(site.Faction) || site.Faction == Faction.OfPlayer)
             {
                 __result = 25;
                 return false;

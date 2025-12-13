@@ -1,8 +1,8 @@
-﻿using GameClient.Values;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
 using static Shared.CommonEnumerators;
 using GameClient.Dialogs;
+using GameClient.Misc;
 
 namespace GameClient.Patches.Pages
 {
@@ -14,9 +14,9 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Dialog_Options __instance)
         {
-            if (SessionValues.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (!SessionValues.ConfigFile.EnforcedConfigs) return true;
-            else if (ClientValues.IsAdmin) return true;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.ConfigFile.EnforcedConfigs) return true;
+            else if (SessionHandler.IsAdmin) return true;
             else
             {
                 __instance.Close();

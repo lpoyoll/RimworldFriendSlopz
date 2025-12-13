@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using GameClient.Misc;
-using GameClient.Values;
 using RimWorld;
 using Shared;
 using Shared.Files;
@@ -24,7 +23,7 @@ namespace GameClient.Managers
 
         public static string SerializeToString(object toSave, SerializableType type, int customCount = -1)
         {
-            ClientValues.ToggleUsingScriber(true);
+            SessionHandler.IsUsingScriber = true;
 
             string scribeData = string.Empty;
             int originalCount = -1;
@@ -54,14 +53,14 @@ namespace GameClient.Managers
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
 
-            ClientValues.ToggleUsingScriber(false);
+            SessionHandler.IsUsingScriber = false;
 
             return scribeData.ToString();
         }
 
         public static T SerializeFromString<T>(string scribeData, SerializableType type = SerializableType.Thing)
         {
-            ClientValues.ToggleUsingScriber(true);
+            SessionHandler.IsUsingScriber = true;
 
             object toLoad = null;
 
@@ -81,7 +80,7 @@ namespace GameClient.Managers
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
 
-            ClientValues.ToggleUsingScriber(false);
+            SessionHandler.IsUsingScriber = false;
 
             return (T)toLoad;
         }

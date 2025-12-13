@@ -1,5 +1,4 @@
 ﻿using GameClient.Misc;
-using GameClient.Values;
 using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
@@ -88,12 +87,12 @@ namespace GameClient.Managers
 
         public static void ClearAllSettlements()
         {
-            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !ClientValues.PlayerFactions.Contains(fetch.Faction) &&
+            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !SessionHandler.PlayerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
             foreach (Settlement settlement in settlements) RemoveSingleSettlement(settlement, null);
 
-            DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !ClientValues.PlayerFactions.Contains(fetch.Faction) &&
+            DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !SessionHandler.PlayerFactions.Contains(fetch.Faction) &&
                 fetch.Faction != Faction.OfPlayer).ToArray();
 
             foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
