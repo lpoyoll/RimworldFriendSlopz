@@ -44,6 +44,8 @@ namespace GameServer.Managers
         {
             List<string> conflictingModNames = new List<string>();
 
+            //Check if missing required mods
+
             foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required))
             {
                 ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
@@ -54,17 +56,7 @@ namespace GameServer.Managers
                 }
             }
 
-            foreach (ModConfig config in loginData._runningMods.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Optional))
-            {
-                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName &&
-                    fetch.Type == config.Type);
-
-                if (toFind == null)
-                {
-                    conflictingModNames.Add($"[Disallowed] > {config.FileName}");
-                    continue;
-                }
-            }
+            //Check if has mods that are forbidden
 
             foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden))
             {
@@ -72,6 +64,19 @@ namespace GameServer.Managers
                 if (toFind != null)
                 {
                     conflictingModNames.Add($"[Forbidden] > {config.FileName}");
+                    continue;
+                }
+            }
+
+            //Check if has mods that aren't required or optional
+
+            foreach (ModConfig config in loginData._runningMods.ModConfigs.Where(fetch => fetch.Type != ModsConfigFile.ModType.Forbidden))
+            {
+                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
+
+                if (toFind == null)
+                {
+                    conflictingModNames.Add($"[Disallowed] > {config.FileName}");
                     continue;
                 }
             }
