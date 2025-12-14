@@ -50,7 +50,6 @@ namespace GameClient.Patches.Pages
                 if (Widgets.ButtonText(RT_Dialog_Base.GetRectForLocation(rect, RT_Dialog_Base.SmallButtonSize, RT_Dialog_Base.RectLocation.BottomLeft), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
                 {
                     __instance.Close();
-                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
                     ClientNetwork.Instance.ClientListener.DisconnectFlag = true;
                 }
             }

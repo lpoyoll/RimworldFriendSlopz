@@ -24,7 +24,7 @@ namespace GameServer.Managers
 
         public static void OnUserSave(ServerClient client, SaveData fileTransferData)
         {
-            if (fileTransferData._instructions == (int)SaveMode.Disconnect) client.Listener.DisconnectFlag = true;
+            if (fileTransferData._forceDisconnect) client.Listener.DisconnectFlag = true;
 
             InformationDisplayer.DisplaySaveGame(client);
         }
@@ -90,9 +90,9 @@ namespace GameServer.Managers
             InformationDisplayer.DisplayLoadGame(client);
 
             SaveData data = new SaveData();
-            data._fileBytes = File.ReadAllBytes(baseClientSavePath);
             data._stepMode = SaveStepMode.Receive;
-            if (!Master.ServerConfig.SyncLocalSave) data._instructions = SaveMode.Strict;
+            data._fileBytes = File.ReadAllBytes(baseClientSavePath);
+            if (!Master.ServerConfig.SyncLocalSave) data._forceUseSave = true;
 
             client.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }

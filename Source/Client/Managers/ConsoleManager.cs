@@ -58,10 +58,6 @@ namespace GameClient.Managers
             RimworldManager.GenerateLetter("Server Broadcast", ChatManagerH.ParseMessage(commandData._details, true), LetterDefOf.PositiveEvent);
         }
 
-        private static void OnForceSaveCommand()
-        {
-            DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
-            SaveManager.ForceSave();
-        }
+        private static void OnForceSaveCommand() { SaveManager.ForceSave(); }
     }
 }

@@ -23,14 +23,14 @@ namespace GameClient.Patches
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 2, buttonSize.x, buttonSize.y), ""))
                 {
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
-                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToMenu);
+                    SessionHandler.IsIntentionalDisconnect = true;
                     SaveManager.ForceSave();
                 }
 
                 if (Widgets.ButtonText(new Rect(0, (buttonSize.y + 7) * 3, buttonSize.x, buttonSize.y), ""))
                 {
                     Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
-                    DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.SaveQuitToOS);
+                    SessionHandler.IsIntentionalDisconnect = true;
                     SaveManager.ForceSave();
                 }
             }
