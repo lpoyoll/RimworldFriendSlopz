@@ -62,7 +62,6 @@ namespace GameClient.Patches.Pages
             private static void Helper()
             {
                 SceneManager.LoadScene(0);
-                DisconnectionManager.SetIntentionalDisconnect(true, DisconnectionManager.DCReason.QuitToMenu);
                 ClientNetwork.Instance.ClientListener.DisconnectFlag = true;
             }
         }

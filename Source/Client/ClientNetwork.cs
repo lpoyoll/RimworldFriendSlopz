@@ -108,7 +108,7 @@ namespace GameClient
 
         public void Disconnect()
         {
-            Printer.Warning($"Disconnecting from server...", LogImportanceMode.Verbose);
+            Printer.Warning($"Disconnecting from server", LogImportanceMode.Verbose);
 
             SessionHandler.CurrentNetworkState = ClientNetworkState.Disconnected;
 

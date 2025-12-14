@@ -102,7 +102,7 @@ namespace GameServer.Core
             GC.Collect();
             GC.WaitForPendingFinalizers();
             Printer.Warning($"{GC.GetTotalAllocatedBytes() / 1024 / 1024}MB in allocation after resource loading", LogImportanceMode.Verbose);
-            Printer.Title($"----------------------------------------");
+            Printer.Title($"----------------------------------------", LogImportanceMode.Verbose);
         }
 
         private static void LoadFiles()
