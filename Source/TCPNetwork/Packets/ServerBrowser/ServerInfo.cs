@@ -16,7 +16,7 @@ namespace Rimworld_Together_Master_Server.Data
         public int _maximumPlayerCount;
         public int _currentPlayerCount;
         public int _port;
-
+        public string _version;
         public override bool Equals(object? obj)
         {
             if (obj is ServerInfo info)

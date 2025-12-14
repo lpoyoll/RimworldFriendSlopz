@@ -57,6 +57,13 @@ namespace GameClient.Dialogs
 
         private void ConnectToServer() 
         {
+            if (ServerInfo._version != CommonValues.ExecutableVersion)
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message($"Version MissMatch", 
+                    [$"{ServerInfo._name} is running version {ServerInfo._version}, " +
+                    $"but you are running version {CommonValues.ExecutableVersion}"]));
+                return;
+            }
             ClientNetwork.Ip = ServerInfo._ip;
             ClientNetwork.Port = ServerInfo._port.ToString();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));

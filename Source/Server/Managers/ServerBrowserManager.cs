@@ -14,6 +14,8 @@ namespace GameServer.Managers
     {
         private const string MasterServer = "https://rimworldtogether.eragon.dev";
 
+        private const string GetPublicIpAddressURL = "https://api.ipify.org";
+        
         private const int MaxDescriptionLength = 200;
 
         private const int MaxNameLength = 40;
@@ -88,12 +90,20 @@ namespace GameServer.Managers
                 return false;
             }
 
-            if (string.IsNullOrEmpty(serverBrowserInfo.PublicEndPoint)) 
+            if (!IPAddress.TryParse(serverBrowserInfo.PublicEndPoint, out _))
             {
-                Printer.Error($"Public endpoint is empty. Please set your public ip adress or domain. Server browser features have been turned off.");
+                serverBrowserInfo.PublicEndPoint = "";
+                serverBrowserInfo.Save();
+                Printer.Error($"Public endpoint \"{serverBrowserInfo.PublicEndPoint}\" is not a valid ip address. Server browser features have been turned off and faulty entry has been removed.");
+            }
+            
+            if (string.IsNullOrEmpty(serverBrowserInfo.PublicEndPoint))
+            {
+                if(!GetPublicIpAddressAsync().Result)
+                    Printer.Error($"Public endpoint is empty. Please set your public ip address or domain. Server browser features have been turned off.");
                 return false;
             }
-
+            
             if (serverInfo.Name.Length > MaxNameLength)
             {
                 Printer.Error($"Server name is above {MaxNameLength} characters, please shorten it. Server browser features have been turned off.");
@@ -109,6 +119,31 @@ namespace GameServer.Managers
             return true;
         }
 
+        private static async Task<bool> GetPublicIpAddressAsync()
+        {
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+
+                var ip = await Client.GetStringAsync(GetPublicIpAddressURL, cts.Token);
+
+                ip = ip.Trim();
+
+                if (!IPAddress.TryParse(ip, out _))
+                    return false;
+
+                Master.ServerBrowserConfig.PublicEndPoint = ip;
+                Master.ServerBrowserConfig.Save();
+                Printer.Warning($"Public endpoint was empty for the server browser, but the server managed to automatically fetch the ip {ip}. If this is not the correct ip, make sure to change it in the config file!");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Printer.Warning($"Failed to automatically resolve public IP address: {ex.Message}", LogImportanceMode.Verbose);
+                return false;
+            }
+        }
+        
         private static async Task<bool> SendServerInformation()
         {
             try
@@ -123,6 +158,7 @@ namespace GameServer.Managers
                     _description = Master.ServerConfig.Description,
                     _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
                     _currentPlayerCount = ServerNetwork.Instance.ServerClients.Count,
+                    _version = CommonValues.ExecutableVersion,
                     _config = Master.ModConfig
                 };
 
