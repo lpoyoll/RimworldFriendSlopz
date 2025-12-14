@@ -90,11 +90,11 @@ namespace GameServer.Managers
                 return false;
             }
 
-            if (!IPAddress.TryParse(serverBrowserInfo.PublicEndPoint, out _))
+            if (!IsValidEndPoint(serverBrowserInfo.PublicEndPoint))
             {
+                Printer.Error($"Public endpoint \"{serverBrowserInfo.PublicEndPoint}\" is not a valid ip address. Server browser features have been turned off and faulty entry has been removed.");
                 serverBrowserInfo.PublicEndPoint = "";
                 serverBrowserInfo.Save();
-                Printer.Error($"Public endpoint \"{serverBrowserInfo.PublicEndPoint}\" is not a valid ip address. Server browser features have been turned off and faulty entry has been removed.");
             }
             
             if (string.IsNullOrEmpty(serverBrowserInfo.PublicEndPoint))
@@ -129,7 +129,7 @@ namespace GameServer.Managers
 
                 ip = ip.Trim();
 
-                if (!IPAddress.TryParse(ip, out _))
+                if (!IsValidEndPoint(ip))
                     return false;
 
                 Master.ServerBrowserConfig.PublicEndPoint = ip;
@@ -142,6 +142,20 @@ namespace GameServer.Managers
                 Printer.Warning($"Failed to automatically resolve public IP address: {ex.Message}", LogImportanceMode.Verbose);
                 return false;
             }
+        }
+
+        private static bool IsValidEndPoint(string endpoint)
+        {
+            try
+            {
+                if (Dns.GetHostAddresses(endpoint).Length > 0)
+                    return true;
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
         }
         
         private static async Task<bool> SendServerInformation()
