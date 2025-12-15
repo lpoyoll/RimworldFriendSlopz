@@ -94,8 +94,6 @@ namespace GameClient
 
             try
             {
-                SessionHandler.CurrentNetworkState = ClientNetworkState.Connecting;
-
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
                 ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, 

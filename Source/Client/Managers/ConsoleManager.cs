@@ -42,14 +42,12 @@ namespace GameClient.Managers
         private static void OnOpCommand()
         {
             SessionHandler.IsAdmin = true;
-            SessionHandler.ManageDevOptions();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are now an admin!" }));
         }
 
         private static void OnDeopCommand()
         {
             SessionHandler.IsAdmin = false;
-            SessionHandler.ManageDevOptions();
             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are no longer an admin!" }));
         }
 

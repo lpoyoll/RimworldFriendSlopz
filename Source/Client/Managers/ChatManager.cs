@@ -77,7 +77,7 @@ namespace GameClient.Managers
             }
         }
 
-        [TriggerOnSessionEnd]
+        [OnSessionEnd]
         private static void CleanChat()
         {
             CurrentChatInput = string.Empty;

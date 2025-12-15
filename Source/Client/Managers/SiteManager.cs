@@ -194,7 +194,7 @@ namespace GameClient.Managers
             SaveManager.ForceSave();
         }
 
-        [TriggerOnSessionStart]
+        [OnSessionStart]
         private static void StartTickingSites()
         {
             Token = new CancellationTokenSource();
@@ -219,7 +219,7 @@ namespace GameClient.Managers
             });
         }
 
-        [TriggerOnSessionEnd]
+        [OnSessionEnd]
         private static void StopTickingSites() { Token.Cancel(); }
 
         public static void AskForSiteRewards()

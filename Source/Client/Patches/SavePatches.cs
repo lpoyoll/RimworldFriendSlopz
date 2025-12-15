@@ -20,8 +20,6 @@ namespace GameClient.Patches
                 if (SessionHandler.IsSavingGame) return false;
 
                 SessionHandler.IsSavingGame = true;
-                SessionHandler.ForcePermadeath();
-                SessionHandler.ManageDevOptions();
 
                 GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
                 GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);

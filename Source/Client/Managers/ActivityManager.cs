@@ -40,7 +40,7 @@ namespace GameClient.Managers
                 return;
             }
 
-            SessionHandler.ToggleActivity(type);
+            SessionHandler.latestActivity = type;
 
             SendRequest(targetTile);
         }

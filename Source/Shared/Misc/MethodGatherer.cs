@@ -82,7 +82,7 @@ namespace Shared
             for (int x = 0; x < types.Length; x++)
             {
                 toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(fetch => fetch.GetCustomAttribute<TriggerOnSessionStart>() != null).ToList());
+                    .Where(fetch => fetch.GetCustomAttribute<OnSessionStart>() != null).ToList());
             }
 
             return toAdd.ToArray();
@@ -94,7 +94,7 @@ namespace Shared
             for (int x = 0; x < types.Length; x++)
             {
                 toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(fetch => fetch.GetCustomAttribute<TriggerOnSessionEnd>() != null).ToList());
+                    .Where(fetch => fetch.GetCustomAttribute<OnSessionEnd>() != null).ToList());
             }
 
             return toAdd.ToArray();
@@ -106,7 +106,7 @@ namespace Shared
             for (int x = 0; x < types.Length; x++)
             {
                 toAdd.AddRange(types[x].GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
-                    .Where(fetch => fetch.GetCustomAttribute<TriggerPerFrame>() != null).ToList());
+                    .Where(fetch => fetch.GetCustomAttribute<OnUpdate>() != null).ToList());
             }
 
             return toAdd.ToArray();

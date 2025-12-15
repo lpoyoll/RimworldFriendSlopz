@@ -26,7 +26,6 @@ namespace GameClient.Patches
                     if (!SessionHandler.IsGeneratingFreshWorld) SaveManager.ForceSave();
                     else ModManager.OpenModManagerMenu(true);
 
-                    SessionHandler.ForcePermadeath();
                     SessionHandler.IsReadyToPlay = true;
 
                     MainThreadHandler.Instance.DoOnStartMethods();
@@ -48,22 +47,10 @@ namespace GameClient.Patches
                     GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
                     GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
 
-                    SessionHandler.ForcePermadeath();
                     SessionHandler.IsReadyToPlay = true;
 
                     MainThreadHandler.Instance.DoOnStartMethods();
                 }
-            }
-        }
-
-        [HarmonyPatch(typeof(Dialog_Options), nameof(Dialog_Options.DoWindowContents))]
-        public static class PatchDevMode
-        {
-            [HarmonyPostfix]
-            public static void DoPost()
-            {
-                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected) SessionHandler.ManageDevOptions();
-                else return;
             }
         }
     }

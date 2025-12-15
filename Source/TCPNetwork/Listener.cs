@@ -52,7 +52,8 @@ namespace TCPNetwork
             PacketHeader.WorldManager,
             PacketHeader.GlobalDataManager,
             PacketHeader.RecountManager,
-            PacketHeader.ChatManager
+            PacketHeader.ChatManager,
+            PacketHeader.ConsoleManager
         };
 
 

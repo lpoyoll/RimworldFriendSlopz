@@ -83,20 +83,24 @@ namespace GameClient.Misc
             CurrentActionValues = serverGlobalData._actionValues;
         }
 
-        public static void ToggleActivity(ActivityType type) { latestActivity = type; }
-
-        public static void ForcePermadeath() { Current.Game.Info.permadeathMode = true; }
-
-        public static void ManageDevOptions()
+        [OnUpdate]
+        private static void ForcePermadeath()
         {
-            if (IsAdmin) return;
-            else Prefs.DevMode = false;
+            try { Current.Game.Info.permadeathMode = true; }
+            catch { }
         }
 
-        [TriggerOnSessionEnd]
+        [OnUpdate]
+        private static void ManageDevOptions()
+        {
+            try { if (!IsAdmin) Prefs.DevMode = false; }
+            catch { }
+        }
+
+        [OnSessionEnd]
         private static void CleanValues()
         {
-            ToggleActivity(ActivityType.None);
+            latestActivity = ActivityType.None;
 
             ChosenSettlement = null;
             ChosenCaravan = null;

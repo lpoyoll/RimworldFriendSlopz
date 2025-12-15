@@ -14,13 +14,13 @@ namespace Shared
     }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class TriggerOnSessionStart() : Attribute { }
+    public class OnSessionStart() : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class TriggerOnSessionEnd() : Attribute { }
+    public class OnSessionEnd() : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class TriggerPerFrame() : Attribute { }
+    public class OnUpdate() : Attribute { }
 
     public enum PacketHeader : byte
     {

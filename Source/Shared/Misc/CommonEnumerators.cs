@@ -2,7 +2,7 @@ namespace Shared
 {
     public class CommonEnumerators
     {
-        public enum ClientNetworkState { Disconnected, Connecting, Connected }
+        public enum ClientNetworkState { Disconnected, Connected }
 
         public enum GenStepMode { Scenario, Storyteller, Difficulty }
 
