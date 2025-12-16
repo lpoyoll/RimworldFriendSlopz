@@ -34,10 +34,7 @@ namespace GameClient
             }
         };
 
-        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode)
-        {
-
-        };
+        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
 
         public override Action<ServerClient> OnDisconnect { get; set; } = delegate 
         {
@@ -46,6 +43,16 @@ namespace GameClient
                 Instance.Disconnect();
                 MainThreadHandler.Instance.DoOnEndMethods();
             });
+        };
+
+        public override Action<ServerClient> OnKAFlag { get; set; } = delegate (ServerClient client)
+        {
+            if (SessionHandler.IsIntentionalDisconnect)
+            {
+                Printer.Warning("We executed this");
+                ClientNetwork.Instance.ClientListener.DisconnectFlag = true;
+                ClientNetwork.Instance.ClientListener.OnDisconnect(client);
+            }
         };
 
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
@@ -100,7 +107,7 @@ namespace GameClient
             {
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
-                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, 
+                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, OnKAFlag, 
                     OnMessage, OnWarning, OnError, Listener.ListenerMode.Client);
             }
             catch { return false; }

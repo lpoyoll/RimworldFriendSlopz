@@ -31,6 +31,8 @@ namespace TCPNetwork
 
         public virtual Action<ServerClient> OnDisconnect { get; set; }
 
+        public virtual Action<ServerClient> OnKAFlag { get; set; }
+
         public Listener ClientListener { get; set; } = null;
 
         public TcpListener ServerListener { get; set; }

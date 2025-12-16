@@ -32,7 +32,9 @@ namespace TCPNetwork
 
         private Action<bool> OnWritePacket { get; set; } = null;
 
-        private Action<ServerClient> OnDisconnect { get; set; } = null;
+        public Action<ServerClient> OnDisconnect { get; set; } = null;
+
+        private Action<ServerClient> OnKAFlag { get; set; } = null;
 
         private Action<object, LogImportanceMode> OnMessage { get; set; } = null;
 
@@ -44,7 +46,7 @@ namespace TCPNetwork
 
         public static readonly string DefaultParserMethodName = "ParsePacket";
 
-        public static readonly int KeepAliveCooldown = 3000;
+        public static readonly int KeepAliveCooldown = 30000;
 
         public static readonly PacketHeader[] BypassReadyPackets =
         {
@@ -65,7 +67,7 @@ namespace TCPNetwork
         };
 
         public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
-            Action<ServerClient> onDisconnect, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
+            Action<ServerClient> onDisconnect, Action<ServerClient> onKAFlag, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
             Action<object, LogImportanceMode> onError, ListenerMode mode)
         {
             this.Connection = connection;
@@ -75,6 +77,7 @@ namespace TCPNetwork
             this.OnMessage = onMessage;
             this.OnWarning = onWarning;
             this.OnError = onError;
+            this.OnKAFlag = onKAFlag;
 
             this.OnReadPacket = onReadPacket;
             this.OnWritePacket = onWritePacket;
@@ -167,8 +170,7 @@ namespace TCPNetwork
                     OnWritePacket(false);
                 }
             }
-            catch (System.IO.IOException e) { OnWarning(e, LogImportanceMode.Verbose); }
-            catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
+            catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
 
             DisconnectFlag = true;
         }
@@ -179,14 +181,14 @@ namespace TCPNetwork
             {
                 while (!DisconnectFlag)
                 {
+                    this.OnKAFlag.Invoke(TargetClient);
+
                     Thread.Sleep(1000);
                     KeepAliveData keepAliveData = new KeepAliveData();
                     EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
                 }
             }
             catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
-
-            DisconnectFlag = true;
         }
 
         private void CheckConnectionHealth()
@@ -196,7 +198,6 @@ namespace TCPNetwork
                 while (!DisconnectFlag)
                 {
                     KeepAliveFlag = true;
-
                     Thread.Sleep(KeepAliveCooldown);
 
                     if (KeepAliveFlag) break;
@@ -206,9 +207,6 @@ namespace TCPNetwork
             catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
 
             DisconnectFlag = true;
-
-            Thread.Sleep(1000);
-
             this.OnDisconnect(TargetClient);
         }
 

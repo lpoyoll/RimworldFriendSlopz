@@ -19,15 +19,14 @@ namespace GameServer
             MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { client, buffer, header });
         };
 
-        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode)
-        {
-
-        };
+        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
 
         public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
         { 
             Instance.Disconnect(client); 
         };
+
+        public override Action<ServerClient> OnKAFlag { get; set; } = delegate (ServerClient client) { };
 
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
         {
@@ -88,7 +87,7 @@ namespace GameServer
             TcpClient newTCP = ServerListener.AcceptTcpClient();
 
             ServerClient newServerClient = new ServerClient(newTCP);
-            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnWritePacket, OnDisconnect,
+            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnWritePacket, OnDisconnect, OnKAFlag,
                 OnMessage, OnWarning, OnError, Listener.ListenerMode.Server);
 
             if (Master.IsClosing)
