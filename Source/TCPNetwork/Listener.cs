@@ -34,7 +34,7 @@ namespace TCPNetwork
 
         public Action<ServerClient> OnDisconnect { get; set; } = null;
 
-        private Action<ServerClient> OnKAFlag { get; set; } = null;
+        private Action<ServerClient> OnSendFlag { get; set; } = null;
 
         private Action<object, LogImportanceMode> OnMessage { get; set; } = null;
 
@@ -67,7 +67,7 @@ namespace TCPNetwork
         };
 
         public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
-            Action<ServerClient> onDisconnect, Action<ServerClient> onKAFlag, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
+            Action<ServerClient> onDisconnect, Action<ServerClient> onSendFlag, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
             Action<object, LogImportanceMode> onError, ListenerMode mode)
         {
             this.Connection = connection;
@@ -77,7 +77,7 @@ namespace TCPNetwork
             this.OnMessage = onMessage;
             this.OnWarning = onWarning;
             this.OnError = onError;
-            this.OnKAFlag = onKAFlag;
+            this.OnSendFlag = onSendFlag;
 
             this.OnReadPacket = onReadPacket;
             this.OnWritePacket = onWritePacket;
@@ -86,7 +86,7 @@ namespace TCPNetwork
             Task.Run(() => Read());
             Task.Run(() => Write());
             Task.Run(() => SendKAFlag());
-            Task.Run(() => CheckConnectionHealth());
+            Task.Run(() => CheckKAFlag());
         }
 
         public void EnqueuePacket(PacketHeader header, object obj)
@@ -181,7 +181,7 @@ namespace TCPNetwork
             {
                 while (!DisconnectFlag)
                 {
-                    this.OnKAFlag.Invoke(TargetClient);
+                    this.OnSendFlag.Invoke(TargetClient);
 
                     Thread.Sleep(1000);
                     KeepAliveData keepAliveData = new KeepAliveData();
@@ -191,7 +191,7 @@ namespace TCPNetwork
             catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
         }
 
-        private void CheckConnectionHealth()
+        private void CheckKAFlag()
         {
             try
             {

@@ -45,7 +45,7 @@ namespace GameClient
             });
         };
 
-        public override Action<ServerClient> OnKAFlag { get; set; } = delegate (ServerClient client)
+        public override Action<ServerClient> OnSendFlag { get; set; } = delegate (ServerClient client)
         {
             if (SessionHandler.IsIntentionalDisconnect)
             {
@@ -107,7 +107,7 @@ namespace GameClient
             {
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
-                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, OnKAFlag, 
+                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, OnSendFlag, 
                     OnMessage, OnWarning, OnError, Listener.ListenerMode.Client);
             }
             catch { return false; }
