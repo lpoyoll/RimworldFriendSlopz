@@ -15,7 +15,7 @@ namespace GameServer.Managers
             data._stepMode = ResponseStepMode.IllegalAction;
 
             client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
-            client.Listener.DisconnectFlag = true;
+            client.Listener.Disconnect();
 
             if (shouldBroadcast)
             {

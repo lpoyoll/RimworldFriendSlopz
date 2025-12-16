@@ -79,7 +79,7 @@ namespace GameServer.Commands
         public static void DisconnectCommandAction()
         {
             if (TargetClient == null) return;
-            else TargetClient.Listener.DisconnectFlag = true;
+            else TargetClient.Listener.Disconnect();
         }
 
         public static void PrivateMessageCommandAction()

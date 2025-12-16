@@ -8,7 +8,7 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.KeepAliveManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            ClientNetwork.Instance.ClientListener.KeepAliveFlag = false;
+            ClientNetwork.Instance.ClientListener.CurrentKeepAliveTime = 0;
         }
     }
 }

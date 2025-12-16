@@ -24,9 +24,7 @@ namespace TCPNetwork
 
         public NetworkStream Stream { get; set; } = null;
 
-        public bool DisconnectFlag { get; set; } = false;
-
-        public bool KeepAliveFlag { get; set; } = false;
+        private bool DisconnectFlag { get; set; } = false;
 
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = null;
 
@@ -45,6 +43,8 @@ namespace TCPNetwork
         private ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
 
         public static readonly string DefaultParserMethodName = "ParsePacket";
+
+        public int CurrentKeepAliveTime { get; set; } = 0;
 
         public static readonly int KeepAliveCooldown = 30000;
 
@@ -118,21 +118,13 @@ namespace TCPNetwork
                         else OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
                         try { OnReadPacket(header, buffer, TargetClient); }
-                        catch (Exception ex) { OnHandleError(ex); }
-
-                        void OnHandleError(Exception e)
-                        {
-                            OnError($"Error while trying to execute method from type '{header}'", LogImportanceMode.Verbose);
-                            OnError("Forcefully disconnecting due to MethodManager exception", LogImportanceMode.Verbose);
-                            OnError(e, LogImportanceMode.Verbose);
-                            DisconnectFlag = true;
-                        }
+                        catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
                     }
                 }
             }
             catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
 
-            DisconnectFlag = true;
+            Disconnect();
         }
 
         private void Write()
@@ -169,7 +161,7 @@ namespace TCPNetwork
             }
             catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
 
-            DisconnectFlag = true;
+            Disconnect();
         }
 
         private void SendKAFlag()
@@ -194,17 +186,15 @@ namespace TCPNetwork
             {
                 while (!DisconnectFlag)
                 {
-                    KeepAliveFlag = true;
-                    Thread.Sleep(KeepAliveCooldown);
+                    Thread.Sleep(1);
 
-                    if (KeepAliveFlag) break;
-                    else continue;
+                    if (CurrentKeepAliveTime < KeepAliveCooldown) CurrentKeepAliveTime++;
+                    else break;
                 }
             }
             catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
 
-            DisconnectFlag = true;
-            this.OnDisconnect(TargetClient);
+            Disconnect();
         }
 
         private void ReadFullPacket(byte[] content)
@@ -223,10 +213,17 @@ namespace TCPNetwork
             catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
         }
 
-        public void DestroyConnection() 
-        { 
-            Connection.Dispose();
-            Stream.Dispose();
+        public void Disconnect()
+        {
+            if (DisconnectFlag) return;
+            else
+            {
+                DisconnectFlag = true;
+                Connection.Dispose();
+                Stream.Dispose();
+
+                this.OnDisconnect(TargetClient);
+            }
         }
     }
 }

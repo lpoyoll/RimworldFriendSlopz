@@ -22,8 +22,17 @@ namespace GameServer
         public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
 
         public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
-        { 
-            Instance.Disconnect(client); 
+        {
+            try
+            {
+                Instance.ServerClients.Remove(client);
+
+                Main_.ChangeTitle();
+                UserManager.SendPlayerRecount();
+                InformationDisplayer.DisplayDisconnect(client);
+                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
+            }
+            catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
         };
 
         public override Action<ServerClient> OnSendFlag { get; set; } = delegate (ServerClient client) { };
@@ -79,10 +88,10 @@ namespace GameServer
 
             Main_.ChangeTitle();
 
-            while (true) TryConnect();
+            while (true) ListenForNewClients();
         }
 
-        private void TryConnect()
+        private void ListenForNewClients()
         {
             TcpClient newTCP = ServerListener.AcceptTcpClient();
 
@@ -92,7 +101,7 @@ namespace GameServer
 
             if (Master.IsClosing)
             {
-                newServerClient.Listener.DisconnectFlag = true;
+                newServerClient.Listener.Disconnect();
             }
 
             else if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
@@ -115,26 +124,6 @@ namespace GameServer
 
                 VersionManager.AskForClientVersion(newServerClient);
             }
-        }
-
-        public void Disconnect(ServerClient client)
-        {
-            try
-            {
-                ServerClients.Remove(client);
-
-                if (ClientListener != null)
-                {
-                    client.Listener.DestroyConnection();
-                    client.Listener = null;
-                }
-
-                Main_.ChangeTitle();
-                UserManager.SendPlayerRecount();
-                InformationDisplayer.DisplayDisconnect(client);
-                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
-            }
-            catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
         }
 
         public ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)

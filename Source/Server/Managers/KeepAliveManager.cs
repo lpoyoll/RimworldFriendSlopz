@@ -9,7 +9,7 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.KeepAliveManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            client.Listener.KeepAliveFlag = false;
+            client.Listener.CurrentKeepAliveTime = 0;
         }
     }
 }

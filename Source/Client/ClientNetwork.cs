@@ -40,34 +40,31 @@ namespace GameClient
         {
             MainThreadHandler.Instance.Enqueue(delegate
             {
-                Instance.Disconnect();
+                DisconnectionManager.HandleDisconnect();
                 MainThreadHandler.Instance.DoOnEndMethods();
+                SessionHandler.CurrentNetworkState = ClientNetworkState.Disconnected;
+                Printer.Warning($"Disconnecting from server", LogImportanceMode.Verbose);
             });
         };
 
         public override Action<ServerClient> OnSendFlag { get; set; } = delegate (ServerClient client)
         {
-            if (SessionHandler.IsIntentionalDisconnect)
-            {
-                Printer.Warning("We executed this");
-                ClientNetwork.Instance.ClientListener.DisconnectFlag = true;
-                ClientNetwork.Instance.ClientListener.OnDisconnect(client);
-            }
+            if (SessionHandler.IsIntentionalDisconnect) ClientNetwork.Instance.ClientListener.Disconnect();
         };
 
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
         {
-            Printer.Message(obj, mode);
+            MainThreadHandler.Instance.Enqueue(delegate { Printer.Message(obj, mode); });
         };
 
         public override Action<object, LogImportanceMode> OnWarning { get; set; } = delegate (object obj, LogImportanceMode mode)
         {
-            Printer.Warning(obj, mode);
+            MainThreadHandler.Instance.Enqueue(delegate { Printer.Warning(obj, mode); });
         };
 
         public override Action<object, LogImportanceMode> OnError { get; set; } = delegate (object obj, LogImportanceMode mode)
         {
-            Printer.Error(obj, mode);
+            MainThreadHandler.Instance.Enqueue(delegate { Printer.Error(obj, mode); });
         };
 
         public ClientNetwork()
@@ -95,7 +92,7 @@ namespace GameClient
                 RT_Dialog_Wait.Instance.Close();
                 RT_Dialog_Message d1 = new RT_Dialog_Message("ERROR", new string[] { "The server did not respond in time" });
                 RT_Dialog_Base.PushNewDialog(d1);
-                Disconnect();
+                OnDisconnect.Invoke(null);
             }
         }
 
@@ -113,21 +110,6 @@ namespace GameClient
             catch { return false; }
 
             return true;
-        }
-
-        public void Disconnect()
-        {
-            Printer.Warning($"Disconnecting from server", LogImportanceMode.Verbose);
-
-            SessionHandler.CurrentNetworkState = ClientNetworkState.Disconnected;
-
-            if (ClientListener != null)
-            {
-                ClientListener.DestroyConnection();
-                ClientListener = null;
-            }
-
-            DisconnectionManager.HandleDisconnect();
         }
     }
 }

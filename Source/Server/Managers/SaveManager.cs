@@ -24,7 +24,7 @@ namespace GameServer.Managers
 
         public static void OnUserSave(ServerClient client, SaveData fileTransferData)
         {
-            if (fileTransferData._forceDisconnect) client.Listener.DisconnectFlag = true;
+            if (fileTransferData._forceDisconnect) client.Listener.Disconnect();
 
             InformationDisplayer.DisplaySaveGame(client);
         }
@@ -47,8 +47,8 @@ namespace GameServer.Managers
                 ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username}'s save was attempted to be reset while the player doesn't have a save");
                 return;
             }
-            client.Listener.DisconnectFlag = true;
 
+            client.Listener.Disconnect();
             ResetPlayerData(client, client.UserFile.Username);
         }
 
@@ -56,7 +56,7 @@ namespace GameServer.Managers
         {
             BackupManager.BackupUser(username);
 
-            if (client != null) client.Listener.DisconnectFlag = true;
+            if (client != null) client.Listener.Disconnect();
 
             // Delete save file
             try { File.Delete(Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat)); }
