@@ -24,8 +24,6 @@ namespace TCPNetwork
 
         public NetworkStream Stream { get; set; } = null;
 
-        private bool DisconnectFlag { get; set; } = false;
-
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = null;
 
         private Action<bool> OnWritePacket { get; set; } = null;
@@ -42,11 +40,13 @@ namespace TCPNetwork
 
         private ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
 
-        public static readonly string DefaultParserMethodName = "ParsePacket";
+        private bool DisconnectFlag { get; set; } = false;
 
         public int CurrentKeepAliveTime { get; set; } = 0;
 
-        public static readonly int KeepAliveCooldown = 30000;
+        public static readonly int KeepAliveMaxTime = 30000;
+
+        public static readonly string DefaultParserMethodName = "ParsePacket";
 
         public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAliveManager };
 
@@ -187,7 +187,7 @@ namespace TCPNetwork
                 {
                     Thread.Sleep(1);
 
-                    if (CurrentKeepAliveTime < KeepAliveCooldown) CurrentKeepAliveTime++;
+                    if (CurrentKeepAliveTime < KeepAliveMaxTime) CurrentKeepAliveTime++;
                     else break;
                 }
             }
