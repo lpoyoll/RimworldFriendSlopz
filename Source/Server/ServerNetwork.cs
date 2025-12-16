@@ -24,7 +24,10 @@ namespace GameServer
 
         };
 
-        public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) { Instance.Disconnect(client); };
+        public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
+        { 
+            Instance.Disconnect(client); 
+        };
 
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
         {
@@ -120,7 +123,12 @@ namespace GameServer
             try
             {
                 ServerClients.Remove(client);
-                client.Listener.DestroyConnection();
+
+                if (ClientListener != null)
+                {
+                    client.Listener.DestroyConnection();
+                    client.Listener = null;
+                }
 
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();

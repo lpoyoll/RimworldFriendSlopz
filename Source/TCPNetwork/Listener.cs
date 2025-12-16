@@ -4,12 +4,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
-using TCPNetwork.Packets;
-using TCPNetwork.Files.Client;
 
 namespace TCPNetwork
 {
@@ -17,15 +18,15 @@ namespace TCPNetwork
     {
         public enum ListenerMode { Client, Server }
 
-        private ServerClient TargetClient { get; set; }
+        private ServerClient TargetClient { get; set; } = null;
 
-        public TcpClient Connection { get; set; }
+        public TcpClient Connection { get; set; } = null;
 
-        public NetworkStream Stream { get; set; }
+        public NetworkStream Stream { get; set; } = null;
 
-        public bool DisconnectFlag { get; set; }
+        public bool DisconnectFlag { get; set; } = false;
 
-        private bool ClosingFlag { get; set; }
+        public bool KeepAliveFlag { get; set; } = false;
 
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = null;
 
@@ -43,6 +44,8 @@ namespace TCPNetwork
 
         public static readonly string DefaultParserMethodName = "ParsePacket";
 
+        public static readonly int KeepAliveCooldown = 3000;
+
         public static readonly PacketHeader[] BypassReadyPackets =
         {
             PacketHeader.LoginManager,
@@ -56,13 +59,10 @@ namespace TCPNetwork
             PacketHeader.ConsoleManager
         };
 
-
         public static readonly PacketHeader[] IgnoreLogPackets = 
         { 
-            PacketHeader.KeepAliveManager 
+            PacketHeader.KeepAliveManager
         };
-
-        public static readonly int KeepAliveCooldown = 3000;
 
         public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
             Action<ServerClient> onDisconnect, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
@@ -83,30 +83,19 @@ namespace TCPNetwork
             Task.Run(() => Read());
             Task.Run(() => Write());
             Task.Run(() => SendKAFlag());
-            Task.Run(() => CheckConnectionHealth(delegate { this.OnDisconnect(TargetClient); }));
+            Task.Run(() => CheckConnectionHealth());
         }
 
         public void EnqueuePacket(PacketHeader header, object obj)
         {
-            if (ClosingFlag) return;
-            
-            if (!IgnoreLogPackets.Contains(header)) OnMessage($"[Packet] Sent packet > {header}", LogImportanceMode.Verbose);
-            else OnMessage($"[Packet] > Sent packet {header}", LogImportanceMode.Extreme);
-            
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
-        }
-
-        public void EnqueuePacket(PacketHeader header, byte[] bytes)
-        {
-            if (ClosingFlag) return;
-            PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
         }
 
         private void Read()
         {
             try
             {
-                while (true)
+                while (!DisconnectFlag)
                 {
                     Thread.Sleep(1);
 
@@ -141,19 +130,16 @@ namespace TCPNetwork
                     }
                 }
             }
+            catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
 
-            catch (Exception e)
-            {
-                OnWarning(e, LogImportanceMode.Extreme);
-                DisconnectFlag = true;
-            }
+            DisconnectFlag = true;
         }
 
         private void Write()
         {
             try
             {
-                while (true)
+                while (!DisconnectFlag)
                 {
                     Thread.Sleep(1);
 
@@ -172,23 +158,58 @@ namespace TCPNetwork
 
                         // Write packet data
                         Stream.Write(packetData.Value, 0, packetData.Value.Length);
+
+                        //Log the packet data
+                        if (!IgnoreLogPackets.Contains((PacketHeader)(packetData.Key))) OnMessage($"[Packet] Sent packet > {(PacketHeader)(packetData.Key)}", LogImportanceMode.Verbose);
+                        else OnMessage($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Extreme);
                     }
 
                     OnWritePacket(false);
                 }
             }
+            catch (System.IO.IOException e) { OnWarning(e, LogImportanceMode.Verbose); }
+            catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
 
-            catch (System.IO.IOException e)
-            {
-                DisconnectFlag = true;
-                OnWarning(e, LogImportanceMode.Verbose);
-            }
+            DisconnectFlag = true;
+        }
 
-            catch (Exception e)
+        private void SendKAFlag()
+        {
+            try
             {
-                DisconnectFlag = true;
-                OnWarning(e, LogImportanceMode.Verbose);
+                while (!DisconnectFlag)
+                {
+                    Thread.Sleep(1000);
+                    KeepAliveData keepAliveData = new KeepAliveData();
+                    EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
+                }
             }
+            catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
+
+            DisconnectFlag = true;
+        }
+
+        private void CheckConnectionHealth()
+        {
+            try
+            {
+                while (!DisconnectFlag)
+                {
+                    KeepAliveFlag = true;
+
+                    Thread.Sleep(KeepAliveCooldown);
+
+                    if (KeepAliveFlag) break;
+                    else continue;
+                }
+            }
+            catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
+
+            DisconnectFlag = true;
+
+            Thread.Sleep(1000);
+
+            this.OnDisconnect(TargetClient);
         }
 
         private void ReadFullPacket(byte[] content)
@@ -204,43 +225,13 @@ namespace TCPNetwork
                     readBytes += read;
                 }
             }
-
-            catch (Exception e)
-            {
-                DisconnectFlag = true;
-                OnWarning(e, LogImportanceMode.Verbose);
-            }
+            catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
         }
 
-        private void SendKAFlag()
-        {
-            try
-            {
-                while (true)
-                {
-                    Thread.Sleep(KeepAliveCooldown);
-
-                    KeepAliveData keepAliveData = new KeepAliveData();
-                    EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
-                }
-            }
-
-            catch (Exception e)
-            {
-                DisconnectFlag = true;
-                OnWarning(e, LogImportanceMode.Verbose);
-            }
+        public void DestroyConnection() 
+        { 
+            Connection.Dispose();
+            Stream.Dispose();
         }
-
-        private void CheckConnectionHealth(Action toDo)
-        {
-            while (!DisconnectFlag) Thread.Sleep(1);
-
-            Thread.Sleep(1000);
-
-            toDo.Invoke();
-        }
-
-        public void DestroyConnection() { Connection.Close(); }
     }
 }

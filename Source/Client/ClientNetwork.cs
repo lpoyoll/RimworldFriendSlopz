@@ -7,6 +7,7 @@ using Shared;
 using System;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork;
@@ -40,8 +41,11 @@ namespace GameClient
 
         public override Action<ServerClient> OnDisconnect { get; set; } = delegate 
         {
-            Instance.Disconnect();
-            MainThreadHandler.Instance.DoOnEndMethods();
+            MainThreadHandler.Instance.Enqueue(delegate
+            {
+                Instance.Disconnect();
+                MainThreadHandler.Instance.DoOnEndMethods();
+            });
         };
 
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
