@@ -170,9 +170,8 @@ namespace TCPNetwork
             {
                 while (!DisconnectFlag)
                 {
-                    this.OnSendFlag.Invoke(TargetClient);
-
                     Thread.Sleep(1000);
+                    this.OnSendFlag.Invoke(TargetClient);
                     KeepAliveData keepAliveData = new KeepAliveData();
                     EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
                 }
