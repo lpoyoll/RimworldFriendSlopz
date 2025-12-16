@@ -48,6 +48,8 @@ namespace TCPNetwork
 
         public static readonly int KeepAliveCooldown = 30000;
 
+        public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAliveManager };
+
         public static readonly PacketHeader[] BypassReadyPackets =
         {
             PacketHeader.LoginManager,
@@ -59,11 +61,6 @@ namespace TCPNetwork
             PacketHeader.RecountManager,
             PacketHeader.ChatManager,
             PacketHeader.ConsoleManager
-        };
-
-        public static readonly PacketHeader[] IgnoreLogPackets = 
-        { 
-            PacketHeader.KeepAliveManager
         };
 
         public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
