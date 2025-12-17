@@ -72,7 +72,7 @@ namespace GameServer.Managers
 
             foreach (ModConfig config in loginData._runningMods.ModConfigs)
             {
-                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName && fetch.Type == ModsConfigFile.ModType.Optional);
+                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName && fetch.Type == ModsConfigFile.ModType.Forbidden);
                 if (toFind == null)
                 {
                     conflictingModNames.Add($"[Disallowed] > {config.FileName}");
