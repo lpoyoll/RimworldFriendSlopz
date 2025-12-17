@@ -56,18 +56,6 @@ namespace GameServer.Managers
                 }
             }
 
-            //Check if has mods that are forbidden
-
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden))
-            {
-                ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
-                if (toFind != null)
-                {
-                    conflictingModNames.Add($"[Forbidden] > {config.FileName}");
-                    continue;
-                }
-            }
-
             //Check if has mods that aren't required or optional
 
             foreach (ModConfig config in loginData._runningMods.ModConfigs)
