@@ -48,7 +48,7 @@ namespace GameServer.Misc
                     Console.ForegroundColor = ConsoleColor.White;
                 }
             }
-            catch { throw new Exception($"Logger encountered an error. This should never happen"); }
+            catch(Exception ex) { throw new Exception($"Logger encountered an error. This should never happen\n{ex}"); }
 
             Semaphore.Release();
         }
