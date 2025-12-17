@@ -70,10 +70,9 @@ namespace GameServer.Managers
 
             //Check if has mods that aren't required or optional
 
-            foreach (ModConfig config in loginData._runningMods.ModConfigs.Where(fetch => fetch.Type != ModsConfigFile.ModType.Forbidden))
+            foreach (ModConfig config in loginData._runningMods.ModConfigs)
             {
-                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
-
+                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName && fetch.Type == ModsConfigFile.ModType.Optional);
                 if (toFind == null)
                 {
                     conflictingModNames.Add($"[Disallowed] > {config.FileName}");
