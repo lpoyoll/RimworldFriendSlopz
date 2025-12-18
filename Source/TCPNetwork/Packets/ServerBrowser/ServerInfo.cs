@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MessagePack;
 using Shared.Files.Configs.Mods;
 
 namespace Rimworld_Together_Master_Server.Data
@@ -17,6 +18,7 @@ namespace Rimworld_Together_Master_Server.Data
         public int _currentPlayerCount;
         public int _port;
         public string _version;
+        [IgnoreMember] public volatile Reachability Reachability = Reachability.Unknown;
         public override bool Equals(object? obj)
         {
             if (obj is ServerInfo info)
@@ -24,7 +26,7 @@ namespace Rimworld_Together_Master_Server.Data
                 return info._ip == _ip && info._port == _port;
             }
             else
-            return base.Equals(obj);
+                return base.Equals(obj);
         }
         public override int GetHashCode()
         {

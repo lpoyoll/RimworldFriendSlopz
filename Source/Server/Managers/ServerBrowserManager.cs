@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Mime;
 using System.Text;
 using GameServer.Core;
 using GameServer.Misc;
@@ -7,13 +8,12 @@ using Shared;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using Shared.Files.Configs;
+using TCPNetwork.Files.Client;
 
 namespace GameServer.Managers
 {
     public static class ServerBrowserManager
     {
-        private const string MasterServer = "https://rimworldtogether.eragon.dev";
-
         private const string GetPublicIpAddressURL = "https://api.ipify.org";
         
         private const int MaxDescriptionLength = 200;
@@ -27,6 +27,22 @@ namespace GameServer.Managers
         private static HttpClientHandler handler = new HttpClientHandler() { UseProxy = false };
 
         private static HttpClient Client = new HttpClient(handler) { DefaultRequestVersion = HttpVersion.Version11 };
+        
+        private static bool IsRunning { get; set; }= false;
+
+        [HandlesPacket(PacketHeader.ServerBrowserReachability)]
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            if(!IsRunning)
+                ResponseShortcutManager.SendIllegalPacket(client, 
+                    "Server did not have the server browser enabled, if you're seeing this then a bug occured", false);
+            client.Listener.EnqueuePacket(PacketHeader.ServerBrowserReachability, new KeepAliveData());
+            Task.Run(() =>
+            {
+                Thread.Sleep(200);
+                client.Listener.Disconnect();
+            });
+        }
 
         public static void StartFeature()
         {
@@ -36,7 +52,7 @@ namespace GameServer.Managers
                 {
                     Printer.Warning("Server discovery is ENABLED");
                     Printer.Warning("The server details are currently being transmitted to the public browser");
-
+                    
                     Task.Run(async () =>
                     {
                         while (true)
@@ -46,6 +62,7 @@ namespace GameServer.Managers
                             else await Task.Delay(DelayBetweenErrors);
                         }
                     });
+                    AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
                 }
             }
 
@@ -100,8 +117,11 @@ namespace GameServer.Managers
             if (string.IsNullOrEmpty(serverBrowserInfo.PublicEndPoint))
             {
                 if(!GetPublicIpAddressAsync().Result)
-                    Printer.Error($"Public endpoint is empty. Please set your public ip address or domain. Server browser features have been turned off.");
-                return false;
+                {
+                    Printer.Error(
+                        $"Public endpoint is empty. Please set your public ip address or domain. Server browser features have been turned off.");
+                    return false;
+                }
             }
             
             if (serverInfo.Name.Length > MaxNameLength)
@@ -176,7 +196,7 @@ namespace GameServer.Managers
                     _config = Master.ModConfig
                 };
 
-                HttpResponseMessage response = await Client.PostAsync(MasterServer, 
+                HttpResponseMessage response = await Client.PostAsync(CommonValues.MasterServer, 
                     new StringContent(Serializer.SerializeToString(info), Encoding.UTF8, "application/json"));
 
                 response.EnsureSuccessStatusCode();
@@ -198,7 +218,7 @@ namespace GameServer.Managers
                 Client.DefaultRequestHeaders.Clear();
                 Client.DefaultRequestHeaders.Add("action", "Player-Count");
 
-                HttpResponseMessage response = await Client.PostAsync(MasterServer,
+                HttpResponseMessage response = await Client.PostAsync(CommonValues.MasterServer,
                     new StringContent(ServerNetwork.Instance.ServerClients.Count.ToString()));
 
                 response.EnsureSuccessStatusCode();
@@ -210,6 +230,24 @@ namespace GameServer.Managers
                 Printer.Error(ex, LogImportanceMode.Verbose);
                 return false;
             }
+        }
+        
+        private static void SendClosureSignalFromApplicationShutdown(object sender, EventArgs e)
+        {
+            SendClosureSignal().Wait();
+        }
+        private static async Task SendClosureSignal() 
+        {
+            Client.DefaultRequestHeaders.Clear();
+            Client.DefaultRequestHeaders.Add("action", "Remove-Server-Browser");
+            ServerInfo info = new ServerInfo()
+            {
+                _ip = Master.ServerBrowserConfig.PublicEndPoint,
+                _port = int.Parse(Master.ServerConfig.Port),
+                _name = Master.ServerConfig.Name
+            };
+            HttpResponseMessage response = await Client.PostAsync(CommonValues.MasterServer,
+                new StringContent(Serializer.SerializeToString(info)));
         }
     }
 }

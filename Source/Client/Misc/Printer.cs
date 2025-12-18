@@ -11,6 +11,24 @@ namespace GameClient.Misc
     {
         private static readonly Color RTColor = new  Color(140f, 0f, 255f);
         
+        public static void EnqueueMessage(object value, LogImportanceMode importance = LogImportanceMode.Normal)
+        {
+            if (CheckIfShouldPrint(importance))
+                MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Message, importance);});
+        }
+
+        public static void EnqueueWarning(object value, LogImportanceMode importance = LogImportanceMode.Normal)
+        {
+            if (CheckIfShouldPrint(importance))
+                MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Warning, importance);});
+        }
+
+        public static void EnqueueError(object value, LogImportanceMode importance = LogImportanceMode.Normal)
+        {
+            if (CheckIfShouldPrint(importance))
+                MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Error, importance);});
+        }
+        
         public static void Message(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Message, importance); }
 
         public static void Warning(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Warning, importance); }
@@ -24,6 +42,7 @@ namespace GameClient.Misc
             if (CheckIfShouldPrint(importance))
             {
                 string toWrite = $"[RT] > {text}";
+
 
                 switch (mode)
                 {

@@ -13,6 +13,7 @@ namespace TCPNetwork
 {
     public class Network
     {
+        public const int PacketLengthSizeInBytes = sizeof(int);
         public static string Ip { get; set; } = string.Empty;
 
         public static string Port { get; set; } = string.Empty;

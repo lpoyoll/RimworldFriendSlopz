@@ -60,7 +60,8 @@ namespace TCPNetwork
             PacketHeader.GlobalDataManager,
             PacketHeader.RecountManager,
             PacketHeader.ChatManager,
-            PacketHeader.ConsoleManager
+            PacketHeader.ConsoleManager,
+            PacketHeader.ServerBrowserReachability
         };
 
         public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
@@ -107,7 +108,7 @@ namespace TCPNetwork
                         PacketHeader header = (PacketHeader)buffer[0];
 
                         // Read packet size
-                        buffer = new byte[4];
+                        buffer = new byte[Network.PacketLengthSizeInBytes];
                         Stream.Read(buffer, 0, buffer.Length);
 
                         // Read packet contents

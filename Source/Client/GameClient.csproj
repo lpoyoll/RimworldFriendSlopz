@@ -3,7 +3,7 @@
 		<TargetFramework>net472</TargetFramework>
 		<RootNamespace>GameClient</RootNamespace>
 		<Nullable>disable</Nullable>
-		<LangVersion>12</LangVersion>
+		<LangVersion>latest</LangVersion>
 		<OutputPath>..\..\1.6\Assemblies</OutputPath>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
@@ -99,6 +99,12 @@
 	  </Reference>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Reference Include="System.Memory">
+			<Aliases>sysmem</Aliases>
+		</Reference>
+	</ItemGroup>
+	
 	<ItemGroup>
 	  <Reference Update="System.Xml.Linq">
 	    <Private>False</Private>

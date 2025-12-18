@@ -6,14 +6,13 @@ using TCPNetwork.Packets;
 using Shared;
 using UnityEngine;
 using Verse;
+using Reachability = Rimworld_Together_Master_Server.Data.Reachability;
 
 namespace GameClient.Dialogs
 {
     public class RT_Dialog_ServerListing : RT_Dialog_Base
     {
         public override Vector2 InitialSize => new Vector2(650f, 400f);
-
-        public ServerInfo[] AllServers { get; private set; } = new ServerInfo[0];
 
         public static RT_Dialog_Base Instance { get; private set; }
 
@@ -33,19 +32,14 @@ namespace GameClient.Dialogs
 
         private bool GetServers() 
         {
-            ServerInfo[] servers = ServerBrowserManager.GetAllServersAvailable();
+            ServerBrowserManager.GetAllServersAvailable();
 
-            if (servers == null) return false;
+            var servers = ServerBrowserManager.AllServers;
+            
+            if (servers == null || servers.Length == 0) return false;
             else
             {
-                AllServers = servers;
-
                 Printer.Warning($"Found {servers.Count()} servers in the server browser", CommonEnumerators.LogImportanceMode.Verbose);
-
-                foreach (ServerInfo server in servers)
-                {
-                    Printer.Warning($"Server found! {server._name}", CommonEnumerators.LogImportanceMode.Verbose);
-                }
 
                 return true;
             }
@@ -79,20 +73,27 @@ namespace GameClient.Dialogs
 
         private void FillMainRect(Rect mainRect)
         {
-            float height = 6f + AllServers.Length * 30f;
+            var servers = ServerBrowserManager.AllServers
+                .ToList()
+                .OrderByDescending(x => x._currentPlayerCount)
+                .Where(x => x.Reachability == Reachability.Reachable && x._version == CommonValues.ExecutableVersion)
+                .ToArray();
+            
+            float height = 6f + servers.Length * 30f;
             Rect viewRect = new Rect(0f, 0f, mainRect.width - 16f, height);
             Widgets.BeginScrollView(mainRect, ref base.ScrollPosition, viewRect);
             float num = 0;
             float num2 = base.ScrollPosition.y - 30f;
             float num3 = base.ScrollPosition.y + mainRect.height;
             int num4 = 0;
-            AllServers = AllServers.ToList().OrderByDescending(x => x._currentPlayerCount).ToArray();
-            for (int i = 0; i < AllServers.Length; i++)
+
+            for (int i = 0; i < servers.Length; i++)
             {
+                var server = servers[i];
                 if (num > num2 && num < num3)
                 {
                     Rect rect = new Rect(0f, num, viewRect.width, 30f);
-                    DrawCustomRow(rect, AllServers[i], num4);
+                    DrawCustomRow(rect, server , num4);
                 }
 
                 num += 30f;

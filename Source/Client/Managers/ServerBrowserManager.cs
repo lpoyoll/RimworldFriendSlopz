@@ -1,40 +1,128 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 using GameClient.Misc;
 using Rimworld_Together_Master_Server.Data;
 using TCPNetwork.Packets;
 using Shared;
 using Steamworks;
+using TCPNetwork;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Managers
 {
-    public class ServerBrowserManager
+    public static class ServerBrowserManager
     {
-        private static WebClient Client { get; set; } = new WebClient();
+        private const int Concurrency = 10;
+        // Using memories avoids an implicit conversion down the line
+        private static readonly Memory<byte> SenderBuffer = new byte[]{(byte)PacketHeader.ServerBrowserReachability, 0, 0, 0, 0};
+        private static readonly Memory<byte> ReceiverBuffer = new byte[Concurrency * (sizeof(PacketHeader) + Network.PacketLengthSizeInBytes)];
+        
+        private static readonly WebClient Client = new WebClient();
 
-        private static string MasterServer { get; set; } = "https://rimworldtogether.eragon.dev";
+        // I know how much you like your getters and setters, but it don't work on volatile
+        private static volatile bool IsRunning = false;
+        private static int PingedIndex { get; set; }= 0;
+        public static ServerInfo[] AllServers { get; private set; } = [];
+        
+        public static void TurnOnReachabilityChecks()
+        {
+            if(IsRunning || AllServers.Length == 0)
+                return;
+            IsRunning = true;
 
-        public static ServerInfo[] GetAllServersAvailable()
+            _ = Task.Run( async () => CheckForConnections().GetAwaiter().GetResult());
+        }
+
+        public static void TurnOffReachabilityChecks()
+        {
+            PingedIndex = 0;
+            IsRunning = false;
+        }
+        
+        private static async Task CheckForConnections()
+        {
+            List<Task> tasks = new List<Task>(Concurrency);
+            while (IsRunning && PingedIndex < AllServers.Length)
+            {
+                for (int i = 0; i < Concurrency && PingedIndex < AllServers.Length; i++, PingedIndex++)
+                {
+                    var server = AllServers[PingedIndex];
+                    if (server._version != CommonValues.ExecutableVersion)
+                    {
+                        Printer.EnqueueWarning($"Server {server._name} did not have the same version as the client", LogImportanceMode.Verbose);
+                        i--;
+                        continue;
+                    }
+                    tasks.Add(TryReachOfServer(server, i));
+                }
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+            }
+            Printer.EnqueueWarning("Finished checking for connections", LogImportanceMode.Verbose);
+            TurnOffReachabilityChecks();
+        }
+
+        private static async Task TryReachOfServer(ServerInfo server, int index)
+        {
+            using var client = new TcpClient();
+            var token = new CancellationTokenSource(500);
+            try
+            {
+                var connectTask = client.ConnectAsync(server._ip, server._port);
+                
+                if (await Task.WhenAny(connectTask, Task.Delay(500)) != connectTask)
+                {
+                    // Timed out
+                    server.Reachability = Reachability.Unreachable;
+                    Printer.EnqueueWarning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
+                    return;
+                }
+
+                using (var stream = client.GetStream())
+                {
+                    // Again, 4 because we use an int32 for length
+                    await stream.WriteAsync(SenderBuffer, token.Token);
+                    _ = await stream.ReadAsync(ReceiverBuffer, token.Token);
+                    // The server is reachable
+                    server.Reachability = Reachability.Reachable;
+                    Printer.EnqueueWarning($"Server found and reachable {server._name}", LogImportanceMode.Verbose);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // do nothing, timed out for some reason
+                server.Reachability = Reachability.Unreachable;
+                Printer.EnqueueWarning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
+            }
+            catch (Exception ex)
+            {
+                Printer.EnqueueWarning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
+                server.Reachability = Reachability.Unreachable;
+            }
+        }
+        
+        public static void GetAllServersAvailable()
         {
             try
             {
                 Client.Headers.Clear();
                 Client.Headers.Add("action", "Server-Infos");
-                string response = Client.DownloadString(MasterServer);
+                string response = Client.DownloadString(CommonValues.MasterServer);
                 if (string.IsNullOrEmpty(response))
                 {
                     Printer.Warning($"response was null");
-                    return null;
                 }
                 AllServersPacket data = Serializer.SerializeFromString<AllServersPacket>(response);
-
-                return data._serverInfos;
+                AllServers = data._serverInfos;
+                TurnOnReachabilityChecks();
             }
             catch (Exception ex)
             {
                 Printer.Error($"Error while trying to fetch info from the server browser.\n{ex}");
-                return null;
             }
         }
 

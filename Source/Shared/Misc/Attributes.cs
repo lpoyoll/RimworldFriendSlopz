@@ -55,5 +55,6 @@ namespace Shared
         SPlayerWeather,
         SPlayerMentalState,
         SPlayerGameSpeed,
+        ServerBrowserReachability,
     }
 }
