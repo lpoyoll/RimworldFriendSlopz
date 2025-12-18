@@ -52,7 +52,7 @@ namespace GameServer.Managers
                 {
                     Printer.Warning("Server discovery is ENABLED");
                     Printer.Warning("The server details are currently being transmitted to the public browser");
-                    
+                    IsRunning = true;
                     Task.Run(async () =>
                     {
                         while (true)
