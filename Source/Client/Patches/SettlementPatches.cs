@@ -3,71 +3,65 @@ using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Patches
+namespace GameClient.Patches;
+
+[HarmonyPatch(typeof(SettleInEmptyTileUtility), nameof(SettleInEmptyTileUtility.Settle))]
+public static class Patch_SettleInEmptyTileUtility_Settle
 {
-    [HarmonyPatch(typeof(SettleInEmptyTileUtility), nameof(SettleInEmptyTileUtility.Settle))]
-    public static class Patch_SettleInEmptyTileUtility_Settle
+    [HarmonyPostfix]
+    public static void ModifyPost(Caravan caravan)
     {
-        [HarmonyPostfix]
-        public static void ModifyPost(Caravan caravan)
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
-            {
-                SettlementManager.SendNewPlayerSettlement(caravan.Tile);
+            SettlementManager.SendNewPlayerSettlement(caravan.Tile);
 
-                SaveManager.ForceSave();
-            }
+            SaveManager.ForceSave();
         }
     }
+}
 
-    [HarmonyPatch(typeof(SettleInExistingMapUtility), nameof(SettleInExistingMapUtility.Settle))]
-    public static class Patch_SettleInExistingMapUtility_Settle
+[HarmonyPatch(typeof(SettleInExistingMapUtility), nameof(SettleInExistingMapUtility.Settle))]
+public static class Patch_SettleInExistingMapUtility_Settle
+{
+    [HarmonyPostfix]
+    public static void ModifyPost(Map map)
     {
-        [HarmonyPostfix]
-        public static void ModifyPost(Map map)
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
-            {
-                SettlementManager.SendNewPlayerSettlement(map.Tile);
+            SettlementManager.SendNewPlayerSettlement(map.Tile);
 
-                SaveManager.ForceSave();
-            }
+            SaveManager.ForceSave();
         }
     }
+}
 
-    [HarmonyPatch(typeof(SettlementAbandonUtility), "Abandon")]
-    public static class Patch_SettlementAbandonUtility_Abandon
+[HarmonyPatch(typeof(SettlementAbandonUtility), "Abandon")]
+public static class Patch_SettlementAbandonUtility_Abandon
+{
+    [HarmonyPostfix]
+    public static void ModifyPost(Settlement settlement)
     {
-        [HarmonyPostfix]
-        public static void ModifyPost(Settlement settlement)
-        {
-            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return;
-            else SettlementManager.AbandonSettlement(settlement.Tile);
-        }
+        if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return;
+        else SettlementManager.AbandonSettlement(settlement.Tile);
     }
+}
 
-    [HarmonyPatch(typeof(Settlement), nameof(Settlement.PostRemove))]
-    public static class Patch_Settlement_PostRemove
+[HarmonyPatch(typeof(Settlement), nameof(Settlement.PostRemove))]
+public static class Patch_Settlement_PostRemove
+{
+    [HarmonyPostfix]
+    public static void ModifyPost(Settlement __instance)
     {
-        [HarmonyPostfix]
-        public static void ModifyPost(Settlement __instance)
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
+            if (!SessionHandler.CurrentActionValues.EnableNPCDestruction) return;
+            else
             {
-                if (!SessionHandler.CurrentActionValues.EnableNPCDestruction) return;
-                else
-                {
-                    if (__instance.Faction == Faction.OfPlayer) return;
-                    else if (NPCManagerH.lastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
-                }
+                if (__instance.Faction == Faction.OfPlayer) return;
+                else if (NPCManagerH.LastRemovedSettlement != __instance) NPCManager.RequestSettlementRemoval(__instance);
             }
         }
     }

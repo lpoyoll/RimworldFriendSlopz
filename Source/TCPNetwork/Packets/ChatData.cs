@@ -1,15 +1,14 @@
 ﻿using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets
+namespace TCPNetwork.Packets;
+
+public class ChatData
 {
-    public class ChatData
-    {
-        public ChatColor _usernameColor { get; set; } = ChatColor.Normal;
+    public ChatColor _usernameColor { get; set; } = ChatColor.Normal;
 
-        public ChatColor _messageColor { get; set; } = ChatColor.Normal;
+    public ChatColor _messageColor { get; set; } = ChatColor.Normal;
 
-        public string _username { get; set; } = string.Empty;
+    public string _username { get; set; } = string.Empty;
 
-        public string _message { get; set; } = string.Empty;
-    }
+    public string _message { get; set; } = string.Empty;
 }

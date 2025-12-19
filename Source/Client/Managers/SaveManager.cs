@@ -5,7 +5,6 @@ using System.IO;
 using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
-using static GameClient.Managers.DisconnectionManager;
 using System.Xml;
 using System.Xml.XPath;
 using System;
@@ -17,158 +16,164 @@ using System.Linq;
 using TCPNetwork.Packets;
 using System.Threading.Tasks;
 using System.Threading;
-using Shared.Misc;
 
-namespace GameClient.Managers
+namespace GameClient.Managers;
+
+public static class SaveManager
 {
-    public static class SaveManager
+    public static string LatestSavePath { get; set; } = string.Empty;
+
+    public static string CustomSaveName => $"MP - {ClientNetwork.Ip} - {ClientNetwork.Port} - {SessionHandler.Username}";
+
+    public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
+
+    public static string TempSaveFilePath => SaveFilePath + ".rws.temp";
+
+    [HandlesPacket(PacketHeader.SaveManager)]
+    private static void ParsePacket(byte[] bytes)
     {
-        public static string LatestSavePath { get; set; } = string.Empty;
-
-        public static string CustomSaveName => $"MP - {ClientNetwork.Ip} - {ClientNetwork.Port} - {SessionHandler.Username}";
-
-        public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
-
-        public static string TempSaveFilePath => SaveFilePath + ".rws.temp";
-
-        [HandlesPacket(PacketHeader.SaveManager)]
-        private static void ParsePacket(byte[] bytes)
+        var read = SaveData.ParseSavePacket(bytes, out SaveDataHeader header);
+        var saveFileBytes = bytes.AsSpan().Slice(read);
+        switch (header._stepMode)
         {
-            var read = SaveData.ParseSavePacket(bytes, out SaveDataHeader header);
-            var saveFileBytes = bytes.AsSpan().Slice(read);
-            if (header._stepMode == SaveStepMode.Receive) OnSaveReceived(header, saveFileBytes.ToArray());
-            else if (header._stepMode == SaveStepMode.Send)
-            {
+            case SaveStepMode.Receive:
+                OnSaveReceived(header, saveFileBytes.ToArray());
+                break;
+            case SaveStepMode.Send:
                 LatestSavePath = SaveFilePath;
                 SendSaveToServer();
-            }
+                break;
+            
+            default:
+                Printer.Error($"Received invalid step mode {header._stepMode}");
+                return;
         }
+    }
 
-        public static void ForceSave()
+    public static void ForceSave()
+    {
+        Printer.Warning("Force saving", LogImportanceMode.Verbose);
+        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Saving your game"));
+
+        Task.Run(delegate
         {
-            Printer.Warning("Force saving", LogImportanceMode.Verbose);
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Saving your game"));
+            Thread.Sleep(100);
 
-            Task.Run(delegate
+            MainThreadHandler.Instance.Enqueue(delegate
             {
-                Thread.Sleep(100);
-
-                MainThreadHandler.Instance.Enqueue(delegate
-                {
-                    FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
-                    FticksSinceSave.SetValue(Current.Game.autosaver, 0);
-                    GameDataSaveLoader.SaveGame(CustomSaveName);
-                });
+                FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
+                FticksSinceSave.SetValue(Current.Game.autosaver, 0);
+                GameDataSaveLoader.SaveGame(CustomSaveName);
             });
-        }
+        });
+    }
 
-        public static void RequestResetSave()
+    public static void RequestResetSave()
+    {
+        SaveData data = new SaveData();
+        data._header._stepMode = SaveStepMode.Reset;
+
+        ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
+    }
+
+    public static double GetRealPlayTimeInteractingFromSave(string filePath)
+    {
+        if (!File.Exists(filePath)) return 0;
+
+        try
         {
-            SaveData data = new SaveData();
-            data._header._stepMode = SaveStepMode.Reset;
+            XmlDocument doc = new XmlDocument();
+            doc.Load(filePath);
+            XPathNavigator nav = doc.CreateNavigator();
 
-            ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
+            return double.Parse(nav.SelectSingleNode("/savegame/game/info/realPlayTimeInteracting").Value);
         }
+        catch { return 0; }
+    }
 
-        public static double GetRealPlayTimeInteractingFromSave(string filePath)
+    public static Dictionary<string, string> GetAllSaveFiles() 
+    {
+        Dictionary<string, string> result = new Dictionary<string, string>();
+        foreach (string file in Directory.GetFiles(Master.SavesFolderPath))
         {
-            if (!File.Exists(filePath)) return 0;
+            if(Path.GetExtension(file) == ".rws")
+                result.Add(Path.GetFileNameWithoutExtension(file), file);
+        }
+        return result;
+    }
 
-            try
+    public static void OpenSaveUploaderMenu()
+    {
+        Dictionary<string, string> saves = GetAllSaveFiles();
+        RT_Dialog_ListingWithButton dialog = new RT_Dialog_ListingWithButton("Save uploader",
+            "Select a save to upload:",
+            saves.Keys.ToArray(),
+            delegate
             {
-                XmlDocument doc = new XmlDocument();
-                doc.Load(filePath);
-                XPathNavigator nav = doc.CreateNavigator();
-
-                return double.Parse(nav.SelectSingleNode("/savegame/game/info/realPlayTimeInteracting").Value);
-            }
-            catch { return 0; }
-        }
-
-        public static Dictionary<string, string> GetAllSaveFiles() 
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach (string file in Directory.GetFiles(Master.SavesFolderPath))
-            {
-                if(Path.GetExtension(file) == ".rws")
-                    result.Add(Path.GetFileNameWithoutExtension(file), file);
-            }
-            return result;
-        }
-
-        public static void OpenSaveUploaderMenu()
-        {
-            Dictionary<string, string> saves = SaveManager.GetAllSaveFiles();
-            RT_Dialog_ListingWithButton dialog = new RT_Dialog_ListingWithButton("Save uploader",
-                "Select a save to upload:",
-                saves.Keys.ToArray(),
-                delegate
+                RT_Dialog_YesNo D2 = new RT_Dialog_YesNo("This feature is in beta and might fail, are you sure?", delegate
                 {
-                    RT_Dialog_YesNo D2 = new RT_Dialog_YesNo("This feature is in beta and might fail, are you sure?", delegate
+                    if (saves.TryGetValue(RT_Dialog_ListingWithButton.DialogButtonListingResultString, out string file))
                     {
-                        if (saves.TryGetValue(RT_Dialog_ListingWithButton.DialogButtonListingResultString, out string file))
-                        {
-                            byte[] data = File.ReadAllBytes(file);
-                            File.WriteAllBytes(SaveManager.SaveFilePath, data);
-                            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for save upload"));
+                        byte[] data = File.ReadAllBytes(file);
+                        File.WriteAllBytes(SaveFilePath, data);
+                        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for save upload"));
 
-                            SaveManager.LatestSavePath = SaveManager.SaveFilePath;
-                            SessionHandler.IsExiting = true;
-                            SaveManager.SendSaveToServer();
-                        }
-                    });
-
-                    RT_Dialog_Base.PushNewDialog(D2);
+                        LatestSavePath = SaveFilePath;
+                        SessionHandler.IsExiting = true;
+                        SendSaveToServer();
+                    }
                 });
 
-            RT_Dialog_Base.PushNewDialog(dialog);
+                RT_Dialog_Base.PushNewDialog(D2);
+            });
+
+        RT_Dialog_Base.PushNewDialog(dialog);
+    }
+
+    public static void SendSaveToServer()
+    {
+        byte[] saveBytes;
+        if (string.IsNullOrEmpty(LatestSavePath)) saveBytes = File.ReadAllBytes(SaveFilePath);
+        else saveBytes = File.ReadAllBytes(LatestSavePath);
+
+        SaveData data = new SaveData();
+        data._header = new SaveDataHeader(SaveStepMode.Receive, SessionHandler.IsExiting);
+        data._fileBytes = GZip.CompressBytes(saveBytes);
+
+        ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
+    }
+
+    private static void OnSaveReceived(SaveDataHeader header, byte[] save)
+    {
+        Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
+        var saveBytes = GZip.DecompressBytes(save);
+        File.WriteAllBytes(TempSaveFilePath, saveBytes);
+        File.Delete(CommonValues.DefaultSaveFormat);
+
+        if (header._forceUseSave || !File.Exists(SaveFilePath))
+        {
+            File.Delete(SaveFilePath);
+            File.Move(TempSaveFilePath, SaveFilePath);
         }
 
-        public static void SendSaveToServer()
+        else
         {
-            byte[] saveBytes;
-            if (string.IsNullOrEmpty(LatestSavePath)) saveBytes = File.ReadAllBytes(SaveFilePath);
-            else saveBytes = File.ReadAllBytes(LatestSavePath);
-
-            SaveData data = new SaveData();
-            data._header = new SaveDataHeader(SaveStepMode.Receive, SessionHandler.IsExiting);
-            data._fileBytes = GZip.CompressBytes(saveBytes);
-
-            ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
-        }
-
-        private static void OnSaveReceived(SaveDataHeader header, byte[] save)
-        {
-            Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
-            var saveBytes = GZip.DecompressBytes(save);
-            File.WriteAllBytes(TempSaveFilePath, saveBytes);
-            File.Delete(CommonValues.DefaultSaveFormat);
-
-            if (header._forceUseSave || !File.Exists(SaveFilePath))
+            if (GetRealPlayTimeInteractingFromSave(TempSaveFilePath) >= GetRealPlayTimeInteractingFromSave(SaveFilePath))
             {
+                Printer.Message("Loading remote save", LogImportanceMode.Verbose);
+
                 File.Delete(SaveFilePath);
                 File.Move(TempSaveFilePath, SaveFilePath);
             }
 
             else
             {
-                if (GetRealPlayTimeInteractingFromSave(TempSaveFilePath) >= GetRealPlayTimeInteractingFromSave(SaveFilePath))
-                {
-                    Printer.Message("Loading remote save", LogImportanceMode.Verbose);
+                Printer.Message("Loading local save", LogImportanceMode.Verbose);
 
-                    File.Delete(SaveManager.SaveFilePath);
-                    File.Move(SaveManager.TempSaveFilePath, SaveManager.SaveFilePath);
-                }
-
-                else
-                {
-                    Printer.Message("Loading local save", LogImportanceMode.Verbose);
-
-                    File.Delete(SaveManager.TempSaveFilePath);
-                }
+                File.Delete(TempSaveFilePath);
             }
-
-            GameDataSaveLoader.LoadGame(SaveManager.CustomSaveName);
         }
+
+        GameDataSaveLoader.LoadGame(CustomSaveName);
     }
 }

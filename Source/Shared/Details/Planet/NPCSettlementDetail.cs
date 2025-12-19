@@ -1,17 +1,14 @@
-using System;
+namespace Shared.Details.Planet;
 
-namespace Shared.Details.Planet
+public class NPCSettlementDetail
 {
-    public class NPCSettlementDetail
-    {
-        public int Tile { get; set; } = -1;
+    public int Tile { get; set; } = -1;
 
-        public string Name { get; set; } = null;
+    public string Name { get; set; } = null;
 
-        public string DefName { get; set; } = null;
+    public string DefName { get; set; } = null;
 
-        // This is only used if there are 2 factions of the same type loaded. It's not null or it would cause errors
+    // This is only used if there are 2 factions of the same type loaded. It's not null or it would cause errors
 
-        public string FactionName { get; set; } = string.Empty; 
-    }
+    public string FactionName { get; set; } = string.Empty; 
 }

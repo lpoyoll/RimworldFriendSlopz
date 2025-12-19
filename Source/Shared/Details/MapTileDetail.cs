@@ -1,11 +1,10 @@
-namespace Shared
+namespace Shared.Details;
+
+public class MapTileDetail
 {
-    public class MapTileDetail
-    {
-        public string DefName { get; set; } = null;
+    public string DefName { get; set; } = null;
 
-        public string RoofDefName { get; set; } = null;
+    public string RoofDefName { get; set; } = null;
 
-        public bool IsPolluted { get; set; } = false;
-    }
+    public bool IsPolluted { get; set; } = false;
 }

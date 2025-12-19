@@ -1,17 +1,10 @@
-﻿using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Shared.CommonEnumerators;
+﻿using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets.Goodwills
+namespace TCPNetwork.Packets.Goodwills;
+
+public class SettlementGoodwill
 {
-    public class SettlementGoodwill
-    {
-        public int Tile { get; set; } = -1;
+    public int Tile { get; set; } = -1;
 
-        public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
-    }
+    public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
 }

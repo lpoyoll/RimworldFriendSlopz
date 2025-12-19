@@ -1,22 +1,17 @@
-﻿using GameClient.Defs;
-using GameClient.Dialogs;
-using GameClient.Managers;
-using GameClient.Misc;
-using GameClient.WorldObjects;
-using RimWorld;
-using RimWorld.Planet;
-using Shared;
-using Shared.Files.Sites;
-using Shared.Misc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GameClient.Defs;
+using GameClient.Dialogs;
+using GameClient.Misc;
+using RimWorld;
+using RimWorld.Planet;
+using Shared;
+using Shared.Files.Sites;
 using TCPNetwork.Packets;
 using Verse;
-using static Shared.CommonEnumerators;
-
 
 namespace GameClient.Managers
 {
@@ -24,7 +19,8 @@ namespace GameClient.Managers
     {
         public static SiteType[] SiteValues { get; set; }
 
-        public static List<Site> PlayerSites { get; set; } = new List<Site>();
+        // todo remove if truly unused after site rework, currently unused
+        public static readonly List<Site> PlayerSites = [];
 
         private static CancellationTokenSource Token { get; set; } = new CancellationTokenSource();
 
@@ -37,19 +33,19 @@ namespace GameClient.Managers
 
             switch (data._stepMode)
             {
-                case SiteStepMode.Accept:
+                case CommonEnumerators.SiteStepMode.Accept:
                     OnSiteAccept();
                     break;
 
-                case SiteStepMode.Build:
+                case CommonEnumerators.SiteStepMode.Build:
                     SpawnSingleSite(data._file);
                     break;
 
-                case SiteStepMode.Destroy:
+                case CommonEnumerators.SiteStepMode.Destroy:
                     RemoveSingleSite(data._file);
                     break;
 
-                case SiteStepMode.Rewards:
+                case CommonEnumerators.SiteStepMode.Rewards:
                     ReceiveSiteRewards(data._rewardFiles);
                     break;
             }
@@ -59,7 +55,7 @@ namespace GameClient.Managers
         {
             if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionHandler.ChosenCaravan, ThingDefOf.Silver.defName, configFile.Cost))
             {
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You do not have enough silver!" }));
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", ["You do not have enough silver!"]));
                 return;
             }
 
@@ -67,7 +63,7 @@ namespace GameClient.Managers
                 DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName), configFile.Cost);
 
             SiteData siteData = new SiteData();
-            siteData._stepMode = SiteStepMode.Build;
+            siteData._stepMode = CommonEnumerators.SiteStepMode.Build;
             siteData._file.Tile = SessionHandler.ChosenCaravan.Tile;
             siteData._file.Type.DefName = configFile.DefName;
 
@@ -82,7 +78,7 @@ namespace GameClient.Managers
             {
                 SiteData siteData = new SiteData();
                 siteData._file.Tile = SessionHandler.ChosenSite.Tile;
-                siteData._stepMode = SiteStepMode.Destroy;
+                siteData._stepMode = CommonEnumerators.SiteStepMode.Destroy;
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
             };
@@ -98,7 +94,7 @@ namespace GameClient.Managers
             rewardConfig._rewardDef = reward;
 
             SiteData siteData = new SiteData();
-            siteData._stepMode = SiteStepMode.Config;
+            siteData._stepMode = CommonEnumerators.SiteStepMode.Config;
             siteData._rewardConfig = rewardConfig;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
@@ -106,7 +102,7 @@ namespace GameClient.Managers
 
         private static void ReceiveSiteRewards(SiteReward[] files)
         {
-            List<Thing> rewards = new List<Thing>();
+            List<Thing> rewards = [];
             foreach (SiteReward reward in files)
             {
                 try
@@ -117,16 +113,16 @@ namespace GameClient.Managers
                     toMake.HitPoints = def.BaseMaxHitPoints;
                     rewards.Add(toMake);
 
-                    Printer.Message($"Received {reward.Amount} of {reward.DefName}", LogImportanceMode.Verbose);
+                    Printer.Message($"Received {reward.Amount} of {reward.DefName}", CommonEnumerators.LogImportanceMode.Verbose);
                 }
-                catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
+                catch (Exception e) { Printer.Warning(e.ToString(), CommonEnumerators.LogImportanceMode.Verbose); }
             }
 
             if (rewards.Count > 0)
             {
                 TransferManager.GetTransferedItemsToSettlement(rewards.ToArray(), true, false, false);
                 RimworldManager.GenerateLetter("Site rewards", $"You've received your site rewards", LetterDefOf.PositiveEvent);
-                Printer.Message("Rewards delivered", LogImportanceMode.Verbose);
+                Printer.Message("Rewards delivered", CommonEnumerators.LogImportanceMode.Verbose);
             }
         }
 
@@ -143,7 +139,7 @@ namespace GameClient.Managers
             PlayerSites.Clear();
 
             Site[] sites = Find.WorldObjects.Sites.Where(fetch => SessionHandler.PlayerFactions.Contains(fetch.Faction) ||
-                fetch.Faction == Faction.OfPlayer).ToArray();
+                                                                  fetch.Faction == Faction.OfPlayer).ToArray();
 
             foreach (Site toRemove in sites)
             {
@@ -226,23 +222,21 @@ namespace GameClient.Managers
         public static void AskForSiteRewards()
         {
             SiteData siteData = new SiteData();
-            siteData._stepMode = SiteStepMode.Rewards;
+            siteData._stepMode = CommonEnumerators.SiteStepMode.Rewards;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
     }
-}
 
-public static class SiteManagerH
-{
-    public static SiteFile[] tempSites;
-
-    public static void SetValues(ServerGlobalData serverGlobalData)
+    public static class SiteManagerH
     {
-        tempSites = serverGlobalData._playerSites;
-        SiteManager.SiteValues = serverGlobalData._siteValues;
-        SiteManager.RewardDelay = serverGlobalData._actionValues.SiteAction.TimeInterval;
+        public static SiteFile[] tempSites;
+
+        public static void SetValues(ServerGlobalData serverGlobalData)
+        {
+            tempSites = serverGlobalData._playerSites;
+            SiteManager.SiteValues = serverGlobalData._siteValues;
+            SiteManager.RewardDelay = serverGlobalData._actionValues.SiteAction.TimeInterval;
+        }
     }
 }
-
-

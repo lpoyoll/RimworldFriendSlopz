@@ -1,88 +1,83 @@
 ﻿using GameClient.Defs;
-using GameClient.Managers;
-using GameClient.Misc;
 using RimWorld;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using Verse.Steam;
 
-namespace GameClient.Dialogs
+namespace GameClient.Dialogs;
+
+public class RT_Dialog_SiteMenu : RT_Dialog_Base
 {
-    public class RT_Dialog_SiteMenu : RT_Dialog_Base
+    public override Vector2 InitialSize => new Vector2(700f, 450);
+
+    private readonly bool IsInConfigMode;
+
+    public static RT_Dialog_Base Instance { get; private set; } = null;
+
+    public RT_Dialog_SiteMenu(bool configMode)
     {
-        public override Vector2 InitialSize => new Vector2(700f, 450);
+        Instance = this;
+        Title = "Choose a site";
+        IsInConfigMode = configMode;
+    }
 
-        private bool IsInConfigMode { get; set; }
+    public override void DoWindowContents(Rect rect)
+    {
+        Widgets.DrawLineHorizontal(rect.x, rect.y - 1, rect.width);
+        Widgets.DrawLineHorizontal(rect.x, rect.yMax + 1, rect.width);
 
-        public static RT_Dialog_Base Instance { get; private set; } = null;
+        float centeredX = rect.width / 2;
+        Text.Font = GameFont.Medium;
+        Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
+        if (Widgets.CloseButtonFor(rect)) Close();
 
-        public RT_Dialog_SiteMenu(bool configMode)
+        Rect mainRect = new Rect(0, 50f, rect.width, rect.height - 50f);
+        float height = 6f + RTSitePartDefs.Defs.Count() * 50f;
+        Rect viewRect = new Rect(0f, 50f, mainRect.width - 16f, height);
+        Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
+        float num = 50;
+        float num2 = ScrollPosition.y - 30f;
+        float num3 = ScrollPosition.y + mainRect.height;
+        int num4 = 0;
+
+        for (int i = 0; i < RTSitePartDefs.Defs.Length; i++)
         {
-            Instance = this;
-            this.Title = "Choose a site";
-            this.IsInConfigMode = configMode;
+            if (num > num2 && num < num3)
+            {
+                Rect inRect = new Rect(0f, num, viewRect.width, 50f);
+                DrawCustomRow(inRect, RTSitePartDefs.Defs[i], num4);
+            }
+
+            num += 50f;
+            num4++;
         }
 
-        public override void DoWindowContents(Rect rect)
+        Widgets.EndScrollView();
+    }
+
+    private void DrawCustomRow(Rect rect, SitePartDef thing, int index)
+    {
+        Text.Font = GameFont.Small;
+        Rect highLightRect = new Rect(new Vector2(rect.x, rect.y), new Vector2(rect.width - 16f, 50f));
+        Rect fixedRect = new Rect(new Vector2(highLightRect.x + 75, highLightRect.y), new Vector2(highLightRect.width - 75f, 55f));
+        Rect textRect = new Rect(new Vector2(rect.x, rect.y), new Vector2(50f, 50f));
+
+        if (index % 2 == 0) Widgets.DrawHighlight(highLightRect);
+        Widgets.DrawTextureFitted(textRect, thing.ExpandingIconTexture, 1f);
+        Widgets.Label(fixedRect, thing.description);
+
+        if (Mouse.IsOver(highLightRect))
         {
-            Widgets.DrawLineHorizontal(rect.x, rect.y - 1, rect.width);
-            Widgets.DrawLineHorizontal(rect.x, rect.yMax + 1, rect.width);
-
-            float centeredX = rect.width / 2;
-            Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
-            if (Widgets.CloseButtonFor(rect)) Close();
-
-            Rect mainRect = new Rect(0, 50f, rect.width, rect.height - 50f);
-            float height = 6f + RTSitePartDefs.Defs.Count() * 50f;
-            Rect viewRect = new Rect(0f, 50f, mainRect.width - 16f, height);
-            Widgets.BeginScrollView(mainRect, ref ScrollPosition, viewRect);
-            float num = 50;
-            float num2 = ScrollPosition.y - 30f;
-            float num3 = ScrollPosition.y + mainRect.height;
-            int num4 = 0;
-
-            for (int i = 0; i < RTSitePartDefs.Defs.Length; i++)
-            {
-                if (num > num2 && num < num3)
-                {
-                    Rect inRect = new Rect(0f, num, viewRect.width, 50f);
-                    DrawCustomRow(inRect, RTSitePartDefs.Defs[i], num4);
-                }
-
-                num += 50f;
-                num4++;
-            }
-
-            Widgets.EndScrollView();
+            Widgets.DrawLineHorizontal(highLightRect.x, highLightRect.y, highLightRect.width);
+            Widgets.DrawLineHorizontal(highLightRect.x, highLightRect.yMax, highLightRect.width);
+            Widgets.DrawLineVertical(highLightRect.x, highLightRect.y, highLightRect.height);
+            Widgets.DrawLineVertical(highLightRect.xMax - 1, highLightRect.y, highLightRect.height);
         }
 
-        private void DrawCustomRow(Rect rect, SitePartDef thing, int index)
+        if (Widgets.ButtonInvisible(highLightRect))
         {
-            Text.Font = GameFont.Small;
-            Rect highLightRect = new Rect(new Vector2(rect.x, rect.y), new Vector2(rect.width - 16f, 50f));
-            Rect fixedRect = new Rect(new Vector2(highLightRect.x + 75, highLightRect.y), new Vector2(highLightRect.width - 75f, 55f));
-            Rect textRect = new Rect(new Vector2(rect.x, rect.y), new Vector2(50f, 50f));
-
-            if (index % 2 == 0) Widgets.DrawHighlight(highLightRect);
-            Widgets.DrawTextureFitted(textRect, thing.ExpandingIconTexture, 1f);
-            Widgets.Label(fixedRect, thing.description);
-
-            if (Mouse.IsOver(highLightRect))
-            {
-                Widgets.DrawLineHorizontal(highLightRect.x, highLightRect.y, highLightRect.width);
-                Widgets.DrawLineHorizontal(highLightRect.x, highLightRect.yMax, highLightRect.width);
-                Widgets.DrawLineVertical(highLightRect.x, highLightRect.y, highLightRect.height);
-                Widgets.DrawLineVertical(highLightRect.xMax - 1, highLightRect.y, highLightRect.height);
-            }
-
-            if (Widgets.ButtonInvisible(highLightRect))
-            {
-                if (IsInConfigMode) Find.WindowStack.Add(new RT_Dialog_SiteMenu_Config(thing));
-                else Find.WindowStack.Add(new RT_Dialog_SiteMenu_Info(thing));
-            }
+            if (IsInConfigMode) Find.WindowStack.Add(new RT_Dialog_SiteMenu_Config(thing));
+            else Find.WindowStack.Add(new RT_Dialog_SiteMenu_Info(thing));
         }
     }
 }
-

@@ -1,18 +1,16 @@
 ﻿using Shared.Files;
 using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets
+namespace TCPNetwork.Packets;
+
+public class PlayerSettlementData
 {
+    public SettlementStepMode _stepMode { get; set; } = SettlementStepMode.Add;
 
-    public class PlayerSettlementData
+    public SettlementFile _settlementFile { get; set; } = new SettlementFile();
+
+    public override string ToString()
     {
-        public SettlementStepMode _stepMode { get; set; } = SettlementStepMode.Add;
-
-        public SettlementFile _settlementFile { get; set; } = new SettlementFile();
-
-        public override string ToString()
-        {
-            return $"PlayerSettlementData:|{_stepMode}|{_settlementFile}";
-        }
+        return $"PlayerSettlementData:|{_stepMode}|{_settlementFile}";
     }
 }

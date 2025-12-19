@@ -1,17 +1,16 @@
 using Shared.Files;
 using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets
+namespace TCPNetwork.Packets;
+
+public class CaravanData
 {
-    public class CaravanData
+    public CaravanStepMode _stepMode { get; set; } = CaravanStepMode.Add;
+
+    public CaravanFile _caravanFile { get; set; } = null;
+
+    public override string ToString()
     {
-        public CaravanStepMode _stepMode { get; set; } = CaravanStepMode.Add;
-
-        public CaravanFile _caravanFile { get; set; } = null;
-
-        public override string ToString()
-        {
-            return $"CaravanData:|{_stepMode}|{_caravanFile}";
-        }
+        return $"CaravanData:|{_stepMode}|{_caravanFile}";
     }
 }

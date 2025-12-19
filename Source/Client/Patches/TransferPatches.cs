@@ -1,275 +1,270 @@
-﻿using GameClient.Dialogs;
-using GameClient.Managers;
+﻿using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Verse;
 using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
 using Shared;
-using Shared.Misc;
 
-namespace GameClient.Patches
+namespace GameClient.Patches;
+// Sends the request to the server after the vanilla trading has gone through
+
+[HarmonyPatch(typeof(TradeDeal), nameof(TradeDeal.TryExecute))]
+public static class Patch_TradeDeal_TryExecute
 {
-    // Sends the request to the server after the vanilla trading has gone through
-
-    [HarmonyPatch(typeof(TradeDeal), nameof(TradeDeal.TryExecute))]
-    public static class Patch_TradeDeal_TryExecute
+    [HarmonyPostfix]
+    public static void DoPost()
     {
-        [HarmonyPostfix]
-        public static void DoPost()
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return;
+        else
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return;
-            else
-            {
-                if (TradeSession.giftMode) SessionHandler.OutgoingManifest._transferMode = TransferMode.Gift;
-                else SessionHandler.OutgoingManifest._transferMode = TransferMode.Trade;
+            if (TradeSession.giftMode) SessionHandler.OutgoingManifest._transferMode = TransferMode.Gift;
+            else SessionHandler.OutgoingManifest._transferMode = TransferMode.Trade;
 
-                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving) TransferManager.SendTransferRequestToServer(TransferLocation.Caravan);
-                else TransferManager.SendTransferRequestToServer(TransferLocation.Settlement);
-            }
+            if (SessionHandler.LastTradeStep != TradeMode.Receiving) TransferManager.SendTransferRequestToServer(TransferLocation.Caravan);
+            else TransferManager.SendTransferRequestToServer(TransferLocation.Settlement);
         }
     }
+}
 
-    // Forces the trader to want every item the player wants to give
+// Forces the trader to want every item the player wants to give
 
-    [HarmonyPatch(typeof(TraderKindDef), nameof(TraderKindDef.WillTrade))]
-    public static class Patch_TraderKindDef_WillTrade
+[HarmonyPatch(typeof(TraderKindDef), nameof(TraderKindDef.WillTrade))]
+public static class Patch_TraderKindDef_WillTrade
+{
+    [HarmonyPrefix]
+    public static bool DoPre(ref bool __result)
     {
-        [HarmonyPrefix]
-        public static bool DoPre(ref bool __result)
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
-            else
-            {
-                __result = true;
-                return false;
-            }
+            __result = true;
+            return false;
         }
     }
+}
 
-    // Adds all available items to the tradeable list
+// Adds all available items to the tradeable list
 
-    [HarmonyPatch(typeof(TradeDeal), "AddAllTradeables")]
-    public static class Patch_TradeDeal_AddAllTradeables
+[HarmonyPatch(typeof(TradeDeal), "AddAllTradeables")]
+public static class Patch_TradeDeal_AddAllTradeables
+{
+    [HarmonyPrefix]
+    public static bool DoPre(TradeDeal __instance)
     {
-        [HarmonyPrefix]
-        public static bool DoPre(TradeDeal __instance)
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
-            else
-            {
-                // This means we are adding items from the CARAVAN
+            // This means we are adding items from the CARAVAN
 
-                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving)
+            if (SessionHandler.LastTradeStep != TradeMode.Receiving)
+            {
+                SessionHandler.ChosenCaravan = TradeSession.playerNegotiator.GetCaravan();
+
+                MethodInfo toInvoke = typeof(TradeDeal).GetMethod("AddToTradeables", BindingFlags.NonPublic | BindingFlags.Instance);
+
+                //Need to check if they are slaves or prisoners because the game already adds them by default
+
+                foreach (Pawn pawn in SessionHandler.ChosenCaravan.PawnsListForReading)
                 {
-                    SessionHandler.ChosenCaravan = TradeSession.playerNegotiator.GetCaravan();
-
-                    MethodInfo toInvoke = typeof(TradeDeal).GetMethod("AddToTradeables", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                    //Need to check if they are slaves or prisoners because the game already adds them by default
-
-                    foreach (Pawn pawn in SessionHandler.ChosenCaravan.PawnsListForReading)
-                    {
-                        if (TradeSession.playerNegotiator == pawn) continue;
-                        else if (!pawn.IsFreeColonist || !pawn.IsFreeNonSlaveColonist) continue;
-                        else toInvoke.Invoke(__instance, new object[] { pawn, Transactor.Colony });
-                    }
-
-                    return true;
-                }
-
-                // This means we are adding items from the SETTLEMENT
-
-                else
-                {
-                    MethodInfo toInvoke = typeof(TradeDeal).GetMethod("AddToTradeables", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                    foreach (Pawn pawn in RimworldManager.GetPawnsFromMap(TradeSession.playerNegotiator.Map, Faction.OfPlayer, true))
-                    {
-                        if (TradeSession.playerNegotiator == pawn) continue;
-                        else toInvoke.Invoke(__instance, new object[] { pawn, Transactor.Colony });
-                    }
-
-                    foreach (Thing thing in RimworldManager.GetAllThingsInMap(TradeSession.playerNegotiator.Map))
-                    {
-                        toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
-                    }
-
-                    return false;
-                }
-            }
-        }
-    }
-
-    // Adds the selected item to the tradeable list while preventing AI faction from adding it
-
-    [HarmonyPatch(typeof(TradeDeal), "AddToTradeables")]
-    public static class Patch_TradeDeal_AddToTradeables
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(Transactor trans)
-        {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
-            else
-            {
-                if (trans == Transactor.Trader) return false;
-                else return true;
-            }
-        }
-    }
-
-    // Prevents the warning of trader not having enough silver
-
-    [HarmonyPatch(typeof(TradeDeal), nameof(TradeDeal.DoesTraderHaveEnoughSilver))]
-    public static class Patch_TradeDeal_DoesTraderHaveEnoughSilver
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(ref bool __result)
-        {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
-            else
-            {
-                __result = true;
-                return false;
-            }
-        }
-    }
-
-    // Prevents the trade from failing if the AI faction has no silver
-
-    [HarmonyPatch(typeof(Tradeable), nameof(Tradeable.CountPostDealFor))]
-    public static class Patch_Tradeable_CountPostDealFor
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(ref int __result)
-        {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
-            else
-            {
-                __result = int.MaxValue;
-                return false;
-            }
-        }
-    }
-
-    // Trades every item that has been selected
-
-    [HarmonyPatch(typeof(Tradeable), nameof(Tradeable.ResolveTrade))]
-    public static class Patch_Tradeable_ResolveTrade
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
-        {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
-            else
-            {
-                // We need to set it back to positive because the way RimWorld treats traded items
-                int toTransfer = Math.Abs(___countToTransfer);
-
-                if (toTransfer > 0)
-                {
-                    TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], toTransfer);
-                    Printer.Warning($"Transfered {Math.Abs(___countToTransfer)} of thing {___thingsColony[0]}", LogImportanceMode.Verbose);
+                    if (TradeSession.playerNegotiator == pawn) continue;
+                    else if (!pawn.IsFreeColonist || !pawn.IsFreeNonSlaveColonist) continue;
+                    else toInvoke.Invoke(__instance, [pawn, Transactor.Colony]);
                 }
 
                 return true;
             }
-        }
-    }
 
-    // Trades every pawn that has been selected
+            // This means we are adding items from the SETTLEMENT
 
-    [HarmonyPatch(typeof(Tradeable_Pawn), nameof(Tradeable_Pawn.ResolveTrade))]
-    public static class Patch_Tradeable_Pawn_ResolveTrade
-    {
-        [HarmonyPrefix]
-        public static bool DoPre(Tradeable_Pawn __instance)
-        {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
-                // We need to set it back to positive because the way RimWorld treats traded items
-                int toTransfer = Math.Abs(__instance.CountToTransfer);
+                MethodInfo toInvoke = typeof(TradeDeal).GetMethod("AddToTradeables", BindingFlags.NonPublic | BindingFlags.Instance);
 
-                if (toTransfer > 0)
+                foreach (Pawn pawn in RimworldManager.GetPawnsFromMap(TradeSession.playerNegotiator.Map, Faction.OfPlayer, true))
                 {
-                    TransferManagerHelper.AddThingToTransferManifest(__instance.thingsColony[0], toTransfer);
-                    Printer.Warning($"Transfered {Math.Abs(__instance.CountToTransfer)} of thing {__instance.thingsColony[0]}", LogImportanceMode.Verbose);
+                    if (TradeSession.playerNegotiator == pawn) continue;
+                    else toInvoke.Invoke(__instance, [pawn, Transactor.Colony]);
                 }
 
-                return true;
+                foreach (Thing thing in RimworldManager.GetAllThingsInMap(TradeSession.playerNegotiator.Map))
+                {
+                    toInvoke.Invoke(__instance, [thing, Transactor.Colony]);
+                }
+
+                return false;
             }
         }
     }
+}
 
-    // Patches settlement trading so items and pawns can be sent over
+// Adds the selected item to the tradeable list while preventing AI faction from adding it
 
-    [HarmonyPatch(typeof(Settlement_TraderTracker), nameof(Settlement_TraderTracker.GiveSoldThingToTrader))]
-    public static class Patch_Settlement_TraderTracker_GiveSoldThingToTrader
+[HarmonyPatch(typeof(TradeDeal), "AddToTradeables")]
+public static class Patch_TradeDeal_AddToTradeables
+{
+    [HarmonyPrefix]
+    public static bool DoPre(Transactor trans)
     {
-        [HarmonyPrefix]
-        public static bool DoPre(Thing toGive, int countToGive)
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (trans == Transactor.Trader) return false;
+            else return true;
+        }
+    }
+}
+
+// Prevents the warning of trader not having enough silver
+
+[HarmonyPatch(typeof(TradeDeal), nameof(TradeDeal.DoesTraderHaveEnoughSilver))]
+public static class Patch_TradeDeal_DoesTraderHaveEnoughSilver
+{
+    [HarmonyPrefix]
+    public static bool DoPre(ref bool __result)
+    {
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else
+        {
+            __result = true;
+            return false;
+        }
+    }
+}
+
+// Prevents the trade from failing if the AI faction has no silver
+
+[HarmonyPatch(typeof(Tradeable), nameof(Tradeable.CountPostDealFor))]
+public static class Patch_Tradeable_CountPostDealFor
+{
+    [HarmonyPrefix]
+    public static bool DoPre(ref int __result)
+    {
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else
+        {
+            __result = int.MaxValue;
+            return false;
+        }
+    }
+}
+
+// Trades every item that has been selected
+
+[HarmonyPatch(typeof(Tradeable), nameof(Tradeable.ResolveTrade))]
+public static class Patch_Tradeable_ResolveTrade
+{
+    [HarmonyPrefix]
+    public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
+    {
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else
+        {
+            // We need to set it back to positive because the way RimWorld treats traded items
+            int toTransfer = Math.Abs(___countToTransfer);
+
+            if (toTransfer > 0)
+            {
+                TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], toTransfer);
+                Printer.Warning($"Transfered {Math.Abs(___countToTransfer)} of thing {___thingsColony[0]}", LogImportanceMode.Verbose);
+            }
+
+            return true;
+        }
+    }
+}
+
+// Trades every pawn that has been selected
+
+[HarmonyPatch(typeof(Tradeable_Pawn), nameof(Tradeable_Pawn.ResolveTrade))]
+public static class Patch_Tradeable_Pawn_ResolveTrade
+{
+    [HarmonyPrefix]
+    public static bool DoPre(Tradeable_Pawn __instance)
+    {
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else
+        {
+            // We need to set it back to positive because the way RimWorld treats traded items
+            int toTransfer = Math.Abs(__instance.CountToTransfer);
+
+            if (toTransfer > 0)
+            {
+                TransferManagerHelper.AddThingToTransferManifest(__instance.thingsColony[0], toTransfer);
+                Printer.Warning($"Transfered {Math.Abs(__instance.CountToTransfer)} of thing {__instance.thingsColony[0]}", LogImportanceMode.Verbose);
+            }
+
+            return true;
+        }
+    }
+}
+
+// Patches settlement trading so items and pawns can be sent over
+
+[HarmonyPatch(typeof(Settlement_TraderTracker), nameof(Settlement_TraderTracker.GiveSoldThingToTrader))]
+public static class Patch_Settlement_TraderTracker_GiveSoldThingToTrader
+{
+    [HarmonyPrefix]
+    public static bool DoPre(Thing toGive, int countToGive)
+    {
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else
+        {
+            // This means we are calculating from the CARAVAN
+
+            if (SessionHandler.LastTradeStep != TradeMode.Receiving) return true;
+
+            // This means we are adding items from the SETTLEMENT
+
             else
             {
-                // This means we are calculating from the CARAVAN
+                Thing thing = toGive.SplitOff(countToGive);
+                if (toGive is Pawn pawn && !pawn.Destroyed) pawn.Destroy();
+                else if (!thing.Destroyed) thing.Destroy();
 
-                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving) return true;
-
-                // This means we are adding items from the SETTLEMENT
-
-                else
-                {
-                    Thing thing = toGive.SplitOff(countToGive);
-                    if (toGive is Pawn pawn && !pawn.Destroyed) pawn.Destroy();
-                    else if (!thing.Destroyed) thing.Destroy();
-
-                    return false;
-                }
+                return false;
             }
         }
     }
+}
 
-    // Patches captive UI so it doesn't show on online trades
+// Patches captive UI so it doesn't show on online trades
 
-    [HarmonyPatch(typeof(TransferableUIUtility), nameof(TransferableUIUtility.DrawCaptiveTradeInfo))]
-    public static class Patch_TransferableUIUtility_DrawCaptiveTradeInfo
+[HarmonyPatch(typeof(TransferableUIUtility), nameof(TransferableUIUtility.DrawCaptiveTradeInfo))]
+public static class Patch_TransferableUIUtility_DrawCaptiveTradeInfo
+{
+    [HarmonyPrefix]
+    public static bool DoPre()
     {
-        [HarmonyPrefix]
-        public static bool DoPre()
-        {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            else if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
-            else return false;
-        }
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+        else if (SessionHandler.LastTradeStep == TradeMode.None) return true;
+        else return false;
     }
+}
 
-    // Resets the trade variables to make sure it doesn't conflict with AI trades
+// Resets the trade variables to make sure it doesn't conflict with AI trades
 
-    [HarmonyPatch(typeof(Dialog_Trade), nameof(Dialog_Trade.Close))]
-    public static class Patch_Dialog_Trade_Close
+[HarmonyPatch(typeof(Dialog_Trade), nameof(Dialog_Trade.Close))]
+public static class Patch_Dialog_Trade_Close
+{
+    [HarmonyPostfix]
+    public static void DoPre()
     {
-        [HarmonyPostfix]
-        public static void DoPre()
-        {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.None;
-        }
+        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+        else SessionHandler.LastTradeStep = TradeMode.None;
     }
 }

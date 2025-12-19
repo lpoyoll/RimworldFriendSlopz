@@ -1,18 +1,16 @@
 using Shared.Details.Planet;
 using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets
+namespace TCPNetwork.Packets;
+
+public class RoadData
 {
+    public RoadStepMode _stepMode { get; set; } = RoadStepMode.Add;
 
-    public class RoadData
+    public RoadDetail _details { get; set; } = null;
+
+    public override string ToString()
     {
-        public RoadStepMode _stepMode { get; set; } = RoadStepMode.Add;
-
-        public RoadDetail _details { get; set; } = null;
-
-        public override string ToString()
-        {
-            return $"RoadData:|{_stepMode}|{_details}";
-        }
+        return $"RoadData:|{_stepMode}|{_details}";
     }
 }

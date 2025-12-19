@@ -1,60 +1,54 @@
 using System;
 
-namespace Shared
+namespace Shared;
+
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+public class HandlesPacket(PacketHeader header) : Attribute
 {
-    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class HandlesPacket : Attribute
-    {
-        public HandlesPacket(PacketHeader header)
-        {
-            this.header = header;
-        }
+    public readonly PacketHeader Header = header;
+}
 
-        public readonly PacketHeader header;
-    }
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+public class OnSessionStart() : Attribute { }
 
-    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnSessionStart() : Attribute { }
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+public class OnSessionEnd() : Attribute { }
 
-    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnSessionEnd() : Attribute { }
+[AttributeUsage(AttributeTargets.Method, Inherited = false)]
+public class OnUpdate() : Attribute { }
 
-    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnUpdate() : Attribute { }
-
-    public enum PacketHeader : byte
-    {
-        None,
-        KeepAliveManager,
-        LoginManager,
-        TransferManager,
-        ActivityManager,
-        AidManager,
-        CaravanManager,
-        ChatManager,
-        EventManager,
-        GameParameterManager,
-        GoodWillManager,
-        GuildManager,
-        MapManager,
-        ModManager,
-        NPCManager,
-        RoadManager,
-        SaveManager,
-        SettlementManager,
-        SiteManager,
-        VersionManager,
-        WorldManager,
-        PollutionManager,
-        ConsoleManager,
-        GlobalDataManager,
-        ResponseShortcutManager,
-        RecountManager,
-        InformationManager,
-        SPlayerDraft,
-        SPlayerWeather,
-        SPlayerMentalState,
-        SPlayerGameSpeed,
-        ServerBrowserReachability,
-    }
+public enum PacketHeader : byte
+{
+    None,
+    KeepAliveManager,
+    LoginManager,
+    TransferManager,
+    ActivityManager,
+    AidManager,
+    CaravanManager,
+    ChatManager,
+    EventManager,
+    GameParameterManager,
+    GoodWillManager,
+    GuildManager,
+    MapManager,
+    ModManager,
+    NPCManager,
+    RoadManager,
+    SaveManager,
+    SettlementManager,
+    SiteManager,
+    VersionManager,
+    WorldManager,
+    PollutionManager,
+    ConsoleManager,
+    GlobalDataManager,
+    ResponseShortcutManager,
+    RecountManager,
+    InformationManager,
+    SPlayerDraft,
+    SPlayerWeather,
+    SPlayerMentalState,
+    SPlayerGameSpeed,
+    ServerBrowserReachability,
 }

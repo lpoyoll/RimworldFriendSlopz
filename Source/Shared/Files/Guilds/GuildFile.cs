@@ -1,58 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 
-namespace Shared.Files.Guilds
+namespace Shared.Files.Guilds;
+
+public class GuildFile : BaseFile
 {
-    public class GuildFile : BaseFile
+    public static string SavePath { get; set; } = string.Empty;
+
+    public string Name { get; set; } = string.Empty;
+
+    public List<GuildMember> GuildMembers { get; set; } = new List<GuildMember>();
+
+    private Semaphore SavingSemaphore = new Semaphore(1, 1);
+
+    public void AddMember(GuildMember member)
     {
-        public static string SavePath { get; set; } = string.Empty;
+        if (!GuildMembers.Contains(member)) GuildMembers.Add(member);
+        Save();
+    }
 
-        public string Name { get; set; } = string.Empty;
+    public void RemoveMember(GuildMember member)
+    {
+        if (GuildMembers.Contains(member)) GuildMembers.Remove(member);
+        Save();
+    }
 
-        public List<GuildMember> GuildMembers { get; set; } = new List<GuildMember>();
+    public void PromoteMember(GuildMember member)
+    {
+        GuildMember toFind = GuildMembers.First(fetch => fetch.Username == member.Username);
+        toFind.Rank = GuildMember.GuildRanks.Moderator;
+        Save();
+    }
 
-        private Semaphore SavingSemaphore = new Semaphore(1, 1);
+    public void DemoteMember(GuildMember member)
+    {
+        GuildMember toFind = GuildMembers.First(fetch => fetch.Username == member.Username);
+        toFind.Rank = GuildMember.GuildRanks.Member;
+        Save();
+    }
 
-        public void AddMember(GuildMember member)
-        {
-            if (!GuildMembers.Contains(member)) GuildMembers.Add(member);
-            Save();
-        }
+    public void Delete() { File.Delete(Path.Combine(SavePath, Name + CommonValues.DefaultSaveFormat)); }
 
-        public void RemoveMember(GuildMember member)
-        {
-            if (GuildMembers.Contains(member)) GuildMembers.Remove(member);
-            Save();
-        }
+    public override void Save()
+    {
+        SavingSemaphore.WaitOne();
 
-        public void PromoteMember(GuildMember member)
-        {
-            GuildMember toFind = GuildMembers.First(fetch => fetch.Username == member.Username);
-            toFind.Rank = GuildMember.GuildRanks.Moderator;
-            Save();
-        }
+        string savePath = Path.Combine(SavePath, Name + CommonValues.DefaultSaveFormat);
+        Serializer.SerializeToFile(savePath, this);
 
-        public void DemoteMember(GuildMember member)
-        {
-            GuildMember toFind = GuildMembers.First(fetch => fetch.Username == member.Username);
-            toFind.Rank = GuildMember.GuildRanks.Member;
-            Save();
-        }
-
-        public void Delete() { File.Delete(Path.Combine(SavePath, Name + CommonValues.DefaultSaveFormat)); }
-
-        public override void Save()
-        {
-            SavingSemaphore.WaitOne();
-
-            string savePath = Path.Combine(SavePath, Name + CommonValues.DefaultSaveFormat);
-            Serializer.SerializeToFile(savePath, this);
-
-            SavingSemaphore.Release();
-        }
+        SavingSemaphore.Release();
     }
 }

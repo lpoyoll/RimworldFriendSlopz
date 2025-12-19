@@ -1,87 +1,86 @@
 ﻿using GameServer.Core;
-using Shared.Misc;
 using System.Text;
+using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
-{
-    public static class ServerPrinter
-    {
-        private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
+namespace GameServer;
 
-        private static Dictionary<LogMode, ConsoleColor> ColorDictionary { get; set; } = new Dictionary<LogMode, ConsoleColor>
+public static class ServerPrinter
+{
+    private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
+
+    private static Dictionary<LogMode, ConsoleColor> ColorDictionary { get; set; } = new Dictionary<LogMode, ConsoleColor>
+    {
+        { LogMode.Message, ConsoleColor.White },
+        { LogMode.Warning, ConsoleColor.Yellow },
+        { LogMode.Error, ConsoleColor.Red },
+        { LogMode.Title, ConsoleColor.Green }
+    };
+
+    public static void CreateLogger()
+    {
+        Action<object, LogImportanceMode> onMessage = delegate (object value, LogImportanceMode importance)
         {
-            { LogMode.Message, ConsoleColor.White },
-            { LogMode.Warning, ConsoleColor.Yellow },
-            { LogMode.Error, ConsoleColor.Red },
-            { LogMode.Title, ConsoleColor.Green }
+            if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Message, importance);
         };
 
-        public static void CreateLogger()
+        Action<object, LogImportanceMode> onWarning = delegate (object value, LogImportanceMode importance)
         {
-            Action<object, LogImportanceMode> onMessage = delegate (object value, LogImportanceMode importance)
-            {
-                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Message, importance);
-            };
+            if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Warning, importance);
+        };
 
-            Action<object, LogImportanceMode> onWarning = delegate (object value, LogImportanceMode importance)
-            {
-                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Warning, importance);
-            };
-
-            Action<object, LogImportanceMode> onError = delegate (object value, LogImportanceMode importance)
-            {
-                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Error, importance);
-            };
-
-            Action<object, LogImportanceMode> onTitle = delegate (object value, LogImportanceMode importance)
-            {
-                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Title, importance);
-            };
-
-            Printer printer = new Printer(onMessage, onWarning, onError, onTitle);
-        }
-
-        private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
+        Action<object, LogImportanceMode> onError = delegate (object value, LogImportanceMode importance)
         {
-            Semaphore.WaitOne();
+            if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Error, importance);
+        };
 
-            try
+        Action<object, LogImportanceMode> onTitle = delegate (object value, LogImportanceMode importance)
+        {
+            if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Title, importance);
+        };
+
+        Printer printer = new Printer(onMessage, onWarning, onError, onTitle);
+    }
+
+    private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
+    {
+        Semaphore.WaitOne();
+
+        try
+        {
+            if (CheckIfShouldPrint(importance))
             {
-                if (CheckIfShouldPrint(importance))
-                {
-                    if (writeToLogs) WriteToLogs(text);
+                if (writeToLogs) WriteToLogs(text);
 
-                    Console.ForegroundColor = ColorDictionary[mode];
-                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
+                Console.ForegroundColor = ColorDictionary[mode];
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
+                Console.ForegroundColor = ConsoleColor.White;
             }
-            catch(Exception ex) { throw new Exception($"Logger encountered an error. This should never happen\n{ex}"); }
-
-            Semaphore.Release();
         }
+        catch(Exception ex) { throw new Exception($"Logger encountered an error. This should never happen\n{ex}"); }
 
-        private static void WriteToLogs(string toLog)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | " + toLog);
-            stringBuilder.Append(Environment.NewLine);
+        Semaphore.Release();
+    }
 
-            DateTime dateTime = DateTime.Now.Date;
-            string nowFileName = $"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}";
-            string nowFullPath = Master.SystemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+    private static void WriteToLogs(string toLog)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | " + toLog);
+        stringBuilder.Append(Environment.NewLine);
 
-            File.AppendAllText(nowFullPath, stringBuilder.ToString());
-            stringBuilder.Clear();
-        }
+        DateTime dateTime = DateTime.Now.Date;
+        string nowFileName = $"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}";
+        string nowFullPath = Master.SystemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
-        private static bool CheckIfShouldPrint(LogImportanceMode importance)
-        {
-            if (importance == LogImportanceMode.Normal) return true;
-            else if (importance == LogImportanceMode.Verbose && Master.ServerConfig.VerboseLogs) return true;
-            else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.ExtremeVerboseLogs) return true;
-            else return false;
-        }
+        File.AppendAllText(nowFullPath, stringBuilder.ToString());
+        stringBuilder.Clear();
+    }
+
+    private static bool CheckIfShouldPrint(LogImportanceMode importance)
+    {
+        if (importance == LogImportanceMode.Normal) return true;
+        else if (importance == LogImportanceMode.Verbose && Master.ServerConfig.VerboseLogs) return true;
+        else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.ExtremeVerboseLogs) return true;
+        else return false;
     }
 }

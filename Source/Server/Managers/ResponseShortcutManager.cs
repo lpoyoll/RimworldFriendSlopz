@@ -1,52 +1,48 @@
-﻿using GameServer.Misc;
-using Shared;
+﻿using Shared;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
-using Shared.Misc;
 
-namespace GameServer.Managers
+namespace GameServer.Managers;
+
+public static class ResponseShortcutManager
 {
-
-    public static class ResponseShortcutManager
+    public static void SendIllegalPacket(ServerClient client, string message, bool shouldBroadcast = true)
     {
-        public static void SendIllegalPacket(ServerClient client, string message, bool shouldBroadcast = true)
+        ResponseShortcutData data = new ResponseShortcutData();
+        data._stepMode = ResponseStepMode.IllegalAction;
+
+        client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+        client.Listener.Disconnect();
+
+        if (shouldBroadcast)
         {
-            ResponseShortcutData data = new ResponseShortcutData();
-            data._stepMode = ResponseStepMode.IllegalAction;
-
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
-            client.Listener.Disconnect();
-
-            if (shouldBroadcast)
-            {
-                Printer.Warning($"[Illegal action] > {client.UserFile.Username} > {client.CurrentIP}");
-                Printer.Warning($"[Illegal reason] > {message}");
-            }
+            Printer.Warning($"[Illegal action] > {client.UserFile.Username} > {client.CurrentIP}");
+            Printer.Warning($"[Illegal reason] > {message}");
         }
+    }
 
-        public static void SendUnavailablePacket(ServerClient client)
-        {
-            ResponseShortcutData data = new ResponseShortcutData();
-            data._stepMode = ResponseStepMode.UserUnavailable;
+    public static void SendUnavailablePacket(ServerClient client)
+    {
+        ResponseShortcutData data = new ResponseShortcutData();
+        data._stepMode = ResponseStepMode.UserUnavailable;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
-        }
+        client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+    }
 
-        public static void SendBreakPacket(ServerClient client)
-        {
-            ResponseShortcutData data = new ResponseShortcutData();
-            data._stepMode = ResponseStepMode.Pop;
+    public static void SendBreakPacket(ServerClient client)
+    {
+        ResponseShortcutData data = new ResponseShortcutData();
+        data._stepMode = ResponseStepMode.Pop;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
-        }
+        client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+    }
 
-        public static void SendNoPowerPacket(ServerClient client)
-        {
-            ResponseShortcutData data = new ResponseShortcutData();
-            data._stepMode = ResponseStepMode.NoPower;
+    public static void SendNoPowerPacket(ServerClient client)
+    {
+        ResponseShortcutData data = new ResponseShortcutData();
+        data._stepMode = ResponseStepMode.NoPower;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
-        }
+        client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
     }
 }

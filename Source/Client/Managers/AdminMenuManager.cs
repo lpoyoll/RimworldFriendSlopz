@@ -1,49 +1,48 @@
 using GameClient.Dialogs;
 
-namespace GameClient.Managers
+namespace GameClient.Managers;
+
+public static class AdminMenuManager
 {
-    public static class AdminMenuManager
-    {
-        private static string DialogTitle { get; set; } = "Admin menu";
+    private static string DialogTitle { get; set; } = "Admin menu";
          
-        private static string DialogDescription { get; set; } = "Choose which action to execute";
+    private static string DialogDescription { get; set; } = "Choose which action to execute";
 
-        private static string[] MenuButtons { get; set; } = new string[]
+    private static string[] MenuButtons { get; set; } =
+    [
+        "Mod Manager",
+        "Event Manager",
+        "Difficulty Manager",
+        "Save Manager (BETA)"
+    ];
+
+    public static void ShowAdminMenu()
+    {
+        RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons(DialogTitle, DialogDescription,
+            MenuButtons, delegate { OpenSpecificMenu(); }, null);
+
+        RT_Dialog_Base.PushNewDialog(d1);
+    }
+
+    public static void OpenSpecificMenu()
+    {
+        switch (RT_Dialog_ScrollButtons.SelectedScrollButton)
         {
-            "Mod Manager",
-            "Event Manager",
-            "Difficulty Manager",
-            "Save Manager (BETA)"
-        };
+            case 0:
+                ModManager.OpenModManagerMenu();
+                break;
 
-        public static void ShowAdminMenu()
-        {
-            RT_Dialog_ScrollButtons d1 = new RT_Dialog_ScrollButtons(DialogTitle, DialogDescription,
-                MenuButtons, delegate { OpenSpecificMenu(); }, null);
+            case 1:
+                EventManager.ShowEventTweakerMenu();
+                break;
 
-            RT_Dialog_Base.PushNewDialog(d1);
-        }
+            case 2:
+                DifficultyManager.OpenDifficultyMenu();
+                break;
 
-        public static void OpenSpecificMenu()
-        {
-            switch (RT_Dialog_ScrollButtons.SelectedScrollButton)
-            {
-                case 0:
-                    ModManager.OpenModManagerMenu();
-                    break;
-
-                case 1:
-                    EventManager.ShowEventTweakerMenu();
-                    break;
-
-                case 2:
-                    DifficultyManager.OpenDifficultyMenu();
-                    break;
-
-                case 3:
-                    SaveManager.OpenSaveUploaderMenu();
-                    break;
-            }
+            case 3:
+                SaveManager.OpenSaveUploaderMenu();
+                break;
         }
     }
 }

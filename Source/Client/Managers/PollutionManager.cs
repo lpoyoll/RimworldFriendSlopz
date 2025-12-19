@@ -6,92 +6,91 @@ using Shared;
 using System.Collections.Generic;
 using Verse;
 using Shared.Details.Planet;
-namespace GameClient.Managers
+namespace GameClient.Managers;
+
+public static class PollutionManager
 {
-    public static class PollutionManager
+    [HandlesPacket(PacketHeader.PollutionManager)]
+    private static void ParsePacket(byte[] bytes)
     {
-        [HandlesPacket(PacketHeader.PollutionManager)]
-        private static void ParsePacket(byte[] bytes)
+        if (ModsConfig.BiotechActive)
         {
-            if (ModsConfig.BiotechActive)
-            {
-                PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(bytes);
+            PollutionData data = Serializer.ConvertBytesToObject<PollutionData>(bytes);
 
-                AddPollutedTileOrganic(data._pollutionData);
-            }
-        }
-
-        public static void AddPollutedTiles(PollutionDetail[] details, bool forceRefresh)
-        {
-            if (details == null) return;
-
-            foreach (PollutionDetail detail in details)
-            {
-                AddPollutedTileSimple(detail, forceRefresh);
-            }
-
-            //If we don't want to force refresh we wait for all and then refresh the layer
-            if (!forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
-        }
-
-        public static void AddPollutedTileOrganic(PollutionDetail details)
-        {
-            PollutionPatch.PatchAddPollution.addedByServer = true;
-            WorldPollutionUtility.PolluteWorldAtTile(details.Tile, details.Quantity);
-        }
-
-        public static void AddPollutedTileSimple(PollutionDetail details, bool forceRefresh)
-        {
-            SurfaceTile toPollute = Find.WorldGrid[details.Tile];
-            toPollute.pollution = details.Quantity;
-
-            if (forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
-        }
-
-        public static void ClearAllPollution()
-        {
-            PlanetLayer layer = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
-
-            foreach (SurfaceTile tile in layer.Tiles)
-            {
-                if (tile.pollution != 0) tile.pollution = 0;
-            }
-
-            PollutionManagerHelper.ForcePollutionLayerRefresh();
+            AddPollutedTileOrganic(data._pollutionData);
         }
     }
 
-    public static class PollutionManagerHelper
+    public static void AddPollutedTiles(PollutionDetail[] details, bool forceRefresh)
     {
-        public static PollutionDetail[] tempPollutionDetails;
+        if (details == null) return;
 
-        public static void SetValues(ServerGlobalData serverGlobalData)
+        foreach (PollutionDetail detail in details)
         {
-            tempPollutionDetails = serverGlobalData._pollutedTiles;
+            AddPollutedTileSimple(detail, forceRefresh);
         }
 
-        public static PollutionDetail[] GetPlanetPollutedTiles()
+        //If we don't want to force refresh we wait for all and then refresh the layer
+        if (!forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
+    }
+
+    public static void AddPollutedTileOrganic(PollutionDetail details)
+    {
+        PollutionPatch.PatchAddPollution.addedByServer = true;
+        WorldPollutionUtility.PolluteWorldAtTile(details.Tile, details.Quantity);
+    }
+
+    public static void AddPollutedTileSimple(PollutionDetail details, bool forceRefresh)
+    {
+        SurfaceTile toPollute = Find.WorldGrid[details.Tile];
+        toPollute.pollution = details.Quantity;
+
+        if (forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
+    }
+
+    public static void ClearAllPollution()
+    {
+        PlanetLayer layer = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
+
+        foreach (SurfaceTile tile in layer.Tiles)
         {
-            List<PollutionDetail> toGet = new List<PollutionDetail>();
-            foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
+            if (tile.pollution != 0) tile.pollution = 0;
+        }
+
+        PollutionManagerHelper.ForcePollutionLayerRefresh();
+    }
+}
+
+public static class PollutionManagerHelper
+{
+    public static PollutionDetail[] TempPollutionDetails;
+
+    public static void SetValues(ServerGlobalData serverGlobalData)
+    {
+        TempPollutionDetails = serverGlobalData._pollutedTiles;
+    }
+
+    public static PollutionDetail[] GetPlanetPollutedTiles()
+    {
+        List<PollutionDetail> toGet = new List<PollutionDetail>();
+        foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
+        {
+            if (tile.pollution != 0)
             {
-                if (tile.pollution != 0)
-                {
-                    PollutionDetail details = new PollutionDetail();
-                    details.Tile = tile.tile;
-                    details.Quantity = tile.pollution;
+                PollutionDetail details = new PollutionDetail();
+                details.Tile = tile.tile;
+                details.Quantity = tile.pollution;
 
-                    toGet.Add(details);
-                }
+                toGet.Add(details);
             }
-
-            return toGet.ToArray();
         }
 
-        public static void ForcePollutionLayerRefresh()
-        {
-            PlanetLayer toRefresh = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
-            Find.World.renderer.SetDirty<WorldDrawLayer>(toRefresh);
-        }
+        return toGet.ToArray();
+    }
+
+    public static void ForcePollutionLayerRefresh()
+    {
+        PlanetLayer toRefresh = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Surface);
+        Find.World.renderer.SetDirty<WorldDrawLayer>(toRefresh);
     }
 }

@@ -5,57 +5,56 @@ using RimWorld;
 using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Managers
+namespace GameClient.Managers;
+
+//Class that handles how the client will answer to incoming server commands
+public static class ConsoleManager
 {
-    //Class that handles how the client will answer to incoming server commands
-    public static class ConsoleManager
+    [HandlesPacket(PacketHeader.ConsoleManager)]
+    private static void ParsePacket(byte[] bytes)
     {
-        //Parses the received packet into a command to execute
+        CommandData data = Serializer.ConvertBytesToObject<CommandData>(bytes);
 
-        [HandlesPacket(PacketHeader.ConsoleManager)]
-        private static void ParsePacket(byte[] bytes)
+        switch (data._commandMode)
         {
-            CommandData data = Serializer.ConvertBytesToObject<CommandData>(bytes);
+            case CommandMode.Op:
+                OnOpCommand();
+                break;
 
-            switch (data._commandMode)
-            {
-                case CommandMode.Op:
-                    OnOpCommand();
-                    break;
+            case CommandMode.Deop:
+                OnDeopCommand();
+                break;
 
-                case CommandMode.Deop:
-                    OnDeopCommand();
-                    break;
+            case CommandMode.Broadcast:
+                OnBroadcastCommand(data);
+                break;
 
-                case CommandMode.Broadcast:
-                    OnBroadcastCommand(data);
-                    break;
-
-                case CommandMode.ForceSave:
-                    OnForceSaveCommand();
-                    break;
-            }
+            case CommandMode.ForceSave:
+                OnForceSaveCommand();
+                break;
+            
+            default:
+                Printer.Error($"Received invalid step mode {data._commandMode}");
+                return;
         }
-
-        //Executes the command depending on the type
-
-        private static void OnOpCommand()
-        {
-            SessionHandler.IsAdmin = true;
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are now an admin!" }));
-        }
-
-        private static void OnDeopCommand()
-        {
-            SessionHandler.IsAdmin = false;
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", new string[] { "You are no longer an admin!" }));
-        }
-
-        private static void OnBroadcastCommand(CommandData commandData)
-        {
-            RimworldManager.GenerateLetter("Server Broadcast", ChatManagerH.ParseMessage(commandData._details, true), LetterDefOf.PositiveEvent);
-        }
-
-        private static void OnForceSaveCommand() { SaveManager.ForceSave(); }
     }
+
+    private static void OnOpCommand()
+    {
+        SessionHandler.IsAdmin = true;
+        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", ["You are now an admin!"]));
+    }
+
+    private static void OnDeopCommand()
+    {
+        SessionHandler.IsAdmin = false;
+        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("MESSAGE", ["You are no longer an admin!"]));
+    }
+
+    private static void OnBroadcastCommand(CommandData commandData)
+    {
+        RimworldManager.GenerateLetter("Server Broadcast", ChatManagerH.ParseMessage(commandData._details, true), LetterDefOf.PositiveEvent);
+    }
+
+    private static void OnForceSaveCommand() { SaveManager.ForceSave(); }
 }
