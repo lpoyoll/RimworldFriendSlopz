@@ -1,13 +1,12 @@
-﻿using System.Text;
-using GameServer.Core;
+﻿using GameServer.Core;
+using Shared.Misc;
+using System.Text;
 using static Shared.CommonEnumerators;
 
-namespace GameServer.Misc
+namespace GameServer
 {
-    public static class Printer
+    public static class ServerPrinter
     {
-        //Variables
-
         private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
         private static Dictionary<LogMode, ConsoleColor> ColorDictionary { get; set; } = new Dictionary<LogMode, ConsoleColor>
@@ -15,23 +14,33 @@ namespace GameServer.Misc
             { LogMode.Message, ConsoleColor.White },
             { LogMode.Warning, ConsoleColor.Yellow },
             { LogMode.Error, ConsoleColor.Red },
-            { LogMode.Title, ConsoleColor.Green },
-            { LogMode.Outsider, ConsoleColor.Magenta}
+            { LogMode.Title, ConsoleColor.Green }
         };
 
-        //Functions to write logs in different colors
+        public static void CreateLogger()
+        {
+            Action<object, LogImportanceMode> onMessage = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Message, importance);
+            };
 
-        public static void Message(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Message, importance); }
+            Action<object, LogImportanceMode> onWarning = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Warning, importance);
+            };
 
-        public static void Warning(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Warning, importance); }
+            Action<object, LogImportanceMode> onError = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Error, importance);
+            };
 
-        public static void Error(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Error, importance); }
+            Action<object, LogImportanceMode> onTitle = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Title, importance);
+            };
 
-        public static void Title(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Title, importance); }
-
-        public static void Outsider(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Outsider, importance); }
-
-        //Actual function that writes the logs
+            Printer printer = new Printer(onMessage, onWarning, onError, onTitle);
+        }
 
         private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
         {
@@ -53,8 +62,6 @@ namespace GameServer.Misc
             Semaphore.Release();
         }
 
-        //Function that writes contents to log file
-
         private static void WriteToLogs(string toLog)
         {
             StringBuilder stringBuilder = new StringBuilder();
@@ -68,8 +75,6 @@ namespace GameServer.Misc
             File.AppendAllText(nowFullPath, stringBuilder.ToString());
             stringBuilder.Clear();
         }
-
-        //Checks if the importance of the log has been enabled
 
         private static bool CheckIfShouldPrint(LogImportanceMode importance)
         {

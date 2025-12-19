@@ -1,4 +1,5 @@
 ﻿using Mono.Nat;
+using Shared.Misc;
 
 namespace GameServer.Misc
 {

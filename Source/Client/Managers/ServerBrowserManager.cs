@@ -11,6 +11,7 @@ using Shared;
 using Steamworks;
 using TCPNetwork;
 using static Shared.CommonEnumerators;
+using Shared.Misc;
 
 namespace GameClient.Managers
 {
@@ -53,7 +54,7 @@ namespace GameClient.Managers
                     var server = AllServers[PingedIndex];
                     if (server._version != CommonValues.ExecutableVersion)
                     {
-                        Printer.EnqueueWarning($"Server {server._name} did not have the same version as the client", LogImportanceMode.Verbose);
+                        Printer.Warning($"Server {server._name} did not have the same version as the client", LogImportanceMode.Verbose);
                         i--;
                         continue;
                     }
@@ -62,7 +63,7 @@ namespace GameClient.Managers
                 await Task.WhenAll(tasks);
                 tasks.Clear();
             }
-            Printer.EnqueueWarning("Finished checking for connections", LogImportanceMode.Verbose);
+            Printer.Warning("Finished checking for connections", LogImportanceMode.Verbose);
             TurnOffReachabilityChecks();
         }
 
@@ -78,7 +79,7 @@ namespace GameClient.Managers
                 {
                     // Timed out
                     server.Reachability = Reachability.Unreachable;
-                    Printer.EnqueueWarning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
                     return;
                 }
 
@@ -89,18 +90,18 @@ namespace GameClient.Managers
                     _ = await stream.ReadAsync(ReceiverBuffer, token.Token);
                     // The server is reachable
                     server.Reachability = Reachability.Reachable;
-                    Printer.EnqueueWarning($"Server found and reachable {server._name}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Server found and reachable {server._name}", LogImportanceMode.Verbose);
                 }
             }
             catch (OperationCanceledException)
             {
                 // do nothing, timed out for some reason
                 server.Reachability = Reachability.Unreachable;
-                Printer.EnqueueWarning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
+                Printer.Warning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
             }
             catch (Exception ex)
             {
-                Printer.EnqueueWarning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
+                Printer.Warning($"Server found but not reachable {server._name}", LogImportanceMode.Verbose);
                 server.Reachability = Reachability.Unreachable;
             }
         }

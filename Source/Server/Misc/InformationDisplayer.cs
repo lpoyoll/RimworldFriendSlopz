@@ -1,4 +1,5 @@
-﻿using TCPNetwork.Files.Client;
+﻿using Shared.Misc;
+using TCPNetwork.Files.Client;
 using static Shared.CommonEnumerators;
 
 namespace GameServer.Misc

@@ -1,13 +1,17 @@
-﻿using GameClient.Files;
+﻿using GameClient.Core.Configs;
+using GameClient.Files;
 using GameClient.Misc;
 using HarmonyLib;
 using Shared;
+using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Verse;
+using static Shared.CommonEnumerators;
 
 namespace GameClient.Core
 {
@@ -20,9 +24,12 @@ namespace GameClient.Core
         {
             static RimworldTogether()
             {
-                ApplyHarmonyPathches();
+                ClientPrinter.CreateLogger();
+
+                ApplyHarmonyPatches();
                 PrepareCulture();
                 PreparePaths();
+
                 CreateUnityDispatcher();
                 MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Client);
 
@@ -30,7 +37,7 @@ namespace GameClient.Core
             }
         }
 
-        private static void ApplyHarmonyPathches()
+        private static void ApplyHarmonyPatches()
         {
             Harmony harmony = new Harmony(Master.ModID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());

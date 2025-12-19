@@ -1,5 +1,4 @@
 using GameServer.Managers;
-using GameServer.Misc;
 using Shared;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
@@ -17,7 +16,7 @@ namespace GameServer.Core
         static void Main()
         {
             Console.ForegroundColor = ConsoleColor.White;
-
+            ServerPrinter.CreateLogger();
             SetPaths();
 
             if (!File.Exists(ServerConfigFile.SavePath))

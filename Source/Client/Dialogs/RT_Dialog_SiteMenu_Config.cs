@@ -7,6 +7,7 @@ using Shared;
 using GameClient.Managers;
 using GameClient.Misc;
 using Shared.Files.Sites;
+using Shared.Misc;
 
 namespace GameClient.Dialogs
 {

@@ -12,6 +12,7 @@ using Verse;
 using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
 using Shared;
+using Shared.Misc;
 
 namespace GameClient.Patches
 {

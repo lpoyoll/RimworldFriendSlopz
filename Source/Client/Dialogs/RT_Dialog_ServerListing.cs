@@ -7,6 +7,7 @@ using Shared;
 using UnityEngine;
 using Verse;
 using Reachability = Rimworld_Together_Master_Server.Data.Reachability;
+using Shared.Misc;
 
 namespace GameClient.Dialogs
 {

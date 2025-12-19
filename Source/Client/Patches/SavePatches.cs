@@ -2,6 +2,7 @@
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
+using Shared.Misc;
 using System;
 using Verse;
 using static Shared.CommonEnumerators;

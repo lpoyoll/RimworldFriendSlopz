@@ -1,5 +1,6 @@
 using GameServer.Core;
 using GameServer.Misc;
+using Shared.Misc;
 
 namespace GameServer.Managers
 {

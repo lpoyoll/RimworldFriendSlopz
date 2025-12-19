@@ -1,39 +1,37 @@
 ﻿using GameClient.Core.Configs;
+using GameClient.Misc;
 using Shared;
+using Shared.Misc;
 using System;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Misc
+namespace GameClient
 {
-    public static class Printer
+    public static class ClientPrinter
     {
-        private static readonly Color RTColor = new  Color(140f, 0f, 255f);
+        private static readonly Color RTColor = new Color(140f, 0f, 255f);
         
-        public static void EnqueueMessage(object value, LogImportanceMode importance = LogImportanceMode.Normal)
+        public static void CreateLogger()
         {
-            if (CheckIfShouldPrint(importance))
-                MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Message, importance);});
+            Action<object, LogImportanceMode> onMessage = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Message, importance); });
+            };
+
+            Action<object, LogImportanceMode> onWarning = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Warning, importance); });
+            };
+
+            Action<object, LogImportanceMode> onError = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Error, importance); });
+            };
+
+            Printer printer = new Printer(onMessage, onWarning, onError, null);
         }
-
-        public static void EnqueueWarning(object value, LogImportanceMode importance = LogImportanceMode.Normal)
-        {
-            if (CheckIfShouldPrint(importance))
-                MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Warning, importance);});
-        }
-
-        public static void EnqueueError(object value, LogImportanceMode importance = LogImportanceMode.Normal)
-        {
-            if (CheckIfShouldPrint(importance))
-                MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Error, importance);});
-        }
-        
-        public static void Message(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Message, importance); }
-
-        public static void Warning(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Warning, importance); }
-
-        public static void Error(object value, LogImportanceMode importance = LogImportanceMode.Normal) { WriteToConsole(value.ToString(), LogMode.Error, importance); }
 
         private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance)
         {
