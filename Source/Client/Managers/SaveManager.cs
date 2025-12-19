@@ -17,6 +17,7 @@ using System.Linq;
 using TCPNetwork.Packets;
 using System.Threading.Tasks;
 using System.Threading;
+using Shared.Misc;
 
 namespace GameClient.Managers
 {
@@ -33,13 +34,13 @@ namespace GameClient.Managers
         [HandlesPacket(PacketHeader.SaveManager)]
         private static void ParsePacket(byte[] bytes)
         {
-            SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
-
-            if (data._stepMode == SaveStepMode.Receive) SaveManager.ReceiveSaveFromServer(data);
-            else if (data._stepMode == SaveStepMode.Send)
+            var read = SaveData.ParseSavePacket(bytes, out SaveDataHeader header);
+            var saveFileBytes = bytes.AsSpan().Slice(read);
+            if (header._stepMode == SaveStepMode.Receive) OnSaveReceived(header, saveFileBytes.ToArray());
+            else if (header._stepMode == SaveStepMode.Send)
             {
                 LatestSavePath = SaveFilePath;
-                SaveManager.SendSaveToServer();
+                SendSaveToServer();
             }
         }
 
@@ -64,9 +65,9 @@ namespace GameClient.Managers
         public static void RequestResetSave()
         {
             SaveData data = new SaveData();
-            data._stepMode = SaveStepMode.Reset;
+            data._header._stepMode = SaveStepMode.Reset;
 
-            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SaveManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
         }
 
         public static double GetRealPlayTimeInteractingFromSave(string filePath)
@@ -128,44 +129,33 @@ namespace GameClient.Managers
         public static void SendSaveToServer()
         {
             byte[] saveBytes;
-            if (string.IsNullOrEmpty(SaveManager.LatestSavePath)) saveBytes = File.ReadAllBytes(SaveManager.SaveFilePath);
-            else saveBytes = File.ReadAllBytes(SaveManager.LatestSavePath);
-            saveBytes = GZip.CompressBytes(saveBytes);
+            if (string.IsNullOrEmpty(LatestSavePath)) saveBytes = File.ReadAllBytes(SaveFilePath);
+            else saveBytes = File.ReadAllBytes(LatestSavePath);
 
             SaveData data = new SaveData();
-            data._stepMode = SaveStepMode.Receive;
-            data._fileBytes = saveBytes;
-            data._forceDisconnect = SessionHandler.IsIntentionalDisconnect;
+            data._header._stepMode = SaveStepMode.Receive;
+            data._fileBytes = GZip.CompressBytes(saveBytes);
+            data._header._forceDisconnect = SessionHandler.IsIntentionalDisconnect;
 
-            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SaveManager, data);
+            ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
         }
 
-        public static void ReceiveSaveFromServer(SaveData data)
+        private static void OnSaveReceived(SaveDataHeader header, byte[] save)
         {
             Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
-
-            File.WriteAllBytes(CommonValues.DefaultSaveFormat, data._fileBytes);
-
-            OnSaveReceived(data);
-        }
-
-        private static void OnSaveReceived(SaveData data)
-        {
-            byte[] fileBytes = File.ReadAllBytes(CommonValues.DefaultSaveFormat);
-            fileBytes = GZip.DecompressBytes(fileBytes);
-
-            File.WriteAllBytes(SaveManager.TempSaveFilePath, fileBytes);
+            var saveBytes = GZip.DecompressBytes(save);
+            File.WriteAllBytes(TempSaveFilePath, saveBytes);
             File.Delete(CommonValues.DefaultSaveFormat);
 
-            if (data._forceUseSave || !File.Exists(SaveManager.SaveFilePath))
+            if (header._forceUseSave || !File.Exists(SaveFilePath))
             {
-                File.Delete(SaveManager.SaveFilePath);
-                File.Move(SaveManager.TempSaveFilePath, SaveManager.SaveFilePath);
+                File.Delete(SaveFilePath);
+                File.Move(TempSaveFilePath, SaveFilePath);
             }
 
             else
             {
-                if (SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.TempSaveFilePath) >= SaveManager.GetRealPlayTimeInteractingFromSave(SaveManager.SaveFilePath))
+                if (GetRealPlayTimeInteractingFromSave(TempSaveFilePath) >= GetRealPlayTimeInteractingFromSave(SaveFilePath))
                 {
                     Printer.Message("Loading remote save", LogImportanceMode.Verbose);
 

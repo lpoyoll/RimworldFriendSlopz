@@ -91,11 +91,17 @@ namespace TCPNetwork
         {
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
+        public void EnqueueBytes(PacketHeader header, byte[] bytes)
+        {
+            PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
+        }
 
         private void Read()
         {
             try
             {
+                byte[] headerBuffer = new byte[sizeof(PacketHeader)];
+                byte[] lengthBuffer = new byte[Network.PacketLengthSizeInBytes];
                 while (!DisconnectFlag)
                 {
                     Thread.Sleep(1);
@@ -103,22 +109,21 @@ namespace TCPNetwork
                     if (Stream.DataAvailable)
                     {
                         // Read packet header
-                        byte[] buffer = new byte[1];
-                        Stream.Read(buffer, 0, buffer.Length);
-                        PacketHeader header = (PacketHeader)buffer[0];
+                        
+                        Stream.Read(headerBuffer, 0, sizeof(PacketHeader));
+                        PacketHeader header = (PacketHeader)headerBuffer[0];
 
                         // Read packet size
-                        buffer = new byte[Network.PacketLengthSizeInBytes];
-                        Stream.Read(buffer, 0, buffer.Length);
+                        Stream.Read(lengthBuffer, 0, Network.PacketLengthSizeInBytes);
 
                         // Read packet contents
-                        buffer = new byte[BitConverter.ToInt32(buffer, 0)];
-                        ReadFullPacket(buffer);
+                        var packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
+                        ReadFullPacket(packetBuffer);
 
                         if (!IgnoreLogPackets.Contains(header)) OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
                         else OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
-                        try { OnReadPacket(header, buffer, TargetClient); }
+                        try { OnReadPacket(header, packetBuffer, TargetClient); }
                         catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
                     }
                 }
@@ -132,6 +137,7 @@ namespace TCPNetwork
         {
             try
             {
+                byte[] headerBuffer = new byte[sizeof(PacketHeader)];
                 while (!DisconnectFlag)
                 {
                     Thread.Sleep(1);
@@ -142,9 +148,9 @@ namespace TCPNetwork
                     {
                         if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
                         byte[] packetSize = BitConverter.GetBytes(packetData.Value.Length);
-
                         // Write packet header
-                        Stream.Write(new byte[] { packetData.Key }, 0, 1);
+                        headerBuffer[0] = packetData.Key;
+                        Stream.Write(headerBuffer, 0, sizeof(PacketHeader));
 
                         // Write packet size
                         Stream.Write(packetSize, 0, packetSize.Length);

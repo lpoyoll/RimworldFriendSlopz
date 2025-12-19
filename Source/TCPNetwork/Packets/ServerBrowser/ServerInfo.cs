@@ -19,7 +19,7 @@ namespace Rimworld_Together_Master_Server.Data
         public int _port;
         public string _version;
         [IgnoreMember] public volatile Reachability Reachability = Reachability.Unknown;
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             if (obj is ServerInfo info)
             {
