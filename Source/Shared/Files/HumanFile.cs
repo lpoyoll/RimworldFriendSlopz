@@ -1,8 +1,11 @@
-namespace Shared.Files;
+using System;
 
-public class HumanFile
+namespace Shared.Files
 {
-    public string ScribeData { get; set; } = string.Empty;
+    public class HumanFile
+    {
+        public string ScribeData { get; set; } = string.Empty;
 
-    public string IdeologyData { get; set; } = string.Empty;
+        public string IdeologyData { get; set; } = string.Empty;
+    }
 }

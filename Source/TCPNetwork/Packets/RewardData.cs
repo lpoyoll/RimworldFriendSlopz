@@ -1,13 +1,15 @@
 using Shared.Files.Sites;
 
-namespace TCPNetwork.Packets;
-
-public class RewardData 
+namespace TCPNetwork.Packets 
 {
-    public SiteReward[] _rewardData { get; set; } = null;
 
-    public override string ToString()
+    public class RewardData 
     {
-        return $"RewardData:|{_rewardData?.Length ?? 0}";
+        public SiteReward[] _rewardData { get; set; } = null;
+
+        public override string ToString()
+        {
+            return $"RewardData:|{_rewardData?.Length ?? 0}";
+        }
     }
 }

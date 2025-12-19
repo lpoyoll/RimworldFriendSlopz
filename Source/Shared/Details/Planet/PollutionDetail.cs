@@ -1,8 +1,11 @@
-namespace Shared.Details.Planet;
+using System;
 
-public class PollutionDetail
+namespace Shared.Details.Planet
 {
-    public int Tile { get; set; } = -1;
+    public class PollutionDetail
+    {
+        public int Tile { get; set; } = -1;
 
-    public float Quantity { get; set; } = -1;
+        public float Quantity { get; set; } = -1;
+    }
 }

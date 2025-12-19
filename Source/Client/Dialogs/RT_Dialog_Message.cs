@@ -2,55 +2,56 @@
 using UnityEngine;
 using Verse;
 
-namespace GameClient.Dialogs;
-
-public class RT_Dialog_Message : RT_Dialog_Base
+namespace GameClient.Dialogs
 {
-    public override Vector2 InitialSize => new Vector2(500f, 150f);
-
-    private string CurrentMessage { get; set; }
-
-    private readonly string[] Messages;
-
-    private int Index { get; set; } = 0;
-
-    public RT_Dialog_Message(string title, string[] messages, Action onConfirm = null)
+    public class RT_Dialog_Message : RT_Dialog_Base
     {
-        Title = title;
-        Messages = messages;
-        OnAccept = onConfirm;
-        CurrentMessage = messages[Index];
+        public override Vector2 InitialSize => new Vector2(500f, 150f);
 
-        closeOnAccept = false;
-        closeOnCancel = false;
-    }
+        private string CurrentMessage { get; set; }
 
-    public override void DoWindowContents(Rect rect)
-    {
-        float centeredX = rect.width / 2;
-        float horizontalLineDif = Text.CalcSize(CurrentMessage).y + StandardMargin / 2;
-        float windowDescriptionDif = Text.CalcSize(CurrentMessage).y + StandardMargin;
+        private string[] Messages { get; set; }
 
-        Text.Font = GameFont.Medium;
-        Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
-        Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
-        Text.Font = GameFont.Small;
+        private int Index { get; set; } = 0;
 
-        Widgets.Label(new Rect(centeredX - Text.CalcSize(CurrentMessage).x / 2, windowDescriptionDif, 
-            Text.CalcSize(CurrentMessage).x, Text.CalcSize(CurrentMessage).y), CurrentMessage);
-
-        if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomCenter), "OK"))
+        public RT_Dialog_Message(string title, string[] messages, Action onConfirm = null)
         {
-            if (Index < Messages.Length - 1)
-            {
-                Index++;
-                CurrentMessage = Messages[Index];
-            }
+            this.Title = title;
+            this.Messages = messages;
+            this.OnAccept = onConfirm;
+            CurrentMessage = messages[Index];
 
-            else
+            closeOnAccept = false;
+            closeOnCancel = false;
+        }
+
+        public override void DoWindowContents(Rect rect)
+        {
+            float centeredX = rect.width / 2;
+            float horizontalLineDif = Text.CalcSize(CurrentMessage).y + StandardMargin / 2;
+            float windowDescriptionDif = Text.CalcSize(CurrentMessage).y + StandardMargin;
+
+            Text.Font = GameFont.Medium;
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
+            Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
+            Text.Font = GameFont.Small;
+
+            Widgets.Label(new Rect(centeredX - Text.CalcSize(CurrentMessage).x / 2, windowDescriptionDif, 
+                Text.CalcSize(CurrentMessage).x, Text.CalcSize(CurrentMessage).y), CurrentMessage);
+
+            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomCenter), "OK"))
             {
-                OnAccept?.Invoke();
-                Close();
+                if (Index < Messages.Length - 1)
+                {
+                    Index++;
+                    CurrentMessage = Messages[Index];
+                }
+
+                else
+                {
+                    OnAccept?.Invoke();
+                    Close();
+                }
             }
         }
     }

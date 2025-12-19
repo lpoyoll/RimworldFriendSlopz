@@ -1,12 +1,14 @@
+using GameClient.Misc;
 using Shared;
 
-namespace GameClient.Managers;
-
-public static class KeepAliveManager
+namespace GameClient.Managers
 {
-    [HandlesPacket(PacketHeader.KeepAliveManager)]
-    private static void ParsePacket(byte[] bytes)
+    public static class KeepAliveManager
     {
-        ClientNetwork.Instance.ClientListener.CurrentKeepAliveTime = 0;
+        [HandlesPacket(PacketHeader.KeepAliveManager)]
+        private static void ParsePacket(byte[] bytes)
+        {
+            ClientNetwork.Instance.ClientListener.CurrentKeepAliveTime = 0;
+        }
     }
 }

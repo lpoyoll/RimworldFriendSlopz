@@ -1,88 +1,90 @@
 ﻿using Shared;
+using Shared.Misc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace GameClient.Misc;
-
-public class MainThreadHandler : MonoBehaviour
+namespace GameClient.Misc
 {
-    public static MainThreadHandler Instance { get; private set; }
-
-    private static Queue<Action> ActionQueue { get; set; } = new Queue<Action>();
-
-    public MainThreadHandler() { Instance = this; }
-
-    private void Awake()
+    public class MainThreadHandler : MonoBehaviour
     {
-        DontDestroyOnLoad(gameObject);
+        public static MainThreadHandler Instance { get; private set; }
 
-        Printer.Warning($"Created dispatcher for version > {CommonValues.ExecutableVersion}");
-    }
+        private static Queue<Action> ActionQueue { get; set; } = new Queue<Action>();
 
-    private void Update() 
-    { 
-        ExecuteAllQueue();
+        public MainThreadHandler() { Instance = this; }
 
-        if (SessionHandler.CurrentNetworkState == CommonEnumerators.ClientNetworkState.Connected)
+        private void Awake()
         {
-            DoPerFrameMethods();
+            DontDestroyOnLoad(gameObject);
+
+            Printer.Warning($"Created dispatcher for version > {CommonValues.ExecutableVersion}");
         }
-    }
 
-    public void DoOnStartMethods()
-    {
-        foreach (MethodInfo method in MethodGatherer.OnStartMethods)
-        {
-            method.Invoke(null, null);
-        }
-    }
+        private void Update() 
+        { 
+            ExecuteAllQueue();
 
-    public void DoOnEndMethods()
-    {
-        foreach (MethodInfo method in MethodGatherer.OnEndMethods)
-        {
-            method.Invoke(null, null);
-        }
-    }
-
-    private void DoPerFrameMethods()
-    {
-        foreach (MethodInfo method in MethodGatherer.PerFrameMethods)
-        {
-            method.Invoke(null, null);
-        }
-    }
-
-    public void Enqueue(Action action) { Enqueue(ActionWrapper(action)); }
-
-    private void Enqueue(IEnumerator action)
-    {
-        lock (ActionQueue)
-        {
-            ActionQueue.Enqueue(() =>
+            if (SessionHandler.CurrentNetworkState == CommonEnumerators.ClientNetworkState.Connected)
             {
-                StartCoroutine(action);
-            });
-        }
-    }
-
-    private void ExecuteAllQueue()
-    {
-        lock (ActionQueue)
-        {
-            while (ActionQueue.Count > 0)
-            {
-                ActionQueue.Dequeue().Invoke();
+                DoPerFrameMethods();
             }
         }
-    }
 
-    IEnumerator ActionWrapper(Action action)
-    {
-        action();
-        yield return null;
+        public void DoOnStartMethods()
+        {
+            foreach (MethodInfo method in MethodGatherer.OnStartMethods)
+            {
+                method.Invoke(null, null);
+            }
+        }
+
+        public void DoOnEndMethods()
+        {
+            foreach (MethodInfo method in MethodGatherer.OnEndMethods)
+            {
+                method.Invoke(null, null);
+            }
+        }
+
+        private void DoPerFrameMethods()
+        {
+            foreach (MethodInfo method in MethodGatherer.PerFrameMethods)
+            {
+                method.Invoke(null, null);
+            }
+        }
+
+        public void Enqueue(Action action) { Enqueue(ActionWrapper(action)); }
+
+        private void Enqueue(IEnumerator action)
+        {
+            lock (ActionQueue)
+            {
+                ActionQueue.Enqueue(() =>
+                {
+                    StartCoroutine(action);
+                });
+            }
+        }
+
+        private void ExecuteAllQueue()
+        {
+            lock (ActionQueue)
+            {
+                while (ActionQueue.Count > 0)
+                {
+                    ActionQueue.Dequeue().Invoke();
+                }
+            }
+        }
+
+        IEnumerator ActionWrapper(Action action)
+        {
+            action();
+            yield return null;
+        }
     }
 }

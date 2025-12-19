@@ -2,59 +2,60 @@
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
+using Shared.Misc;
 using System;
-using Shared;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Patches;
-
-[HarmonyPatch(typeof(GameDataSaveLoader), "SaveGame", typeof(string))]
-public static class SaveOnlineGame
+namespace GameClient.Patches
 {
-    [HarmonyPrefix]
-    public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
+    [HarmonyPatch(typeof(GameDataSaveLoader), "SaveGame", typeof(string))]
+    public static class SaveOnlineGame
     {
-        try
+        [HarmonyPrefix]
+        public static bool DoPre(ref string fileName, ref int ___lastSaveTick)
         {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-            if (SessionHandler.IsSavingGame) return false;
-
-            SessionHandler.IsSavingGame = true;
-
-            GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
-            GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
-            GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
-
-            string filePath = GenFilePaths.FilePathForSavedGame(fileName);
-            SaveManager.LatestSavePath = filePath;
             try
             {
-                SafeSaver.Save(filePath, "savegame", delegate
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+                if (SessionHandler.IsSavingGame) return false;
+
+                SessionHandler.IsSavingGame = true;
+
+                GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
+                GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
+                GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
+
+                string filePath = GenFilePaths.FilePathForSavedGame(fileName);
+                SaveManager.LatestSavePath = filePath;
+                try
                 {
-                    ScribeMetaHeaderUtility.WriteMetaHeader();
-                    Game target = Current.Game;
-                    Scribe_Deep.Look(ref target, "game");
-                }, Find.GameInfo.permadeathMode);
-                ___lastSaveTick = Find.TickManager.TicksGame;
+                    SafeSaver.Save(filePath, "savegame", delegate
+                    {
+                        ScribeMetaHeaderUtility.WriteMetaHeader();
+                        Game target = Current.Game;
+                        Scribe_Deep.Look(ref target, "game");
+                    }, Find.GameInfo.permadeathMode);
+                    ___lastSaveTick = Find.TickManager.TicksGame;
+                }
+                catch (Exception e) { Printer.Error("Exception while saving game: " + e); }
+
+                if (SessionHandler.CurrentNetworkState.Equals(ClientNetworkState.Connected))
+                {
+                    Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
+                    MapManager.SendPlayerMapsToServer();
+
+                    Printer.Message("Sending save to server", LogImportanceMode.Verbose);
+                    SaveManager.SendSaveToServer();
+
+                    RT_Dialog_Wait.Instance.Close();
+                }
             }
-            catch (Exception e) { Printer.Error("Exception while saving game: " + e); }
+            catch (Exception e) { Printer.Error($"{e}"); }
 
-            if (SessionHandler.CurrentNetworkState.Equals(ClientNetworkState.Connected))
-            {
-                Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
-                MapManager.SendPlayerMapsToServer();
+            SessionHandler.IsSavingGame = false;
 
-                Printer.Message("Sending save to server", LogImportanceMode.Verbose);
-                SaveManager.SendSaveToServer();
-
-                RT_Dialog_Wait.Instance.Close();
-            }
+            return false;
         }
-        catch (Exception e) { Printer.Error($"{e}"); }
-
-        SessionHandler.IsSavingGame = false;
-
-        return false;
     }
 }

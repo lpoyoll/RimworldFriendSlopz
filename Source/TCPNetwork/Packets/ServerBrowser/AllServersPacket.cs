@@ -1,6 +1,13 @@
-﻿namespace TCPNetwork.Packets.ServerBrowser;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public class AllServersPacket
+namespace Rimworld_Together_Master_Server.Data
 {
-    public ServerInfo[] _serverInfos;
+    public class AllServersPacket
+    {
+        public ServerInfo[] _serverInfos;
+    }
 }

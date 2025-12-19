@@ -4,118 +4,120 @@ using TCPNetwork.Packets;
 using Shared;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Files.Client;
+using Shared.Misc;
 
-namespace GameServer.Managers;
-
-public static class LoginManager
+namespace GameServer.Managers
 {
-    [HandlesPacket(PacketHeader.LoginManager)]
-    private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+    public static class LoginManager
     {
-        LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
-
-        HandleUser(client, data);
-    }
-
-    public static void HandleUser(ServerClient client, LoginData data)
-    {
-        client.UserFile = new UserFile();
-        client.UserFile.UpdateLoginDetails(data);
-
-        if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);
-        else RegisterUser(client, data);
-    }
-
-    public static void LoginUser(ServerClient client, LoginData data)
-    {
-        if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return;
-        else
+        [HandlesPacket(PacketHeader.LoginManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            client.LoadUserFromFile(client);
+            LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
-            if (UserManagerH.CheckIfUserBanned(client)) return;
-
-            if (!UserManagerH.CheckWhitelist(client)) return;
-
-            if (WorldManager.CheckIfWorldExists() && ModManager.CheckIfModConflict(client, data)) return;
-
-            LoginManagerH.RemoveOldClientSessions(client);
-
-            InformationDisplayer.DisplayLogin(client);
-
-            PostLogin(client);
-        }
-    }
-
-    public static void RegisterUser(ServerClient client, LoginData data)
-    {
-        client.UserFile.UpdateHash();
-
-        InformationDisplayer.DisplayRegister(client);
-
-        LoginUser(client, data);
-    }
-
-    private static void PostLogin(ServerClient client)
-    {
-        SiteManager.SetSiteInfoForClient(client);
-
-        UserManager.SendPlayerRecount();
-
-        GlobalDataManager.SendServerGlobalData(client);
-
-        foreach (string str in ChatManager.DefaultJoinMessages) ChatManager.SendConsoleMessage(client, str);
-
-        if (Master.ChatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
-
-        if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has joined the server!");
-
-        if (WorldManager.CheckIfWorldExists())
-        {
-            if (SaveManager.CheckIfUserHasSave(client)) SaveManager.SendSaveToClient(client);
-            else WorldManager.SendWorld(client);
+            HandleUser(client, data);
         }
 
-        else
+        public static void HandleUser(ServerClient client, LoginData data)
         {
-            Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
+            client.UserFile = new UserFile();
+            client.UserFile.UpdateLoginDetails(data);
 
-            client.UserFile.UpdateAdmin(true);
-            CommandData commandData = new CommandData();
-            commandData._commandMode = CommandMode.Op;
-            client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
-
-            WorldManager.RequireWorldFile(client);
+            if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);
+            else RegisterUser(client, data);
         }
-    }
-}
 
-public static class LoginManagerH
-{
-    public static void RemoveOldClientSessions(ServerClient client)
-    {
-        foreach (ServerClient toFind in ServerNetwork.Instance.GetConnectedClientsSafe())
+        public static void LoginUser(ServerClient client, LoginData data)
         {
-            if (toFind == client) continue;
+            if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return;
             else
             {
-                if (toFind.UserFile.Username == client.UserFile.Username)
-                {
-                    DenyConnectionWithReason(toFind, LoginResponse.Duplicate);
-                }
+                client.LoadUserFromFile(client);
+
+                if (UserManagerH.CheckIfUserBanned(client)) return;
+
+                if (!UserManagerH.CheckWhitelist(client)) return;
+
+                if (WorldManager.CheckIfWorldExists() && ModManager.CheckIfModConflict(client, data)) return;
+
+                LoginManagerH.RemoveOldClientSessions(client);
+
+                InformationDisplayer.DisplayLogin(client);
+
+                PostLogin(client);
+            }
+        }
+
+        public static void RegisterUser(ServerClient client, LoginData data)
+        {
+            client.UserFile.UpdateHash();
+
+            InformationDisplayer.DisplayRegister(client);
+
+            LoginUser(client, data);
+        }
+
+        private static void PostLogin(ServerClient client)
+        {
+            SiteManager.SetSiteInfoForClient(client);
+
+            UserManager.SendPlayerRecount();
+
+            GlobalDataManager.SendServerGlobalData(client);
+
+            foreach (string str in ChatManager.DefaultJoinMessages) ChatManager.SendConsoleMessage(client, str);
+
+            if (Master.ChatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
+
+            if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has joined the server!");
+
+            if (WorldManager.CheckIfWorldExists())
+            {
+                if (SaveManager.CheckIfUserHasSave(client)) SaveManager.SendSaveToClient(client);
+                else WorldManager.SendWorld(client);
+            }
+
+            else
+            {
+                Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
+
+                client.UserFile.UpdateAdmin(true);
+                CommandData commandData = new CommandData();
+                commandData._commandMode = CommandMode.Op;
+                client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+
+                WorldManager.RequireWorldFile(client);
             }
         }
     }
 
-    public static void DenyConnectionWithReason(ServerClient client, LoginResponse response, object extraDetails = null)
+    public static class LoginManagerH
     {
-        LoginData loginData = new LoginData();
-        loginData._tryResponse = response;
+        public static void RemoveOldClientSessions(ServerClient client)
+        {
+            foreach (ServerClient toFind in ServerNetwork.Instance.GetConnectedClientsSafe())
+            {
+                if (toFind == client) continue;
+                else
+                {
+                    if (toFind.UserFile.Username == client.UserFile.Username)
+                    {
+                        DenyConnectionWithReason(toFind, LoginResponse.Duplicate);
+                    }
+                }
+            }
+        }
 
-        if (response == LoginResponse.Mods) loginData._extraDetails = (List<string>)extraDetails;
-        else if (response == LoginResponse.Version) loginData._extraDetails = [CommonValues.ExecutableVersion];
+        public static void DenyConnectionWithReason(ServerClient client, LoginResponse response, object extraDetails = null)
+        {
+            LoginData loginData = new LoginData();
+            loginData._tryResponse = response;
 
-        client.Listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
-        client.Listener.Disconnect();
+            if (response == LoginResponse.Mods) loginData._extraDetails = (List<string>)extraDetails;
+            else if (response == LoginResponse.Version) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
+
+            client.Listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
+            client.Listener.Disconnect();
+        }
     }
 }

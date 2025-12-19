@@ -1,8 +1,15 @@
-﻿namespace Shared.Files.Actions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public class ActivityAction : BaseAction
+namespace Shared.Files.Actions
 {
-    public bool IsEnabled { get; set; } = true;
+    public class ActivityAction : BaseAction
+    {
+        public bool IsEnabled { get; set; } = true;
 
-    public double Cooldown { get; set; } = -1;
+        public double Cooldown { get; set; } = -1;
+    }
 }

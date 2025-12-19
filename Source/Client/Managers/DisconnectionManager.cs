@@ -1,28 +1,30 @@
 using GameClient.Dialogs;
 using GameClient.Misc;
 using Verse;
+using static RimWorld.PsychicRitualRoleDef;
 
-namespace GameClient.Managers;
-
-public static class DisconnectionManager
+namespace GameClient.Managers
 {
-    public static void HandleDisconnect()
+    public static class DisconnectionManager
     {
-        if (Current.ProgramState != ProgramState.Entry && !SessionHandler.IsExiting)
+        public static void HandleDisconnect()
         {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?",
-                delegate { SaveManager.ForceSave(); DisconnectToMenu(); }, DisconnectToMenu));
+            if (Current.ProgramState != ProgramState.Entry && !SessionHandler.IsExiting)
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?",
+                    delegate { SaveManager.ForceSave(); DisconnectToMenu(); }, delegate { DisconnectToMenu(); }));
+            }
+            else DisconnectToMenu();
         }
-        else DisconnectToMenu();
-    }
 
-    public static void DisconnectToMenu()
-    {
-        RT_Dialog_Wait.Instance.Close();
-
-        if (Current.ProgramState != ProgramState.Entry)
+        public static void DisconnectToMenu()
         {
-            LongEventHandler.QueueLongEvent(delegate { }, "Entry", "", doAsynchronously: false, null);
+            RT_Dialog_Wait.Instance.Close();
+
+            if (Current.ProgramState != ProgramState.Entry)
+            {
+                LongEventHandler.QueueLongEvent(delegate { }, "Entry", "", doAsynchronously: false, null);
+            }
         }
     }
 }

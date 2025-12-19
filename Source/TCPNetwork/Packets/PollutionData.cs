@@ -1,13 +1,14 @@
 using Shared.Details.Planet;
 
-namespace TCPNetwork.Packets;
-
-public class PollutionData 
+namespace TCPNetwork.Packets
 {
-    public PollutionDetail _pollutionData { get; set; } = new PollutionDetail();
-
-    public override string ToString()
+    public class PollutionData 
     {
-        return $"PollutionData:|{_pollutionData}";
+        public PollutionDetail _pollutionData { get; set; } = new PollutionDetail();
+
+        public override string ToString()
+        {
+            return $"PollutionData:|{_pollutionData}";
+        }
     }
 }

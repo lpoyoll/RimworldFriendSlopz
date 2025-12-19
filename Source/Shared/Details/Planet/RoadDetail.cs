@@ -1,10 +1,15 @@
-namespace Shared.Details.Planet;
+using System;
+using Newtonsoft.Json;
+using Shared.Misc;
 
-public class RoadDetail
+namespace Shared.Details.Planet
 {
-    public string DefName { get; set; } = null;
+    public class RoadDetail
+    {
+        public string DefName { get; set; } = null;
 
-    public int FromTile { get; set; } = -1;
+        public int FromTile { get; set; } = -1;
 
-    public int ToTile { get; set; } = -1;
+        public int ToTile { get; set; } = -1;
+    }
 }

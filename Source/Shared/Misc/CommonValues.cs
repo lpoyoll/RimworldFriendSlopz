@@ -1,16 +1,17 @@
-namespace Shared;
-
-public static class CommonValues
+namespace Shared
 {
-    public const string MasterServer = "https://rimworldtogether.eragon.dev";
-    public const string ExecutableVersion = "25.12.16.1";
-    public const string DefaultSaveFormat = ".json";
+    public static class CommonValues
+    {
+        public const string MasterServer = "https://rimworldtogether.eragon.dev";
+        public static string ExecutableVersion { get; set; } = "25.12.16.1";
+        public static string DefaultSaveFormat { get; set; } = ".json";
 
-    public const string TempSaveFormat = ".temp";
+        public static string TempSaveFormat { get; set; } = ".temp";
 
-    public const string CompressedSaveFormat = ".zip";
+        public static string CompressedSaveFormat { get; set; } = ".zip";
 
-    public static string ServerUsersPath { get; set; } = string.Empty;
+        public static string ServerUsersPath { get; set; } = string.Empty;
 
-    public static string ServerSitesPath { get; set; } = string.Empty;
+        public static string ServerSitesPath { get; set; } = string.Empty;
+    }
 }

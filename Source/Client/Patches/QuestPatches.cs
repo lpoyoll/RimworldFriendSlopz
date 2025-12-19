@@ -1,27 +1,29 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Patches;
-
-[HarmonyPatch(typeof(QuestManager), nameof(QuestManager.Add))]
-public static class PatchAddPollution
+namespace GameClient.Patches
 {
-    [HarmonyPrefix]
-    public static bool DoPre(Quest quest)
+    [HarmonyPatch(typeof(QuestManager), nameof(QuestManager.Add))]
+    public static class PatchAddPollution
     {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-
-        foreach (Faction faction in SessionHandler.PlayerFactions)
+        [HarmonyPrefix]
+        public static bool DoPre(Quest quest)
         {
-            if (quest.InvolvedFactions.Contains(faction))
-            {
-                return false;
-            }
-        }
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
 
-        return true;
+            foreach (Faction faction in SessionHandler.PlayerFactions)
+            {
+                if (quest.InvolvedFactions.Contains(faction))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

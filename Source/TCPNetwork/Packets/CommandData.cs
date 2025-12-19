@@ -1,15 +1,16 @@
 ﻿using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets;
-
-public class CommandData
+namespace TCPNetwork.Packets
 {
-    public CommandMode _commandMode { get; set; } = CommandMode.Op;
-
-    public string _details { get; set; } = string.Empty;
-
-    public override string ToString()
+    public class CommandData
     {
-        return $"CommandData:|{_commandMode}|{_details}";
+        public CommandMode _commandMode { get; set; } = CommandMode.Op;
+
+        public string _details { get; set; } = string.Empty;
+
+        public override string ToString()
+        {
+            return $"CommandData:|{_commandMode}|{_details}";
+        }
     }
 }

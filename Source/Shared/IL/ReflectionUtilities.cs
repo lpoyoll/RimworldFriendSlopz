@@ -4,8 +4,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Shared.IL;
-
+namespace Shared.IL
+{
 public static class ReflectionUtilities
 {
     /// <summary>
@@ -200,4 +200,5 @@ public static class ReflectionUtilities
         
         return (Action<T, TValue>)method.CreateDelegate(typeof(Action<T, TValue>));
     }
+}
 }

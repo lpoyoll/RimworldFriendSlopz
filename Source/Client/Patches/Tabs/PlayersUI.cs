@@ -5,81 +5,82 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 
-namespace GameClient.Patches.Tabs;
-
-public class PlayersUI : WITab
+namespace GameClient.Patches.Tabs
 {
-    private Vector2 scrollPosition;
-
-    private static readonly Vector2 WinSize = new Vector2(432f, 540f);
-
-    private string tabTitle;
-
-    public override bool IsVisible => true;
-
-    protected override bool StillValid => true;
-
-    public PlayersUI()
+    public class PlayersUI : WITab
     {
-        size = WinSize;
-        labelKey = "Players";
-    }
+        private Vector2 scrollPosition;
 
-    protected override void FillTab()
-    {
-        tabTitle = $"Players Online [{RecountManager.CurrentPlayers}]";
+        private static readonly Vector2 WinSize = new Vector2(432f, 540f);
 
-        float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
+        private string tabTitle;
 
-        Rect outRect = new Rect(0f, 0f, WinSize.x, WinSize.y).ContractedBy(10f);
-        Rect rect = new Rect(10f, 10f, outRect.width - 16f, Mathf.Max(0f, outRect.height));
+        public override bool IsVisible => true;
 
-        Text.Font = GameFont.Medium;
-        Widgets.Label(rect, tabTitle);
-        Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
-        GenerateList(new Rect(new Vector2(rect.x, rect.y + 30f), new Vector2(rect.width, rect.height - 30f)));
-    }
+        protected override bool StillValid => true;
 
-    private void GenerateList(Rect mainRect)
-    {
-        List<string> orderedList = RecountManager.CurrentPlayerNames;
-        orderedList.Sort();
-
-        float height = 6f + orderedList.Count() * 30f;
-        Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
-
-        Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
-
-        float num = 0;
-        float num2 = scrollPosition.y - 30f;
-        float num3 = scrollPosition.y + mainRect.height;
-        int num4 = 0;
-
-        foreach (string str in orderedList)
+        public PlayersUI()
         {
-            if (num > num2 && num < num3)
-            {
-                Rect rect = new Rect(0f, mainRect.y + num, viewRect.width, 30f);
-                DrawCustomRow(rect, str, num4);
-            }
-
-            num += 30f;
-            num4++;
+            size = WinSize;
+            labelKey = "Players";
         }
 
-        Widgets.EndScrollView();
-    }
+        protected override void FillTab()
+        {
+            tabTitle = $"Players Online [{RecountManager.CurrentPlayers}]";
 
-    private void DrawCustomRow(Rect rect, string str, int index)
-    {
-        Text.Font = GameFont.Small;
-        if (index % 2 == 0) Widgets.DrawLightHighlight(rect);
-        Rect fixedRect = new Rect(new Vector2(rect.x + 10f, rect.y + 5f), new Vector2(rect.width - 52f, rect.height));
-        Widgets.Label(fixedRect, str);
-    }
+            float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
-    protected override void CloseTab()
-    {
-        throw new System.NotImplementedException();
+            Rect outRect = new Rect(0f, 0f, WinSize.x, WinSize.y).ContractedBy(10f);
+            Rect rect = new Rect(10f, 10f, outRect.width - 16f, Mathf.Max(0f, outRect.height));
+
+            Text.Font = GameFont.Medium;
+            Widgets.Label(rect, tabTitle);
+            Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
+            GenerateList(new Rect(new Vector2(rect.x, rect.y + 30f), new Vector2(rect.width, rect.height - 30f)));
+        }
+
+        private void GenerateList(Rect mainRect)
+        {
+            List<string> orderedList = RecountManager.CurrentPlayerNames;
+            orderedList.Sort();
+
+            float height = 6f + orderedList.Count() * 30f;
+            Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
+
+            Widgets.BeginScrollView(mainRect, ref scrollPosition, viewRect);
+
+            float num = 0;
+            float num2 = scrollPosition.y - 30f;
+            float num3 = scrollPosition.y + mainRect.height;
+            int num4 = 0;
+
+            foreach (string str in orderedList)
+            {
+                if (num > num2 && num < num3)
+                {
+                    Rect rect = new Rect(0f, mainRect.y + num, viewRect.width, 30f);
+                    DrawCustomRow(rect, str, num4);
+                }
+
+                num += 30f;
+                num4++;
+            }
+
+            Widgets.EndScrollView();
+        }
+
+        private void DrawCustomRow(Rect rect, string str, int index)
+        {
+            Text.Font = GameFont.Small;
+            if (index % 2 == 0) Widgets.DrawLightHighlight(rect);
+            Rect fixedRect = new Rect(new Vector2(rect.x + 10f, rect.y + 5f), new Vector2(rect.width - 52f, rect.height));
+            Widgets.Label(fixedRect, str);
+        }
+
+        protected override void CloseTab()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

@@ -1,30 +1,31 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace Shared;
-
-public static class GZip
+namespace Shared
 {
-    public static byte[] CompressBytes(byte[] bytes)
+    public static class GZip
     {
-        using MemoryStream memoryStream = new MemoryStream();
-        using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal))
+        public static byte[] CompressBytes(byte[] bytes)
         {
-            gzipStream.Write(bytes, 0, bytes.Length);
+            using MemoryStream memoryStream = new MemoryStream();
+            using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal))
+            {
+                gzipStream.Write(bytes, 0, bytes.Length);
+            }
+
+            return memoryStream.ToArray();
         }
 
-        return memoryStream.ToArray();
-    }
-
-    public static byte[] DecompressBytes(byte[] bytes)
-    {
-        using MemoryStream memoryStream = new MemoryStream(bytes);
-        using MemoryStream outputStream = new MemoryStream();
-        using (GZipStream decompressStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+        public static byte[] DecompressBytes(byte[] bytes)
         {
-            decompressStream.CopyTo(outputStream);
-        }
+            using MemoryStream memoryStream = new MemoryStream(bytes);
+            using MemoryStream outputStream = new MemoryStream();
+            using (GZipStream decompressStream = new GZipStream(memoryStream, CompressionMode.Decompress))
+            {
+                decompressStream.CopyTo(outputStream);
+            }
 
-        return outputStream.ToArray();
+            return outputStream.ToArray();
+        }
     }
 }

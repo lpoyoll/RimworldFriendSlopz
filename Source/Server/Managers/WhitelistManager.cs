@@ -1,25 +1,27 @@
 using GameServer.Core;
-using Shared;
+using GameServer.Misc;
+using Shared.Misc;
 
-namespace GameServer.Managers;
-
-public static class WhitelistManager
+namespace GameServer.Managers
 {
-    public static void AddUserToWhitelist(string username)
+    public static class WhitelistManager
     {
-        Master.Whitelist.WhitelistedUsers.Add(username);
+        public static void AddUserToWhitelist(string username)
+        {
+            Master.Whitelist.WhitelistedUsers.Add(username);
 
-        Master.Whitelist.Save();
+            Master.Whitelist.Save();
 
-        Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' has been whitelisted");
-    }
+            Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' has been whitelisted");
+        }
 
-    public static void RemoveUserFromWhitelist(string username)
-    {
-        Master.Whitelist.WhitelistedUsers.Remove(username);
+        public static void RemoveUserFromWhitelist(string username)
+        {
+            Master.Whitelist.WhitelistedUsers.Remove(username);
 
-        Master.Whitelist.Save();
+            Master.Whitelist.Save();
 
-        Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' is no longer whitelisted");
+            Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' is no longer whitelisted");
+        }
     }
 }

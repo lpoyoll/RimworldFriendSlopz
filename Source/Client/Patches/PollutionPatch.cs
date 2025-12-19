@@ -11,57 +11,59 @@ using TCPNetwork.Packets;
 using Shared.Details.Planet;
 using GameClient.Misc;
 
-namespace GameClient.Patches;
-
-public static class PollutionPatch
+namespace GameClient.Patches
 {
-    [HarmonyPatch(typeof(WorldPollutionUtility), nameof(WorldPollutionUtility.PolluteWorldAtTile))]
-    public static class PatchAddPollution
+    public static class PollutionPatch
     {
-        private static int lastPollutedTile;
-
-        public static bool addedByServer;
-
-        public static void StoreNumValue(PlanetTile num) { lastPollutedTile = num; }
-
-        [HarmonyTranspiler]
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        [HarmonyPatch(typeof(WorldPollutionUtility), nameof(WorldPollutionUtility.PolluteWorldAtTile))]
+        public static class PatchAddPollution
         {
-            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            MethodInfo method = AccessTools.Method(typeof(PatchAddPollution), nameof(StoreNumValue));
+            private static int lastPollutedTile;
 
-            for (int i = 0; i < codes.Count; i++)
+            public static bool addedByServer;
+
+            public static void StoreNumValue(PlanetTile num) { lastPollutedTile = num; }
+
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                if (codes[i].opcode == OpCodes.Stloc_0)
+                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                MethodInfo method = AccessTools.Method(typeof(PatchAddPollution), nameof(StoreNumValue));
+
+                for (int i = 0; i < codes.Count; i++)
                 {
-                    i++;
-                    codes.InsertRange(i, [
-                        new (OpCodes.Ldloc_0),
-                        new (OpCodes.Call, method)
-                    ]);
-                    break;
+                    if (codes[i].opcode == OpCodes.Stloc_0)
+                    {
+                        i++;
+                        codes.InsertRange(i, new CodeInstruction[]
+                        {
+                            new (OpCodes.Ldloc_0),
+                            new (OpCodes.Call, method)
+                        });
+                        break;
+                    }
                 }
-            }
                 
-            return codes.AsEnumerable();
-        }
+                return codes.AsEnumerable();
+            }
 
-        [HarmonyPostfix]
-        public static void DoPost(float pollutionAmount)
-        {
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-            else if (!SessionHandler.CurrentActionValues.EnablePollutionSpread) return;
-            else if (addedByServer) addedByServer = false;
-            else
+            [HarmonyPostfix]
+            public static void DoPost(float pollutionAmount)
             {
-                PollutionDetail pollution = new PollutionDetail();
-                pollution.Tile = lastPollutedTile;
-                pollution.Quantity = pollutionAmount;
+                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
+                else if (!SessionHandler.CurrentActionValues.EnablePollutionSpread) return;
+                else if (addedByServer) addedByServer = false;
+                else
+                {
+                    PollutionDetail pollution = new PollutionDetail();
+                    pollution.Tile = lastPollutedTile;
+                    pollution.Quantity = pollutionAmount;
 
-                PollutionData data = new PollutionData();
-                data._pollutionData = pollution;
+                    PollutionData data = new PollutionData();
+                    data._pollutionData = pollution;
 
-                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.PollutionManager, data);
+                    ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.PollutionManager, data);
+                }
             }
         }
     }

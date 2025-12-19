@@ -9,158 +9,153 @@ using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Managers;
-
-public static class LoginManager
+namespace GameClient.Managers
 {
-    [HandlesPacket(PacketHeader.LoginManager)]
-    private static void ParsePacket(byte[] bytes)
+    public static class LoginManager
     {
-        LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
-
-        switch (data._tryResponse)
+        [HandlesPacket(PacketHeader.LoginManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            case LoginResponse.Invalid:
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", ["Login details are invalid!", "Please try again or reset your account!"
-                ]));
-                break;
+            LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
-            case LoginResponse.Ban:
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", ["You are banned from this server!"]));
-                break;
+            switch (data._tryResponse)
+            {
+                case LoginResponse.Invalid:
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Login details are invalid!", "Please try again or reset your account!" }));
+                    break;
 
-            case LoginResponse.Duplicate:
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", ["You connected from another place!"]));
-                break;
+                case LoginResponse.Ban:
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You are banned from this server!" }));
+                    break;
 
-            case LoginResponse.Mods:
-                ModManagerH.GetConflictingMods(data);
-                break;
+                case LoginResponse.Duplicate:
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You connected from another place!" }));
+                    break;
 
-            case LoginResponse.Full:
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", ["Server is full!"]));
-                break;
+                case LoginResponse.Mods:
+                    ModManagerH.GetConflictingMods(data);
+                    break;
 
-            case LoginResponse.Whitelist:
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", ["Server is whitelisted!"]));
-                break;
+                case LoginResponse.Full:
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server is full!" }));
+                    break;
 
-            case LoginResponse.Version:
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", [$"Mod version mismatch! Expected version '{data._extraDetails[0]}'"
-                ]));
-                break;
+                case LoginResponse.Whitelist:
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "Server is whitelisted!" }));
+                    break;
 
-            case LoginResponse.NoWorld:
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
-                    [$"Server is currently being set up! Join again later!"]));
-                break;
-            
-            default:
-                Printer.Error($"Received invalid step mode {data._tryResponse}");
-                return;
-        }
-    }
+                case LoginResponse.Version:
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"Mod version mismatch! Expected version '{data._extraDetails[0]}'" }));
+                    break;
 
-    public static void UseLoginData()
-    {
-        if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return;
-        
-        LoginData data = new LoginData();
-
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            data._username = "Test";
-            data._password = "1234";
+                case LoginResponse.NoWorld:
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { $"Server is currently being set up! Join again later!" }));
+                    break;
+            }
         }
 
-        else
+        public static void UseLoginData()
+        {
+            if (SessionHandler.CurrentNetworkState != CommonEnumerators.ClientNetworkState.Connected) return;
+            else
+            {
+                LoginData data = new LoginData();
+
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    data._username = "Test";
+                    data._password = "1234";
+                }
+
+                else
+                {
+                    PersistentSettings settings = PersistentSettings.Load();
+                    data._username = settings.UserSettings.Username;
+                    data._password = settings.UserSettings.Password;
+                }
+
+                SessionHandler.Username = data._username;
+                data._runningMods = ModManagerH.GetRunningModList();
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.LoginManager, data);
+            }
+        }
+
+        public static void PromptCreateAccount(bool isQuickConnect)
+        {
+            Action toDo = delegate
+            {
+                bool isInvalid = false;
+                if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[0])) isInvalid = true;
+                else if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[1])) isInvalid = true;
+
+                if (isInvalid)
+                {
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
+                        new string[] { "Your login details contains illegal characters", "Please try again" }));
+                }
+
+                else
+                {
+                    PersistentSettings settings = PersistentSettings.Load();
+                    settings.UserSettings.Set(RT_Dialog_Inputs.DialogInputResults[0], Hasher.GetHashFromString(RT_Dialog_Inputs.DialogInputResults[1]));
+                    settings.Save();
+
+                    if (isQuickConnect) QuickConnectUser();
+                    else ConnectionManager.ShowConnectDialogs();
+                }
+            };
+
+            Action toDo2 = delegate
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Account Setup",
+                    new string[] { "Username", "Password" }, new bool[] { false, true }, toDo));
+            };
+
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("Account Setup", new string[] { "Please create or log into your account" }, toDo2));
+        }
+
+        public static void QuickConnectUser()
         {
             PersistentSettings settings = PersistentSettings.Load();
-            data._username = settings.UserSettings.Username;
-            data._password = settings.UserSettings.Password;
-        }
+            TCPNetwork.Network.Ip = settings.ServerSettings.LatestIP;
+            TCPNetwork.Network.Port = settings.ServerSettings.LatestPort;
 
-        SessionHandler.Username = data._username;
-        data._runningMods = ModManagerH.GetRunningModList();
-        ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.LoginManager, data);
-    }
-
-    public static void PromptCreateAccount(bool isQuickConnect)
-    {
-        Action toDo = delegate
-        {
-            bool isInvalid = false;
-            if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[0])) isInvalid = true;
-            else if (!StringChecker.CheckIfStringValid(RT_Dialog_Inputs.DialogInputResults[1])) isInvalid = true;
-
-            if (isInvalid)
+            if (StringChecker.CheckIfStringValid(TCPNetwork.Network.Ip) && StringChecker.CheckIfStringValid(TCPNetwork.Network.Port))
             {
-                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
-                    ["Your login details contains illegal characters", "Please try again"]));
+                LoginManagerH.ShowQuickConnectFloatMenu();
             }
 
             else
             {
-                PersistentSettings settings = PersistentSettings.Load();
-                settings.UserSettings.Set(RT_Dialog_Inputs.DialogInputResults[0], Hasher.GetHashFromString(RT_Dialog_Inputs.DialogInputResults[1]));
-                settings.Save();
-
-                if (isQuickConnect) QuickConnectUser();
-                else ConnectionManager.ShowConnectDialogs();
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR", new string[] { "You must join a server first to use this feature!" }));
             }
-        };
-
-        Action toDo2 = delegate
-        {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Account Setup",
-                ["Username", "Password"], [false, true], toDo));
-        };
-
-        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("Account Setup", ["Please create or log into your account"], toDo2));
-    }
-
-    public static void QuickConnectUser()
-    {
-        PersistentSettings settings = PersistentSettings.Load();
-        TCPNetwork.Network.Ip = settings.ServerSettings.LatestIP;
-        TCPNetwork.Network.Port = settings.ServerSettings.LatestPort;
-
-        if (StringChecker.CheckIfStringValid(TCPNetwork.Network.Ip) && StringChecker.CheckIfStringValid(TCPNetwork.Network.Port))
-        {
-            LoginManagerH.ShowQuickConnectFloatMenu();
-        }
-
-        else
-        {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
-                ["You must join a server first to use this feature!"]));
         }
     }
-}
 
-public static class LoginManagerH
-{
-    public static bool CheckIfLoginIsValid()
+    public static class LoginManagerH
     {
-        PersistentSettings settings = PersistentSettings.Load();
-        if (!StringChecker.CheckIfStringValid(settings.UserSettings.Username)) return false;
-        else if (!StringChecker.CheckIfStringValid(settings.UserSettings.Password)) return false;
-        else return true;
-    }
-
-    public static void ShowQuickConnectFloatMenu()
-    {
-        List<Tuple<string, int>> quickConnectTuples =
-        [
-            Tuple.Create($"Join latest server > {TCPNetwork.Network.Ip}:{TCPNetwork.Network.Port}", 0)
-        ];
-
-        FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
+        public static bool CheckIfLoginIsValid()
         {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
-            ClientNetwork _ = new ClientNetwork();
-        });
+            PersistentSettings settings = PersistentSettings.Load();
+            if (!StringChecker.CheckIfStringValid(settings.UserSettings.Username)) return false;
+            else if (!StringChecker.CheckIfStringValid(settings.UserSettings.Password)) return false;
+            else return true;
+        }
 
-        Find.WindowStack.Add(new FloatMenu([tuple1]));
+        public static void ShowQuickConnectFloatMenu()
+        {
+            List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
+            {
+                Tuple.Create($"Join latest server > {TCPNetwork.Network.Ip}:{TCPNetwork.Network.Port}", 0),
+            };
+
+            FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Trying to connect to server"));
+                ClientNetwork _ = new ClientNetwork();
+            });
+
+            Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>() { tuple1 }));
+        }
     }
 }

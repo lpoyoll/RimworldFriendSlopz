@@ -1,15 +1,17 @@
 ﻿using Shared.Files.Sites;
 using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets;
-
-public class SiteData
+namespace TCPNetwork.Packets
 {
-    public SiteStepMode _stepMode { get; set; } = SiteStepMode.Accept;
 
-    public SiteFile _file { get; set; } = new SiteFile();
+    public class SiteData
+    {
+        public SiteStepMode _stepMode { get; set; } = SiteStepMode.Accept;
 
-    public SiteRewardConfigData _rewardConfig { get; set; } = null;
+        public SiteFile _file { get; set; } = new SiteFile();
 
-    public SiteReward[] _rewardFiles { get; set; } = null;
+        public SiteRewardConfigData _rewardConfig { get; set; } = null;
+
+        public SiteReward[] _rewardFiles { get; set; } = null;
+    }
 }

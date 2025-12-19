@@ -1,8 +1,9 @@
-﻿namespace TCPNetwork.Packets.ServerBrowser;
-
-public enum Reachability
+﻿namespace Rimworld_Together_Master_Server.Data
 {
-    Unknown = 0,
-    Unreachable = 1,
-    Reachable = 2,
+    public enum Reachability
+    {
+        Unknown = 0,
+        Unreachable = 1,
+        Reachable = 2,
+    }
 }

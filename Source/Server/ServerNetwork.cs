@@ -7,125 +7,136 @@ using System.Net;
 using System.Net.Sockets;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Files.Client;
+using Shared.Misc;
 
-namespace GameServer;
-
-public class ServerNetwork : Network
+namespace GameServer
 {
-    public static ServerNetwork Instance { get; private set; } = null;
-
-    protected override Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
+    public class ServerNetwork : Network
     {
-        MethodGatherer.ServerMethodDictionary[header].Invoke(null, [client, buffer, header]);
-    };
+        public static ServerNetwork Instance { get; private set; } = null;
 
-    protected override Action<bool> OnWritePacket { get; set; } = delegate { };
-
-    protected override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
-    {
-        try
+        public override Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            Instance.ServerClients.Remove(client);
+            MethodGatherer.ServerMethodDictionary[header].Invoke(null, new object[] { client, buffer, header });
+        };
 
-            Main_.ChangeTitle();
-            UserManager.SendPlayerRecount();
-            InformationDisplayer.DisplayDisconnect(client);
-            if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
-        }
-        catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
-    };
+        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
 
-    protected override Action<object, LogImportanceMode> OnMessage { get; set; } = Printer.Message;
-
-    protected override Action<object, LogImportanceMode> OnWarning { get; set; } = Printer.Warning;
-
-    protected override Action<object, LogImportanceMode> OnError { get; set; } = Printer.Error;
-
-    public ServerNetwork()
-    {
-        Instance = this;
-        Ip = Master.ServerConfig.IP;
-        Port = Master.ServerConfig.Port;
-
-        Task.Run(Setup);
-    }
-
-    public void Setup()
-    {
-        if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
-
-        try
+        public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
         {
-            ServerListener = new TcpListener(IPAddress.Parse(Ip), int.Parse(Port));
-            ServerListener.Start();
-        }
+            try
+            {
+                Instance.ServerClients.Remove(client);
 
-        catch (SocketException e)
+                Main_.ChangeTitle();
+                UserManager.SendPlayerRecount();
+                InformationDisplayer.DisplayDisconnect(client);
+                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
+            }
+            catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
+        };
+
+        public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
         {
-            Printer.Error(
-                $"Failed to start server on {Ip}:{Port}, try setting the address to your local ip address or '0.0.0.0' on port 25555, {e}");
+            Printer.Message(obj, mode);
+        };
+
+        public override Action<object, LogImportanceMode> OnWarning { get; set; } = delegate (object obj, LogImportanceMode mode)
+        {
+            Printer.Warning(obj, mode);
+        };
+
+        public override Action<object, LogImportanceMode> OnError { get; set; } = delegate (object obj, LogImportanceMode mode)
+        {
+            Printer.Error(obj, mode);
+        };
+
+        public ServerNetwork()
+        {
+            Instance = this;
+            Ip = Master.ServerConfig.IP;
+            Port = Master.ServerConfig.Port;
+
+            Task.Run(Setup);
         }
 
-        catch (Exception e)
+        public void Setup()
         {
-            Printer.Error(e);
-        }
+            if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
 
-        Printer.Warning("Server launched");
-        Printer.Warning($"Listening for users at {Ip}:{Port}");
-        Printer.Warning("Type 'help' to get a list of available commands");
+            try
+            {
+                ServerListener = new TcpListener(IPAddress.Parse(Ip), int.Parse(Port));
+                ServerListener.Start();
+            }
 
-        Main_.ChangeTitle();
+            catch (SocketException e)
+            {
+                Printer.Error(
+                    $"Failed to start server on {Ip}:{Port}, try setting the address to your local ip address or '0.0.0.0' on port 25555, {e}");
+            }
 
-        while (true) ListenForNewClients();
-    }
+            catch (Exception e)
+            {
+                Printer.Error(e);
+            }
 
-    private void ListenForNewClients()
-    {
-        TcpClient newTCP = ServerListener.AcceptTcpClient();
-
-        ServerClient newServerClient = new ServerClient(newTCP);
-        newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnWritePacket, OnDisconnect,
-            OnMessage, OnWarning, OnError, Listener.ListenerMode.Server);
-
-        if (Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
-        {
-            LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.Full);
-        }
-
-        else if (Master.WorldValues == null && Instance.GetConnectedClientsSafe().Length > 0)
-        {
-            LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.NoWorld);
-        }
-
-        else
-        {
-            ServerClients.Add(newServerClient);
+            Printer.Warning("Server launched");
+            Printer.Warning($"Listening for users at {Ip}:{Port}");
+            Printer.Warning("Type 'help' to get a list of available commands");
 
             Main_.ChangeTitle();
 
-            InformationDisplayer.DisplayConnect(newServerClient);
-
-            VersionManager.AskForClientVersion(newServerClient);
+            while (true) ListenForNewClients();
         }
-    }
 
-    public ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)
-    {
-        if (toExclude != null) return Instance.ServerClients.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
-        else return Instance.ServerClients.ToArray();
-    }
-
-    public ServerClient GetConnectedClientFromUsername(string username)
-    {
-        return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.UserFile.Username == username);
-    }
-
-    public void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
-    {
-        foreach (ServerClient client in GetConnectedClientsSafe(toExclude))
+        private void ListenForNewClients()
         {
-            client.Listener.EnqueuePacket(header, obj);
+            TcpClient newTCP = ServerListener.AcceptTcpClient();
+
+            ServerClient newServerClient = new ServerClient(newTCP);
+            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnWritePacket, OnDisconnect,
+                OnMessage, OnWarning, OnError, Listener.ListenerMode.Server);
+
+            if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
+            {
+                LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.Full);
+            }
+
+            else if (Master.WorldValues == null && ServerNetwork.Instance.GetConnectedClientsSafe().Length > 0)
+            {
+                LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.NoWorld);
+            }
+
+            else
+            {
+                ServerClients.Add(newServerClient);
+
+                Main_.ChangeTitle();
+
+                InformationDisplayer.DisplayConnect(newServerClient);
+
+                VersionManager.AskForClientVersion(newServerClient);
+            }
+        }
+
+        public ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)
+        {
+            if (toExclude != null) return ServerNetwork.Instance.ServerClients.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
+            else return ServerNetwork.Instance.ServerClients.ToArray();
+        }
+
+        public ServerClient GetConnectedClientFromUsername(string username)
+        {
+            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.UserFile.Username == username);
+        }
+
+        public void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
+        {
+            foreach (ServerClient client in GetConnectedClientsSafe(toExclude))
+            {
+                client.Listener.EnqueuePacket(header, obj);
+            }
         }
     }
 }

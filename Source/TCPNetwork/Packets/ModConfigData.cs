@@ -1,16 +1,18 @@
 using Shared.Files.Configs.Mods;
 using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets;
-
-public class ModConfigData
+namespace TCPNetwork.Packets
 {
-    public ModConfigStepMode _stepMode { get; set; } = ModConfigStepMode.Send;
 
-    public ModsConfigFile _configFile { get; set; } = new ModsConfigFile();
-
-    public override string ToString()
+    public class ModConfigData
     {
-        return $"ModConfigData|{_stepMode}|{_configFile}";
+        public ModConfigStepMode _stepMode { get; set; } = ModConfigStepMode.Send;
+
+        public ModsConfigFile _configFile { get; set; } = new ModsConfigFile();
+
+        public override string ToString()
+        {
+            return $"ModConfigData|{_stepMode}|{_configFile}";
+        }
     }
 }

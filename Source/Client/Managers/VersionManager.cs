@@ -1,102 +1,103 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
+using GameClient.Misc;
 using Shared;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using TCPNetwork.Packets;
 using UnityEngine;
+using Verse;
+using static Shared.CommonEnumerators;
 
-namespace GameClient.Managers;
-
-public static class VersionManager
+namespace GameClient.Managers
 {
-    [HandlesPacket(PacketHeader.VersionManager)]
-    private static void ParsePacket(byte[] bytes)
+    public static class VersionManager
     {
-        VersionData data = Serializer.ConvertBytesToObject<VersionData>(bytes);
-
-        switch (data._step)
+        [HandlesPacket(PacketHeader.VersionManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            case VersionData.VersionStep.Ask:
-                SendClientVersion();
-                break;
+            VersionData data = Serializer.ConvertBytesToObject<VersionData>(bytes);
 
-            case VersionData.VersionStep.Pass:
-                LoginManager.UseLoginData();
-                break;
-            
-            default:
-                Printer.Error($"Received invalid step mode {data._step}");
-                return;
-        }
-    }
-
-    public static void SendClientVersion()
-    {
-        VersionData data = new VersionData();
-        data._version = CommonValues.ExecutableVersion;
-
-        ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.VersionManager, data);
-    }
-
-    public static void PromptChangeVersion()
-    {
-        RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Version selection",
-            ["Release number", "Password (optional)"],
-            [false, true], ChangeVersion));
-    }
-
-    private static void ChangeVersion()
-    {
-        string downloadPath = Path.Combine(Master.ModTempPath, "3005289691.zip");
-        string uri = $"https://github.com/RimWorld-Together/Rimworld-Together/releases/download/{RT_Dialog_Inputs.DialogInputResults[0]}/3005289691.zip";
-
-        if (!Directory.Exists(Master.ModTempPath)) Directory.CreateDirectory(Master.ModTempPath);
-
-        if (!DownloadVersion(uri, downloadPath))
-        {
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
-                ["Failed to download specified version! Please retry"]));
-        }
-
-        else
-        {
-            Action toDo = delegate
+            switch (data._step)
             {
-                string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
-                string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
+                case VersionData.VersionStep.Ask:
+                    SendClientVersion();
+                    break;
 
-                if (File.Exists(copyPath)) File.Delete(copyPath);
-                File.Copy(scriptPath, copyPath);
-
-                ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
-                processInfo.UseShellExecute = false;
-                Process.Start(processInfo);
-
-                Application.Quit();
-            };
-
-            RT_Dialog_Message dialog = new RT_Dialog_Message("MESSAGE", ["The game will close to apply the new version"
-                ],
-                toDo);
-
-            RT_Dialog_Base.PushNewDialog(dialog);
+                case VersionData.VersionStep.Pass:
+                    LoginManager.UseLoginData();
+                    break;
+            }
         }
-    }
 
-    private static bool DownloadVersion(string uri, string downloadPath)
-    {
-        try
+        public static void SendClientVersion()
         {
-            if (File.Exists(downloadPath)) File.Delete(downloadPath);
+            VersionData data = new VersionData();
+            data._version = CommonValues.ExecutableVersion;
 
-            using WebClient webClient = new WebClient();
-            webClient.DownloadFile(new Uri(uri), downloadPath);
-
-            return true;
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.VersionManager, data);
         }
-        catch { return false; }
+
+        public static void PromptChangeVersion()
+        {
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Inputs("Version selection", 
+                new string[] { "Release number", "Password (optional)" }, 
+                new bool[] { false, true }, ChangeVersion));
+        }
+
+        private static void ChangeVersion()
+        {
+            string downloadPath = Path.Combine(Master.ModTempPath, "3005289691.zip");
+            string uri = $"https://github.com/RimWorld-Together/Rimworld-Together/releases/download/{RT_Dialog_Inputs.DialogInputResults[0]}/3005289691.zip";
+
+            if (!Directory.Exists(Master.ModTempPath)) Directory.CreateDirectory(Master.ModTempPath);
+
+            if (!DownloadVersion(uri, downloadPath))
+            {
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("ERROR",
+                    new string[] { "Failed to download specified version! Please retry" }));
+            }
+
+            else
+            {
+                Action toDo = delegate
+                {
+                    string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
+                    string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
+
+                    if (File.Exists(copyPath)) File.Delete(copyPath);
+                    File.Copy(scriptPath, copyPath);
+
+                    ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
+                    processInfo.UseShellExecute = false;
+                    Process.Start(processInfo);
+
+                    Application.Quit();
+                };
+
+                RT_Dialog_Message dialog = new RT_Dialog_Message("MESSAGE", new string[] { "The game will close to apply the new version" },
+                    toDo);
+
+                RT_Dialog_Base.PushNewDialog(dialog);
+            }
+        }
+
+        private static bool DownloadVersion(string uri, string downloadPath)
+        {
+            try
+            {
+                if (File.Exists(downloadPath)) File.Delete(downloadPath);
+
+                using WebClient webClient = new WebClient();
+                webClient.DownloadFile(new Uri(uri), downloadPath);
+
+                return true;
+            }
+            catch { return false; }
+        }
     }
 }

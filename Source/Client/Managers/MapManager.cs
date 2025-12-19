@@ -3,26 +3,27 @@ using Shared;
 using Verse;
 using TCPNetwork.Packets;
 
-namespace GameClient.Managers;
-
-public static class MapManager
+namespace GameClient.Managers
 {
-    public static void SendPlayerMapsToServer()
+    public static class MapManager
     {
-        foreach (Map map in Find.Maps.ToArray())
+        public static void SendPlayerMapsToServer()
         {
-            if (map.IsPlayerHome)
+            foreach (Map map in Find.Maps.ToArray())
             {
-                SendMapToServer(map);
+                if (map.IsPlayerHome)
+                {
+                    SendMapToServer(map);
+                }
             }
         }
-    }
 
-    public static void SendMapToServer(Map map)
-    {
-        MapData mapData = new MapData();
-        mapData._mapFile = MapSaveLoader.MapToString(map, true, true, true, true, true, true);
+        public static void SendMapToServer(Map map)
+        {
+            MapData mapData = new MapData();
+            mapData._mapFile = MapSaveLoader.MapToString(map, true, true, true, true, true, true);
 
-        ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.MapManager, mapData);
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.MapManager, mapData);
+        }
     }
 }

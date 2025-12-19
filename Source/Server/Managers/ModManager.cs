@@ -5,86 +5,89 @@ using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using Shared.Files.Configs.Mods;
+using Shared.Misc;
 
-namespace GameServer.Managers;
-
-public static class ModManager
+namespace GameServer.Managers
 {
-    [HandlesPacket(PacketHeader.ModManager)]
-    private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+
+    public static class ModManager
     {
-        ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
-
-        switch (data._stepMode)
+        [HandlesPacket(PacketHeader.ModManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            case ModConfigStepMode.Send:
-                SaveModConfig(client, data._configFile);
-                break;
-        }
-    }
+            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
 
-    private static void SaveModConfig(ServerClient client, ModsConfigFile file)
-    {
-        if (Master.WorldValues != null && !client.UserFile.IsAdmin)
-        {
-            UserManager.BanPlayerFromName(client.UserFile.Username);
-            Printer.Warning($"Player {client.UserFile.Username} tried to change mod config without being admin");
-        }
-
-        else
-        {
-            Master.ModConfig = file;
-            Master.ModConfig.Save();
-            InformationDisplayer.DisplaySetMods(client);
-        }
-    }
-
-    public static bool CheckIfModConflict(ServerClient client, LoginData loginData)
-    {
-        List<string> conflictingModNames = new List<string>();
-
-        //Check if missing required mods
-
-        foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required))
-        {
-            ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
-            if (toFind == null)
+            switch (data._stepMode)
             {
-                conflictingModNames.Add($"[Required] > {config.FileName}");
-                continue;
+                case ModConfigStepMode.Send:
+                    SaveModConfig(client, data._configFile);
+                    break;
             }
         }
 
-        //Check if has mods that aren't required or optional
-
-        foreach (ModConfig config in loginData._runningMods.ModConfigs)
+        private static void SaveModConfig(ServerClient client, ModsConfigFile file)
         {
-            ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName 
-                                                                         && (fetch.Type == ModsConfigFile.ModType.Required || fetch.Type == ModsConfigFile.ModType.Optional));
-
-            if (toFind == null)
+            if (Master.WorldValues != null && !client.UserFile.IsAdmin)
             {
-                conflictingModNames.Add($"[Disallowed] > {config.FileName}");
-                continue;
-            }
-        }
-
-        //Check for final conflicting count
-
-        if (conflictingModNames.Count == 0) return false;
-        else
-        {
-            if (client.UserFile.IsAdmin)
-            {
-                InformationDisplayer.DisplayModBypass(client.UserFile.Username);
-                return false;
+                UserManager.BanPlayerFromName(client.UserFile.Username);
+                Printer.Warning($"Player {client.UserFile.Username} tried to change mod config without being admin");
             }
 
             else
             {
-                InformationDisplayer.DisplayModMismatch(client.UserFile.Username);
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
-                return true;
+                Master.ModConfig = file;
+                Master.ModConfig.Save();
+                InformationDisplayer.DisplaySetMods(client);
+            }
+        }
+
+        public static bool CheckIfModConflict(ServerClient client, LoginData loginData)
+        {
+            List<string> conflictingModNames = new List<string>();
+
+            //Check if missing required mods
+
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required))
+            {
+                ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
+                if (toFind == null)
+                {
+                    conflictingModNames.Add($"[Required] > {config.FileName}");
+                    continue;
+                }
+            }
+
+            //Check if has mods that aren't required or optional
+
+            foreach (ModConfig config in loginData._runningMods.ModConfigs)
+            {
+                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName 
+                    && (fetch.Type == ModsConfigFile.ModType.Required || fetch.Type == ModsConfigFile.ModType.Optional));
+
+                if (toFind == null)
+                {
+                    conflictingModNames.Add($"[Disallowed] > {config.FileName}");
+                    continue;
+                }
+            }
+
+            //Check for final conflicting count
+
+            if (conflictingModNames.Count == 0) return false;
+            else
+            {
+                if (client.UserFile.IsAdmin)
+                {
+                    InformationDisplayer.DisplayModBypass(client.UserFile.Username);
+                    return false;
+                }
+
+                else
+                {
+                    InformationDisplayer.DisplayModMismatch(client.UserFile.Username);
+                    LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
+                    return true;
+                }
             }
         }
     }

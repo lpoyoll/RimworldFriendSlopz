@@ -1,10 +1,13 @@
-namespace Shared.Details.Planet;
+using System;
 
-public class NPCFactionDetail
+namespace Shared.Details.Planet
 {
-    public float[] Color { get; set; } = null;
+    public class NPCFactionDetail
+    {
+        public float[] Color { get; set; } = null;
 
-    public string Name { get; set; } = null;
+        public string Name { get; set; } = null;
 
-    public string DefName { get; set; } = null;
+        public string DefName { get; set; } = null;
+    }
 }

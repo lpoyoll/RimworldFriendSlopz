@@ -1,24 +1,29 @@
-namespace GameClient.Core;
+using GameClient.Core.Configs;
 
-public static class Master
+namespace GameClient.Core
 {
-    public static string AppdataPath { get; set; }
+    public static class Master
+    {
+        public static string AppdataPath { get; set; }
 
-    public static string AppdataRTPath { get; set; }
+        public static string AppdataRTPath { get; set; }
 
-    public static string AppdataTempPath { get; set; }
+        public static string AppdataTempPath { get; set; }
 
-    public static string ModMainPath { get; set; }
+        public static string ModMainPath { get; set; }
 
-    public static string ModTempPath { get; set; }
+        public static string ModAssemblyPath { get; set; }
 
-    public static string ModScriptsPath { get; set; }
+        public static string ModTempPath { get; set; }
 
-    public static string SavesFolderPath { get; set; }
+        public static string ModScriptsPath { get; set; }
 
-    // Values
+        public static string SavesFolderPath { get; set; }
 
-    public static string ModPackageID { get; private set; } = "nova.rimworldtogether";
+        // Values
 
-    public static string ModID { get; private set; } = "RimWorld Together";
+        public static string ModPackageID { get; private set; } = "nova.rimworldtogether";
+
+        public static string ModID { get; private set; } = "RimWorld Together";
+    }
 }

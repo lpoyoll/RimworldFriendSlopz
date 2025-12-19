@@ -10,58 +10,60 @@ using Shared;
 using Verse;
 using TCPNetwork.Packets;
 
-namespace GameClient.Patches;
-
-public static class MoveColonyUtilityPatches
+namespace GameClient.Patches
 {
-    [HarmonyPatch(typeof(MoveColonyUtility), nameof(MoveColonyUtility.MoveColonyAndReset))]
-    public static class MoveColonyAndResetPatch
+    public static class MoveColonyUtilityPatches
     {
-        /// <summary>
-        /// Catches the removed player settlements and notifies the server about them
-        /// </summary>
-        /// 
-
-        [HarmonyTranspiler]
-        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        [HarmonyPatch(typeof(MoveColonyUtility), nameof(MoveColonyUtility.MoveColonyAndReset))]
+        public static class MoveColonyAndResetPatch
         {
-            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-            MethodInfo method = AccessTools.Method(typeof(MoveColonyAndResetPatch), nameof(RemovePreviousSettlements));
-            MethodInfo methodToCheck = AccessTools.PropertyGetter(typeof(ModsConfig), nameof(ModsConfig.IdeologyActive));
+            /// <summary>
+            /// Catches the removed player settlements and notifies the server about them
+            /// </summary>
+            /// 
+
+            [HarmonyTranspiler]
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+                MethodInfo method = AccessTools.Method(typeof(MoveColonyAndResetPatch), nameof(RemovePreviousSettlements));
+                MethodInfo methodToCheck = AccessTools.PropertyGetter(typeof(ModsConfig), nameof(ModsConfig.IdeologyActive));
             
-            FieldInfo PlayerSettlementsRemoved =
-                AccessTools.Field(typeof(MoveColonyUtility), "playerSettlementsRemoved");
+                FieldInfo PlayerSettlementsRemoved =
+                    AccessTools.Field(typeof(MoveColonyUtility), "playerSettlementsRemoved");
                 
-            for (int i = 0; i < codes.Count; i++)
-            {
-                if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == methodToCheck)
+                for (int i = 0; i < codes.Count; i++)
                 {
-                    codes.InsertRange(i, [
-                        new CodeInstruction(OpCodes.Ldsfld,  PlayerSettlementsRemoved),
-                        new CodeInstruction(OpCodes.Call, method)
-                    ]);
-                    break;
+                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == methodToCheck)
+                    {
+                        codes.InsertRange(i, new []
+                        {
+                            new CodeInstruction(OpCodes.Ldsfld,  PlayerSettlementsRemoved),
+                            new CodeInstruction(OpCodes.Call, method)
+                        });
+                        break;
+                    }
                 }
-            }
                 
-            return codes.AsEnumerable();
-        }
+                return codes.AsEnumerable();
+            }
 
-        [HarmonyPostfix]
-        public static void Postfix(PlanetTile tile)
-        {
-            SettlementManager.SendNewPlayerSettlement(tile);
-        }
-
-        private static void RemovePreviousSettlements(List<PlanetTile> settlementsToRemove)
-        {
-            foreach (int settlement in settlementsToRemove)
+            [HarmonyPostfix]
+            public static void Postfix(PlanetTile tile)
             {
-                PlayerSettlementData settlementData = new PlayerSettlementData();
-                settlementData._settlementFile.Tile = settlement;
-                settlementData._stepMode = CommonEnumerators.SettlementStepMode.Remove;
+                SettlementManager.SendNewPlayerSettlement(tile);
+            }
 
-                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+            private static void RemovePreviousSettlements(List<PlanetTile> settlementsToRemove)
+            {
+                foreach (int settlement in settlementsToRemove)
+                {
+                    PlayerSettlementData settlementData = new PlayerSettlementData();
+                    settlementData._settlementFile.Tile = settlement;
+                    settlementData._stepMode = CommonEnumerators.SettlementStepMode.Remove;
+
+                    ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+                }
             }
         }
     }

@@ -1,13 +1,14 @@
 ﻿using Shared.Files;
 
-namespace TCPNetwork.Packets;
-
-public class MapData
+namespace TCPNetwork.Packets
 {
-    public MapFile _mapFile { get; set; } = new MapFile();
-
-    public override string ToString()
+    public class MapData
     {
-        return $"MapData:|{_mapFile}";
+        public MapFile _mapFile { get; set; } = new MapFile();
+
+        public override string ToString()
+        {
+            return $"MapData:|{_mapFile}";
+        }
     }
 }

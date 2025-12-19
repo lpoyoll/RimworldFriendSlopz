@@ -1,13 +1,15 @@
 using Shared;
 using TCPNetwork.Files.Client;
 
-namespace GameServer.Managers;
-
-public static class RecountManager
+namespace GameServer.Managers
 {
-    [HandlesPacket(PacketHeader.RecountManager)]
-    private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
-    {
 
+    public static class RecountManager
+    {
+        [HandlesPacket(PacketHeader.RecountManager)]
+        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+
+        }
     }
 }

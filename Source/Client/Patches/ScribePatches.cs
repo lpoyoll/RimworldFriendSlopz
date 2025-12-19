@@ -5,195 +5,196 @@ using System.Xml;
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
-using Shared;
+using Shared.Misc;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Patches;
-
-[HarmonyPatch(typeof(ScribeSaver), nameof(ScribeSaver.InitSaving))]
-public static class PatchSaving
+namespace GameClient.Patches
 {
-    [HarmonyPrefix]
-    public static bool DoPre(ScribeSaver __instance, ref XmlWriter ___writer, string documentElementName)
+    [HarmonyPatch(typeof(ScribeSaver), nameof(ScribeSaver.InitSaving))]
+    public static class PatchSaving
     {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-        else if (!SessionHandler.IsUsingScriber) return true;
-        else
+        [HarmonyPrefix]
+        public static bool DoPre(ScribeSaver __instance, ref XmlWriter ___writer, string documentElementName)
         {
-            try
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.IsUsingScriber) return true;
+            else
             {
-                Scribe.mode = LoadSaveMode.Saving;
-
-                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
-                xmlWriterSettings.Indent = true;
-                xmlWriterSettings.IndentChars = "\t";
-                xmlWriterSettings.OmitXmlDeclaration = true;
-
-                ScribeManager.StringWriter = new StringWriter();
-                ___writer = XmlWriter.Create(ScribeManager.StringWriter, xmlWriterSettings);
-                ___writer.WriteStartDocument();
-                __instance.EnterNode(documentElementName);
-            }
-
-            catch (Exception e)
-            {
-                Printer.Error($"Exception while init save patched scribe: {e}");
-                __instance.ForceStop();
-                throw;
-            }
-
-            return false;
-        }
-    }
-}
-
-[HarmonyPatch(typeof(ScribeLoader), nameof(ScribeLoader.InitLoading))]
-public static class PatchLoading
-{
-    [HarmonyPrefix]
-    public static bool DoPre(ScribeLoader __instance, string filePath)
-    {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-        else if (!SessionHandler.IsUsingScriber) return true;
-        else
-        {
-            try
-            {
-                using (StringReader input = new StringReader(filePath))
+                try
                 {
-                    using XmlTextReader reader = new XmlTextReader(input);
-                    XmlDocument xmlDocument = new XmlDocument();
-                    xmlDocument.Load(reader);
+                    Scribe.mode = LoadSaveMode.Saving;
 
-                    __instance.curXmlParent = xmlDocument.DocumentElement;
+                    XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+                    xmlWriterSettings.Indent = true;
+                    xmlWriterSettings.IndentChars = "\t";
+                    xmlWriterSettings.OmitXmlDeclaration = true;
+
+                    ScribeManager.StringWriter = new StringWriter();
+                    ___writer = XmlWriter.Create(ScribeManager.StringWriter, xmlWriterSettings);
+                    ___writer.WriteStartDocument();
+                    __instance.EnterNode(documentElementName);
                 }
 
-                Scribe.mode = LoadSaveMode.LoadingVars;
-            }
+                catch (Exception e)
+                {
+                    Printer.Error($"Exception while init save patched scribe: {e}");
+                    __instance.ForceStop();
+                    throw;
+                }
 
-            catch (Exception e)
-            {
-                Printer.Error($"Exception while init load patched scribe: {e}");
-                __instance.ForceStop();
-                throw;
+                return false;
             }
-
-            return false;
         }
     }
-}
 
-//TODO
-//Find a way to handle scribe errors better than this
-
-[HarmonyPatch(typeof(PawnTextureAtlas), nameof(PawnTextureAtlas.GC))]
-public static class PatchPawnAtlas
-{
-    [HarmonyPrefix]
-    public static bool DoPre(ref Dictionary<Pawn, PawnTextureAtlasFrameSet> ___frameAssignments, ref List<Pawn> ___tmpPawnsToFree, ref List<PawnTextureAtlasFrameSet> ___freeFrameSets)
+    [HarmonyPatch(typeof(ScribeLoader), nameof(ScribeLoader.InitLoading))]
+    public static class PatchLoading
     {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-        else
+        [HarmonyPrefix]
+        public static bool DoPre(ScribeLoader __instance, string filePath)
         {
-            try
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.IsUsingScriber) return true;
+            else
             {
-                foreach (Pawn key in ___frameAssignments.Keys)
+                try
                 {
-                    if (!key.SpawnedOrAnyParentSpawned)
+                    using (StringReader input = new StringReader(filePath))
                     {
-                        ___tmpPawnsToFree.Add(key);
+                        using XmlTextReader reader = new XmlTextReader(input);
+                        XmlDocument xmlDocument = new XmlDocument();
+                        xmlDocument.Load(reader);
+
+                        __instance.curXmlParent = xmlDocument.DocumentElement;
+                    }
+
+                    Scribe.mode = LoadSaveMode.LoadingVars;
+                }
+
+                catch (Exception e)
+                {
+                    Printer.Error($"Exception while init load patched scribe: {e}");
+                    __instance.ForceStop();
+                    throw;
+                }
+
+                return false;
+            }
+        }
+    }
+
+    //TODO
+    //Find a way to handle scribe errors better than this
+
+    [HarmonyPatch(typeof(PawnTextureAtlas), nameof(PawnTextureAtlas.GC))]
+    public static class PatchPawnAtlas
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(ref Dictionary<Pawn, PawnTextureAtlasFrameSet> ___frameAssignments, ref List<Pawn> ___tmpPawnsToFree, ref List<PawnTextureAtlasFrameSet> ___freeFrameSets)
+        {
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else
+            {
+                try
+                {
+                    foreach (Pawn key in ___frameAssignments.Keys)
+                    {
+                        if (!key.SpawnedOrAnyParentSpawned)
+                        {
+                            ___tmpPawnsToFree.Add(key);
+                        }
+                    }
+
+                    foreach (Pawn item in ___tmpPawnsToFree)
+                    {
+                        ___freeFrameSets.Add(___frameAssignments[item]);
+                        ___frameAssignments.Remove(item);
                     }
                 }
 
-                foreach (Pawn item in ___tmpPawnsToFree)
+                catch (Exception e)
                 {
-                    ___freeFrameSets.Add(___frameAssignments[item]);
-                    ___frameAssignments.Remove(item);
+                    ___frameAssignments.Clear();
+                    Printer.Error(e.ToString(), LogImportanceMode.Extreme);
                 }
-            }
 
-            catch (Exception e)
+                ___tmpPawnsToFree.Clear();
+
+                return false;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(DebugLoadIDsSavingErrorsChecker), nameof(DebugLoadIDsSavingErrorsChecker.RegisterDeepSaved))]
+    public static class PatchRegisterDeepSaved
+    {
+        [HarmonyPrefix]
+        public static bool DoPre()
+        {
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(DebugLoadIDsSavingErrorsChecker), nameof(DebugLoadIDsSavingErrorsChecker.CheckForErrorsAndClear))]
+    public static class PatchCheckForErrorsAndClear
+    {
+        [HarmonyPrefix]
+        public static bool DoPre(DebugLoadIDsSavingErrorsChecker __instance)
+        {
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else
             {
-                ___frameAssignments.Clear();
-                Printer.Error(e.ToString(), LogImportanceMode.Extreme);
+                __instance.Clear();
+                return false;
             }
-
-            ___tmpPawnsToFree.Clear();
-
-            return false;
         }
     }
-}
 
-[HarmonyPatch(typeof(DebugLoadIDsSavingErrorsChecker), nameof(DebugLoadIDsSavingErrorsChecker.RegisterDeepSaved))]
-public static class PatchRegisterDeepSaved
-{
-    [HarmonyPrefix]
-    public static bool DoPre()
+    [HarmonyPatch(typeof(LoadedObjectDirectory), nameof(LoadedObjectDirectory.RegisterLoaded))]
+    public static class PatchRegisterLoaded
     {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-        else return false;
-    }
-}
-
-[HarmonyPatch(typeof(DebugLoadIDsSavingErrorsChecker), nameof(DebugLoadIDsSavingErrorsChecker.CheckForErrorsAndClear))]
-public static class PatchCheckForErrorsAndClear
-{
-    [HarmonyPrefix]
-    public static bool DoPre(DebugLoadIDsSavingErrorsChecker __instance)
-    {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-        else
+        [HarmonyPrefix]
+        public static bool DoPre(ILoadReferenceable reffable, ref Dictionary<string, ILoadReferenceable> ___allObjectsByLoadID, ref Dictionary<int, ILoadReferenceable> ___allThingsByThingID)
         {
-            __instance.Clear();
-            return false;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else
+            {
+                try { ___allObjectsByLoadID.Add(reffable.GetUniqueLoadID(), reffable); }
+                catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
+
+                if (reffable is not Thing thing) return false;
+
+                try { ___allThingsByThingID.Add(thing.thingIDNumber, reffable); }
+                catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
+
+                return false;
+            }
         }
     }
-}
 
-[HarmonyPatch(typeof(LoadedObjectDirectory), nameof(LoadedObjectDirectory.RegisterLoaded))]
-public static class PatchRegisterLoaded
-{
-    [HarmonyPrefix]
-    public static bool DoPre(ILoadReferenceable reffable, ref Dictionary<string, ILoadReferenceable> ___allObjectsByLoadID, ref Dictionary<int, ILoadReferenceable> ___allThingsByThingID)
+    [HarmonyPatch(typeof(Log), nameof(Log.Warning))]
+    public static class PatchScribeWarning
     {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-        else
+        [HarmonyPrefix]
+        public static bool DoPre()
         {
-            try { ___allObjectsByLoadID.Add(reffable.GetUniqueLoadID(), reffable); }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
-
-            if (reffable is not Thing thing) return false;
-
-            try { ___allThingsByThingID.Add(thing.thingIDNumber, reffable); }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
-
-            return false;
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.IsUsingScriber) return true;
+            else return false;
         }
     }
-}
 
-[HarmonyPatch(typeof(Log), nameof(Log.Warning))]
-public static class PatchScribeWarning
-{
-    [HarmonyPrefix]
-    public static bool DoPre()
+    [HarmonyPatch(typeof(Log), nameof(Log.Error))]
+    public static class PatchScribeError
     {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-        else if (!SessionHandler.IsUsingScriber) return true;
-        else return false;
-    }
-}
-
-[HarmonyPatch(typeof(Log), nameof(Log.Error))]
-public static class PatchScribeError
-{
-    [HarmonyPrefix]
-    public static bool DoPre()
-    {
-        if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
-        else if (!SessionHandler.IsUsingScriber) return true;
-        else return false;
+        [HarmonyPrefix]
+        public static bool DoPre()
+        {
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
+            else if (!SessionHandler.IsUsingScriber) return true;
+            else return false;
+        }
     }
 }

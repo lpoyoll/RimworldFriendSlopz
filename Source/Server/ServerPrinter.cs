@@ -1,86 +1,87 @@
 ﻿using GameServer.Core;
+using Shared.Misc;
 using System.Text;
-using Shared;
 using static Shared.CommonEnumerators;
 
-namespace GameServer;
-
-public static class ServerPrinter
+namespace GameServer
 {
-    private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
-
-    private static Dictionary<LogMode, ConsoleColor> ColorDictionary { get; set; } = new Dictionary<LogMode, ConsoleColor>
+    public static class ServerPrinter
     {
-        { LogMode.Message, ConsoleColor.White },
-        { LogMode.Warning, ConsoleColor.Yellow },
-        { LogMode.Error, ConsoleColor.Red },
-        { LogMode.Title, ConsoleColor.Green }
-    };
+        private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
-    public static void CreateLogger()
-    {
-        Action<object, LogImportanceMode> onMessage = delegate (object value, LogImportanceMode importance)
+        private static Dictionary<LogMode, ConsoleColor> ColorDictionary { get; set; } = new Dictionary<LogMode, ConsoleColor>
         {
-            if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Message, importance);
+            { LogMode.Message, ConsoleColor.White },
+            { LogMode.Warning, ConsoleColor.Yellow },
+            { LogMode.Error, ConsoleColor.Red },
+            { LogMode.Title, ConsoleColor.Green }
         };
 
-        Action<object, LogImportanceMode> onWarning = delegate (object value, LogImportanceMode importance)
+        public static void CreateLogger()
         {
-            if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Warning, importance);
-        };
-
-        Action<object, LogImportanceMode> onError = delegate (object value, LogImportanceMode importance)
-        {
-            if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Error, importance);
-        };
-
-        Action<object, LogImportanceMode> onTitle = delegate (object value, LogImportanceMode importance)
-        {
-            if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Title, importance);
-        };
-
-        Printer printer = new Printer(onMessage, onWarning, onError, onTitle);
-    }
-
-    private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
-    {
-        Semaphore.WaitOne();
-
-        try
-        {
-            if (CheckIfShouldPrint(importance))
+            Action<object, LogImportanceMode> onMessage = delegate (object value, LogImportanceMode importance)
             {
-                if (writeToLogs) WriteToLogs(text);
+                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Message, importance);
+            };
 
-                Console.ForegroundColor = ColorDictionary[mode];
-                Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
-                Console.ForegroundColor = ConsoleColor.White;
-            }
+            Action<object, LogImportanceMode> onWarning = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Warning, importance);
+            };
+
+            Action<object, LogImportanceMode> onError = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Error, importance);
+            };
+
+            Action<object, LogImportanceMode> onTitle = delegate (object value, LogImportanceMode importance)
+            {
+                if (CheckIfShouldPrint(importance)) WriteToConsole(value.ToString(), LogMode.Title, importance);
+            };
+
+            Printer printer = new Printer(onMessage, onWarning, onError, onTitle);
         }
-        catch(Exception ex) { throw new Exception($"Logger encountered an error. This should never happen\n{ex}"); }
 
-        Semaphore.Release();
-    }
+        private static void WriteToConsole(string text, LogMode mode, LogImportanceMode importance, bool writeToLogs = true)
+        {
+            Semaphore.WaitOne();
 
-    private static void WriteToLogs(string toLog)
-    {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | " + toLog);
-        stringBuilder.Append(Environment.NewLine);
+            try
+            {
+                if (CheckIfShouldPrint(importance))
+                {
+                    if (writeToLogs) WriteToLogs(text);
 
-        DateTime dateTime = DateTime.Now.Date;
-        string nowFileName = $"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}";
-        string nowFullPath = Master.SystemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+                    Console.ForegroundColor = ColorDictionary[mode];
+                    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] | " + text);
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+            catch(Exception ex) { throw new Exception($"Logger encountered an error. This should never happen\n{ex}"); }
 
-        File.AppendAllText(nowFullPath, stringBuilder.ToString());
-        stringBuilder.Clear();
-    }
+            Semaphore.Release();
+        }
 
-    private static bool CheckIfShouldPrint(LogImportanceMode importance)
-    {
-        if (importance == LogImportanceMode.Normal) return true;
-        else if (importance == LogImportanceMode.Verbose && Master.ServerConfig.VerboseLogs) return true;
-        else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.ExtremeVerboseLogs) return true;
-        else return false;
+        private static void WriteToLogs(string toLog)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | " + toLog);
+            stringBuilder.Append(Environment.NewLine);
+
+            DateTime dateTime = DateTime.Now.Date;
+            string nowFileName = $"{dateTime.Year}-{dateTime.Month.ToString("D2")}-{dateTime.Day.ToString("D2")}";
+            string nowFullPath = Master.SystemLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+
+            File.AppendAllText(nowFullPath, stringBuilder.ToString());
+            stringBuilder.Clear();
+        }
+
+        private static bool CheckIfShouldPrint(LogImportanceMode importance)
+        {
+            if (importance == LogImportanceMode.Normal) return true;
+            else if (importance == LogImportanceMode.Verbose && Master.ServerConfig.VerboseLogs) return true;
+            else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.ExtremeVerboseLogs) return true;
+            else return false;
+        }
     }
 }

@@ -1,19 +1,28 @@
 ﻿using GameClient.Dialogs;
+using RimWorld;
+using RimWorld.Planet;
+using Shared;
+using Shared.Files;
 using System;
+using System.Reflection;
+using Verse;
+using static Shared.CommonEnumerators;
+using static UnityEngine.GraphicsBuffer;
 
-namespace GameClient.Managers;
-
-public static class DifficultyManager
+namespace GameClient.Managers
 {
-    public static void OpenDifficultyMenu()
+    public static class DifficultyManager
     {
-        string description = "Do you want to enforce the current difficulty?";
-        Action actionYes = delegate
+        public static void OpenDifficultyMenu()
         {
-            GameParameterManager.SendCurrentStoryteller(true);
-            GameParameterManager.SendCurrentDifficulty(true);
-        };
+            string description = "Do you want to enforce the current difficulty?";
+            Action actionYes = delegate
+            {
+                GameParameterManager.SendCurrentStoryteller(true);
+                GameParameterManager.SendCurrentDifficulty(true);
+            };
 
-        RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo(description, actionYes));
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo(description, actionYes));
+        }
     }
 }

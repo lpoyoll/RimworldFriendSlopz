@@ -1,30 +1,31 @@
 using System;
 using System.IO;
 
-namespace Shared.Files.Configs;
-
-public class ScenarioConfigFile : BaseFile
+namespace Shared.Files.Configs
 {
-    public static string SavePath { get; set; } = string.Empty;
-
-    public bool IsEnforced { get; set; } = false;
-
-    public string Name { get; set; } = string.Empty;
-
-    public override void Save()
+    public class ScenarioConfigFile : BaseFile
     {
-        try { Serializer.SerializeToFile(SavePath, this); }
-        catch (Exception e) { throw new Exception(e.ToString()); }
-    }
+        public static string SavePath { get; set; } = string.Empty;
 
-    public static object Load<T>()
-    {
-        if (File.Exists(SavePath)) return Serializer.SerializeFromFile<T>(SavePath);
-        else
+        public bool IsEnforced { get; set; } = false;
+
+        public string Name { get; set; } = string.Empty;
+
+        public override void Save()
         {
-            ScenarioConfigFile file = new ScenarioConfigFile();
-            Serializer.SerializeToFile(SavePath, file);
-            return file;
+            try { Serializer.SerializeToFile(SavePath, this); }
+            catch (Exception e) { throw new Exception(e.ToString()); }
+        }
+
+        public static object Load<T>()
+        {
+            if (File.Exists(SavePath)) return Serializer.SerializeFromFile<T>(SavePath);
+            else
+            {
+                ScenarioConfigFile file = new ScenarioConfigFile();
+                Serializer.SerializeToFile(SavePath, file);
+                return file;
+            }
         }
     }
 }

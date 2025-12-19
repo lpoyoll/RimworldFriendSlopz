@@ -1,10 +1,13 @@
-namespace Shared.Files;
+using System;
 
-public class CaravanFile
+namespace Shared.Files
 {
-    public int Tile { get; set; } = -1;
+    public class CaravanFile
+    {
+        public int Tile { get; set; } = -1;
 
-    public string Username { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
 
-    public int ID { get; set; } = -1;
+        public int ID { get; set; } = -1;
+    }
 }

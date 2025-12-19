@@ -1,6 +1,14 @@
-﻿namespace Shared.Files;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-public abstract class BaseFile
+namespace Shared.Files
 {
-    public abstract void Save();
+    public abstract class BaseFile
+    {
+        public abstract void Save();
+    }
 }

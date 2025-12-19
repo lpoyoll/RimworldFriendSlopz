@@ -1,10 +1,16 @@
-﻿using static Shared.CommonEnumerators;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Files.Client;
-
-public class PlayerGoodwill
+namespace TCPNetwork.Files.Client
 {
-    public string Name { get; set; } = string.Empty;
+    public class PlayerGoodwill
+    {
+        public string Name { get; set; } = string.Empty;
 
-    public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
+        public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
+    }
 }

@@ -6,261 +6,264 @@ using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Verse;
 using static Shared.CommonEnumerators;
 using Shared.Details.Planet;
+using Shared.Misc;
 
-namespace GameClient.Managers;
-
-public static class NPCManager
+namespace GameClient.Managers
 {
-    [HandlesPacket(PacketHeader.NPCManager)]
-    private static void ParsePacket(byte[] bytes)
+    public static class NPCManager
     {
-        NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(bytes);
-
-        switch (data._stepMode)
+        [HandlesPacket(PacketHeader.NPCManager)]
+        private static void ParsePacket(byte[] bytes)
         {
-            case SettlementStepMode.Add:
-                break;
+            NPCSettlementData data = Serializer.ConvertBytesToObject<NPCSettlementData>(bytes);
 
-            case SettlementStepMode.Remove:
-                RemoveNPCSettlementFromPacket(data._settlementData);
-                break;
-            
-            default:
-                Printer.Error($"Received invalid step mode {data._stepMode}");
-                return;
-        }
-    }
-
-    public static void AddSettlements(NPCSettlementDetail[] settlements)
-    {
-        foreach (NPCSettlementDetail settlement in settlements)
-        {
-            SpawnSingleSettlement(settlement);
-        }
-    }
-
-    public static void SpawnSingleSettlement(NPCSettlementDetail toAdd)
-    {
-        if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
-        else
-        {
-            Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-            settlement.Name = toAdd.Name;
-            settlement.Tile = toAdd.Tile;
-
-            List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.DefName);
-
-            if (factions.Count == 0)
+            switch (data._stepMode)
             {
-                Printer.Warning($"Could not find faction for settlement at tile {toAdd.Tile} with faction {toAdd.DefName}");
-                return;
+                case SettlementStepMode.Add:
+                    break;
+
+                case SettlementStepMode.Remove:
+                    RemoveNPCSettlementFromPacket(data._settlementData);
+                    break;
             }
+        }
 
-            else if (factions.Count == 1) settlement.SetFaction(factions.First());
-
-            else if (factions.Count > 1)
+        public static void AddSettlements(NPCSettlementDetail[] settlements)
+        {
+            foreach (NPCSettlementDetail settlement in settlements)
             {
-                foreach (Faction faction in factions)
+                SpawnSingleSettlement(settlement);
+            }
+        }
+
+        public static void SpawnSingleSettlement(NPCSettlementDetail toAdd)
+        {
+            if (Find.WorldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
+            else
+            {
+                Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                settlement.Name = toAdd.Name;
+                settlement.Tile = toAdd.Tile;
+
+                List<Faction> factions = PlanetManagerHelper.GetNPCFactionFromDefName(toAdd.DefName);
+
+                if (factions.Count == 0)
                 {
-                    if (faction.Name == toAdd.FactionName) settlement.SetFaction(faction);
+                    Printer.Warning($"Could not find faction for settlement at tile {toAdd.Tile} with faction {toAdd.DefName}");
+                    return;
                 }
 
-                if (settlement.Faction == null) settlement.SetFaction(factions.First());
-            }
+                else if (factions.Count == 1) settlement.SetFaction(factions.First());
 
-            // Check if the settlement belongs to planet or space
-
-            if (ModLister.OdysseyInstalled && settlement.Faction.def == FactionDefOf.TradersGuild)
-            {
-                PlanetLayer orbitLayer = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Orbit);
-                Tile toFind = orbitLayer.Tiles.FirstOrDefault(fetch => fetch.tile.tileId == toAdd.Tile);
-                settlement.Tile = toFind.tile;
-            }
-
-            Find.WorldObjects.Add(settlement);
-
-            NPCManagerH.TryRelinkQuest(settlement);
-        }
-    }
-
-    public static void ClearAllSettlements()
-    {
-        Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !SessionHandler.PlayerFactions.Contains(fetch.Faction) &&
-            fetch.Faction != Faction.OfPlayer).ToArray();
-
-        foreach (Settlement settlement in settlements) RemoveSingleSettlement(settlement, null);
-
-        DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !SessionHandler.PlayerFactions.Contains(fetch.Faction) &&
-            fetch.Faction != Faction.OfPlayer).ToArray();
-
-        foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
-    }
-
-    public static void RemoveNPCSettlementFromPacket(NPCSettlementDetail data)
-    {
-        Settlement toRemove = Find.World.worldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data.Tile &&
-            fetch.Faction != Faction.OfPlayer);
-
-        if (toRemove != null) RemoveSingleSettlement(toRemove, null);
-    }
-
-    public static void RemoveSingleSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
-    {
-        if (settlement != null)
-        {
-            try
-            {
-                if (!RimworldManager.CheckIfMapHasPlayerPawns(settlement.Map))
+                else if (factions.Count > 1)
                 {
-                    NPCManagerH.LastRemovedSettlement = settlement;
-                    Find.WorldObjects.Remove(settlement);
-                }
-                else Printer.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
-            }
-            catch (Exception e) { Printer.Warning($"Failed to remove NPC settlement at {settlement.Tile}. Reason: {e}"); }
-        }
+                    foreach (Faction faction in factions)
+                    {
+                        if (faction.Name == toAdd.FactionName) settlement.SetFaction(faction);
+                    }
 
-        else if (destroyedSettlement != null)
-        {
-            try
-            {
-                if (!RimworldManager.CheckIfMapHasPlayerPawns(destroyedSettlement.Map))
+                    if (settlement.Faction == null) settlement.SetFaction(factions.First());
+                }
+
+                // Check if the settlement belongs to planet or space
+
+                if (ModLister.OdysseyInstalled && settlement.Faction.def == FactionDefOf.TradersGuild)
                 {
-                    Find.WorldObjects.Remove(destroyedSettlement);
+                    PlanetLayer orbitLayer = Find.World.grid.FirstLayerOfDef(PlanetLayerDefOf.Orbit);
+                    Tile toFind = orbitLayer.Tiles.FirstOrDefault(fetch => fetch.tile.tileId == toAdd.Tile);
+                    settlement.Tile = toFind.tile;
                 }
-                else Printer.Warning($"Ignored removal of settlement at {destroyedSettlement.Tile} because player was inside");
+
+                Find.WorldObjects.Add(settlement);
+
+                NPCManagerH.TryRelinkQuest(settlement);
             }
-            catch (Exception e) { Printer.Warning($"Failed to remove NPC settlement at {destroyedSettlement.Tile}. Reason: {e}"); }
         }
-    }
 
-    public static void RequestSettlementRemoval(Settlement settlement)
-    {
-        NPCSettlementData data = new NPCSettlementData();
-        data._stepMode = SettlementStepMode.Remove;
-        data._settlementData.Tile = settlement.Tile;
-
-        ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.NPCManager, data);
-    }
-}
-
-public static class NPCManagerH
-{
-    public static NPCSettlementDetail[] TempNPCSettlements;
-
-    public static Settlement LastRemovedSettlement;
-
-    private static readonly Dictionary<int, List<QuestPart>> QuestToFixTemp = new Dictionary<int, List<QuestPart>>();
-
-    public static void SetValues(ServerGlobalData serverGlobalData)
-    {
-        TempNPCSettlements = serverGlobalData._npcSettlements;
-    }
-
-    public static void SaveAllQuests() 
-    {
-        foreach (Quest quest in Find.QuestManager.QuestsListForReading.Where(x => !x.Historical)) 
+        public static void ClearAllSettlements()
         {
-            TrySaveQuest(quest);
+            Settlement[] settlements = Find.WorldObjects.Settlements.Where(fetch => !SessionHandler.PlayerFactions.Contains(fetch.Faction) &&
+                fetch.Faction != Faction.OfPlayer).ToArray();
+
+            foreach (Settlement settlement in settlements) RemoveSingleSettlement(settlement, null);
+
+            DestroyedSettlement[] destroyedSettlements = Find.WorldObjects.DestroyedSettlements.Where(fetch => !SessionHandler.PlayerFactions.Contains(fetch.Faction) &&
+                fetch.Faction != Faction.OfPlayer).ToArray();
+
+            foreach (DestroyedSettlement settlement in destroyedSettlements) RemoveSingleSettlement(null, settlement);
         }
-    }
 
-    public static void CleanupQuests() 
-    {
-        QuestToFixTemp.Clear();
-    }
-
-    private static void TrySaveQuest(Quest quest)
-    {
-        Printer.Warning($"Trying to save quest with id {quest.id}", LogImportanceMode.Verbose);
-
-        IEnumerable<QuestPart> questPart = quest.PartsListForReading.Where(x => x is QuestPart_SpawnWorldObject || x is QuestPart_DisableTradeRequest
-            || x is QuestPart_TradeRequestInactive || x is QuestPart_InitiateTradeRequest);
-
-        foreach (QuestPart part in questPart) 
+        public static void RemoveNPCSettlementFromPacket(NPCSettlementDetail data)
         {
-            int tile = -1;
+            Settlement toRemove = Find.World.worldObjects.Settlements.FirstOrDefault(fetch => fetch.Tile == data.Tile &&
+                fetch.Faction != Faction.OfPlayer);
 
-            switch (part)
+            if (toRemove != null) RemoveSingleSettlement(toRemove, null);
+        }
+
+        public static void RemoveSingleSettlement(Settlement settlement, DestroyedSettlement destroyedSettlement)
+        {
+            if (settlement != null)
             {
-                case QuestPart_SpawnWorldObject part2:
+                try
+                {
+                    if (!RimworldManager.CheckIfMapHasPlayerPawns(settlement.Map))
+                    {
+                        NPCManagerH.lastRemovedSettlement = settlement;
+                        Find.WorldObjects.Remove(settlement);
+                    }
+                    else Printer.Warning($"Ignored removal of settlement at {settlement.Tile} because player was inside");
+                }
+                catch (Exception e) { Printer.Warning($"Failed to remove NPC settlement at {settlement.Tile}. Reason: {e}"); }
+            }
+
+            else if (destroyedSettlement != null)
+            {
+                try
+                {
+                    if (!RimworldManager.CheckIfMapHasPlayerPawns(destroyedSettlement.Map))
+                    {
+                        Find.WorldObjects.Remove(destroyedSettlement);
+                    }
+                    else Printer.Warning($"Ignored removal of settlement at {destroyedSettlement.Tile} because player was inside");
+                }
+                catch (Exception e) { Printer.Warning($"Failed to remove NPC settlement at {destroyedSettlement.Tile}. Reason: {e}"); }
+            }
+        }
+
+        public static void RequestSettlementRemoval(Settlement settlement)
+        {
+            NPCSettlementData data = new NPCSettlementData();
+            data._stepMode = SettlementStepMode.Remove;
+            data._settlementData.Tile = settlement.Tile;
+
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.NPCManager, data);
+        }
+    }
+
+    public static class NPCManagerH
+    {
+        public static NPCSettlementDetail[] tempNPCSettlements;
+
+        public static Settlement lastRemovedSettlement;
+
+        private static Dictionary<int, List<QuestPart>> questToFixTemp = new Dictionary<int, List<QuestPart>>();
+
+        public static void SetValues(ServerGlobalData serverGlobalData)
+        {
+            tempNPCSettlements = serverGlobalData._npcSettlements;
+        }
+
+        public static void SaveAllQuests() 
+        {
+            foreach (Quest quest in Find.QuestManager.QuestsListForReading.Where(x => !x.Historical)) 
+            {
+                TrySaveQuest(quest);
+            }
+        }
+
+        public static void CleanupQuests() 
+        {
+            questToFixTemp.Clear();
+        }
+
+        private static void TrySaveQuest(Quest quest)
+        {
+            Printer.Warning($"Trying to save quest with id {quest.id}", LogImportanceMode.Verbose);
+
+            IEnumerable<QuestPart> questPart = quest.PartsListForReading.Where(x => x is QuestPart_SpawnWorldObject || x is QuestPart_DisableTradeRequest
+                || x is QuestPart_TradeRequestInactive || x is QuestPart_InitiateTradeRequest);
+
+            foreach (QuestPart part in questPart) 
+            {
+                int tile = -1;
+
+                if (part is QuestPart_SpawnWorldObject part2) 
+                {
                     Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
                     tile = part2.worldObject?.Tile ?? -1;
-                    break;
-                case QuestPart_DisableTradeRequest part3:
+                }
+
+                else if (part is QuestPart_DisableTradeRequest part3) 
+                {
                     Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
                     tile = part3.settlement?.Tile ?? -1;
-                    break;
-                case QuestPart_TradeRequestInactive part4:
+                }
+
+                else if (part is QuestPart_TradeRequestInactive part4) 
+                {
                     Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
                     tile = part4.settlement?.Tile ?? -1;
-                    break;
-                case QuestPart_InitiateTradeRequest part5:
+                }
+
+                else if (part is QuestPart_InitiateTradeRequest part5)
+                {
                     Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
                     tile = part5.settlement?.Tile ?? -1;
-                    break;
-            }
-
-            if (tile != -1)
-            {
-                Printer.Warning($"Saved quest {quest.id}", LogImportanceMode.Verbose);
-                if (QuestToFixTemp.ContainsKey(tile))
-                {
-                    QuestToFixTemp[tile].Add(part);
-                }
-                else
-                {
-                    QuestToFixTemp[tile] = [part];
-                }
-            }
-        }
-    }
-
-    public static void TryRelinkQuest(WorldObject obj) 
-    {
-        try
-        {
-            if (QuestToFixTemp.TryGetValue(obj.Tile, out List<QuestPart> parts))
-            {
-                Printer.Warning($"Found quest with id {parts.First().quest.id}", LogImportanceMode.Verbose);
-
-                foreach (QuestPart part in parts)
-                {
-                    if (part is QuestPart_SpawnWorldObject part2)
-                    {
-                        Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
-                        part2.worldObject = obj;
-                    }
-
-                    else if (part is QuestPart_DisableTradeRequest part3)
-                    {
-                        Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
-                        part3.settlement = (Settlement)obj;
-                    }
-
-                    else if (part is QuestPart_TradeRequestInactive part4)
-                    {
-                        Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
-                        part4.settlement = (Settlement)obj;
-                    }
-
-                    else if (part is QuestPart_InitiateTradeRequest part5)
-                    {
-                        Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
-                        part5.settlement = (Settlement)obj;
-                    }
                 }
 
-                Printer.Warning($"Loaded quest with id {parts.First().quest.id} on tile {obj.Tile}.", LogImportanceMode.Verbose);
+                if (tile != -1)
+                {
+                    Printer.Warning($"Saved quest {quest.id}", LogImportanceMode.Verbose);
+                    if (questToFixTemp.ContainsKey(tile))
+                    {
+                        questToFixTemp[tile].Add(part);
+                    }
+                    else
+                    {
+                        questToFixTemp[tile] = new List<QuestPart>() { part };
+                    }
+                }
             }
         }
 
-        catch (Exception ex)
+        public static void TryRelinkQuest(WorldObject obj) 
         {
-            Printer.Error($"Error while trying to relink quests\n{ex}");
+            try
+            {
+                if (questToFixTemp.TryGetValue(obj.Tile, out List<QuestPart> parts))
+                {
+                    Printer.Warning($"Found quest with id {parts.First().quest.id}", LogImportanceMode.Verbose);
+
+                    foreach (QuestPart part in parts)
+                    {
+                        if (part is QuestPart_SpawnWorldObject part2)
+                        {
+                            Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
+                            part2.worldObject = obj;
+                        }
+
+                        else if (part is QuestPart_DisableTradeRequest part3)
+                        {
+                            Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
+                            part3.settlement = (Settlement)obj;
+                        }
+
+                        else if (part is QuestPart_TradeRequestInactive part4)
+                        {
+                            Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
+                            part4.settlement = (Settlement)obj;
+                        }
+
+                        else if (part is QuestPart_InitiateTradeRequest part5)
+                        {
+                            Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
+                            part5.settlement = (Settlement)obj;
+                        }
+                    }
+
+                    Printer.Warning($"Loaded quest with id {parts.First().quest.id} on tile {obj.Tile}.", LogImportanceMode.Verbose);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                Printer.Error($"Error while trying to relink quests\n{ex}");
+            }
         }
     }
 }

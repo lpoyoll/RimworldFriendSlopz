@@ -1,12 +1,17 @@
-namespace Shared.Details.Planet;
+using System;
+using Newtonsoft.Json;
+using Shared.Misc;
 
-public class FeatureDetail
+namespace Shared.Details.Planet
 {
-    public string Label { get; set; } = null;
+    public class FeatureDetail
+    {
+        public string Label { get; set; } = null;
         
-    public string DefName { get; set; } = null;
+        public string DefName { get; set; } = null;
 
-    public float[] DrawCenter { get; set; } = null;
+        public float[] DrawCenter { get; set; } = null;
 
-    public float MaxDrawSizeInTiles { get; set; } = -1;
+        public float MaxDrawSizeInTiles { get; set; } = -1;
+    }
 }

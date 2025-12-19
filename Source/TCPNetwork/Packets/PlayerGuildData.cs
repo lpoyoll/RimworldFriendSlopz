@@ -1,13 +1,15 @@
 ﻿using Shared.Files.Guilds;
 using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Packets;
-
-public class PlayerGuildData
+namespace TCPNetwork.Packets
 {
-    public GuildStepMode _stepMode { get; set; } = GuildStepMode.Create;
 
-    public GuildFile _guild { get; set; } = new GuildFile();
+    public class PlayerGuildData
+    {
+        public GuildStepMode _stepMode { get; set; } = GuildStepMode.Create;
 
-    public int _dataInt { get; set; } = -1;
+        public GuildFile _guild { get; set; } = new GuildFile();
+
+        public int _dataInt { get; set; } = -1;
+    }
 }

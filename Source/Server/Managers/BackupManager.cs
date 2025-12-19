@@ -3,125 +3,127 @@ using GameServer.Misc;
 using Shared;
 using Shared.Files;
 using Shared.Files.Sites;
+using Shared.Misc;
 using System.IO.Compression;
 using static Shared.CommonEnumerators;
 
-namespace GameServer.Managers;
-
-public static class BackupManager
+namespace GameServer.Managers
 {
-    private static readonly Semaphore savingSemaphore = new Semaphore(1, 1);
-
-    public static void BackupServer()
+    public static class BackupManager
     {
-        savingSemaphore.WaitOne();
+        private static readonly Semaphore savingSemaphore = new Semaphore(1, 1);
 
-        try
+        public static void BackupServer()
         {
-            string backupName = $"Server_{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}_{DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
-            string backupPath = $"{Master.BackupServerPath + Path.DirectorySeparatorChar}{backupName}{CommonValues.CompressedSaveFormat}";
+            savingSemaphore.WaitOne();
 
-            List<string> toArchive = new List<string>();
-            toArchive.AddRange(Directory.GetFiles(Master.AssetsPath, "*.*", SearchOption.AllDirectories));
-            toArchive.AddRange(Directory.GetFiles(Master.ConfigsPath, "*.*", SearchOption.AllDirectories));
-            toArchive.AddRange(Directory.GetFiles(Master.LogsPath, "*.*", SearchOption.AllDirectories));
-
-            CreateArchive(toArchive, backupPath);
-
-            if (Directory.GetFiles(Master.BackupServerPath).Count() > Master.BackupConfig.Amount && Master.BackupConfig.AutomaticDeletion == true)
+            try
             {
-                DeleteOldestArchive();
-            }
+                string backupName = $"Server_{DateTime.Now.Year}-{DateTime.Now.Month}-{DateTime.Now.Day}_{DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Second}";
+                string backupPath = $"{Master.BackupServerPath + Path.DirectorySeparatorChar}{backupName}{CommonValues.CompressedSaveFormat}";
 
-            InformationDisplayer.DisplayServerBackup(backupPath);
-        }
-        catch (Exception ex) { Printer.Error(ex.ToString()); }
+                List<string> toArchive = new List<string>();
+                toArchive.AddRange(Directory.GetFiles(Master.AssetsPath, "*.*", SearchOption.AllDirectories));
+                toArchive.AddRange(Directory.GetFiles(Master.ConfigsPath, "*.*", SearchOption.AllDirectories));
+                toArchive.AddRange(Directory.GetFiles(Master.LogsPath, "*.*", SearchOption.AllDirectories));
 
-        savingSemaphore.Release();
-    }
+                CreateArchive(toArchive, backupPath);
 
-    public static void BackupUser(string username, bool persistent = false)
-    {
-        savingSemaphore.WaitOne();
-
-        try
-        {
-            string playerArchivedSavePath = Path.Combine(Master.BackupUsersPath, username);
-            if (persistent) playerArchivedSavePath += " - persistent";
-            playerArchivedSavePath += CommonValues.CompressedSaveFormat;
-
-            if (File.Exists(playerArchivedSavePath))
-            {
-                if (persistent == true)
+                if (Directory.GetFiles(Master.BackupServerPath).Count() > Master.BackupConfig.Amount && Master.BackupConfig.AutomaticDeletion == true)
                 {
-                    Printer.Error($"Could not backup user {username} because the file {playerArchivedSavePath} already exist. Consider running a non-persistent backup if you want to overwrite it.");
-                    savingSemaphore.Release();
-                    return;
+                    DeleteOldestArchive();
                 }
 
-                else
+                InformationDisplayer.DisplayServerBackup(backupPath);
+            }
+            catch (Exception ex) { Printer.Error(ex.ToString()); }
+
+            savingSemaphore.Release();
+        }
+
+        public static void BackupUser(string username, bool persistent = false)
+        {
+            savingSemaphore.WaitOne();
+
+            try
+            {
+                string playerArchivedSavePath = Path.Combine(Master.BackupUsersPath, username);
+                if (persistent) playerArchivedSavePath += " - persistent";
+                playerArchivedSavePath += CommonValues.CompressedSaveFormat;
+
+                if (File.Exists(playerArchivedSavePath))
                 {
-                    File.Delete(playerArchivedSavePath);
-                    Printer.Warning($"Deleting backup of {username} because he already had one.", LogImportanceMode.Verbose);
+                    if (persistent == true)
+                    {
+                        Printer.Error($"Could not backup user {username} because the file {playerArchivedSavePath} already exist. Consider running a non-persistent backup if you want to overwrite it.");
+                        savingSemaphore.Release();
+                        return;
+                    }
+
+                    else
+                    {
+                        File.Delete(playerArchivedSavePath);
+                        Printer.Warning($"Deleting backup of {username} because he already had one.", LogImportanceMode.Verbose);
+                    }
+                }
+
+                List<string> toArchive = new List<string>();
+
+                string userFilePath = Path.Combine(Master.UsersPath, username + CommonValues.DefaultSaveFormat);
+                if (File.Exists(userFilePath)) toArchive.Add(userFilePath);
+
+                string userSavePath = Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat);
+                if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
+
+                SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+                foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
+
+                SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
+                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));
+
+                CreateArchive(toArchive, playerArchivedSavePath);
+
+                InformationDisplayer.DisplayUserBackup(playerArchivedSavePath);
+            }
+            catch (Exception ex) { Printer.Error(ex.ToString()); }
+
+            savingSemaphore.Release();
+        }
+
+        private static void CreateArchive(List<string> files, string toPath)
+        {
+            using FileStream zip = new FileStream(toPath, FileMode.CreateNew);
+            using ZipArchive archive = new ZipArchive(zip, ZipArchiveMode.Create);
+
+            foreach (string file in files)
+            {
+                if (File.Exists(file))
+                {
+                    string relativePath = Path.GetRelativePath(Master.MainPath, file);
+                    archive.CreateEntryFromFile(file, relativePath);
                 }
             }
-
-            List<string> toArchive = new List<string>();
-
-            string userFilePath = Path.Combine(Master.UsersPath, username + CommonValues.DefaultSaveFormat);
-            if (File.Exists(userFilePath)) toArchive.Add(userFilePath);
-
-            string userSavePath = Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat);
-            if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
-
-            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-            foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
-
-            SettlementFile[] playerSettlements = SettlementManager.GetAllSettlementsFromUsername(username);
-            foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));
-
-            CreateArchive(toArchive, playerArchivedSavePath);
-
-            InformationDisplayer.DisplayUserBackup(playerArchivedSavePath);
         }
-        catch (Exception ex) { Printer.Error(ex.ToString()); }
 
-        savingSemaphore.Release();
-    }
-
-    private static void CreateArchive(List<string> files, string toPath)
-    {
-        using FileStream zip = new FileStream(toPath, FileMode.CreateNew);
-        using ZipArchive archive = new ZipArchive(zip, ZipArchiveMode.Create);
-
-        foreach (string file in files)
+        private static void DeleteOldestArchive()
         {
-            if (File.Exists(file))
+            while (Directory.GetFiles(Master.BackupServerPath).Length > Master.BackupConfig.Amount)
             {
-                string relativePath = Path.GetRelativePath(Master.MainPath, file);
-                archive.CreateEntryFromFile(file, relativePath);
+                FileSystemInfo fileInfo = new DirectoryInfo(Master.BackupServerPath).GetFileSystemInfos().OrderBy(file => file.CreationTime).First();
+                Printer.Warning($"Deleting backup {fileInfo.Name} because we've reached the limit of {Master.BackupConfig.Amount}", LogImportanceMode.Verbose);
+                fileInfo.Delete();
             }
         }
-    }
 
-    private static void DeleteOldestArchive()
-    {
-        while (Directory.GetFiles(Master.BackupServerPath).Length > Master.BackupConfig.Amount)
+        public static void AutoBackup()
         {
-            FileSystemInfo fileInfo = new DirectoryInfo(Master.BackupServerPath).GetFileSystemInfos().OrderBy(file => file.CreationTime).First();
-            Printer.Warning($"Deleting backup {fileInfo.Name} because we've reached the limit of {Master.BackupConfig.Amount}", LogImportanceMode.Verbose);
-            fileInfo.Delete();
-        }
-    }
+            while (true)
+            {
+                Thread.Sleep(TimeSpan.FromHours(Master.BackupConfig.IntervalHours));
 
-    public static void AutoBackup()
-    {
-        while (true)
-        {
-            Thread.Sleep(TimeSpan.FromHours(Master.BackupConfig.IntervalHours));
-
-            try { BackupServer(); }
-            catch (Exception e) { Printer.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
+                try { BackupServer(); }
+                catch (Exception e) { Printer.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
+            }
         }
     }
 }
