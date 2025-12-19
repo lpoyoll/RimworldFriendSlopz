@@ -112,10 +112,8 @@ namespace GameClient.Managers
                             File.WriteAllBytes(SaveManager.SaveFilePath, data);
                             RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait("Waiting for save upload"));
 
-                            SessionHandler.IsIntentionalDisconnect = true;
-
                             SaveManager.LatestSavePath = SaveManager.SaveFilePath;
-
+                            SessionHandler.IsExiting = true;
                             SaveManager.SendSaveToServer();
                         }
                     });

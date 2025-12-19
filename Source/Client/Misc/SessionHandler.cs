@@ -74,7 +74,7 @@ namespace GameClient.Misc
 
         public static TradeMode LastTradeStep { get; set; } = CommonEnumerators.TradeMode.None;
 
-        public static bool IsIntentionalDisconnect { get; set; } = false;
+        public static bool IsExiting { get; set; } = false;
 
         public static void SetValues(ServerGlobalData serverGlobalData)
         {
@@ -115,8 +115,8 @@ namespace GameClient.Misc
             IsSavingGame = false;
             IsUsingScriber = false;
             LastTradeStep = TradeMode.None;
-            IsIntentionalDisconnect = false;
             ChatManager.ShouldScrollChat = true;
+            IsExiting = false;
 
             Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
             Patch_DialogOptions_DoModOptions.executedMessage = false;

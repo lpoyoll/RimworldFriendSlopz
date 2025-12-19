@@ -9,7 +9,7 @@ namespace GameClient.Managers
     {
         public static void HandleDisconnect()
         {
-            if (Current.ProgramState != ProgramState.Entry && !SessionHandler.IsIntentionalDisconnect)
+            if (Current.ProgramState != ProgramState.Entry && !SessionHandler.IsExiting)
             {
                 RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Connection lost. Save game?",
                     delegate { SaveManager.ForceSave(); DisconnectToMenu(); }, delegate { DisconnectToMenu(); }));

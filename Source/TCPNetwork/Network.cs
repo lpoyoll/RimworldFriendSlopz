@@ -14,6 +14,7 @@ namespace TCPNetwork
     public class Network
     {
         public const int PacketLengthSizeInBytes = sizeof(int);
+
         public static string Ip { get; set; } = string.Empty;
 
         public static string Port { get; set; } = string.Empty;
@@ -31,8 +32,6 @@ namespace TCPNetwork
         public virtual Action<ServerClient> OnConnect { get; set; }
 
         public virtual Action<ServerClient> OnDisconnect { get; set; }
-
-        public virtual Action<ServerClient> OnSendFlag { get; set; }
 
         public Listener ClientListener { get; set; } = null;
 

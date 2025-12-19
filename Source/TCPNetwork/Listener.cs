@@ -30,8 +30,6 @@ namespace TCPNetwork
 
         public Action<ServerClient> OnDisconnect { get; set; } = null;
 
-        private Action<ServerClient> OnSendFlag { get; set; } = null;
-
         private Action<object, LogImportanceMode> OnMessage { get; set; } = null;
 
         private Action<object, LogImportanceMode> OnWarning { get; set; } = null;
@@ -65,7 +63,7 @@ namespace TCPNetwork
         };
 
         public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
-            Action<ServerClient> onDisconnect, Action<ServerClient> onSendFlag, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
+            Action<ServerClient> onDisconnect, Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, 
             Action<object, LogImportanceMode> onError, ListenerMode mode)
         {
             this.Connection = connection;
@@ -75,7 +73,6 @@ namespace TCPNetwork
             this.OnMessage = onMessage;
             this.OnWarning = onWarning;
             this.OnError = onError;
-            this.OnSendFlag = onSendFlag;
 
             this.OnReadPacket = onReadPacket;
             this.OnWritePacket = onWritePacket;
@@ -178,7 +175,6 @@ namespace TCPNetwork
                 while (!DisconnectFlag)
                 {
                     Thread.Sleep(1000);
-                    this.OnSendFlag.Invoke(TargetClient);
                     KeepAliveData keepAliveData = new KeepAliveData();
                     EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
                 }

@@ -72,7 +72,7 @@ namespace GameServer.Managers
 
             if (WorldManager.CheckIfWorldExists())
             {
-                if (SaveManager.CheckIfUserHasSave(client)) SaveSenderManager.SendSaveToClient(client);
+                if (SaveManager.CheckIfUserHasSave(client)) SaveManager.SendSaveToClient(client);
                 else WorldManager.SendWorld(client);
             }
 

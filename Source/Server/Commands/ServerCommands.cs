@@ -557,24 +557,7 @@ namespace GameServer.Commands
             Environment.Exit(0);
         }
 
-        public static void QuitCommandAction()
-        {
-            Master.IsClosing = true;
-
-            Printer.Warning($"Waiting for all saves to quit");
-
-            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
-            {
-                CommandData commandData = new CommandData();
-                commandData._commandMode = CommandMode.ForceSave;
-
-                client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
-            }
-
-            while (ServerNetwork.Instance.GetConnectedClientsSafe().Length > 0) Thread.Sleep(1);
-
-            Environment.Exit(0);
-        }
+        public static void QuitCommandAction() { Environment.Exit(0); }
 
         public static void ForceQuitCommandAction() { Environment.Exit(0); }
 

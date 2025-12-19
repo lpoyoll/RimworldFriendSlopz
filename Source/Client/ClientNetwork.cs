@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
+using Verse;
 using static Shared.CommonEnumerators;
 
 namespace GameClient
@@ -45,11 +46,6 @@ namespace GameClient
                 SessionHandler.CurrentNetworkState = ClientNetworkState.Disconnected;
                 Printer.Warning($"Disconnecting from server", LogImportanceMode.Verbose);
             });
-        };
-
-        public override Action<ServerClient> OnSendFlag { get; set; } = delegate (ServerClient client)
-        {
-            if (SessionHandler.IsIntentionalDisconnect) ClientNetwork.Instance.ClientListener.Disconnect();
         };
 
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
@@ -104,7 +100,7 @@ namespace GameClient
             {
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
-                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, OnSendFlag, 
+                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnDisconnect, 
                     OnMessage, OnWarning, OnError, Listener.ListenerMode.Client);
             }
             catch { return false; }
