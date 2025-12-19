@@ -131,9 +131,8 @@ namespace GameClient.Managers
             else saveBytes = File.ReadAllBytes(LatestSavePath);
 
             SaveData data = new SaveData();
-            data._header._stepMode = SaveStepMode.Receive;
+            data._header = new SaveDataHeader(SaveStepMode.Receive, SessionHandler.IsExiting);
             data._fileBytes = GZip.CompressBytes(saveBytes);
-            data._header._forceDisconnect = SessionHandler.IsIntentionalDisconnect;
 
             ClientNetwork.Instance.ClientListener.EnqueueBytes(PacketHeader.SaveManager, data.SerializeSavePacket());
         }

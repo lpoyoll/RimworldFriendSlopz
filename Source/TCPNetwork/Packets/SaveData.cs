@@ -33,8 +33,8 @@ namespace TCPNetwork.Packets
         {
             byte[] result = new byte[3 + (_fileBytes?.Length ?? 0)];
             result[0] = (byte)_header._stepMode;
-            result[1] = (byte)(_header._forceUseSave ? 1 : 0);
-            result[2] = (byte)(_header._forceDisconnect ? 1 : 0);
+            result[1] = (byte)(_header._forceDisconnect ? 1 : 0);
+            result[2] = (byte)(_header._forceUseSave ? 1 : 0);
             if (_fileBytes != null)
             {
                 _fileBytes.CopyTo(result.AsSpan().Slice(3));
