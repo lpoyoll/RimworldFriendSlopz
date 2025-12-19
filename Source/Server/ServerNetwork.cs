@@ -35,8 +35,6 @@ namespace GameServer
             catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
         };
 
-        public override Action<ServerClient> OnSendFlag { get; set; } = delegate (ServerClient client) { };
-
         public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
         {
             Printer.Message(obj, mode);
@@ -96,15 +94,10 @@ namespace GameServer
             TcpClient newTCP = ServerListener.AcceptTcpClient();
 
             ServerClient newServerClient = new ServerClient(newTCP);
-            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnWritePacket, OnDisconnect, OnSendFlag,
+            newServerClient.Listener = new Listener(newServerClient, newTCP, OnReadPacket, OnWritePacket, OnDisconnect,
                 OnMessage, OnWarning, OnError, Listener.ListenerMode.Server);
 
-            if (Master.IsClosing)
-            {
-                newServerClient.Listener.Disconnect();
-            }
-
-            else if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
+            if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
             {
                 LoginManagerH.DenyConnectionWithReason(newServerClient, LoginResponse.Full);
             }

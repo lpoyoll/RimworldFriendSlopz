@@ -1,11 +1,12 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
 using Shared;
-using static Shared.CommonEnumerators;
 using Shared.Files;
-using TCPNetwork.Packets;
-using TCPNetwork.Files.Client;
 using Shared.Files.Sites;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer.Managers
 {
@@ -16,17 +17,20 @@ namespace GameServer.Managers
         {
             SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
 
-            if (data._stepMode == SaveStepMode.Receive) SaveReceiverManager.ReceiveSaveFromClient(client, data);
-            else if (data._stepMode == SaveStepMode.Send) SaveSenderManager.SendSaveToClient(client);
-            else if (data._stepMode == SaveStepMode.Reset) ResetClientSave(client);
-            else ResponseShortcutManager.SendIllegalPacket(client, "Received invalid step mode");
-        }
+            switch (data._stepMode)
+            {
+                case SaveStepMode.Receive:
+                    ReceiveSaveFromClient(client, data);
+                    break;
 
-        public static void OnUserSave(ServerClient client, SaveData fileTransferData)
-        {
-            if (fileTransferData._forceDisconnect) client.Listener.Disconnect();
+                case SaveStepMode.Send:
+                    SendSaveToClient(client);
+                    break;
 
-            InformationDisplayer.DisplaySaveGame(client);
+                case SaveStepMode.Reset:
+                    ResetClientSave(client);
+                    break;
+            }
         }
 
         public static bool CheckIfUserHasSave(ServerClient client)
@@ -79,44 +83,27 @@ namespace GameServer.Managers
 
             InformationDisplayer.DisplayResetPlayer(username);
         }
-    }
 
-    public static class SaveSenderManager
-    {
         public static void SendSaveToClient(ServerClient client)
         {
-            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Username + CommonValues.DefaultSaveFormat);
-
-            InformationDisplayer.DisplayLoadGame(client);
+            string savePath = Path.Combine(Master.SavesPath, client.UserFile.Username + CommonValues.DefaultSaveFormat);
 
             SaveData data = new SaveData();
             data._stepMode = SaveStepMode.Receive;
-            data._fileBytes = File.ReadAllBytes(baseClientSavePath);
+            data._fileBytes = File.ReadAllBytes(savePath);
             if (!Master.ServerConfig.SyncLocalSave) data._forceUseSave = true;
 
+            InformationDisplayer.DisplayLoadGame(client);
             client.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
         }
-    }
 
-    public static class SaveReceiverManager
-    {
         public static void ReceiveSaveFromClient(ServerClient client, SaveData data)
         {
-            string baseClientSavePath = Path.Combine(Master.SavesPath, client.UserFile.Username + CommonValues.DefaultSaveFormat);
-            string tempClientSavePath = Path.Combine(Master.TempPath, client.UserFile.Username + CommonValues.TempSaveFormat);
+            string savePath = Path.Combine(Master.SavesPath, client.UserFile.Username + CommonValues.DefaultSaveFormat);
+            File.WriteAllBytes(savePath, data._fileBytes);
 
-            File.WriteAllBytes(tempClientSavePath, data._fileBytes);
-
-            OnSaveReceived(client, data, baseClientSavePath, tempClientSavePath);
-        }
-
-        private static void OnSaveReceived(ServerClient client, SaveData data, string baseClientSavePath, string tempClientSavePath)
-        {
-            byte[] completedSave = File.ReadAllBytes(tempClientSavePath);
-            File.WriteAllBytes(baseClientSavePath, completedSave);
-            File.Delete(tempClientSavePath);
-
-            SaveManager.OnUserSave(client, data);
+            InformationDisplayer.DisplaySaveGame(client);
+            if (data._forceDisconnect) client.Listener.Disconnect();
         }
     }
 }
