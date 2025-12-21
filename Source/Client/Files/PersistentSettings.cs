@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Shared.Misc;
 
 namespace GameClient.Files
 {
@@ -25,8 +26,21 @@ namespace GameClient.Files
         public static PersistentSettings Load()
         {
             if (!File.Exists(FilePath)) Regenerate();
-
-            return Serializer.SerializeFromFile<PersistentSettings>(FilePath);
+            try
+            {
+                PersistentSettings value = Serializer.SerializeFromFile<PersistentSettings>(FilePath);
+                if (value == null)
+                {
+                    Printer.Error($"Error while parsing existing persistent settings file, was somehow null, returning default value,");
+                    value = new PersistentSettings();
+                }
+                return value;
+            }
+            catch (Exception e)
+            {
+                Printer.Error($"Error while parsing existing persistent settings file, returning default value\n{e}");
+                return new PersistentSettings();
+            }
         }
 
         public static void Regenerate()

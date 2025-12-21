@@ -23,29 +23,35 @@ namespace GameServer.Managers
             client.UserFile = new UserFile();
             client.UserFile.UpdateLoginDetails(data);
 
-            if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);
+            if (UserManagerH.CheckIfUserExists(client, data))
+            {
+                var result = TryLoginUser(client, data);
+                if (!string.IsNullOrEmpty(result))
+                {
+                    Printer.Error($"Error during login: {result}");
+                }
+            }
             else RegisterUser(client, data);
         }
 
-        public static void LoginUser(ServerClient client, LoginData data)
+        public static string TryLoginUser(ServerClient client, LoginData data)
         {
-            if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return;
-            else
-            {
-                client.LoadUserFromFile(client);
+            if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return $"Login details to not match, either the password or username is wrong for {data._username}";
+            
+            client.LoadUserFromFile(client);
 
-                if (UserManagerH.CheckIfUserBanned(client)) return;
+            if (UserManagerH.CheckIfUserBanned(client)) return $"{data._username} is banned";
 
-                if (!UserManagerH.CheckWhitelist(client)) return;
+            if (!UserManagerH.CheckWhitelist(client)) return $"{data._username} is not whitelisted";
 
-                if (WorldManager.CheckIfWorldExists() && ModManager.CheckIfModConflict(client, data)) return;
+            if (WorldManager.CheckIfWorldExists() && ModManager.CheckIfModConflict(client, data)) return $"{data._username} has a mod conflict";
 
-                LoginManagerH.RemoveOldClientSessions(client);
+            LoginManagerH.RemoveOldClientSessions(client);
 
-                InformationDisplayer.DisplayLogin(client);
+            InformationDisplayer.DisplayLogin(client);
 
-                PostLogin(client);
-            }
+            PostLogin(client);
+            return "";
         }
 
         public static void RegisterUser(ServerClient client, LoginData data)
@@ -54,7 +60,11 @@ namespace GameServer.Managers
 
             InformationDisplayer.DisplayRegister(client);
 
-            LoginUser(client, data);
+            var error = TryLoginUser(client, data);
+            if (!string.IsNullOrEmpty(error))
+            {
+                Printer.Error($"Error during login: {error}");
+            }
         }
 
         private static void PostLogin(ServerClient client)
