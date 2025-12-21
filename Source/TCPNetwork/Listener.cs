@@ -40,6 +40,8 @@ namespace TCPNetwork
 
         private bool DisconnectFlag { get; set; } = false;
 
+        private bool IsDisconnecting { get; set; } = false;
+        
         public int CurrentKeepAliveTime { get; set; } = 0;
 
         public static readonly int KeepAliveMaxTime = 30000;
@@ -86,10 +88,14 @@ namespace TCPNetwork
 
         public void EnqueuePacket(PacketHeader header, object obj)
         {
+            if(IsDisconnecting)
+                return;
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
         public void EnqueueBytes(PacketHeader header, byte[] bytes)
         {
+            if(IsDisconnecting)
+                return;
             PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
         }
 
@@ -127,7 +133,7 @@ namespace TCPNetwork
             }
             catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
 
-            Disconnect();
+            DisconnectNow();
         }
 
         private void Write()
@@ -160,12 +166,17 @@ namespace TCPNetwork
                         else OnMessage($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Extreme);
                     }
 
+                    if (IsDisconnecting)
+                    {
+                        DisconnectNow();
+                    }
+                    
                     OnWritePacket(false);
                 }
             }
             catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
 
-            Disconnect();
+            DisconnectNow();
         }
 
         private void SendKAFlag()
@@ -196,7 +207,7 @@ namespace TCPNetwork
             }
             catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
 
-            Disconnect();
+            DisconnectNow();
         }
 
         private void ReadFullPacket(byte[] content)
@@ -215,7 +226,18 @@ namespace TCPNetwork
             catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
         }
 
-        public void Disconnect()
+        /// <summary>
+        /// Empties the packet buffer first
+        /// </summary>
+        public void DisconnectSmooth()
+        {
+            IsDisconnecting = true;
+        }
+        
+        /// <summary>
+        /// Disconnects instantly, all packets not sent yet are lost
+        /// </summary>
+        public void DisconnectNow()
         {
             if (DisconnectFlag) return;
             else

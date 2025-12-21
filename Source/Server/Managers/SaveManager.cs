@@ -38,7 +38,7 @@ namespace GameServer.Managers
         
         public static void OnUserSave(ServerClient client, SaveDataHeader fileTransferData)
         {
-            if (fileTransferData._forceDisconnect) client.Listener.Disconnect();
+            if (fileTransferData._forceDisconnect) client.Listener.DisconnectNow();
                     ResetClientSave(client);
         }
 
@@ -61,7 +61,7 @@ namespace GameServer.Managers
                 return;
             }
 
-            client.Listener.Disconnect();
+            client.Listener.DisconnectNow();
             ResetPlayerData(client, client.UserFile.Username);
         }
 
@@ -69,7 +69,7 @@ namespace GameServer.Managers
         {
             BackupManager.BackupUser(username);
 
-            if (client != null) client.Listener.Disconnect();
+            if (client != null) client.Listener.DisconnectNow();
 
             // Delete save file
             try { File.Delete(Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat)); }
@@ -114,7 +114,7 @@ namespace GameServer.Managers
             }
 
             InformationDisplayer.DisplaySaveGame(client);
-            if (header._forceDisconnect) client.Listener.Disconnect();
+            if (header._forceDisconnect) client.Listener.DisconnectNow();
         }
     }
 }

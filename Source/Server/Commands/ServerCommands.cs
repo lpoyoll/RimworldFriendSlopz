@@ -317,7 +317,7 @@ namespace GameServer.Commands
                 return;
             }
 
-            toFind.Listener.Disconnect();
+            toFind.Listener.DisconnectNow();
             Printer.Warning($"User '{toFind.UserFile.Username}' has been kicked from the server");
         }
 
