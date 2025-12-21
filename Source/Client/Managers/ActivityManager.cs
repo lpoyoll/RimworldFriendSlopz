@@ -60,7 +60,7 @@ namespace GameClient.Managers
         {
             RT_Dialog_Wait.Instance.Close();
 
-            PrepareMap(data._mapFile); 
+            PrepareMap(MapFile.FullyDecompressFromBytes(data._mapFile)); 
         }
 
         private static void OnDeny()

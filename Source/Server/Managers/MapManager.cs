@@ -3,6 +3,7 @@ using GameServer.Misc;
 using Shared;
 using static Shared.CommonEnumerators;
 using Shared.Files;
+using Shared.Misc;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 
@@ -13,23 +14,41 @@ namespace GameServer.Managers
         [HandlesPacket(PacketHeader.MapManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            MapData data = Serializer.ConvertBytesToObject<MapData>(bytes);
-
-            SaveUserMap(client, data._mapFile);
+            MapFileHeader mapHeader = MapFile.FromBytes(bytes, out _);
+            SaveUserMap(client, mapHeader, bytes);
         }
 
-        public static void SaveUserMap(ServerClient client, MapFile file)
+        /// <summary>
+        /// Delete after next version (current version is 25.12.19.1)
+        /// </summary>
+        public static void ClearPreviousMaps()
         {
-            file.Username = client.UserFile.Username;
-            Serializer.ObjectBytesToFile(Path.Combine(Master.MapsPath, file.Tile + CommonValues.DefaultSaveFormat), file);
+            if(!Directory.Exists(Master.MapsPath))
+                return;
+            foreach (var map in Directory.GetFiles(Master.MapsPath))
+            {
+                if (map.EndsWith(".json"))
+                {
+                    File.Delete(map);
+                }
+            }
+            Printer.Error($"Deleted all old map data while migrating to new update, players will need to save at least once for some features to be activated!\n" +
+                            $"This does not affect save files");
+        }
+        
+        public static void SaveUserMap(ServerClient client, MapFileHeader header, byte[] mapBytes)
+        {
+            header.Username = client.UserFile.Username;
+            string path = Path.Combine(Master.MapsPath, header.Tile + CommonValues.MapSaveFormat);
+            File.WriteAllBytes(path, mapBytes);
 
             InformationDisplayer.DisplaySaveMap(client);
         }
 
         public static void DeleteMap(MapFile mapFile)
         {
-            File.Delete(Path.Combine(Master.MapsPath, mapFile.Tile + CommonValues.DefaultSaveFormat));
-            InformationDisplayer.DisplayRemoveMap(mapFile.Tile.ToString());
+            File.Delete(Path.Combine(Master.MapsPath, mapFile.Header.Tile + CommonValues.MapSaveFormat));
+            InformationDisplayer.DisplayRemoveMap(mapFile.Header.Tile.ToString());
         }
 
         public static string[] GetAllMaps()
@@ -44,11 +63,17 @@ namespace GameServer.Managers
             else return false;
         }
 
-        public static MapFile GetMapFromTile(int mapTileToGet)
+        public static MapFileHeader GetMapFromTile(int mapTileToGet, out byte[] allBytes)
         {
-            string path = Path.Combine(Master.MapsPath, mapTileToGet + CommonValues.DefaultSaveFormat);
-            if (File.Exists(path)) return Serializer.FileBytesToObject<MapFile>(path);
-            else return null;
+            
+            string path = Path.Combine(Master.MapsPath, mapTileToGet + CommonValues.MapSaveFormat);
+            if (File.Exists(path))
+            {
+                allBytes = File.ReadAllBytes(path);
+                return MapFile.FromBytes(allBytes, out _);
+            }
+            allBytes = null; 
+            return null;
         }
     }
 }

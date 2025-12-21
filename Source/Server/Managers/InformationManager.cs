@@ -36,9 +36,9 @@ namespace GameServer.Managers
 
         private static void SendWealth(ServerClient client, InformationData data)
         {
-            MapFile mapToFind = MapManager.GetMapFromTile(data._settlementTile);
+            MapFileHeader header = MapManager.GetMapFromTile(data._settlementTile, out _);
 
-            data._settlementWealth = mapToFind != null ? mapToFind.Wealth : -1;
+            data._settlementWealth = header != null ? header.Wealth : -1;
 
             client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
         }
