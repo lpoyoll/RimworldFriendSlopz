@@ -39,9 +39,8 @@ namespace GameServer.Managers
             else
             {
                 data._stepMode = ActivityStepMode.Request;
-                MapManager.GetMapFromTile(data._targetTile, out var bytes);
+                data._mapFile = MapManager.GetMapFromTile(data._targetTile);
 
-                data._mapFile = bytes;
                 client.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }
         }

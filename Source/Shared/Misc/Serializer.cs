@@ -3,7 +3,6 @@ using MessagePack;
 using MessagePack.Resolvers;
 using Newtonsoft.Json;
 using System.IO;
-using System.IO.Compression;
 
 namespace Shared
 {
@@ -29,23 +28,12 @@ namespace Shared
             catch (Exception ex) { throw ex; }
         }
 
-        public static void ConvertObjectToBytes<T>(T toConvert, Stream stream)
-        {
-            MessagePackSerializer.Serialize(stream, toConvert, ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4Block));
-        }
-
         public static T ConvertBytesToObject<T>(byte[] bytes)
         {
             try { return MessagePackSerializer.Deserialize<T>(bytes, ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4Block)); }
             catch (Exception ex) { throw ex; }
         }
 
-        public static T ConvertBytesToObject<T>(Stream stream)
-        {
-            try { return MessagePackSerializer.Deserialize<T>(stream, ContractlessStandardResolver.Options.WithCompression(MessagePackCompression.Lz4Block)); }
-            catch (Exception ex) { throw ex; }
-        }
-        
         // Serialize from and to strings
 
         public static string SerializeToString(object serializable)

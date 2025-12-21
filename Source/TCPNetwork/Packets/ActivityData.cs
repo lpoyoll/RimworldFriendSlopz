@@ -9,7 +9,7 @@ namespace TCPNetwork.Packets
 
         public int _targetTile { get; set; } = -1;
 
-        public byte[] _mapFile { get; set; } = null;
+        public MapFile _mapFile { get; set; } = null;
 
         public override string ToString()
         {

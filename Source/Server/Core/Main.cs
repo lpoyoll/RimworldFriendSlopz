@@ -30,7 +30,7 @@ namespace GameServer.Core
             LoadResources();
 
             MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
-            MapManager.ClearPreviousMaps();
+
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
             ServerBrowserManager.StartFeature();

@@ -17,14 +17,12 @@ namespace GameClient.Misc
             bool factionAnimals, bool nonFactionAnimals)
         {
             MapFile mapFile = new MapFile();
-            mapFile.Header = new MapFileHeader();
-            mapFile.Header.Tile = map.Tile;
 
-            mapFile.Header.SizeX = map.Size.x;
-            mapFile.Header.SizeY = map.Size.y;
-            mapFile.Header.SizeZ = map.Size.z;
+            mapFile.Tile = map.Tile;
 
-            mapFile.Header.Wealth = (int)map.wealthWatcher.WealthTotal;
+            mapFile.Size = ValueParser.IntVec3ToArray(map.Size);
+
+            mapFile.Wealth = (int)map.wealthWatcher.WealthTotal;
 
             mapFile.CurWeatherDefName = map.weatherManager.curWeather.defName;
 
@@ -178,11 +176,10 @@ namespace GameClient.Misc
 
             try
             {
-                var header = mapFile.Header;
-                var size = new IntVec3(header.SizeX, header.SizeY, header.SizeZ);
+                IntVec3 mapSize = ValueParser.ArrayToIntVec3(mapFile.Size);
 
                 PlanetManagerHelper.SetOverrideGenerators();
-                toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(tileToUse, size, null);
+                toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(tileToUse, mapSize, null);
                 PlanetManagerHelper.SetDefaultGenerators();
 
                 return toReturn;

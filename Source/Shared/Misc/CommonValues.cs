@@ -8,8 +8,6 @@ namespace Shared
 
         public static string DefaultSaveFormat { get; set; } = ".json";
 
-        public const string MapSaveFormat = ".Map";
-
         public static string TempSaveFormat { get; set; } = ".temp";
 
         public static string CompressedSaveFormat { get; set; } = ".zip";
