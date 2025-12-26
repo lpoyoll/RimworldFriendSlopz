@@ -24,8 +24,6 @@ cd "Temp"
 
 ::Set mod folder path
 set /p ModFolder=<ModPath.txt
-echo %ModFolder%
-timeout /t 5
 
 ::Go to version folder
 cd "Version"
