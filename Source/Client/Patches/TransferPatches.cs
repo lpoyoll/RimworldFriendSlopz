@@ -79,15 +79,10 @@ namespace GameClient.Patches
 
                 else
                 {
-                    foreach (Pawn pawn in Finder.GetAllPawnsInMap(TradeSession.playerNegotiator.Map).Where(fetch => fetch.Faction == Faction.OfPlayer))
+                    foreach (Thing thing in Finder.GetAllThingsInMap(TradeSession.playerNegotiator.Map))
                     {
-                        if (TradeSession.playerNegotiator == pawn) continue;
-                        else toInvoke.Invoke(__instance, new object[] { pawn, Transactor.Colony });
-                    }
-
-                    foreach (Thing thing in Finder.GetAllThingsInMap(TradeSession.playerNegotiator.Map).Where(fetch => fetch.Faction == Faction.OfPlayer))
-                    {
-                        toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
+                        if (thing is Pawn && thing.Faction == Faction.OfPlayer) toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
+                        else if (thing is not Pawn && thing.def.alwaysHaulable) toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
                     }
 
                     return false;

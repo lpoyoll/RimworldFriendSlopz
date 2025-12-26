@@ -12,12 +12,20 @@ echo - Waiting for RimWorld to safely close...
 echo %DashLine%
 timeout /t 5
 
-::Go to default folder
-cd Mods
-cd 3005289691
-
 ::Go to temp folder
+cd %LOCALAPPDATA%\..\LocalLow
+cd "Ludeon Studios"
+cd "RimWorld by Ludeon Studios"
+cd "RimWorld Together"
 cd "Temp"
+
+::Set mod folder path
+set /p ModFolder=<ModPath.txt
+echo %ModFolder%
+timeout /t 5
+
+::Go to version folder
+cd "Version"
 
 ::Unzip the file
 echo.
@@ -29,10 +37,8 @@ powershell -command "Expand-Archive -Path '3005289691.zip' -DestinationPath '300
 ::Save file location
 set "ExtractedFolder=%cd%/3005289691"
 
-::Go to mods folder
-cd..
-cd..
-echo %cd%
+::Go to mod folder
+cd %ModFolder%\..
 
 ::Move folder to temp place
 move "%ExtractedFolder%" "3005289691-Temp"
