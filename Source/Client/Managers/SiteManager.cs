@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork.Packets;
+using UnityEngine.Tilemaps;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -24,7 +25,7 @@ namespace GameClient.Managers
     {
         public static SiteType[] SiteValues { get; set; }
 
-        public static List<Site> PlayerSites { get; set; } = new List<Site>();
+        public static List<RTSite> PlayerSites { get; set; } = new List<RTSite>();
 
         private static CancellationTokenSource Token { get; set; } = new CancellationTokenSource();
 
@@ -41,16 +42,20 @@ namespace GameClient.Managers
                     OnSiteAccept();
                     break;
 
+                case SiteStepMode.Info:
+                    OnSiteInfo(data._file);
+                    break;
+
                 case SiteStepMode.Build:
-                    SpawnSingleSite(data._file);
+                    OnSiteBuild(data._file);
                     break;
 
                 case SiteStepMode.Destroy:
-                    RemoveSingleSite(data._file);
+                    OnSiteDestroy(data._file);
                     break;
 
                 case SiteStepMode.Rewards:
-                    ReceiveSiteRewards(data._rewardFiles);
+                    OnReceiveRewards(data._rewardFiles);
                     break;
             }
         }
@@ -104,7 +109,7 @@ namespace GameClient.Managers
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
 
-        private static void ReceiveSiteRewards(SiteReward[] files)
+        private static void OnReceiveRewards(SiteReward[] files)
         {
             List<Thing> rewards = new List<Thing>();
             foreach (SiteReward reward in files)
@@ -134,7 +139,7 @@ namespace GameClient.Managers
         {
             foreach (SiteFile toAdd in sites)
             {
-                SpawnSingleSite(toAdd);
+                OnSiteBuild(toAdd);
             }
         }
 
@@ -142,18 +147,16 @@ namespace GameClient.Managers
         {
             PlayerSites.Clear();
 
-            Site[] sites = Find.WorldObjects.Sites.Where(fetch => SessionHandler.PlayerFactions.Contains(fetch.Faction) ||
-                fetch.Faction == Faction.OfPlayer).ToArray();
-
-            foreach (Site toRemove in sites)
+            WorldObject[] toRemove = Find.WorldObjects.AllWorldObjects.Where(fetch => fetch is RTSite).ToArray();
+            foreach (WorldObject wo in toRemove)
             {
                 SiteFile siteFile = new SiteFile();
-                siteFile.Tile = toRemove.Tile;
-                RemoveSingleSite(siteFile);
+                siteFile.Tile = wo.Tile;
+                OnSiteDestroy(siteFile);
             }
         }
 
-        public static void SpawnSingleSite(SiteFile toAdd)
+        public static void OnSiteBuild(SiteFile toAdd)
         {
             if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
             else
@@ -161,10 +164,10 @@ namespace GameClient.Managers
                 try
                 {
                     SitePartDef siteDef = RTSitePartDefs.Defs.First(fetch => fetch.defName == toAdd.Type.DefName);
-                    Site site = SiteMaker.MakeSite(sitePart: siteDef,
-                        tile: toAdd.Tile,
-                        threatPoints: 1000,
-                        faction: PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
+                    RTSite site = (RTSite)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSite"));
+                    site.Tile = toAdd.Tile;
+                    site.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
+                    site.AddPart(new RTSitePart(site, siteDef));
 
                     PlayerSites.Add(site);
                     Find.WorldObjects.Add(site);
@@ -173,11 +176,11 @@ namespace GameClient.Managers
             }
         }
 
-        public static void RemoveSingleSite(SiteFile toRemove)
+        public static void OnSiteDestroy(SiteFile toRemove)
         {
             try
             {
-                Site toGet = Find.WorldObjects.Sites.Find(fetch => fetch.Tile == toRemove.Tile);
+                RTSite toGet = (RTSite)Find.WorldObjects.AllWorldObjects.Find(fetch => fetch.Tile == toRemove.Tile && fetch is RTSite);
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
                     if (PlayerSites.Contains(toGet)) PlayerSites.Remove(toGet);
@@ -193,6 +196,17 @@ namespace GameClient.Managers
             RimworldManager.GenerateLetter("Site built", $"You've built a site!", LetterDefOf.PositiveEvent);
             RT_Dialog_Wait.Instance.Close();
             SaveManager.ForceSave();
+        }
+
+        private static void OnSiteInfo(SiteFile file)
+        {
+            RT_Dialog_Wait.Instance.Close();
+
+            string toDisplay;
+            if (string.IsNullOrEmpty(file.WorkerString)) toDisplay = "No worker!";
+            else toDisplay = "Worker!";
+
+            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("Site Info", new string[] { toDisplay }));
         }
 
         [OnSessionStart]
@@ -227,6 +241,15 @@ namespace GameClient.Managers
         {
             SiteData siteData = new SiteData();
             siteData._stepMode = SiteStepMode.Rewards;
+
+            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+        }
+
+        public static void AskForInformation()
+        {
+            SiteData siteData = new SiteData();
+            siteData._stepMode = SiteStepMode.Info;
+            siteData._file.Tile = SessionHandler.ChosenSite.Tile;
 
             ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
