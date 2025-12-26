@@ -6,6 +6,9 @@ set "DashLine=----------"
 ::Set custom title
 title RimWorld Together - Version Updater
 
+::Set rimworld folder path
+set GameFolder=%CD%
+
 ::Wait for RimWorld safe close
 echo %DashLine%
 echo - Waiting for RimWorld to safely close...
@@ -66,5 +69,5 @@ echo %DashLine%
 timeout /t 10
 
 ::Open game
-cd..
+cd %GameFolder%
 start RimWorldWin64.exe
