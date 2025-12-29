@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using TCPNetwork.Packets;
 using UnityEngine.Tilemaps;
 using Verse;
+using static Mono.Security.X509.X520;
 using static Shared.CommonEnumerators;
 
 
@@ -147,11 +148,10 @@ namespace GameClient.Managers
         {
             PlayerSites.Clear();
 
-            WorldObject[] toRemove = Find.WorldObjects.AllWorldObjects.Where(fetch => fetch is RTSite).ToArray();
-            foreach (WorldObject wo in toRemove)
+            foreach (WorldObject site in Finder.GetAllRTSites())
             {
                 SiteFile siteFile = new SiteFile();
-                siteFile.Tile = wo.Tile;
+                siteFile.Tile = site.Tile;
                 OnSiteDestroy(siteFile);
             }
         }
@@ -180,7 +180,7 @@ namespace GameClient.Managers
         {
             try
             {
-                RTSite toGet = (RTSite)Find.WorldObjects.AllWorldObjects.Find(fetch => fetch.Tile == toRemove.Tile && fetch is RTSite);
+                RTSite toGet = Finder.GetRTSiteFromTile(toRemove.Tile);
                 if (!RimworldManager.CheckIfMapHasPlayerPawns(toGet.Map))
                 {
                     if (PlayerSites.Contains(toGet)) PlayerSites.Remove(toGet);
@@ -202,11 +202,48 @@ namespace GameClient.Managers
         {
             RT_Dialog_Wait.Instance.Close();
 
-            string toDisplay;
-            if (string.IsNullOrEmpty(file.WorkerString)) toDisplay = "No worker!";
-            else toDisplay = "Worker!";
+            Action selectWorker = delegate
+            {
+                Pawn toSend = SessionHandler.ChosenCaravan.PawnsListForReading[RT_Dialog_ListingWithButton.DialogButtonListingResultInt];
 
-            RT_Dialog_Base.PushNewDialog(new RT_Dialog_Message("Site Info", new string[] { toDisplay }));
+                SiteData siteData = new SiteData();
+                siteData._stepMode = SiteStepMode.Worker;
+                siteData._file.Tile = SessionHandler.ChosenSite.Tile;
+                siteData._file.WorkerString = ScribeManager.SerializeToString(toSend, ScribeManager.SerializableType.Thing);
+
+                SessionHandler.ChosenCaravan.RemovePawn(toSend);
+                Find.WorldPawns.RemovePawn(toSend);
+                toSend.Destroy();
+
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            };
+
+            Action retrieveWorker = delegate
+            {
+                Pawn toRetrieve = ScribeManager.SerializeFromString<Pawn>(file.WorkerString, ScribeManager.SerializableType.Pawn);
+                Find.WorldPawns.PassToWorld(toRetrieve, PawnDiscardDecideMode.Decide);
+                SessionHandler.ChosenCaravan.AddPawn(toRetrieve, false);
+
+                SiteData siteData = new SiteData();
+                siteData._stepMode = SiteStepMode.Worker;
+                siteData._file.Tile = SessionHandler.ChosenSite.Tile;
+
+                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            };
+
+            if (file.WorkerString == null)
+            {
+                List<string> contents = new List<string>();
+                foreach (Pawn pawn in SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => ScriberH.CheckIfThingIsHuman(fetch)))
+                {
+                    contents.Add(pawn.LabelCap);
+                }
+
+                string title = "Available pawns";
+                string description = "Choose the pawn you want to send as a worker";
+                RT_Dialog_Base.PushNewDialog(new RT_Dialog_ListingWithButton(title, description, contents.ToArray(), selectWorker, null));
+            }
+            else { RT_Dialog_Base.PushNewDialog(new RT_Dialog_YesNo("Do you want to retrieve the worker from the site?", retrieveWorker)); }
         }
 
         [OnSessionStart]

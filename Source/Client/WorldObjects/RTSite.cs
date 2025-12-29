@@ -61,19 +61,6 @@ namespace GameClient.WorldObjects
         {
             List<Gizmo> gizmoList = new List<Gizmo>();
 
-            Command_Action command_Info = new Command_Action
-            {
-                defaultLabel = "Info",
-                defaultDesc = "Shows if the player is connected",
-                icon = ContentFinder<Texture2D>.Get("Commands/Info"),
-                action = delegate
-                {
-                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait());
-                    SessionHandler.ChosenSite = this;
-                    SiteManager.AskForInformation();
-                }
-            };
-
             Command_Action command_DestroySite = new Command_Action
             {
                 defaultLabel = "Destroy site",
@@ -90,11 +77,30 @@ namespace GameClient.WorldObjects
                 }
             };
 
-            if (Faction == Find.FactionManager.OfPlayer || Faction == SessionHandler.GuildFaction)
+            if (Faction == Find.FactionManager.OfPlayer || Faction == SessionHandler.GuildFaction) gizmoList.Add(command_DestroySite);
+
+            return gizmoList;
+        }
+
+        public override IEnumerable<Gizmo> GetCaravanGizmos(Caravan caravan)
+        {
+            List<Gizmo> gizmoList = new List<Gizmo>();
+
+            Command_Action command_Info = new Command_Action
             {
-                gizmoList.Add(command_DestroySite);
-                gizmoList.Add(command_Info);
-            }
+                defaultLabel = "Info",
+                defaultDesc = "Shows if the player is connected",
+                icon = ContentFinder<Texture2D>.Get("Commands/Worker"),
+                action = delegate
+                {
+                    RT_Dialog_Base.PushNewDialog(new RT_Dialog_Wait());
+                    SessionHandler.ChosenCaravan = caravan;
+                    SessionHandler.ChosenSite = this;
+                    SiteManager.AskForInformation();
+                }
+            };
+
+            if (Faction == Find.FactionManager.OfPlayer || Faction == SessionHandler.GuildFaction) gizmoList.Add(command_Info);
 
             return gizmoList;
         }

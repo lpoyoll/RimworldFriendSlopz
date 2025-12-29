@@ -22,9 +22,9 @@ namespace Shared.Files
 
         public string[] NonFactionThings { get; set; } = null;
 
-        public HumanFile[] FactionHumans { get; set; } = null;
+        public string[] FactionHumans { get; set; } = null;
 
-        public HumanFile[] NonFactionHumans { get; set; } = null;
+        public string[] NonFactionHumans { get; set; } = null;
 
         public string[] FactionAnimals { get; set; } = null;
 

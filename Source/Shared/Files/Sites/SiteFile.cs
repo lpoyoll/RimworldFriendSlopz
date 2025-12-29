@@ -17,7 +17,7 @@ namespace Shared.Files.Sites
 
         public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
 
-        public string WorkerString { get; set; } = string.Empty;
+        public string WorkerString { get; set; } = null;
 
         public SiteType Type { get; set; } = new SiteType();
 

@@ -20,9 +20,9 @@ namespace GameClient.Managers
 
         public static string ScribeNodeName { get; private set; } = "N";
 
-        public enum SerializableType { Thing, Other }
+        public enum SerializableType { Thing, Pawn, Other }
 
-        public static string SerializeToString(object toSave, SerializableType type, int customCount = -1)
+        public static string SerializeToString(object toSave, SerializableType type = SerializableType.Thing, int customCount = -1)
         {
             SessionHandler.IsUsingScriber = true;
 
@@ -78,48 +78,19 @@ namespace GameClient.Managers
                     Thing thing = toLoad as Thing;
                     thing.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
                 }
+
+                else if (type == SerializableType.Pawn)
+                {
+                    Pawn pawn = toLoad as Pawn;
+                    pawn.SetFaction(Faction.OfPlayer);
+                    pawn.guest = new Pawn_GuestTracker();
+                }
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }
 
             SessionHandler.IsUsingScriber = false;
 
             return (T)toLoad;
-        }
-
-        //At some point merge these 2 below into the top functions, beware of ideology
-
-        public static HumanFile HumanToString(Pawn human)
-        {
-            HumanFile humanFile = new HumanFile();
-
-            humanFile.ScribeData = ScribeManager.SerializeToString(human, SerializableType.Thing);
-
-            if (ModsConfig.IdeologyActive)
-            {
-                bool isPlayerIdeo = human.Ideo.initialPlayerIdeo;
-                human.Ideo.initialPlayerIdeo = false;
-                humanFile.IdeologyData = SerializeToString(human.Ideo, SerializableType.Other);
-                human.Ideo.initialPlayerIdeo = isPlayerIdeo;
-            }
-
-            return humanFile;
-        }
-
-        public static Pawn StringtoHuman(HumanFile file)
-        {
-            Pawn pawn = (Pawn)ScribeManager.SerializeFromString<Pawn>(file.ScribeData);
-
-            if (ModsConfig.IdeologyActive)
-            {
-                Ideo ideo = (Ideo)ScribeManager.SerializeFromString<Ideo>(file.IdeologyData);
-
-                Ideo match = Find.IdeoManager.IdeosListForReading.FirstOrDefault(i => 
-                    i.id == ideo.id && i.name == ideo.name && i.description == ideo.description);
-
-                pawn.ideo.SetIdeo(match ?? ideo);
-            }
-
-            return (pawn);
         }
     }
 
