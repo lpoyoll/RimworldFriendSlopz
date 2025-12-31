@@ -88,15 +88,14 @@ namespace TCPNetwork
 
         public void EnqueuePacket(PacketHeader header, object obj)
         {
-            if(IsDisconnecting)
-                return;
-            PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
+            if (IsDisconnecting) return;
+            else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
-        public void EnqueueBytes(PacketHeader header, byte[] bytes)
+
+        public void EnqueuePacket(PacketHeader header, byte[] bytes)
         {
-            if(IsDisconnecting)
-                return;
-            PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
+            if (IsDisconnecting) return;
+            else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
         }
 
         private void Read()
