@@ -106,11 +106,18 @@ namespace GameClient.Misc
         {
             foreach (Thing thing in map.listerThings.AllThings.Where(fetch => ScriberH.CheckIfThingIsHuman(fetch)))
             {
-                try
+                List<string> tempFactionHumans = new List<string>();
+                List<string> tempNonFactionHumans = new List<string>();
+
+                foreach (Thing thing in map.listerThings.AllThings)
                 {
-                    HumanFile humanData = ScribeManager.HumanToString(thing as Pawn);
-                    if (thing.Faction == Faction.OfPlayer && factionHumans) mapFile.FactionHumans.Add(humanData);
-                    else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) mapFile.NonFactionHumans.Add(humanData);
+                    if (ScriberH.CheckIfThingIsHuman(thing))
+                    {
+                        string humanData = ScribeManager.SerializeToString(thing as Pawn, ScribeManager.SerializableType.Thing);
+
+                        if (thing.Faction == Faction.OfPlayer && factionHumans) tempFactionHumans.Add(humanData);
+                        else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) tempNonFactionHumans.Add(humanData);
+                    }
                 }
                 catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
             }
@@ -243,11 +250,11 @@ namespace GameClient.Misc
             {
                 if (factionHumans)
                 {
-                    foreach (HumanFile pawn in mapFile.FactionHumans)
+                    foreach (string pawn in mapFile.FactionHumans)
                     {
                         try
                         {
-                            Pawn human = ScribeManager.StringtoHuman(pawn);
+                            Pawn human = ScribeManager.SerializeFromString<Pawn>(pawn);
                             human.SetFaction(SessionHandler.NeutralFaction);
 
                             GenSpawn.Spawn(human, human.Position, map, human.Rotation);
@@ -258,11 +265,11 @@ namespace GameClient.Misc
 
                 if (nonFactionHumans)
                 {
-                    foreach (HumanFile pawn in mapFile.NonFactionHumans)
+                    foreach (string pawn in mapFile.NonFactionHumans)
                     {
                         try
                         {
-                            Pawn human = ScribeManager.StringtoHuman(pawn);
+                            Pawn human = ScribeManager.SerializeFromString<Pawn>(pawn);
                             GenSpawn.Spawn(human, human.Position, map, human.Rotation);
                         }
                         catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
