@@ -4,7 +4,7 @@ namespace Shared
     {
         public const string MasterServer = "https://rimworldtogether.eragon.dev";
 
-        public static string ExecutableVersion { get; set; } = "25.12.19.1";
+        public static string ExecutableVersion { get; set; } = "dev";
 
         public static string DefaultSaveFormat { get; set; } = ".json";
 

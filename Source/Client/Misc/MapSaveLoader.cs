@@ -106,18 +106,11 @@ namespace GameClient.Misc
         {
             foreach (Thing thing in map.listerThings.AllThings.Where(fetch => ScriberH.CheckIfThingIsHuman(fetch)))
             {
-                List<string> tempFactionHumans = new List<string>();
-                List<string> tempNonFactionHumans = new List<string>();
-
-                foreach (Thing thing in map.listerThings.AllThings)
+                try
                 {
-                    if (ScriberH.CheckIfThingIsHuman(thing))
-                    {
-                        string humanData = ScribeManager.SerializeToString(thing as Pawn, ScribeManager.SerializableType.Thing);
-
-                        if (thing.Faction == Faction.OfPlayer && factionHumans) tempFactionHumans.Add(humanData);
-                        else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) tempNonFactionHumans.Add(humanData);
-                    }
+                    string humanData = ScribeManager.SerializeToString(thing as Pawn, ScribeManager.SerializableType.Thing);
+                    if (thing.Faction == Faction.OfPlayer && factionHumans) mapFile.FactionHumans.Add(humanData);
+                    else if (thing.Faction != Faction.OfPlayer && nonFactionHumans) mapFile.NonFactionHumans.Add(humanData);
                 }
                 catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
             }
