@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork.Packets;
+using TCPNetwork.Packets.Goodwills;
 using UnityEngine.Tilemaps;
 using Verse;
 using static Mono.Security.X509.X520;
@@ -191,6 +192,17 @@ namespace GameClient.Managers
             catch (Exception e) { Printer.Error($"Failed to remove site at {toRemove.Tile}. Reason: {e}"); }
         }
 
+        public static void RecalculateSiteGoodwill(RTSite site, Goodwill goodwill)
+        {
+            SiteFile file = new SiteFile();
+            file.Tile = site.Tile;
+            file.Goodwill = goodwill;
+            file.Type = SiteValues.First(fetch => fetch.DefName == site.MainSitePartDef.defName);
+
+            OnSiteDestroy(file);
+            OnSiteBuild(file);
+        }
+
         private static void OnSiteAccept()
         {
             RimworldManager.GenerateLetter("Site built", $"You've built a site!", LetterDefOf.PositiveEvent);
@@ -204,7 +216,8 @@ namespace GameClient.Managers
 
             Action selectWorker = delegate
             {
-                Pawn toSend = SessionHandler.ChosenCaravan.PawnsListForReading[RT_Dialog_ListingWithButton.DialogButtonListingResultInt];
+                Pawn toSend = SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => ScriberH.CheckIfThingIsHuman(fetch)).ToList()
+                    [RT_Dialog_ListingWithButton.DialogButtonListingResultInt];
 
                 SiteData siteData = new SiteData();
                 siteData._stepMode = SiteStepMode.Worker;
@@ -221,8 +234,7 @@ namespace GameClient.Managers
             Action retrieveWorker = delegate
             {
                 Pawn toRetrieve = ScribeManager.SerializeFromString<Pawn>(file.WorkerString, ScribeManager.SerializableType.Pawn);
-                Find.WorldPawns.PassToWorld(toRetrieve, PawnDiscardDecideMode.Decide);
-                SessionHandler.ChosenCaravan.AddPawn(toRetrieve, false);
+                RimworldManager.PlaceThingIntoCaravan(toRetrieve, SessionHandler.ChosenCaravan);
 
                 SiteData siteData = new SiteData();
                 siteData._stepMode = SiteStepMode.Worker;

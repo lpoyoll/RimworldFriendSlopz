@@ -39,6 +39,12 @@ namespace GameClient.Managers
                     if (customCount != -1) objAsThing.stackCount = customCount;
                 }
 
+                else if (type == SerializableType.Pawn)
+                {
+                    Pawn pawn = toSave as Pawn;
+                    pawn.guest = null;
+                }
+
                 Scribe.saver.InitSaving("", ScribeTreeName);
 
                 Scribe_Deep.Look(ref toSave, ScribeNodeName);
@@ -82,8 +88,11 @@ namespace GameClient.Managers
                 else if (type == SerializableType.Pawn)
                 {
                     Pawn pawn = toLoad as Pawn;
-                    pawn.SetFaction(Faction.OfPlayer);
-                    pawn.guest = new Pawn_GuestTracker();
+                    if (pawn.def.CanHaveFaction)
+                    {
+                        pawn.SetFactionDirect(Faction.OfPlayer);
+                        pawn.guest = null;
+                    }
                 }
             }
             catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Verbose); }

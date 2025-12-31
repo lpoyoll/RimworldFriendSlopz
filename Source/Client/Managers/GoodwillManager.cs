@@ -122,12 +122,7 @@ namespace GameClient.Managers
             {
                 RTSite site = (RTSite)Find.WorldObjects.AllWorldObjects.First(fetch => fetch.Tile == _.Tile && fetch is RTSite);
 
-                SiteFile file = new SiteFile();
-                file.Tile = site.Tile;
-                file.Goodwill = _.Goodwill;
-
-                SiteManager.OnSiteDestroy(file);
-                SiteManager.OnSiteBuild(file);
+                SiteManager.RecalculateSiteGoodwill(site, _.Goodwill);
             }
         }
     }

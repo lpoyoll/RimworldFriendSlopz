@@ -125,8 +125,8 @@ namespace GameServer.Managers
 
         public static void SendRewardsToPlayer(ServerClient client)
         {
-            SiteFile[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username == client.UserFile.Username ||
-                (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)).ToArray();
+            SiteFile[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => (fetch.Username == client.UserFile.Username ||
+                (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)) && !string.IsNullOrEmpty(fetch.WorkerString)).ToArray();
 
             if (availableSites.Length > 0)
             {
