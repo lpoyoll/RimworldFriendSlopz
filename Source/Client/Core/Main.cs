@@ -40,7 +40,7 @@ namespace GameClient.Core
         private static void ApplyHarmonyPatches()
         {
             Harmony harmony = new Harmony(Master.ModID);
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
+            harmony.PatchAllUncategorized(Assembly.GetExecutingAssembly());
         }
 
         private static void PrepareCulture()
