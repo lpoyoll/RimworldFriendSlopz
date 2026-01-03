@@ -229,6 +229,8 @@ namespace GameClient.Managers
                 toSend.Destroy();
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+
+                SaveManager.ForceSave();
             };
 
             Action retrieveWorker = delegate
@@ -241,6 +243,8 @@ namespace GameClient.Managers
                 siteData._file.Tile = SessionHandler.ChosenSite.Tile;
 
                 ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+
+                SaveManager.ForceSave();
             };
 
             if (file.WorkerString == null)
