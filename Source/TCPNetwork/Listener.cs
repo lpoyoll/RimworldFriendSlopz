@@ -133,6 +133,7 @@ namespace TCPNetwork
                     }
                 }
             }
+            catch (ObjectDisposedException e) { OnWarning("Disposed of connection", LogImportanceMode.Extreme); }
             catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
 
             DisconnectNow();
