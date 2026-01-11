@@ -40,13 +40,13 @@ namespace GameClient.Misc
         }
 
         public static Map StringToMap(MapFile mapFile, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, 
-            bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false)
+            bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false, bool enforceIDs = false)
         {
             Map map = SetEmptyMap(mapFile, SessionHandler.ChosenSettlement.Tile);
 
             SetMapTerrain(mapFile, map);
 
-            if (factionThings || nonFactionThings) SetMapThings(mapFile, map, factionThings, nonFactionThings, lessLoot);
+            if (factionThings || nonFactionThings) SetMapThings(mapFile, map, factionThings, nonFactionThings, lessLoot, enforceIDs);
 
             if (factionHumans || nonFactionHumans) SetMapHumans(mapFile, map, factionHumans, nonFactionHumans);
 
@@ -184,7 +184,7 @@ namespace GameClient.Misc
             catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
         }
 
-        private static void SetMapThings(MapFile mapFile, Map map, bool factionThings, bool nonFactionThings, bool lessLoot)
+        private static void SetMapThings(MapFile mapFile, Map map, bool factionThings, bool nonFactionThings, bool lessLoot, bool enforceIDs)
         {
             try
             {
@@ -198,7 +198,7 @@ namespace GameClient.Misc
                     {
                         try
                         {
-                            Thing toGet = (Thing)ScribeManager.SerializeFromString<Thing>(item);
+                            Thing toGet = (Thing)ScribeManager.SerializeFromString<Thing>(item, ScribeManager.SerializableType.Thing, enforceIDs);
 
                             if (lessLoot)
                             {
