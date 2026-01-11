@@ -24,4 +24,8 @@
 	    <HintPath>Assemblies\Newtonsoft.Json.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Files\Network\" />
+	</ItemGroup>
 </Project>
