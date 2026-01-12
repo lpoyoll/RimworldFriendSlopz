@@ -129,12 +129,12 @@ namespace TCPNetwork
                         else OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
                         try { OnReadPacket(header, packetBuffer, TargetClient); }
-                        catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
+                        catch (Exception e) { OnWarning(e, LogImportanceMode.Normal); }
                     }
                 }
             }
             catch (ObjectDisposedException e) { OnWarning("Disposed of connection", LogImportanceMode.Extreme); }
-            catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
+            catch (Exception e) { OnWarning(e, LogImportanceMode.Normal); }
 
             DisconnectNow();
         }
