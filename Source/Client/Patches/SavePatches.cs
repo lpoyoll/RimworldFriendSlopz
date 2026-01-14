@@ -17,7 +17,6 @@ namespace GameClient.Patches
         {
             try
             {
-                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return true;
                 if (SessionHandler.IsSavingGame) return false;
 
                 SessionHandler.IsSavingGame = true;
@@ -40,16 +39,13 @@ namespace GameClient.Patches
                 }
                 catch (Exception e) { Printer.Error("Exception while saving game: " + e); }
 
-                if (SessionHandler.CurrentNetworkState.Equals(ClientNetworkState.Connected))
-                {
-                    Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
-                    MapManager.SendPlayerMapsToServer();
+                Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
+                MapManager.SendPlayerMapsToServer();
 
-                    Printer.Message("Sending save to server", LogImportanceMode.Verbose);
-                    SaveManager.SendSaveToServer();
+                Printer.Message("Sending save to server", LogImportanceMode.Verbose);
+                SaveManager.SendSaveToServer();
 
-                    RT_Dialog_Wait.Instance.Close();
-                }
+                RT_Dialog_Wait.Instance.Close();
             }
             catch (Exception e) { Printer.Error($"{e}"); }
 
