@@ -99,6 +99,13 @@ namespace GameClient.Misc
             catch { }
         }
 
+        [OnUpdate]
+        private static void ForceBackgroundMode()
+        {
+            try { Prefs.RunInBackground = true; }
+            catch { }
+        }
+
         [OnSessionEnd]
         private static void CleanValues()
         {
