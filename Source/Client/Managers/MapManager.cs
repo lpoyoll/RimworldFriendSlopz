@@ -25,7 +25,7 @@ namespace GameClient.Managers
 
         public static void SendMapToServer(Map map)
         {
-            MapFile mapFile = MapSaveLoader.MapToString(map, true, true, true, true, true, true);
+            MapFile mapFile = MapSaveLoader.MapToString(map);
 
             MapData mapData = new MapData();
             mapData._mapTile = mapFile.Tile;
