@@ -7,11 +7,11 @@ namespace Shared
 {
     public static class MethodGatherer
     {
-        public static MethodInfo[] OnStartMethods { get; private set; }
+        public static MethodInfo[] OnStartMethods { get; private set; } = null;
 
-        public static MethodInfo[] OnEndMethods { get; private set; }
+        public static MethodInfo[] OnEndMethods { get; private set; } = null;
 
-        public static MethodInfo[] PerFrameMethods { get; private set; }
+        public static MethodInfo[] PerFrameMethods { get; private set; } = null;
 
         public static void CacheAllMethods(CommonEnumerators.AssemblyType type)
         {
@@ -21,10 +21,6 @@ namespace Shared
                 OnEndMethods = GetSessionEndMethods(GetAllGameTypes());
                 PerFrameMethods = GetPerFrameMethods(GetAllGameTypes());
             }
-            else
-            {
-                // nothing to cache
-            }
         }
 
         private static Type[] GetAllGameTypes()
@@ -33,10 +29,6 @@ namespace Shared
 
             Assembly toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameClient");
             allTypes.AddRange(toUse.GetTypes().ToList());
-
-            //REIMPLEMENT WHEN ADDING SYNCHRONOUS BACK
-            //toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "Synchronous");
-            //allTypes.AddRange(toUse.GetTypes().ToList());
 
             return allTypes.ToArray();
         }

@@ -9,6 +9,7 @@ using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using Shared.Files.Configs.Mods;
 using Shared.Misc;
+using GameServer.Hooks.TCPNetwork;
 
 namespace GameServer.Commands
 {

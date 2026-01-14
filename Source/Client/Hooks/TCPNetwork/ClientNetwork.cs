@@ -17,7 +17,7 @@ using TCPNetwork.Misc;
 using Verse;
 using static Shared.CommonEnumerators;
 
-namespace GameClient
+namespace GameClient.Hooks.TCPNetwork
 {
     public class ClientNetwork : Network
     {
@@ -53,21 +53,6 @@ namespace GameClient
                 SessionHandler.CurrentNetworkState = ClientNetworkState.Disconnected;
                 Printer.Warning($"Disconnecting from server", LogImportanceMode.Verbose);
             });
-        };
-
-        public override Action<object, LogImportanceMode> OnMessage { get; set; } = delegate (object obj, LogImportanceMode mode)
-        {
-            MainThreadHandler.Instance.Enqueue(delegate { Printer.Message(obj, mode); });
-        };
-
-        public override Action<object, LogImportanceMode> OnWarning { get; set; } = delegate (object obj, LogImportanceMode mode)
-        {
-            MainThreadHandler.Instance.Enqueue(delegate { Printer.Warning(obj, mode); });
-        };
-
-        public override Action<object, LogImportanceMode> OnError { get; set; } = delegate (object obj, LogImportanceMode mode)
-        {
-            MainThreadHandler.Instance.Enqueue(delegate { Printer.Error(obj, mode); });
         };
 
         public ClientNetwork()
@@ -107,8 +92,7 @@ namespace GameClient
             {
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
 
-                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnConnect, OnDisconnect, 
-                    OnMessage, OnWarning, OnError, Listener.ListenerMode.Client);
+                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnConnect, OnDisconnect, Listener.ListenerMode.Client);
             }
             catch { return false; }
 

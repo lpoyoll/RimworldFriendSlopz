@@ -3,7 +3,7 @@ using Shared.Misc;
 using System.Text;
 using static Shared.CommonEnumerators;
 
-namespace GameServer
+namespace GameServer.Hooks.Shared
 {
     public static class ServerPrinter
     {
