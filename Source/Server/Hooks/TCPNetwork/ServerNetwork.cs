@@ -97,8 +97,6 @@ namespace GameServer.Hooks.TCPNetwork
 
             else
             {
-                Printer.Warning(client);
-
                 ServerNetwork.Instance.ServerClients.Add(client);
 
                 Main_.ChangeTitle();
