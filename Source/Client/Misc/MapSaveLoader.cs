@@ -1,4 +1,5 @@
-﻿using GameClient.Managers;
+﻿using GameClient.Defs;
+using GameClient.Managers;
 using RimWorld;
 using Shared.Files;
 using Shared.Files.Maps;
@@ -42,7 +43,9 @@ namespace GameClient.Misc
         public static Map StringToMap(MapFile mapFile, bool factionThings, bool nonFactionThings, bool factionHumans, bool nonFactionHumans, 
             bool factionAnimals, bool nonFactionAnimals, bool lessLoot = false, bool enforceIDs = false)
         {
-            Map map = SetEmptyMap(mapFile, mapFile.Tile);
+            SetOverrideGenerators();
+
+            Map map = GetOrGenerateMapUtility.GetOrGenerateMap(mapFile.Tile, ValueParser.ArrayToIntVec3(mapFile.Size), null);
 
             SetMapTerrain(mapFile, map);
 
@@ -130,24 +133,6 @@ namespace GameClient.Misc
                     else if (thing.Faction != Faction.OfPlayer) mapFile.NonFactionAnimals.Add(animalData);
                 }
                 catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
-            }
-        }
-
-        private static Map SetEmptyMap(MapFile mapFile, int tileToUse)
-        {
-            try
-            {
-                PlanetManagerHelper.SetOverrideGenerators();
-                Map toReturn = GetOrGenerateMapUtility.GetOrGenerateMap(tileToUse, ValueParser.ArrayToIntVec3(mapFile.Size), null);
-                PlanetManagerHelper.SetDefaultGenerators();
-
-                return toReturn;
-            }
-
-            catch (Exception e) 
-            { 
-                Printer.Error(e.ToString(), LogImportanceMode.Verbose);
-                return null;
             }
         }
 
@@ -308,6 +293,17 @@ namespace GameClient.Misc
                 map.roofGrid.Drawer.SetDirty();
             }
             catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
+        }
+
+        public static void SetOverrideGenerators()
+        {
+            MapGeneratorDef emptyGenerator = DefDatabase<MapGeneratorDef>.AllDefs.First(fetch => fetch.defName == "Empty");
+
+            WorldObjectDef settlement = RTWorldObjectDefOf.RTSettlement;
+            settlement.mapGenerator = emptyGenerator;
+
+            WorldObjectDef site = RTWorldObjectDefOf.RTSite;
+            site.mapGenerator = emptyGenerator;
         }
     }
 }
