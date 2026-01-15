@@ -63,13 +63,13 @@ namespace GameClient.Patches.Pages
                 }
             }
 
-    //        return codes;
-    //    }
+            return codes;
+        }
 
-    //    private static void Helper()
-    //    {
-    //        SceneManager.LoadScene(0);
-    //        ClientNetwork.Instance.ClientListener.DisconnectNow();
-    //    }
-    //}
+        private static void Helper()
+        {
+            SceneManager.LoadScene(0);
+            ClientNetwork.Instance.ClientListener.DisconnectNow();
+        }
+    }
 }
