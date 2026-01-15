@@ -41,11 +41,7 @@ namespace GameClient.Patches.Pages
             {
                 if (codes[index].operand is string str && str == "Back")
                 {
-                    CodeInstruction[] newInstructions = new CodeInstruction[]{
-                            new(OpCodes.Ldstr, disconnectText) // Swap the text
-                        };
-
-                    TranspilerHelper.CheckIfConnected(ilGenerator, codes, newInstructions, ref index, 3);
+                    codes[index] = new CodeInstruction(OpCodes.Ldstr, disconnectText);
                     break;
                 }
             }
@@ -60,13 +56,9 @@ namespace GameClient.Patches.Pages
                         flag = true;
                         continue;
                     }
-
-                    CodeInstruction[] newInstructions = new CodeInstruction[]
-                    {
-                            new(OpCodes.Call, helper), // Call helper so Nova can read it
-                            new(OpCodes.Ret) // Return
-                    };
-                    TranspilerHelper.CheckIfConnected(ilGenerator, codes, newInstructions, ref index, 0);
+                    codes.InsertRange(index,  [
+                    new(OpCodes.Call, helper),
+                    new (OpCodes.Ret)]);
                     break;
                 }
             }
