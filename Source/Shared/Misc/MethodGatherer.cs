@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static Shared.CommonEnumerators;
 
 namespace Shared
 {
@@ -14,19 +15,13 @@ namespace Shared
 
         public static MethodInfo[] PerFrameMethods { get; private set; } = null;
 
-        public static MethodInfo[] OnEndMethods { get; private set; }
-
-        public static MethodInfo[] PerFrameMethods { get; private set; }
-
         public static MethodInfo[] OnSynchronousStartMethods { get; private set; }
 
         public static MethodInfo[] OnSynchronousEndMethods { get; private set; }
 
-        public enum AssemblyType { Client, Server }
-
         public static void CacheAllMethods(AssemblyType type)
         {
-            if (type == CommonEnumerators.AssemblyType.Client)
+            if (type == AssemblyType.Client)
             {
                 OnStartMethods = GetSessionStartMethods(GetAllGameTypes());
                 OnEndMethods = GetSessionEndMethods(GetAllGameTypes());
