@@ -1,4 +1,5 @@
 ﻿using Shared;
+using Shared.Misc;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -30,12 +31,6 @@ namespace TCPNetwork
 
         public Action<ServerClient> OnDisconnect { get; set; } = null;
 
-        private Action<object, LogImportanceMode> OnMessage { get; set; } = null;
-
-        private Action<object, LogImportanceMode> OnWarning { get; set; } = null;
-
-        private Action<object, LogImportanceMode> OnError { get; set; } = null;
-
         private ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
 
         private bool DisconnectFlag { get; set; } = false;
@@ -65,16 +60,11 @@ namespace TCPNetwork
         };
 
         public Listener(ServerClient clientToUse, TcpClient connection, Action<PacketHeader, byte[], ServerClient> onReadPacket, Action<bool> onWritePacket, 
-            Action<ServerClient> onConnect, Action<ServerClient> onDisconnect, Action<object, LogImportanceMode> onMessage, 
-            Action<object, LogImportanceMode> onWarning, Action<object, LogImportanceMode> onError, ListenerMode mode)
+            Action<ServerClient> onConnect, Action<ServerClient> onDisconnect, ListenerMode mode)
         {
             this.Connection = connection;
             this.TargetClient = clientToUse;
             this.Stream = connection.GetStream();
-
-            this.OnMessage = onMessage;
-            this.OnWarning = onWarning;
-            this.OnError = onError;
 
             this.OnReadPacket = onReadPacket;
             this.OnWritePacket = onWritePacket;
@@ -94,7 +84,7 @@ namespace TCPNetwork
             else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
 
-        public void EnqueuePacket(PacketHeader header, byte[] bytes)
+        public void EnqueueBytes(PacketHeader header, byte[] bytes)
         {
             if (IsDisconnecting) return;
             else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
@@ -106,6 +96,7 @@ namespace TCPNetwork
             {
                 byte[] headerBuffer = new byte[sizeof(PacketHeader)];
                 byte[] lengthBuffer = new byte[Network.PacketLengthSizeInBytes];
+
                 while (!DisconnectFlag)
                 {
                     Thread.Sleep(1);
@@ -124,15 +115,16 @@ namespace TCPNetwork
                         var packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
                         ReadFullPacket(packetBuffer);
 
-                        if (!IgnoreLogPackets.Contains(header)) OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
-                        else OnMessage($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
+                        if (!IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
+                        else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
                         try { OnReadPacket(header, packetBuffer, TargetClient); }
-                        catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
+                        catch (Exception e) { Printer.Warning(e, LogImportanceMode.Normal); }
                     }
                 }
             }
-            catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
+            catch (ObjectDisposedException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
+            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Normal); }
 
             DisconnectNow();
         }
@@ -163,8 +155,8 @@ namespace TCPNetwork
                         Stream.Write(packetData.Value, 0, packetData.Value.Length);
 
                         //Log the packet data
-                        if (!IgnoreLogPackets.Contains((PacketHeader)(packetData.Key))) OnMessage($"[Packet] Sent packet > {(PacketHeader)(packetData.Key)}", LogImportanceMode.Verbose);
-                        else OnMessage($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Extreme);
+                        if (!IgnoreLogPackets.Contains((PacketHeader)(packetData.Key))) Printer.Message($"[Packet] Sent packet > {(PacketHeader)(packetData.Key)}", LogImportanceMode.Verbose);
+                        else Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Extreme);
                     }
 
                     if (IsDisconnecting)
@@ -175,7 +167,7 @@ namespace TCPNetwork
                     OnWritePacket(false);
                 }
             }
-            catch (Exception e) { OnWarning(e, LogImportanceMode.Extreme); }
+            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Extreme); }
 
             DisconnectNow();
         }
@@ -191,7 +183,7 @@ namespace TCPNetwork
                     EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
                 }
             }
-            catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
+            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
         }
 
         private void CheckKAFlag()
@@ -206,7 +198,7 @@ namespace TCPNetwork
                     else break;
                 }
             }
-            catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
+            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
 
             DisconnectNow();
         }
@@ -224,16 +216,13 @@ namespace TCPNetwork
                     readBytes += read;
                 }
             }
-            catch (Exception e) { OnWarning(e, LogImportanceMode.Verbose); }
+            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
         }
 
         /// <summary>
         /// Empties the packet buffer first
         /// </summary>
-        public void DisconnectSmooth()
-        {
-            IsDisconnecting = true;
-        }
+        public void DisconnectSmooth() { IsDisconnecting = true; }
         
         /// <summary>
         /// Disconnects instantly, all packets not sent yet are lost

@@ -10,6 +10,7 @@ using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using Shared.Details.Planet;
 using GameClient.Misc;
+using GameClient.Hooks.TCPNetwork;
 
 namespace GameClient.Patches
 {
@@ -50,8 +51,7 @@ namespace GameClient.Patches
             [HarmonyPostfix]
             public static void DoPost(float pollutionAmount)
             {
-                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-                else if (!SessionHandler.CurrentActionValues.EnablePollutionSpread) return;
+                if (!SessionHandler.CurrentActionValues.EnablePollutionSpread) return;
                 else if (addedByServer) addedByServer = false;
                 else
                 {

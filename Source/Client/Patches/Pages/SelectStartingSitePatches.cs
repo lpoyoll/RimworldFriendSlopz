@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
@@ -72,8 +73,6 @@ namespace GameClient.Patches.Pages
             [HarmonyPostfix]
             public static void DoPost()
             {
-                if (SessionHandler.CurrentNetworkState == ClientNetworkState.Disconnected) return;
-
                 if (!SessionHandler.IsGeneratingFreshWorld)
                 {
                     WorldManager.SetPlanetFeatures();

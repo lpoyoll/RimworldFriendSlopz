@@ -7,7 +7,10 @@ using Shared.Files.Guilds;
 using System.Globalization;
 using System.Reflection;
 using Shared.Misc;
+using TCPNetwork.Misc;
 using static Shared.CommonEnumerators;
+using GameServer.Hooks.TCPNetwork;
+using GameServer.Hooks.Shared;
 
 namespace GameServer.Core
 {
@@ -29,7 +32,7 @@ namespace GameServer.Core
             SetCulture();
             LoadResources();
 
-            MethodGatherer.CacheAllMethods(MethodGatherer.AssemblyType.Server);
+            PacketCache.CacheAllPacketsInAppDomain(AssemblyType.Server);
 
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
