@@ -5,6 +5,7 @@ using Shared;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Files.Client;
 using Shared.Misc;
+using GameServer.Hooks.TCPNetwork;
 
 namespace GameServer.Managers
 {
