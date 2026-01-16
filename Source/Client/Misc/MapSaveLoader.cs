@@ -6,6 +6,7 @@ using Shared.Files.Maps;
 using Shared.Misc;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography;
 using Verse;
@@ -45,15 +46,11 @@ namespace GameClient.Misc
 
             SetMapTerrain(mapFile, map);
 
-            if (factionThings || nonFactionThings) SetMapThings(mapFile, map, factionThings, nonFactionThings, lessLoot, enforceIDs);
+            SetMapThings(mapFile, map, factionThings, nonFactionThings, lessLoot, enforceIDs);
 
-            if (factionPawns || nonFactionPawns) SetMapPawns(mapFile, map, factionPawns, nonFactionPawns, enforceIDs);
+            SetMapPawns(mapFile, map, factionPawns, nonFactionPawns, enforceIDs);
 
-            SetWeather(mapFile, map);
-
-            SetFog(map);
-
-            SetRoofs(map);
+            PostGenerationSteps(mapFile, map);
 
             return map;
         }
@@ -225,16 +222,14 @@ namespace GameClient.Misc
             catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
         }
 
-        private static void SetFog(Map map)
-        {
-            try { FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map); }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
-        }
-
-        private static void SetRoofs(Map map)
+        private static void PostGenerationSteps(MapFile mapFile, Map map)
         {
             try
             {
+                map.weatherManager.TransitionTo(DefDatabase<WeatherDef>.AllDefs.ToList()[mapFile.WeatherByte]);
+
+                FloodFillerFog.FloodUnfog(MapGenerator.PlayerStartSpot, map);
+
                 map.roofCollapseBuffer.Clear();
                 map.roofGrid.Drawer.SetDirty();
             }
