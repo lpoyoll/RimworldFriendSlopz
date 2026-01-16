@@ -212,16 +212,6 @@ namespace GameClient.Misc
             }
         }
 
-        private static void SetWeather(MapFile mapFile, Map map)
-        {
-            try
-            {
-                WeatherDef weatherDef = DefDatabase<WeatherDef>.AllDefs.ToList()[mapFile.WeatherByte];
-                map.weatherManager.TransitionTo(weatherDef);
-            }
-            catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
-        }
-
         private static void PostGenerationSteps(MapFile mapFile, Map map)
         {
             try
