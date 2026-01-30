@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using GameClient.Managers;
-using GameClient.Misc;
+﻿using System.Reflection;
 using HarmonyLib;
-using Rimworld_Together_Master_Server.Data;
-using TCPNetwork.Packets;
-using Shared;
 using UnityEngine;
 using Verse;
-using static Shared.CommonEnumerators;
-using Shared.Files.Configs.Mods;
 using GameClient.Hooks.TCPNetwork;
+using TCPNetwork.Packets.ServerBrowser;
 
 namespace GameClient.Dialogs
 {

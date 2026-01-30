@@ -1,9 +1,9 @@
-﻿using System.Net;
+﻿using System.Buffers;
+using System.Buffers.Binary;
+using System.Net;
 using System.Net.Mime;
 using System.Text;
 using GameServer.Core;
-using GameServer.Misc;
-using Rimworld_Together_Master_Server.Data;
 using Shared;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
@@ -11,6 +11,8 @@ using Shared.Files.Configs;
 using TCPNetwork.Files.Client;
 using Shared.Misc;
 using GameServer.Hooks.TCPNetwork;
+using TCPNetwork.Packets.ServerBrowser;
+// ReSharper disable FunctionNeverReturns
 
 namespace GameServer.Managers
 {
@@ -22,16 +24,16 @@ namespace GameServer.Managers
 
         private const int MaxNameLength = 40;
 
-        private const int DelayBetweenRequest = 520000;
-
-        private const int DelayBetweenErrors = 18000000;
-
         private static HttpClientHandler handler = new HttpClientHandler() { UseProxy = false };
 
         private static HttpClient Client = new HttpClient(handler) { DefaultRequestVersion = HttpVersion.Version11 };
         
         private static bool IsRunning { get; set; }= false;
 
+        private static ServerAuth Auth = default;
+
+        private static readonly byte[] TelemetryBuffer = new byte[ServerAuth.PacketSize + Telemetry.PacketSize];
+        
         [HandlesPacket(PacketHeader.ServerBrowserReachability)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
         {
@@ -53,14 +55,13 @@ namespace GameServer.Managers
                     IsRunning = true;
                     Task.Run(async () =>
                     {
+                        await GetServerSecret();
                         while (true)
                         {
-                            bool result = await SendServerInformation();
-                            if (result) await Task.Delay(DelayBetweenRequest);
-                            else await Task.Delay(DelayBetweenErrors);
+                            await SendServerUpdate();
+                            await Task.Delay(ServerBrowserValues.HeartbeatDelay);
                         }
                     });
-                    AppDomain.CurrentDomain.ProcessExit += SendClosureSignalFromApplicationShutdown;
                 }
             }
 
@@ -74,12 +75,11 @@ namespace GameServer.Managers
                 {
                     Task.Run(async () =>
                     {
+                        await GetServerSecret();
                         while (true)
                         {
-                            bool result = await SendServerPlayerCount();
-
-                            if (result) await Task.Delay(DelayBetweenRequest);
-                            else await Task.Delay(DelayBetweenErrors);
+                            await SendServerTelemetry();
+                            await Task.Delay(ServerBrowserValues.HeartbeatDelay);
                         }
                     });
                 }
@@ -175,77 +175,95 @@ namespace GameServer.Managers
             }
             return false;
         }
-        
-        private static async Task<bool> SendServerInformation()
+
+        private static async Task RegisterServer()
         {
-            try
-            {
-                Client.DefaultRequestHeaders.Clear();
-                Client.DefaultRequestHeaders.Add("action", "Add-Server-Browser");
-                ServerInfo info = new ServerInfo()
-                {
-                    _ip = Master.ServerBrowserConfig.PublicEndPoint,
-                    _port = int.Parse(Master.ServerConfig.Port),
-                    _name = Master.ServerConfig.Name,
-                    _description = Master.ServerConfig.Description,
-                    _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
-                    _currentPlayerCount = ServerNetwork.Instance.ServerClients.Count,
-                    _version = CommonValues.ExecutableVersion,
-                    _config = Master.ModConfig
-                };
-
-                HttpResponseMessage response = await Client.PostAsync(CommonValues.MasterServer, 
-                    new StringContent(Serializer.SerializeToString(info), Encoding.UTF8, "application/json"));
-
-                response.EnsureSuccessStatusCode();
-                return true;
-            }
-
-            catch (Exception ex)
-            {
-                Printer.Error($"Error while notifying the Master Server\n {ex}");
-                Printer.Error($"Will retry in 30 minutes");
-                return false;
-            }
-        }
-
-        private static async Task<bool> SendServerPlayerCount() 
-        {
-            try
-            {
-                Client.DefaultRequestHeaders.Clear();
-                Client.DefaultRequestHeaders.Add("action", "Player-Count");
-
-                HttpResponseMessage response = await Client.PostAsync(CommonValues.MasterServer,
-                    new StringContent(ServerNetwork.Instance.ServerClients.Count.ToString()));
-
-                response.EnsureSuccessStatusCode();
-                return true;
-            }
-
-            catch(Exception ex)
-            {
-                Printer.Error(ex, LogImportanceMode.Verbose);
-                return false;
-            }
-        }
-        
-        private static void SendClosureSignalFromApplicationShutdown(object sender, EventArgs e)
-        {
-            SendClosureSignal().Wait();
-        }
-        private static async Task SendClosureSignal() 
-        {
-            Client.DefaultRequestHeaders.Clear();
-            Client.DefaultRequestHeaders.Add("action", "Remove-Server-Browser");
-            ServerInfo info = new ServerInfo()
+            ServerInfo server = new ServerInfo()
             {
                 _ip = Master.ServerBrowserConfig.PublicEndPoint,
                 _port = int.Parse(Master.ServerConfig.Port),
-                _name = Master.ServerConfig.Name
+                _name = Master.ServerConfig.Name,
+                _description = Master.ServerConfig.Description,
+                _maximumPlayerCount = int.Parse(Master.ServerConfig.MaxPlayers),
+                _currentPlayerCount = ServerNetwork.Instance.ServerClients.Count,
+                _version = CommonValues.ExecutableVersion,
+                _config = Master.ModConfig
             };
-            HttpResponseMessage response = await Client.PostAsync(CommonValues.MasterServer,
-                new StringContent(Serializer.SerializeToString(info)));
+            var serializedServerInfo = Serializer.ConvertObjectToBytes(server);
+            byte[] packet = new byte[ServerAuth.PacketSize + serializedServerInfo.Length];
+            var packetSpan = packet.AsSpan();
+            var serverAuth = TelemetryBuffer.AsSpan(0, ServerAuth.PacketSize);
+            serverAuth.CopyTo(packetSpan.Slice(0, ServerAuth.PacketSize));
+            serializedServerInfo.AsSpan().CopyTo(packetSpan.Slice(ServerAuth.PacketSize));
+            HttpResponseMessage response = await Client.PostAsync(ServerBrowserValues.RegisterServerUrl, new ByteArrayContent(packet));
+            response.EnsureSuccessStatusCode();
+        }
+        
+        private static async Task GetServerSecret()
+        {
+            var ip = Master.ServerBrowserConfig.PublicEndPoint;
+            var portStr = Master.ServerConfig.Port;
+            if (!ushort.TryParse(portStr, out var port))
+            {
+                throw new Exception($"Non-numeric port for server: {portStr}");
+            }
+
+            var id = Hasher.GetServerId(ip, port);
+            HttpResponseMessage response = await Client.GetAsync(ServerBrowserValues.GetSecretUrl);
+            response.EnsureSuccessStatusCode();
+            Span<byte> authRaw = await response.Content.ReadAsByteArrayAsync();
+            if (authRaw.Length != sizeof(ulong))
+            {
+                throw new Exception($"Should never happen, packet size miss-match when receiving auth, got {authRaw.Length}");
+            }
+            Auth._secret = BinaryPrimitives.ReadUInt64LittleEndian(authRaw);
+            Auth._id = id;
+
+            Auth.CopyInto(TelemetryBuffer.AsSpan().Slice(0, ServerAuth.PacketSize));
+        }
+        
+        private static async Task SendServerUpdate()
+        {
+            try
+            {
+                PrepareTelemetryIntoBuffer();
+                ByteArrayContent body = new ByteArrayContent(TelemetryBuffer);
+                HttpResponseMessage response = await Client.PostAsync(ServerBrowserValues.UpdateServerUrl, body);
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    if (Master.ServerBrowserConfig.EnableServerBrowser)
+                    {
+                        await RegisterServer();
+                    }
+                    body = new ByteArrayContent(TelemetryBuffer);
+                    response = await Client.PostAsync(ServerBrowserValues.UpdateServerUrl, body);
+                    if (response.StatusCode == HttpStatusCode.Forbidden)
+                    {
+                        Printer.Error($"Fell into forbidden loop, this should never happen.", LogImportanceMode.Verbose);
+                    }
+                    return;
+                }
+                response.EnsureSuccessStatusCode();
+            }
+            catch (Exception ex)
+            {
+                Printer.Error($"Error while notifying the Master Server\n {ex}", LogImportanceMode.Verbose);
+            }
+        }
+
+        private static async Task SendServerTelemetry()
+        {
+            PrepareTelemetryIntoBuffer();
+            ByteArrayContent body = new ByteArrayContent(TelemetryBuffer);
+            HttpResponseMessage response = await Client.PostAsync(ServerBrowserValues.TelemetryServerUrl, body);
+        }
+        
+        
+        private static void PrepareTelemetryIntoBuffer()
+        {
+            var playerCount = ServerNetwork.Instance.ServerClients.Count;
+            var destination = TelemetryBuffer.AsSpan().Slice(ServerAuth.PacketSize);
+            BinaryPrimitives.WriteInt32LittleEndian(destination, playerCount); ;
         }
     }
 }
