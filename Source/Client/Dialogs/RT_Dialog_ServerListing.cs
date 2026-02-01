@@ -46,7 +46,11 @@ namespace GameClient.Dialogs
 
         public override void DoWindowContents(Rect rect)
         {
-            if (FailedToFetchServers) Close();
+            if (FailedToFetchServers)
+            {
+                PushNewDialog(new RT_Dialog_Message("Server Browser", ["Server browser is currently empty"]));
+                Close();
+            }
 
             float centeredX = rect.width / 2;
             float windowDescriptionDif = Text.CalcSize(base.Description).y + StandardMargin;
