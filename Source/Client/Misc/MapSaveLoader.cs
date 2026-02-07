@@ -76,7 +76,6 @@ namespace GameClient.Misc
                         if (roofDef != null) component.RoofByte = (byte)DefDatabase<RoofDef>.AllDefs.FirstIndexOf(fetch => fetch == roofDef);
 
                         mapFile.Tiles.Add(component);
-
                     }
                     catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
                 }
