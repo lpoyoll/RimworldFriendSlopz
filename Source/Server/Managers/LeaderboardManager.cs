@@ -13,7 +13,7 @@ namespace GameServer.Managers
 {
     public static class LeaderboardManager
     {
-        private static float ScoreboardMultiplier = 0.001f;
+        private static float ScoreMultiplier = 0.001f;
 
         [HandlesPacket(PacketHeader.LeaderboardManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header) { SendLeaderboard(client); }
@@ -28,7 +28,7 @@ namespace GameServer.Managers
         public static void UpdateLeaderboard(ServerClient client, MapFile map)
         {
             LeaderboardFile file = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>();
-            double scoreValue = Math.Round(map.Wealth * ScoreboardMultiplier) + 1;
+            double scoreValue = Math.Round(map.Wealth * ScoreMultiplier) + 1;
             
             if (!file.Scores.Keys.Contains(client.UserFile.Username)) file.Scores.Add(client.UserFile.Username, scoreValue);
             else
