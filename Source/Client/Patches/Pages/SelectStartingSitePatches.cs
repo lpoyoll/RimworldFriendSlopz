@@ -69,7 +69,7 @@ namespace GameClient.Patches.Pages
         private static void Helper()
         {
             SceneManager.LoadScene(0);
-            ClientNetwork.Instance.ClientListener.DisconnectNow();
+            ClientNetwork.Instance.ClientListener.Disconnect();
         }
     }
 }

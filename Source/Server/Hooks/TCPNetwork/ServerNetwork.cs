@@ -21,7 +21,7 @@ namespace GameServer.Hooks.TCPNetwork
             PacketCache.ServerMethodDictionary[header](client, buffer, header);
         };
 
-        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
+        public override Action<ServerClient> OnWritePacket { get; set; } = delegate (ServerClient client) { };
 
         public override Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client) { };
 
@@ -81,9 +81,9 @@ namespace GameServer.Hooks.TCPNetwork
         private void ListenForNewClients()
         {
             TcpClient newTCP = ServerListener.AcceptTcpClient();
-
             ServerClient client = new ServerClient(newTCP);
-            client.Listener = new Listener(client, newTCP, OnReadPacket, OnWritePacket, OnConnect, OnDisconnect, Listener.ListenerMode.Server);
+            NetworkRuleset ruleset = new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, OnWritePacket);
+            client.Listener = new Listener(client, newTCP, ruleset, Listener.ListenerMode.Server);
 
             if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
             {

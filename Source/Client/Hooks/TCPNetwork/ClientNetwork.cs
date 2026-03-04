@@ -27,7 +27,7 @@ namespace GameClient.Hooks.TCPNetwork
         {
             Thread.Sleep(250 * (int)ModConfigGetter.CurrentSimulatedLag);
 
-            if (!SessionHandler.IsReadyToPlay && !Listener.BypassReadyPackets.Contains(header)) return;
+            if (!SessionHandler.IsReadyToPlay && !Network.BypassReadyPackets.Contains(header)) return;
             else
             {
                 MainThreadHandler.Instance.Enqueue(delegate
@@ -37,7 +37,7 @@ namespace GameClient.Hooks.TCPNetwork
             }
         };
 
-        public override Action<bool> OnWritePacket { get; set; } = delegate (bool mode) { };
+        public override Action<ServerClient> OnWritePacket { get; set; } = delegate (ServerClient client) { };
 
         public override Action<ServerClient> OnConnect { get; set; } = delegate
         {
@@ -90,8 +90,8 @@ namespace GameClient.Hooks.TCPNetwork
             try
             {
                 TcpClient tcpClient = new TcpClient(Ip, int.Parse(Port));
-
-                ClientListener = new Listener(null, tcpClient, OnReadPacket, OnWritePacket, OnConnect, OnDisconnect, Listener.ListenerMode.Client);
+                NetworkRuleset ruleset = new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, OnWritePacket);
+                ClientListener = new Listener(null, tcpClient, ruleset, Listener.ListenerMode.Client);
             }
             catch { return false; }
 
