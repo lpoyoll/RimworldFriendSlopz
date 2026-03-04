@@ -10,6 +10,7 @@ using static TCPNetwork.Packets.TransferData;
 using static Shared.CommonEnumerators;
 using GameClient.Misc;
 using GameClient.Hooks.TCPNetwork;
+using TCPNetwork;
 
 namespace GameClient.Dialogs
 {
@@ -127,7 +128,7 @@ namespace GameClient.Dialogs
             {
                 SessionHandler.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
 
-                ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.IncomingManifest);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.IncomingManifest);
 
                 TransferManager.GetTransferedItemsToCaravan(ListedThings);
 

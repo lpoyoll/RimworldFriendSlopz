@@ -6,6 +6,7 @@ using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
+using TCPNetwork;
 using UnityEngine.SceneManagement;
 using static Shared.CommonEnumerators;
 
@@ -69,7 +70,7 @@ namespace GameClient.Patches.Pages
         private static void Helper()
         {
             SceneManager.LoadScene(0);
-            ClientNetwork.Instance.ClientListener.Disconnect();
+            Network.ServerEndpoint.Disconnect();
         }
     }
 }

@@ -42,7 +42,7 @@ namespace GameServer.Managers
                 Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat), settlementFile);
 
                 settlementData._stepMode = SettlementStepMode.Add;
-                foreach (ServerClient cClient in ServerNetwork.Instance.GetConnectedClientsSafe())
+                foreach (ServerClient cClient in ServerNetwork.GetConnectedClients())
                 {
                     if (cClient == client) continue;
                     else
@@ -95,7 +95,7 @@ namespace GameServer.Managers
             {
                 settlementData._stepMode = SettlementStepMode.Remove;
 
-                ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.SettlementManager, settlementData, client);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.SettlementManager, settlementData, client);
             }
         }
 

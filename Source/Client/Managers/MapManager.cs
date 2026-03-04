@@ -3,6 +3,7 @@ using GameClient.Misc;
 using Shared;
 using Shared.Files.Maps;
 using Shared.Misc;
+using TCPNetwork;
 using TCPNetwork.Packets;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -32,7 +33,7 @@ namespace GameClient.Managers
             mapData._mapTile = mapFile.Tile;
             mapData._rawData = Serializer.ConvertObjectToBytes(mapFile);
 
-            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.MapManager, mapData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.MapManager, mapData);
         }
     }
 }

@@ -75,7 +75,7 @@ namespace GameServer.Managers
             chatData._usernameColor = client.UserFile.IsAdmin ? ChatColor.Admin : ChatColor.Normal;
             chatData._messageColor = ChatColor.Normal;
 
-            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(client.UserFile.Username, message);
             ChatManagerHelper.ShowChatInConsole(client.UserFile.Username, message);
@@ -89,7 +89,7 @@ namespace GameServer.Managers
             chatData._usernameColor = ChatColor.Discord;
             chatData._messageColor = ChatColor.Discord;
 
-            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(client, message);
             ChatManagerHelper.ShowChatInConsole(client, message, true);
@@ -103,7 +103,7 @@ namespace GameServer.Managers
             chatData._usernameColor = ChatColor.Console;
             chatData._messageColor = ChatColor.Console;
 
-            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(chatData._username, message);
             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
@@ -117,7 +117,7 @@ namespace GameServer.Managers
             chatData._usernameColor = ChatColor.Server;
             chatData._messageColor = ChatColor.Server;
 
-            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
 
             WriteToLogs(chatData._username, message);
             ChatManagerHelper.ShowChatInConsole(chatData._username, message);
@@ -168,7 +168,7 @@ namespace GameServer.Managers
     {
         public static ServerClient GetUserFromName(string username)
         {
-            return ServerNetwork.Instance.GetConnectedClientFromUsername(username);
+            return ServerNetwork.GetConnectedClientFromUsername(username);
         }
 
         public static CommandBase GetCommandFromName(string commandName)

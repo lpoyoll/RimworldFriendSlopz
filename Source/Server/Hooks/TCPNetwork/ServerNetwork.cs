@@ -12,24 +12,22 @@ using TCPNetwork.Misc;
 
 namespace GameServer.Hooks.TCPNetwork
 {
-    public class ServerNetwork : Network
+    public class ServerNetwork
     {
-        public static ServerNetwork Instance { get; private set; } = null;
-
-        public override Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
+        private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
             PacketCache.ServerMethodDictionary[header](client, buffer, header);
         };
 
-        public override Action<ServerClient> OnWritePacket { get; set; } = delegate (ServerClient client) { };
+        private Action<ServerClient> OnWritePacket { get; set; } = delegate (ServerClient client) { };
 
-        public override Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client) { };
+        private Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client) { };
 
-        public override Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
+        private Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
         {
             try
             {
-                Instance.ServerClients.Remove(client);
+                Network.ServerClients.Remove(client);
 
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
@@ -41,63 +39,41 @@ namespace GameServer.Hooks.TCPNetwork
 
         public ServerNetwork()
         {
-            Instance = this;
-            Ip = Master.ServerConfig.IP;
-            Port = Master.ServerConfig.Port;
+            Network.Ip = Master.ServerConfig.IP;
+            Network.Port = Master.ServerConfig.Port;
 
             Task.Run(Setup);
         }
 
-        public void Setup()
+        private void Setup()
         {
             if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
 
             try
             {
-                ServerListener = new TcpListener(IPAddress.Parse(Ip), int.Parse(Port));
-                ServerListener.Start();
+                Network.ServerListener = new TcpListener(IPAddress.Parse(Network.Ip), Network.Port);
+                Network.ServerListener.Start();
             }
-
-            catch (SocketException e)
-            {
-                Printer.Error(
-                    $"Failed to start server on {Ip}:{Port}, try setting the address to your local ip address or '0.0.0.0' on port 25555, {e}");
-            }
-
-            catch (Exception e)
-            {
-                Printer.Error(e);
-            }
-
-            Printer.Warning("Server launched");
-            Printer.Warning($"Listening for users at {Ip}:{Port}");
-            Printer.Warning("Type 'help' to get a list of available commands");
+            catch (Exception e) { Printer.Error(e); }
 
             Main_.ChangeTitle();
+            Printer.Warning("Server launched");
+            Printer.Warning($"Listening for users at {Network.Ip}:{Network.Port}");
+            Printer.Warning("Type 'help' to get a list of available commands");
 
             while (true) ListenForNewClients();
         }
 
         private void ListenForNewClients()
         {
-            TcpClient newTCP = ServerListener.AcceptTcpClient();
-            ServerClient client = new ServerClient(newTCP);
-            NetworkRuleset ruleset = new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, OnWritePacket);
-            client.Listener = new Listener(client, newTCP, ruleset, Listener.ListenerMode.Server);
+            ServerClient client = new ServerClient(Network.ServerListener.AcceptTcpClient(), 
+                new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, OnWritePacket));
 
-            if (ServerNetwork.Instance.GetConnectedClientsSafe().Length >= int.Parse(Master.ServerConfig.MaxPlayers))
-            {
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Full);
-            }
-
-            else if (Master.WorldValues == null && ServerNetwork.Instance.GetConnectedClientsSafe().Length > 0)
-            {
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.NoWorld);
-            }
-
+            if (GetConnectedClients().Length >= Master.ServerConfig.MaxPlayers) LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Full);
+            else if (Master.WorldValues == null && GetConnectedClients().Length > 0) LoginManagerH.DenyConnectionWithReason(client, LoginResponse.NoWorld);
             else
             {
-                ServerNetwork.Instance.ServerClients.Add(client);
+                Network.ServerClients.Add(client);
 
                 Main_.ChangeTitle();
 
@@ -107,20 +83,20 @@ namespace GameServer.Hooks.TCPNetwork
             }
         }
 
-        public ServerClient[] GetConnectedClientsSafe(ServerClient toExclude = null)
+        public static ServerClient[] GetConnectedClients(ServerClient toExclude = null)
         {
-            if (toExclude != null) return ServerNetwork.Instance.ServerClients.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
-            else return ServerNetwork.Instance.ServerClients.ToArray();
+            if (toExclude != null) return Network.ServerClients.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
+            else return Network.ServerClients.ToArray();
         }
 
-        public ServerClient GetConnectedClientFromUsername(string username)
+        public static ServerClient GetConnectedClientFromUsername(string username)
         {
-            return GetConnectedClientsSafe().FirstOrDefault(fetch => fetch.UserFile.Username == username);
+            return GetConnectedClients().FirstOrDefault(fetch => fetch.UserFile.Username == username);
         }
 
-        public void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
+        public static void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
         {
-            foreach (ServerClient client in GetConnectedClientsSafe(toExclude))
+            foreach (ServerClient client in GetConnectedClients(toExclude))
             {
                 client.Listener.EnqueuePacket(header, obj);
             }

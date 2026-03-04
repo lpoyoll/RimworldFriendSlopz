@@ -106,7 +106,7 @@ namespace GameServer.Managers
     {
         public static void RemoveOldClientSessions(ServerClient client)
         {
-            foreach (ServerClient toFind in ServerNetwork.Instance.GetConnectedClientsSafe())
+            foreach (ServerClient toFind in ServerNetwork.GetConnectedClients())
             {
                 if (toFind == client) continue;
                 else

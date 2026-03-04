@@ -4,6 +4,7 @@ using Shared;
 using GameClient.Misc;
 using Shared.Files.Maps;
 using GameClient.Hooks.TCPNetwork;
+using TCPNetwork;
 
 namespace GameClient.Managers
 {
@@ -34,7 +35,7 @@ namespace GameClient.Managers
             data._stepMode = InformationData.InfoStepMode.Connection;
             data._settlementTile = SessionHandler.ChosenSettlement.Tile;
 
-            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.InformationManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.InformationManager, data);
         }
 
         public static void AskForWealth()
@@ -45,7 +46,7 @@ namespace GameClient.Managers
             data._stepMode = InformationData.InfoStepMode.Wealth;
             data._settlementTile = SessionHandler.ChosenSettlement.Tile;
 
-            ClientNetwork.Instance.ClientListener.EnqueuePacket(PacketHeader.InformationManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.InformationManager, data);
         }
 
         public static void ReceiveInformation(InformationData data)

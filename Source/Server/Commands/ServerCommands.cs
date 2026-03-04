@@ -1,15 +1,16 @@
-using Shared;
-using static Shared.CommonEnumerators;
-using static GameServer.Commands.ConsoleCommandActions;
 using GameServer.Core;
+using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.Misc;
+using Shared;
 using Shared.Files;
-using TCPNetwork.Packets;
-using TCPNetwork.Files.Client;
 using Shared.Files.Configs.Mods;
 using Shared.Misc;
-using GameServer.Hooks.TCPNetwork;
+using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
+using static GameServer.Commands.ConsoleCommandActions;
+using static Shared.CommonEnumerators;
 
 namespace GameServer.Commands
 {
@@ -218,9 +219,9 @@ namespace GameServer.Commands
         }
         public static void ListCommandAction()
         {
-            Printer.Title($"Connected players: [{ServerNetwork.Instance.GetConnectedClientsSafe().Count()}]");
+            Printer.Title($"Connected players: [{ServerNetwork.GetConnectedClients().Count()}]");
             Printer.Title("----------------------------------------");
-            foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
+            foreach (ServerClient client in ServerNetwork.GetConnectedClients())
             {
                 Printer.Warning($"{client.CurrentIP} - {client.UserFile.Username}");
             }
@@ -253,7 +254,7 @@ namespace GameServer.Commands
 
             toFind.UpdateAdmin(true);
 
-            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUsername(toFind.Username);
+            ServerClient client = ServerNetwork.GetConnectedClientFromUsername(toFind.Username);
             if (client != null)
             {
                 CommandData commandData = new CommandData();
@@ -289,7 +290,7 @@ namespace GameServer.Commands
             if (CheckIfIsAlready(toFind)) return;
 
             toFind.UpdateAdmin(false);
-            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUsername(toFind.Username);
+            ServerClient client = ServerNetwork.GetConnectedClientFromUsername(toFind.Username);
             if (client != null)
             {
                 CommandData commandData = new CommandData();
@@ -315,7 +316,7 @@ namespace GameServer.Commands
 
         public static void KickCommandAction()
         {
-            ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
+            ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
 
             if (toFind == null)
             {
@@ -372,7 +373,7 @@ namespace GameServer.Commands
 
         public static void EventCommandAction()
         {
-            ServerClient client = ServerNetwork.Instance.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
+            ServerClient client = ServerNetwork.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
 
             if (client == null) Printer.Warning($"User '{ConsoleManager.commandParameters[0]}' was not found");
             else
@@ -401,7 +402,7 @@ namespace GameServer.Commands
             if (toFind == null) Printer.Warning($"Event '{ConsoleManager.commandParameters[0]}' was not found");
             else
             {
-                foreach (ServerClient client in ServerNetwork.Instance.GetConnectedClientsSafe())
+                foreach (ServerClient client in ServerNetwork.GetConnectedClients())
                 {
                     EventData eventData = new EventData();
                     eventData._stepMode = EventStepMode.Receive;
@@ -435,7 +436,7 @@ namespace GameServer.Commands
             commandData._commandMode = CommandMode.Broadcast;
             commandData._details = fullText;
 
-            ServerNetwork.Instance.SendPacketToAllClients(PacketHeader.ConsoleManager, commandData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.ConsoleManager, commandData);
 
             Printer.Title($"Sent broadcast: '{fullText}'");
         }
@@ -509,7 +510,7 @@ namespace GameServer.Commands
 
         public static void ForceSaveCommandAction()
         {
-            ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
+            ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(ConsoleManager.commandParameters[0]);
             if (toFind == null) ThrowUserNotFoundError();
             else
             {
@@ -528,7 +529,7 @@ namespace GameServer.Commands
             if (userFile == null) ThrowUserNotFoundError();
             else
             {
-                ServerClient toFind = ServerNetwork.Instance.GetConnectedClientFromUsername(userFile.Username);
+                ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(userFile.Username);
                 SaveManager.ResetPlayerData(toFind, userFile.Username);
             }
         }
