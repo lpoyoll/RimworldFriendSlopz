@@ -52,9 +52,9 @@ namespace GameClient.Hooks.TCPNetwork
             });
         };
 
-        public ClientNetwork() { StartConnection(); }
+        public ClientNetwork() { Start(); }
 
-        private void StartConnection()
+        private void Start()
         {
             if (TryConnect())
             {
