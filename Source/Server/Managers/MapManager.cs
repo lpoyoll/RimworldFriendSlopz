@@ -21,6 +21,7 @@ namespace GameServer.Managers
         public static void SaveUserMap(ServerClient client, MapData data)
         {
             File.WriteAllBytes(Path.Combine(Master.MapsPath, data._mapTile + CommonValues.DefaultSaveFormat), data._rawData);
+            LeaderboardManager.UpdateLeaderboard(client, data._mapFile);
             InformationDisplayer.DisplaySaveMap(client);
         }
 
