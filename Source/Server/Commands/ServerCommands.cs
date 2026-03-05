@@ -135,10 +135,6 @@ namespace GameServer.Commands
         public static readonly CommandBase SiteRewardsCommand = new CommandBase("forcerewards", 0,
             "Forces every connected user to get site rewards",
             ForceSiteRewardsCommandAction);
-
-        private static readonly CommandBase ToggleVerboseCommand = new CommandBase("toggleverbose", 0,
-            "Toggles extreme verbose and verbose",
-            ToggleVerboseAndExtremeVerboseCommand);
         
         public static List<CommandBase> Commands = new List<CommandBase>
         {
@@ -172,7 +168,6 @@ namespace GameServer.Commands
             WhitelistRemoveCommand,
             DebugGCClearCommand,
             SiteRewardsCommand,
-            ToggleVerboseCommand
         };
     }
 
@@ -600,14 +595,6 @@ namespace GameServer.Commands
                 Printer.Warning($"Since only one person with the username {ConsoleManager.commandParameters[0]} exists, " +
                     $"we were able to fetch his UID automatically: {usersWithMatchingUsername.First().Username}");
             }
-        }
-        
-        public static void ToggleVerboseAndExtremeVerboseCommand()
-        {
-            Master.ServerConfig.VerboseLogs = !Master.ServerConfig.VerboseLogs;
-            Master.ServerConfig.ExtremeVerboseLogs = !Master.ServerConfig.VerboseLogs;
-            Master.ServerConfig.Save();
-            Printer.Warning($"Verbose logging is now {(Master.ServerConfig.VerboseLogs ? "on":"off")}");
         }
     }
 }
