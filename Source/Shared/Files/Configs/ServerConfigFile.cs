@@ -24,22 +24,5 @@ namespace Shared.Files.Configs
         public bool UseUPnP { get; set; } = false;
 
         public bool SyncLocalSave { get; set; } = true;
-
-        public override void Save()
-        {
-            try { Serializer.SerializeToFile(SavePath, this); }
-            catch (Exception e) { throw new Exception(e.ToString()); }
-        }
-
-        public static object Load<T>()
-        {
-            if (File.Exists(SavePath)) return Serializer.SerializeFromFile<T>(SavePath);
-            else
-            {
-                ServerConfigFile file = new ServerConfigFile();
-                Serializer.SerializeToFile(SavePath, file);
-                return file;
-            }
-        }
     }
 }

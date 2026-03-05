@@ -21,13 +21,13 @@ namespace GameServer.Managers
         private static void SendLeaderboard(ServerClient client)
         {
             LeaderboardData data = new LeaderboardData();
-            data._file = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>();
+            data._file = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>(LeaderboardFile.SavePath);
             client.Listener.EnqueuePacket(PacketHeader.LeaderboardManager, data);
         }
 
         public static void UpdateLeaderboard(ServerClient client, MapFile map)
         {
-            LeaderboardFile file = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>();
+            LeaderboardFile file = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>(LeaderboardFile.SavePath);
             double scoreValue = Math.Round(map.Wealth * ScoreMultiplier) + 1;
             
             if (!file.Scores.Keys.Contains(client.UserFile.Username)) file.Scores.Add(client.UserFile.Username, scoreValue);
@@ -44,7 +44,7 @@ namespace GameServer.Managers
                 }
             }
 
-            file.Save();
+            LeaderboardFile.Save(LeaderboardFile.SavePath, file);
         }
     }
 }

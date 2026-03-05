@@ -36,7 +36,7 @@ namespace GameServer.Managers
             else
             {
                 Master.ModConfig = file;
-                Master.ModConfig.Save();
+                ModsConfigFile.Save(ModsConfigFile.SavePath, file);
                 InformationDisplayer.DisplaySetMods(client);
             }
         }
