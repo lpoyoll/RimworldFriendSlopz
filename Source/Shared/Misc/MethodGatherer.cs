@@ -38,8 +38,14 @@ namespace Shared
             Assembly toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameClient");
             allTypes.AddRange(toUse.GetTypes().ToList());
 
-            toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "Synchronous");
-            allTypes.AddRange(toUse.GetTypes().ToList());
+            //Just in case we're not loading the dll for now
+
+            try
+            {
+                toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "Synchronous");
+                allTypes.AddRange(toUse.GetTypes().ToList());
+            }
+            catch { }
 
             return allTypes.ToArray();
         }
