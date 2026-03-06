@@ -30,8 +30,8 @@ namespace GameClient.Managers
             MapFile mapFile = MapSaveLoader.MapToString(map);
 
             MapData mapData = new MapData();
-            mapData._mapFile = mapFile;
             mapData._mapTile = mapFile.Tile;
+            mapData._mapFile.Wealth = mapFile.Wealth;
             mapData._rawData = Serializer.ConvertObjectToBytes(mapFile);
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.MapManager, mapData);
