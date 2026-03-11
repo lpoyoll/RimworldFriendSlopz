@@ -20,7 +20,7 @@ namespace GameClient.PacketManagers
 {
     public static class PM_Settlements
     {
-        public static List<RTSettlement> PlayerSettlements { get; set; } = new List<RTSettlement>();
+        public static List<WO_Settlement> PlayerSettlements { get; set; } = new List<WO_Settlement>();
 
         [HandlesPacket(PacketHeader.SettlementManager)]
         private static void ParsePacket(byte[] bytes)
@@ -64,7 +64,7 @@ namespace GameClient.PacketManagers
             try
             {
                 WorldObjectDef def = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSettlement");
-                RTSettlement settlement = (RTSettlement)WorldObjectMaker.MakeWorldObject(def);
+                WO_Settlement settlement = (WO_Settlement)WorldObjectMaker.MakeWorldObject(def);
                 settlement.Tile = toAdd.Tile;
                 settlement.Name = $"{toAdd.Username}'s settlement";
                 settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
@@ -79,7 +79,7 @@ namespace GameClient.PacketManagers
         {
             try
             {
-                RTSettlement toGet = Finder.GetRTSettlementFromTile(toRemove.Tile);
+                WO_Settlement toGet = Finder.GetRTSettlementFromTile(toRemove.Tile);
                 PlayerSettlements.Remove(toGet); 
                 Find.WorldObjects.Remove(toGet);
                 toGet.Destroy();
@@ -87,7 +87,7 @@ namespace GameClient.PacketManagers
             catch (Exception e) { Printer.Error($"Failed to remove settlement at {toRemove.Tile}. Reason: {e}"); }
         }
 
-        public static void RegenSettlement(RTSettlement _)
+        public static void RegenSettlement(WO_Settlement _)
         {
             SettlementFile file = new SettlementFile();
             file.Tile = _.Tile;

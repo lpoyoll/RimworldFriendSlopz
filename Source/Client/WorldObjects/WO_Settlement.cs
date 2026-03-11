@@ -17,7 +17,7 @@ using static Shared.CommonEnumerators;
 
 namespace GameClient.WorldObjects
 {
-    public class RTSettlement : MapParent
+    public class WO_Settlement : MapParent
     {
         private string nameInt;
 

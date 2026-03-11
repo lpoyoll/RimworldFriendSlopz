@@ -2,7 +2,7 @@
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
-using GameClient.Patches.Tabs;
+using GameClient.Tabs;
 using GameClient.WorldObjects;
 using HarmonyLib;
 using RimWorld;
@@ -176,9 +176,9 @@ namespace GameClient.Patches
             if (Find.WorldSelector.NumSelectedObjects == 0 && Find.WorldSelector.SelectedTile.Valid)
             {
                 __result = PlanetLayer.Selected.Def.Tabs;
-                __result = __result.AddItem(new PlayersUI());
-                __result = __result.AddItem(new BasesUI());
-                __result = __result.AddItem(new SitesUI());
+                __result = __result.AddItem(new TAB_Players());
+                __result = __result.AddItem(new TAB_Bases());
+                __result = __result.AddItem(new TAB_Sites());
             }
 
             return false;

@@ -6,9 +6,9 @@ using System.Linq;
 using GameClient.Managers;
 using GameClient.PacketManagers;
 
-namespace GameClient.Patches.Tabs
+namespace GameClient.Tabs
 {
-    public class ChatTab : MainTabWindow
+    public class TAB_Chat : MainTabWindow
     {
         public override Vector2 RequestedTabSize => new Vector2(800f, 600f);
 
@@ -16,7 +16,7 @@ namespace GameClient.Patches.Tabs
 
         private Vector2 scrollPositionChat = Vector2.zero;
 
-        public ChatTab()
+        public TAB_Chat()
         {
             layer = WindowLayer.GameUI;
 

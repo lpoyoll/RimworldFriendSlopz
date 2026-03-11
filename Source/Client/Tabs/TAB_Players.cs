@@ -6,9 +6,9 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 
-namespace GameClient.Patches.Tabs
+namespace GameClient.Tabs
 {
-    public class PlayersUI : WITab
+    public class TAB_Players : WITab
     {
         private Vector2 scrollPosition;
 
@@ -20,7 +20,7 @@ namespace GameClient.Patches.Tabs
 
         protected override bool StillValid => true;
 
-        public PlayersUI()
+        public TAB_Players()
         {
             size = WinSize;
             labelKey = "Players";
