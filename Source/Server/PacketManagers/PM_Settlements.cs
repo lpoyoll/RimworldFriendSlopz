@@ -1,19 +1,20 @@
 ﻿using GameServer.Core;
-using GameServer.Misc;
-using Shared;
-using static Shared.CommonEnumerators;
-using Shared.Files;
-using TCPNetwork.Packets;
-using TCPNetwork.Files.Client;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
+using GameServer.Misc;
+using Shared;
+using Shared.Files;
+using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer.PacketManager
 {
-    public static class PM_Settlements
+    public class PM_Settlements : PM_Base
     {
         [HandlesPacket(PacketHeader.SettlementManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PlayerSettlementData data = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
 

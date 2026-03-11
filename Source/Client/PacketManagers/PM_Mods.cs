@@ -1,27 +1,29 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Managers;
 using GameClient.Misc;
-using TCPNetwork.Packets;
 using RimWorld;
 using Shared;
+using Shared.Files.Configs.Mods;
+using Shared.Misc;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
 using Verse;
 using Verse.Steam;
 using static Shared.CommonEnumerators;
-using static UnityEngine.GraphicsBuffer;
 using static Shared.Files.Configs.Mods.ModsConfigFile;
-using Shared.Files.Configs.Mods;
-using Shared.Misc;
-using GameClient.Managers;
+using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient.PacketManagers
 {
-    public static class PM_Mods
+    public class PM_Mods : PM_Base
     {
         [HandlesPacket(PacketHeader.ModManager)]
-        private static void ParsePacket(byte[] bytes)
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
 
@@ -66,7 +68,7 @@ namespace GameClient.PacketManagers
         }
     }
 
-    public static class ModManagerH
+    public class ModManagerH
     {
         public static ModsConfigFile GetRunningModList()
         {

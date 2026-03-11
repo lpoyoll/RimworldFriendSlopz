@@ -13,10 +13,10 @@ using TCPNetwork.Packets.Goodwills;
 
 namespace GameClient.PacketManagers
 {
-    public static class PM_Leaderboard
+    public class PM_Leaderboard : PM_Base
     {
         [HandlesPacket(PacketHeader.LeaderboardManager)]
-        private static void ParsePacket(byte[] bytes) 
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) 
         {
             LeaderboardData data = Serializer.ConvertBytesToObject<LeaderboardData>(bytes);
             DisplayLeaderboard(data._file); 

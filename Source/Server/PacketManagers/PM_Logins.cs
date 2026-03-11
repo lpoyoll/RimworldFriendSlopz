@@ -1,19 +1,20 @@
 using GameServer.Core;
-using GameServer.Misc;
-using TCPNetwork.Packets;
-using Shared;
-using static Shared.CommonEnumerators;
-using TCPNetwork.Files.Client;
-using Shared.Misc;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
+using GameServer.Misc;
+using Shared;
+using Shared.Misc;
+using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer.PacketManager
 {
-    public static class PM_Logins
+    public class PM_Logins : PM_Base
     {
         [HandlesPacket(PacketHeader.LoginManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             LoginData data = Serializer.ConvertBytesToObject<LoginData>(bytes);
 
@@ -75,7 +76,7 @@ namespace GameServer.PacketManager
 
             UserManager.SendPlayerRecount();
 
-            PM_GlobalData.SendServerGlobalData(client);
+            GlobalDataManager.SendServerGlobalData(client);
 
             foreach (string str in PM_Chat.DefaultJoinMessages) PM_Chat.SendConsoleMessage(client, str);
 
@@ -103,7 +104,7 @@ namespace GameServer.PacketManager
         }
     }
 
-    public static class LoginManagerH
+    public class LoginManagerH
     {
         public static void RemoveOldClientSessions(ServerClient client)
         {

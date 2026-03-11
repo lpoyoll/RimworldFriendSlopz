@@ -9,7 +9,6 @@ using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork.Files.Client;
-using TCPNetwork.Misc;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;

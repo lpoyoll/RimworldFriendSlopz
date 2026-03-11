@@ -1,18 +1,18 @@
 using GameServer.Commands;
 using GameServer.Core;
+using GameServer.Hooks.TCPNetwork;
 using GameServer.Misc;
 using Shared;
-using System.Text;
-using static Shared.CommonEnumerators;
-using TCPNetwork.Packets;
-using TCPNetwork.Files.Client;
 using Shared.Misc;
-using GameServer.Hooks.TCPNetwork;
+using System.Text;
+using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer.PacketManager
 {
-
-    public static class PM_Chat
+    public class PM_Chat : PM_Base
     {
         private static Semaphore LogSemaphore = new Semaphore(1, 1);
 
@@ -38,7 +38,7 @@ namespace GameServer.PacketManager
         };
 
         [HandlesPacket(PacketHeader.ChatManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             ChatData data = Serializer.ConvertBytesToObject<ChatData>(bytes);
 
@@ -164,7 +164,7 @@ namespace GameServer.PacketManager
         }
     }
 
-    public static class ChatManagerHelper
+    public class ChatManagerHelper
     {
         public static ServerClient GetUserFromName(string username)
         {

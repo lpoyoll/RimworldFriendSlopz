@@ -1,16 +1,17 @@
-﻿using TCPNetwork.Packets;
+﻿using GameServer.Hooks.TCPNetwork;
 using Shared;
 using Shared.Files;
-using TCPNetwork.Files.Client;
 using Shared.Files.Maps;
-using GameServer.Hooks.TCPNetwork;
+using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
 
 namespace GameServer.PacketManager
 {
-    public static class PM_Information
+    public class PM_Information : PM_Base
     {
         [HandlesPacket(PacketHeader.InformationManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             InformationData data = Serializer.ConvertBytesToObject<InformationData>(bytes);
 

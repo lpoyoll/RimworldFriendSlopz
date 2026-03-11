@@ -5,13 +5,14 @@ using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using GameServer.Managers;
+using TCPNetwork;
 
 namespace GameServer.PacketManager
 {
-    public static class PM_Activity
+    public class PM_Activity : PM_Base
     {
         [HandlesPacket(PacketHeader.ActivityManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!Master.ActionConfigs.ActivityAction.IsEnabled)
             {

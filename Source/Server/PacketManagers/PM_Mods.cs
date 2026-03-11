@@ -1,20 +1,20 @@
 ﻿using GameServer.Core;
+using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
-using static Shared.CommonEnumerators;
-using TCPNetwork.Packets;
-using TCPNetwork.Files.Client;
 using Shared.Files.Configs.Mods;
 using Shared.Misc;
-using GameServer.Managers;
+using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
 
 namespace GameServer.PacketManager
 {
-
-    public static class PM_Mods
+    public class PM_Mods : PM_Base
     {
         [HandlesPacket(PacketHeader.ModManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
 

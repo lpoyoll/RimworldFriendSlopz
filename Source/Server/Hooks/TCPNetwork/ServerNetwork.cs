@@ -1,15 +1,15 @@
 ﻿using GameServer.Core;
 using GameServer.Managers;
 using GameServer.Misc;
-using TCPNetwork;
+using GameServer.PacketManager;
 using Shared;
+using Shared.Misc;
 using System.Net;
 using System.Net.Sockets;
-using static Shared.CommonEnumerators;
+using System.Reflection;
+using TCPNetwork;
 using TCPNetwork.Files.Client;
-using Shared.Misc;
-using TCPNetwork.Misc;
-using GameServer.PacketManager;
+using static Shared.CommonEnumerators;
 
 namespace GameServer.Hooks.TCPNetwork
 {
@@ -17,7 +17,8 @@ namespace GameServer.Hooks.TCPNetwork
     {
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            PacketCache.ServerMethodDictionary[header](client, buffer, header);
+            MethodInfo method = (MethodInfo)MethodGatherer.ServerMethodDictionary[header][1];
+            method.Invoke(MethodGatherer.ServerMethodDictionary[header][0], new object[] { client, buffer, header });
         };
 
         private Action<ServerClient> OnWritePacket { get; set; } = delegate (ServerClient client) { };

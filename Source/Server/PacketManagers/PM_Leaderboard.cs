@@ -6,17 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 
 namespace GameServer.PacketManager
 {
-    public static class PM_Leaderboard
+    public class PM_Leaderboard : PM_Base
     {
         private static float ScoreMultiplier = 0.001f;
 
         [HandlesPacket(PacketHeader.LeaderboardManager)]
-        private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header) { SendLeaderboard(client); }
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) { SendLeaderboard(client); }
 
         private static void SendLeaderboard(ServerClient client)
         {

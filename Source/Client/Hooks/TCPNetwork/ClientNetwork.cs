@@ -8,12 +8,12 @@ using Shared.Misc;
 using System;
 using System.Linq;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
-using TCPNetwork.Misc;
 using Verse;
 using static Shared.CommonEnumerators;
 
@@ -30,7 +30,8 @@ namespace GameClient.Hooks.TCPNetwork
             {
                 MainThreadHandler.Instance.Enqueue(delegate
                 {
-                    PacketCache.ClientMethodDictionary[header](buffer);
+                    MethodInfo method = (MethodInfo)MethodGatherer.ClientMethodDictionary[header][1];
+                    method.Invoke(MethodGatherer.ClientMethodDictionary[header][0], new object[] { client, buffer, header });
                 });
             }
         };
