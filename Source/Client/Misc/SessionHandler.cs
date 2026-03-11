@@ -1,5 +1,6 @@
 using GameClient.Defs;
 using GameClient.Managers;
+using GameClient.PacketManagers;
 using GameClient.Patches.Pages;
 using GameClient.WorldObjects;
 using RimWorld;
@@ -140,7 +141,7 @@ namespace GameClient.Misc
             IsSavingGame = false;
             IsUsingScriber = false;
             LastTradeStep = TradeMode.None;
-            ChatManager.ShouldScrollChat = true;
+            PM_Chat.ShouldScrollChat = true;
             IsExiting = false;
             IsSynchronousHost = false;
             SynchronousMap = null;

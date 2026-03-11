@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using GameClient.Managers;
 using GameClient.Misc;
+using GameClient.PacketManagers;
 using GameClient.WorldObjects;
 using RimWorld.Planet;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            tabTitle = $"Player Bases [{SettlementManager.PlayerSettlements.Count()}]";
+            tabTitle = $"Player Bases [{PM_Settlements.PlayerSettlements.Count()}]";
 
             float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -44,7 +45,7 @@ namespace GameClient.Patches.Tabs
 
         private void GenerateList(Rect mainRect)
         {
-            var orderedDictionary = SettlementManager.PlayerSettlements.OrderBy(x => x.Name);
+            var orderedDictionary = PM_Settlements.PlayerSettlements.OrderBy(x => x.Name);
 
             float height = 6f + orderedDictionary.Count() * 30f;
             Rect viewRect = new Rect(mainRect.x, mainRect.y, mainRect.width - 16f, height);
@@ -102,7 +103,7 @@ namespace GameClient.Patches.Tabs
                     {
                         SessionHandler.ChosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(Goodwill.Enemy,
+                        PM_Goodwills.TryRequestGoodwill(Goodwill.Enemy,
                             GoodwillTarget.Settlement);
 
                         break;
@@ -118,7 +119,7 @@ namespace GameClient.Patches.Tabs
                     {
                         SessionHandler.ChosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(Goodwill.Neutral,
+                        PM_Goodwills.TryRequestGoodwill(Goodwill.Neutral,
                             GoodwillTarget.Settlement);
 
                         break;
@@ -134,7 +135,7 @@ namespace GameClient.Patches.Tabs
                     {
                         SessionHandler.ChosenSettlement = settlement;
 
-                        GoodwillManager.TryRequestGoodwill(Goodwill.Ally,
+                        PM_Goodwills.TryRequestGoodwill(Goodwill.Ally,
                             GoodwillTarget.Settlement);
 
                         break;

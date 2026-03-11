@@ -1,4 +1,5 @@
 ﻿using GameClient.Managers;
+using GameClient.PacketManagers;
 using RimWorld.Planet;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace GameClient.Patches.Tabs
 
         protected override void FillTab()
         {
-            tabTitle = $"Players Online [{RecountManager.CurrentPlayers}]";
+            tabTitle = $"Players Online [{PM_Recount.CurrentPlayers}]";
 
             float horizontalLineDif = Text.CalcSize(tabTitle).y + 3f + 10f;
 
@@ -42,7 +43,7 @@ namespace GameClient.Patches.Tabs
 
         private void GenerateList(Rect mainRect)
         {
-            List<string> orderedList = RecountManager.CurrentPlayerNames;
+            List<string> orderedList = PM_Recount.CurrentPlayerNames;
             orderedList.Sort();
 
             float height = 6f + orderedList.Count() * 30f;

@@ -1,0 +1,60 @@
+﻿using GameClient.Hooks.TCPNetwork;
+using HarmonyLib;
+using System.Reflection;
+using TCPNetwork;
+using TCPNetwork.Packets.ServerBrowser;
+using UnityEngine;
+using Verse;
+
+namespace GameClient.Dialogs
+{
+    public class DLG_ServerListingInfo : Window
+    {
+        public override Vector2 InitialSize => new Vector2(600f, 250f);
+
+        private static FieldInfo ModsConfigData;
+
+
+        private static FieldInfo ModsConfigDataActiveMods;
+
+        private ServerInfo ServerInfo { get; set; }
+
+        public DLG_ServerListingInfo(ServerInfo info) 
+        {
+            this.ServerInfo = info;
+            ModsConfigData = AccessTools.Field(typeof(ModsConfig), "data");
+            ModsConfigDataActiveMods = AccessTools.Field(AccessTools.TypeByName("Verse.ModsConfig+ModsConfigData"), "activeMods");
+        }
+
+        public override void DoWindowContents(Rect inRect)
+        {
+            Text.Font = GameFont.Medium;
+            Vector2 titleSize = Text.CalcSize(ServerInfo._name);
+            float centeredx = inRect.width / 2;
+            Rect titleRect = new Rect(centeredx - titleSize.x / 2, inRect.y, titleSize.x, titleSize.y);
+            Widgets.Label(titleRect, ServerInfo._name);
+
+            Widgets.DrawLineHorizontal(0, titleSize.y + 3f, inRect.width);
+
+            Text.Font = GameFont.Small;
+            Rect descriptionRect = new Rect(inRect.x, titleSize.y + 6f, inRect.width / 3 * 2, inRect.height - 55f);
+            Widgets.Label(descriptionRect, ServerInfo._description);
+
+            Rect connectRect = new Rect(inRect.width - 135f, inRect.height - 55f, 125f, 45f);
+            Rect playerCountRect = new Rect(connectRect.x, connectRect.y - 30f, 125f, 45f);
+
+            Widgets.Label(playerCountRect, $"Population: {ServerInfo._currentPlayerCount}/{ServerInfo._maximumPlayerCount}");
+
+            if (Widgets.ButtonText(connectRect, "Connect")) ConnectToServer();
+        }
+
+        private void ConnectToServer() 
+        {
+            Network.Ip = ServerInfo._ip;
+            Network.Port = ServerInfo._port;
+            DLG_Base.PushNewDialog(new DLG_Wait("Trying to connect to server"));
+            ClientNetwork _ = new ClientNetwork();
+            Close();
+        }
+    }
+}
