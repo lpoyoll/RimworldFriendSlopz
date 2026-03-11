@@ -37,7 +37,7 @@ namespace GameClient.PacketManagers
         [HandlesPacket(PacketHeader.SaveManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            SaveData data = Serializer.ConvertBytesToObject<SaveData>(bytes);
+            PKT_Save data = Serializer.ConvertBytesToObject<PKT_Save>(bytes);
 
             switch (data._stepMode)
             {
@@ -67,7 +67,7 @@ namespace GameClient.PacketManagers
 
         public static void RequestResetSave()
         {
-            SaveData data = new SaveData();
+            PKT_Save data = new PKT_Save();
             data._stepMode = SaveStepMode.Reset;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SaveManager, data);
@@ -135,7 +135,7 @@ namespace GameClient.PacketManagers
             if (string.IsNullOrEmpty(LatestSavePath)) saveBytes = File.ReadAllBytes(SaveFilePath);
             else saveBytes = File.ReadAllBytes(LatestSavePath);
 
-            SaveData data = new SaveData();
+            PKT_Save data = new PKT_Save();
             data._stepMode = SaveStepMode.Receive;
             data._forceDisconnect = SessionHandler.IsExiting;
             data._fileBytes = GZip.CompressBytes(saveBytes);
@@ -143,7 +143,7 @@ namespace GameClient.PacketManagers
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
-        private static void OnSaveReceived(SaveData data)
+        private static void OnSaveReceived(PKT_Save data)
         {
             Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
 

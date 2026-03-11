@@ -26,7 +26,7 @@ namespace GameClient.PacketManagers
         [HandlesPacket(PacketHeader.SettlementManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PlayerSettlementData data = Serializer.ConvertBytesToObject<PlayerSettlementData>(bytes);
+            PKT_PlayerSettlement data = Serializer.ConvertBytesToObject<PKT_PlayerSettlement>(bytes);
 
             switch (data._stepMode)
             {
@@ -105,7 +105,7 @@ namespace GameClient.PacketManagers
 
         public static void SendNewPlayerSettlement(int settlementTile)
         {
-            PlayerSettlementData settlementData = new PlayerSettlementData();
+            PKT_PlayerSettlement settlementData = new PKT_PlayerSettlement();
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Add;
 
@@ -114,7 +114,7 @@ namespace GameClient.PacketManagers
 
         public static void AbandonSettlement(int settlementTile)
         {
-            PlayerSettlementData settlementData = new PlayerSettlementData();
+            PKT_PlayerSettlement settlementData = new PKT_PlayerSettlement();
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Remove;
 
@@ -128,7 +128,7 @@ namespace GameClient.PacketManagers
     {
         public static SettlementFile[] tempSettlements;
 
-        public static void SetValues(ServerGlobalData serverGlobalData)
+        public static void SetValues(PKT_ServerGlobalData serverGlobalData)
         {
             tempSettlements = serverGlobalData._playerSettlements;
         }

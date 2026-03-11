@@ -18,13 +18,13 @@ namespace GameClient.PacketManagers
         [HandlesPacket(PacketHeader.LeaderboardManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) 
         {
-            LeaderboardData data = Serializer.ConvertBytesToObject<LeaderboardData>(bytes);
+            PKT_Leaderboard data = Serializer.ConvertBytesToObject<PKT_Leaderboard>(bytes);
             DisplayLeaderboard(data._file); 
         }
 
         public static void Ask()
         {
-            LeaderboardData data = new LeaderboardData();
+            PKT_Leaderboard data = new PKT_Leaderboard();
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.LeaderboardManager, data);
         }
 

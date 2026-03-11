@@ -13,21 +13,21 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.InformationManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            InformationData data = Serializer.ConvertBytesToObject<InformationData>(bytes);
+            PKT_Information data = Serializer.ConvertBytesToObject<PKT_Information>(bytes);
 
             switch (data._stepMode)
             {
-                case InformationData.InfoStepMode.Connection:
+                case PKT_Information.InfoStepMode.Connection:
                     SendInformation(client, data);
                     break;
 
-                case InformationData.InfoStepMode.Wealth:
+                case PKT_Information.InfoStepMode.Wealth:
                     SendWealth(client, data);
                     break;
             }
         }
 
-        private static void SendInformation(ServerClient client, InformationData data)
+        private static void SendInformation(ServerClient client, PKT_Information data)
         {
             SettlementFile settlementToFind = PM_Settlements.GetSettlementFileFromTile(data._settlementTile);
             ServerClient clientToFind = ServerNetwork.GetConnectedClientFromUsername(settlementToFind.Username);
@@ -37,7 +37,7 @@ namespace GameServer.PacketManager
             client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
         }
 
-        private static void SendWealth(ServerClient client, InformationData data)
+        private static void SendWealth(ServerClient client, PKT_Information data)
         {
             data._settlementRawData = PM_Maps.GetMapFromTile(data._settlementTile);
 

@@ -25,7 +25,7 @@ namespace GameClient.PacketManagers
         [HandlesPacket(PacketHeader.ModManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
+            PKT_ModConfig data = Serializer.ConvertBytesToObject<PKT_ModConfig>(bytes);
 
             switch (data._stepMode)
             {
@@ -55,7 +55,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(dialog);
         }
 
-        public static void ReceiveModConfigs(ServerGlobalData data)
+        public static void ReceiveModConfigs(PKT_ServerGlobalData data)
         {
             SessionHandler.CurrentModConfig = data._modConfigs;
 
@@ -86,7 +86,7 @@ namespace GameClient.PacketManagers
             return configFile;
         }
 
-        public static void GetConflictingMods(LoginData data)
+        public static void GetConflictingMods(PKT_Login data)
         {
             DLG_Base.PushNewDialog(new DLG_Listing("Mod Conflicts", "The following mods are conflicting with the server",
                 data._extraDetails.ToArray()));

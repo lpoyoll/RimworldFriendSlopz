@@ -253,7 +253,7 @@ namespace GameServer.Commands
             ServerClient client = ServerNetwork.GetConnectedClientFromUsername(toFind.Username);
             if (client != null)
             {
-                CommandData commandData = new CommandData();
+                PKT_Command commandData = new PKT_Command();
                 commandData._commandMode = CommandMode.Op;
 
                 client.UserFile.UpdateAdmin(true);
@@ -289,7 +289,7 @@ namespace GameServer.Commands
             ServerClient client = ServerNetwork.GetConnectedClientFromUsername(toFind.Username);
             if (client != null)
             {
-                CommandData commandData = new CommandData();
+                PKT_Command commandData = new PKT_Command();
                 commandData._commandMode = CommandMode.Deop;
 
                 client.UserFile.UpdateAdmin(false);
@@ -378,7 +378,7 @@ namespace GameServer.Commands
                 if (toFind == null) Printer.Warning($"Event '{ConsoleManager.commandParameters[1]}' was not found");
                 else
                 {
-                    EventData eventData = new EventData();
+                    PKT_Event eventData = new PKT_Event();
                     eventData._stepMode = EventStepMode.Receive;
                     eventData._eventFile = toFind;
 
@@ -400,7 +400,7 @@ namespace GameServer.Commands
             {
                 foreach (ServerClient client in ServerNetwork.GetConnectedClients())
                 {
-                    EventData eventData = new EventData();
+                    PKT_Event eventData = new PKT_Event();
                     eventData._stepMode = EventStepMode.Receive;
                     eventData._eventFile = toFind;
 
@@ -428,7 +428,7 @@ namespace GameServer.Commands
             foreach (string str in ConsoleManager.commandParameters) fullText += $"{str} ";
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
-            CommandData commandData = new CommandData();
+            PKT_Command commandData = new PKT_Command();
             commandData._commandMode = CommandMode.Broadcast;
             commandData._details = fullText;
 
@@ -510,7 +510,7 @@ namespace GameServer.Commands
             if (toFind == null) ThrowUserNotFoundError();
             else
             {
-                CommandData commandData = new CommandData();
+                PKT_Command commandData = new PKT_Command();
                 commandData._commandMode = CommandMode.ForceSave;
 
                 toFind.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);

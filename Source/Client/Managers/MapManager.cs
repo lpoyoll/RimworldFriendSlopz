@@ -29,7 +29,7 @@ namespace GameClient.Managers
         {
             MapFile mapFile = MapSaveLoader.MapToString(map);
 
-            MapData mapData = new MapData();
+            PKT_Map mapData = new PKT_Map();
             mapData._mapTile = mapFile.Tile;
             mapData._mapFile.Wealth = mapFile.Wealth;
             mapData._rawData = Serializer.ConvertObjectToBytes(mapFile);

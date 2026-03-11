@@ -40,7 +40,7 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.ChatManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            ChatData data = Serializer.ConvertBytesToObject<ChatData>(bytes);
+            PKT_Chat data = Serializer.ConvertBytesToObject<PKT_Chat>(bytes);
 
             if (data._message.StartsWith("/")) ExecuteChatCommand(client, data._message.Split(' '));
             else BroadcastChatMessage(client, data._message);
@@ -69,7 +69,7 @@ namespace GameServer.PacketManager
 
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
-            ChatData chatData = new ChatData();
+            PKT_Chat chatData = new PKT_Chat();
             chatData._username = client.UserFile.Username;
             chatData._message = message;
             chatData._usernameColor = client.UserFile.IsAdmin ? ChatColor.Admin : ChatColor.Normal;
@@ -83,7 +83,7 @@ namespace GameServer.PacketManager
 
         public static void BroadcastDiscordMessage(string client, string message)
         {
-            ChatData chatData = new ChatData();
+            PKT_Chat chatData = new PKT_Chat();
             chatData._username = client;
             chatData._message = message;
             chatData._usernameColor = ChatColor.Discord;
@@ -97,7 +97,7 @@ namespace GameServer.PacketManager
 
         public static void BroadcastConsoleMessage(string message)
         {
-            ChatData chatData = new ChatData();
+            PKT_Chat chatData = new PKT_Chat();
             chatData._username = SystemName;
             chatData._message = message;
             chatData._usernameColor = ChatColor.Console;
@@ -111,7 +111,7 @@ namespace GameServer.PacketManager
 
         public static void BroadcastServerNotification(string message)
         {
-            ChatData chatData = new ChatData();
+            PKT_Chat chatData = new PKT_Chat();
             chatData._username = NotificationName;
             chatData._message = message;
             chatData._usernameColor = ChatColor.Server;
@@ -125,7 +125,7 @@ namespace GameServer.PacketManager
 
         public static void SendConsoleMessage(ServerClient client, string message)
         {
-            ChatData chatData = new ChatData();
+            PKT_Chat chatData = new PKT_Chat();
             chatData._username = SystemName;
             chatData._message = message;
             chatData._usernameColor = ChatColor.Console;
@@ -136,7 +136,7 @@ namespace GameServer.PacketManager
 
         public static void SendServerMessage(ServerClient client, string message)
         {
-            ChatData chatData = new ChatData();
+            PKT_Chat chatData = new PKT_Chat();
             chatData._username = NotificationName;
             chatData._message = message;
             chatData._usernameColor = ChatColor.Server;

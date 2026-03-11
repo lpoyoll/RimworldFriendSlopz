@@ -20,7 +20,7 @@ namespace GameServer.PacketManager
                 return;
             }
 
-            ActivityData data = Serializer.ConvertBytesToObject<ActivityData>(bytes);
+            PKT_Activity data = Serializer.ConvertBytesToObject<PKT_Activity>(bytes);
 
             switch (data._stepMode)
             {
@@ -30,7 +30,7 @@ namespace GameServer.PacketManager
             }
         }
 
-        private static void SendRequestedMap(ServerClient client, ActivityData data)
+        private static void SendRequestedMap(ServerClient client, PKT_Activity data)
         {
             if (!PM_Maps.CheckIfMapExists(data._targetTile))
             {

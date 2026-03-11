@@ -234,7 +234,7 @@ namespace GameClient.WorldObjects
                     SessionHandler.ChosenSettlement = this;
                     SessionHandler.ChosenCaravan = caravan;
 
-                    PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.SynchronousData.Type.Visit);
+                    PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.PKT_Synchronous.Type.Visit);
                 }
             };
 
@@ -248,7 +248,7 @@ namespace GameClient.WorldObjects
                     SessionHandler.ChosenSettlement = this;
                     SessionHandler.ChosenCaravan = caravan;
 
-                    PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.SynchronousData.Type.Raid);
+                    PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.PKT_Synchronous.Type.Raid);
                 }
             };
 

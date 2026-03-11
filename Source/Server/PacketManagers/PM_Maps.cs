@@ -14,12 +14,12 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.MapManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            MapData data = Serializer.ConvertBytesToObject<MapData>(bytes);
+            PKT_Map data = Serializer.ConvertBytesToObject<PKT_Map>(bytes);
 
             SaveUserMap(client, data);
         }
 
-        public static void SaveUserMap(ServerClient client, MapData data)
+        public static void SaveUserMap(ServerClient client, PKT_Map data)
         {
             File.WriteAllBytes(Path.Combine(Master.MapsPath, data._mapTile + CommonValues.DefaultSaveFormat), data._rawData);
             PM_Leaderboard.UpdateLeaderboard(client, data._mapFile);

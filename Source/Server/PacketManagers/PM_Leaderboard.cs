@@ -21,7 +21,7 @@ namespace GameServer.PacketManager
 
         private static void SendLeaderboard(ServerClient client)
         {
-            LeaderboardData data = new LeaderboardData();
+            PKT_Leaderboard data = new PKT_Leaderboard();
             data._file = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>(LeaderboardFile.SavePath);
             client.Listener.EnqueuePacket(PacketHeader.LeaderboardManager, data);
         }

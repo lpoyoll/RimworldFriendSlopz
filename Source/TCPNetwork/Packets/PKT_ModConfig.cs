@@ -4,7 +4,7 @@ using static Shared.CommonEnumerators;
 namespace TCPNetwork.Packets
 {
 
-    public class ModConfigData
+    public class PKT_ModConfig
     {
         public ModConfigStepMode _stepMode { get; set; } = ModConfigStepMode.Send;
 

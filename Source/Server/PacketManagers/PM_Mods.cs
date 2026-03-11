@@ -16,7 +16,7 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.ModManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            ModConfigData data = Serializer.ConvertBytesToObject<ModConfigData>(bytes);
+            PKT_ModConfig data = Serializer.ConvertBytesToObject<PKT_ModConfig>(bytes);
 
             switch (data._stepMode)
             {
@@ -42,7 +42,7 @@ namespace GameServer.PacketManager
             }
         }
 
-        public static bool CheckIfModConflict(ServerClient client, LoginData loginData)
+        public static bool CheckIfModConflict(ServerClient client, PKT_Login loginData)
         {
             List<string> conflictingModNames = new List<string>();
 
