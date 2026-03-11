@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 
-namespace GameServer.Managers
+namespace GameServer.PacketManager
 {
-    public static class LeaderboardManager
+    public static class PM_Leaderboard
     {
         private static float ScoreMultiplier = 0.001f;
 

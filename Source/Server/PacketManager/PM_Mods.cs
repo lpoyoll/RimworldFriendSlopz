@@ -6,11 +6,12 @@ using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using Shared.Files.Configs.Mods;
 using Shared.Misc;
+using GameServer.Managers;
 
-namespace GameServer.Managers
+namespace GameServer.PacketManager
 {
 
-    public static class ModManager
+    public static class PM_Mods
     {
         [HandlesPacket(PacketHeader.ModManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)

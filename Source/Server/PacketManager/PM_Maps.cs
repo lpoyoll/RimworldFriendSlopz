@@ -6,9 +6,9 @@ using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using Shared.Files.Maps;
 
-namespace GameServer.Managers
+namespace GameServer.PacketManager
 {
-    public static class MapManager
+    public static class PM_Maps
     {
         [HandlesPacket(PacketHeader.MapManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
@@ -21,7 +21,7 @@ namespace GameServer.Managers
         public static void SaveUserMap(ServerClient client, MapData data)
         {
             File.WriteAllBytes(Path.Combine(Master.MapsPath, data._mapTile + CommonValues.DefaultSaveFormat), data._rawData);
-            LeaderboardManager.UpdateLeaderboard(client, data._mapFile);
+            PM_Leaderboard.UpdateLeaderboard(client, data._mapFile);
             InformationDisplayer.DisplaySaveMap(client);
         }
 

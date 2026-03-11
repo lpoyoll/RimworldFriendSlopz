@@ -9,6 +9,7 @@ using static Shared.CommonEnumerators;
 using TCPNetwork.Files.Client;
 using Shared.Misc;
 using TCPNetwork.Misc;
+using GameServer.PacketManager;
 
 namespace GameServer.Hooks.TCPNetwork
 {
@@ -32,7 +33,7 @@ namespace GameServer.Hooks.TCPNetwork
                 Main_.ChangeTitle();
                 UserManager.SendPlayerRecount();
                 InformationDisplayer.DisplayDisconnect(client);
-                if (Master.ChatConfig.DisconnectNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
+                if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
             }
             catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
         };
@@ -76,7 +77,7 @@ namespace GameServer.Hooks.TCPNetwork
 
                 InformationDisplayer.DisplayConnect(client);
 
-                VersionManager.AskForClientVersion(client);
+                PM_Version.AskForClientVersion(client);
             }
         }
 

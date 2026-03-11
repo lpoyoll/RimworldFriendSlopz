@@ -6,10 +6,11 @@ using Shared.Files;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using GameServer.Hooks.TCPNetwork;
+using GameServer.Managers;
 
-namespace GameServer.Managers
+namespace GameServer.PacketManager
 {
-    public static class SettlementManager
+    public static class PM_Settlements
     {
         [HandlesPacket(PacketHeader.SettlementManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
@@ -47,7 +48,7 @@ namespace GameServer.Managers
                     if (cClient == client) continue;
                     else
                     {
-                        settlementData._settlementFile.Goodwill = GoodwillManager.GetSettlementGoodwill(cClient, settlementFile);
+                        settlementData._settlementFile.Goodwill = PM_Goodwills.GetSettlementGoodwill(cClient, settlementFile);
 
                         cClient.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
                     }

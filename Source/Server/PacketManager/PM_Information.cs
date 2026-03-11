@@ -5,9 +5,9 @@ using TCPNetwork.Files.Client;
 using Shared.Files.Maps;
 using GameServer.Hooks.TCPNetwork;
 
-namespace GameServer.Managers
+namespace GameServer.PacketManager
 {
-    public static class InformationManager
+    public static class PM_Information
     {
         [HandlesPacket(PacketHeader.InformationManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
@@ -28,7 +28,7 @@ namespace GameServer.Managers
 
         private static void SendInformation(ServerClient client, InformationData data)
         {
-            SettlementFile settlementToFind = SettlementManager.GetSettlementFileFromTile(data._settlementTile);
+            SettlementFile settlementToFind = PM_Settlements.GetSettlementFileFromTile(data._settlementTile);
             ServerClient clientToFind = ServerNetwork.GetConnectedClientFromUsername(settlementToFind.Username);
 
             data._isPlayerOnline = clientToFind != null ? true : false;
@@ -38,7 +38,7 @@ namespace GameServer.Managers
 
         private static void SendWealth(ServerClient client, InformationData data)
         {
-            data._settlementRawData = MapManager.GetMapFromTile(data._settlementTile);
+            data._settlementRawData = PM_Maps.GetMapFromTile(data._settlementTile);
 
             client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
         }

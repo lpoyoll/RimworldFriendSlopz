@@ -6,10 +6,11 @@ using static Shared.CommonEnumerators;
 using TCPNetwork.Files.Client;
 using Shared.Misc;
 using GameServer.Hooks.TCPNetwork;
+using GameServer.Managers;
 
-namespace GameServer.Managers
+namespace GameServer.PacketManager
 {
-    public static class LoginManager
+    public static class PM_Logins
     {
         [HandlesPacket(PacketHeader.LoginManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
@@ -45,7 +46,7 @@ namespace GameServer.Managers
 
             if (!UserManagerH.CheckWhitelist(client)) return $"{data._username} is not whitelisted";
 
-            if (WorldManager.CheckIfWorldExists() && ModManager.CheckIfModConflict(client, data)) return $"{data._username} has a mod conflict";
+            if (PM_World.CheckIfWorldExists() && PM_Mods.CheckIfModConflict(client, data)) return $"{data._username} has a mod conflict";
 
             LoginManagerH.RemoveOldClientSessions(client);
 
@@ -70,22 +71,22 @@ namespace GameServer.Managers
 
         private static void PostLogin(ServerClient client)
         {
-            SiteManager.SetSiteInfoForClient(client);
+            PM_Sites.SetSiteInfoForClient(client);
 
             UserManager.SendPlayerRecount();
 
-            GlobalDataManager.SendServerGlobalData(client);
+            PM_GlobalData.SendServerGlobalData(client);
 
-            foreach (string str in ChatManager.DefaultJoinMessages) ChatManager.SendConsoleMessage(client, str);
+            foreach (string str in PM_Chat.DefaultJoinMessages) PM_Chat.SendConsoleMessage(client, str);
 
-            if (Master.ChatConfig.EnableMoTD) ChatManager.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
+            if (Master.ChatConfig.EnableMoTD) PM_Chat.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
 
-            if (Master.ChatConfig.LoginNotifications) ChatManager.BroadcastServerNotification($"{client.UserFile.Username} has joined the server!");
+            if (Master.ChatConfig.LoginNotifications) PM_Chat.BroadcastServerNotification($"{client.UserFile.Username} has joined the server!");
 
-            if (WorldManager.CheckIfWorldExists())
+            if (PM_World.CheckIfWorldExists())
             {
-                if (SaveManager.CheckIfUserHasSave(client)) SaveManager.SendSaveToClient(client);
-                else WorldManager.SendWorld(client);
+                if (PM_Saves.CheckIfUserHasSave(client)) PM_Saves.SendSaveToClient(client);
+                else PM_World.SendWorld(client);
             }
 
             else
@@ -97,7 +98,7 @@ namespace GameServer.Managers
                 commandData._commandMode = CommandMode.Op;
                 client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
 
-                WorldManager.RequireWorldFile(client);
+                PM_World.RequireWorldFile(client);
             }
         }
     }

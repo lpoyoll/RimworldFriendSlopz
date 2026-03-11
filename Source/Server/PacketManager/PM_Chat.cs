@@ -9,10 +9,10 @@ using TCPNetwork.Files.Client;
 using Shared.Misc;
 using GameServer.Hooks.TCPNetwork;
 
-namespace GameServer.Managers
+namespace GameServer.PacketManager
 {
 
-    public static class ChatManager
+    public static class PM_Chat
     {
         private static Semaphore LogSemaphore = new Semaphore(1, 1);
 

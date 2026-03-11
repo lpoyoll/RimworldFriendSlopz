@@ -12,6 +12,7 @@ using static Shared.CommonEnumerators;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Hooks.Shared;
 using Shared.Files;
+using GameServer.PacketManager;
 
 namespace GameServer.Core
 {
@@ -37,7 +38,7 @@ namespace GameServer.Core
 
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
-            ServerBrowserManager.StartFeature();
+            PM_ServerBrowser.StartFeature();
 
             ServerNetwork _ = new ServerNetwork();
             while (true) ConsoleManager.ListenForServerCommands();

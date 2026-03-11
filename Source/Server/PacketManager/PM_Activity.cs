@@ -4,10 +4,11 @@ using Shared;
 using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
+using GameServer.Managers;
 
-namespace GameServer.Managers
+namespace GameServer.PacketManager
 {
-    public static class ActivityManager
+    public static class PM_Activity
     {
         [HandlesPacket(PacketHeader.ActivityManager)]
         private static void ParsePacket(ServerClient client, byte[] bytes, PacketHeader header)
@@ -30,7 +31,7 @@ namespace GameServer.Managers
 
         private static void SendRequestedMap(ServerClient client, ActivityData data)
         {
-            if (!MapManager.CheckIfMapExists(data._targetTile))
+            if (!PM_Maps.CheckIfMapExists(data._targetTile))
             {
                 data._stepMode = ActivityStepMode.Deny;
                 client.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
@@ -39,7 +40,7 @@ namespace GameServer.Managers
             else
             {
                 data._stepMode = ActivityStepMode.Request;
-                data._mapRawData = MapManager.GetMapFromTile(data._targetTile);
+                data._mapRawData = PM_Maps.GetMapFromTile(data._targetTile);
 
                 client.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }
