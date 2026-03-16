@@ -2,7 +2,7 @@
 using HarmonyLib;
 using System.Reflection;
 using TCPNetwork;
-using TCPNetwork.Packets.ServerBrowser;
+using TCPNetwork.ServerBrowser;
 using UnityEngine;
 using Verse;
 
