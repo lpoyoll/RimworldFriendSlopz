@@ -85,7 +85,7 @@ namespace GameClient.Misc
 
         private static void GetMapThings(MapFile mapFile, Map map)
         {
-            Thing[] allThings = map.listerThings.AllThings.Where(fetch => !ScriberH.CheckIfThingIsHuman(fetch) && !ScriberH.CheckIfThingIsAnimal(fetch)).ToArray();
+            Thing[] allThings = map.listerThings.AllThings.Where(fetch => !RimworldManager.CheckIfThingIsHuman(fetch) && !RimworldManager.CheckIfThingIsAnimal(fetch)).ToArray();
             foreach (Thing thing in allThings)
             {
                 try
@@ -102,7 +102,7 @@ namespace GameClient.Misc
 
         private static void GetMapPawns(MapFile mapFile, Map map)
         {
-            Thing[] allPawns = map.listerThings.AllThings.Where(fetch => ScriberH.CheckIfThingIsHuman(fetch) || ScriberH.CheckIfThingIsAnimal(fetch)).ToArray();
+            Thing[] allPawns = map.listerThings.AllThings.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch) || RimworldManager.CheckIfThingIsAnimal(fetch)).ToArray();
             foreach (Thing pawn in allPawns)
             {
                 try
