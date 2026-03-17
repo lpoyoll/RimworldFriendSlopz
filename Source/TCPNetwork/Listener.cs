@@ -51,7 +51,7 @@ namespace TCPNetwork
         public void EnqueuePacket(PacketHeader header, object obj)
         {
             if (IsDisconnecting) return;
-            else if (!obj.GetType().IsSubclassOf(typeof(PKT_Base))) Printer.Error($"Malforced package {obj.GetType()}");
+            else if (!obj.GetType().IsSubclassOf(typeof(PKT_Base))) Printer.Error($"Malformed package {obj.GetType()}");
             else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
 
