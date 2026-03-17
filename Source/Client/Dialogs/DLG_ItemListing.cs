@@ -93,9 +93,8 @@ namespace GameClient.Dialogs
             if (itemName.Length > 1) itemName = char.ToUpper(itemName[0]) + itemName.Substring(1);
             else itemName = itemName.ToUpper();
 
-            if (RimworldManager.CheckIfThingIsHuman(thing)) Widgets.Label(fixedRect, $"[Human] {itemName}");
-            else if (RimworldManager.CheckIfThingIsAnimal(thing)) Widgets.Label(fixedRect, $"[Animal] {itemName}");
-            else Widgets.Label(fixedRect, $"[Item] {itemName} (x{thing.stackCount}) ({thing.HitPoints} HP)");
+            if (RimworldManager.CheckIfThingIsPawn(thing)) Widgets.Label(fixedRect, $"[Pawn] {itemName}");
+            else Widgets.Label(fixedRect, $"[Thing] {itemName} (x{thing.stackCount})");
         }
 
         private void Accept()
