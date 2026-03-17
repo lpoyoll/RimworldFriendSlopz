@@ -1,7 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
 using Shared;
-using Shared.Files.Maps;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
