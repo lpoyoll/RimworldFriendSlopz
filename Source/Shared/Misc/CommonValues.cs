@@ -2,13 +2,13 @@ namespace Shared
 {
     public static class CommonValues
     {
-        public static readonly string ExecutableVersion = "26.3.6.2";
+        public static string ExecutableVersion { get; set; } = "26.3.6.2";
 
-        public static readonly string DefaultSaveFormat = ".json";
+        public static string DefaultSaveFormat { get; set; } = ".json";
 
-        public static readonly string TempSaveFormat = ".temp";
+        public static string TempSaveFormat { get; set; } = ".temp";
 
-        public static readonly string CompressedSaveFormat  = ".zip";
+        public static string CompressedSaveFormat { get; set; } = ".zip";
 
         public static string ServerUsersPath { get; set; } = string.Empty;
 
