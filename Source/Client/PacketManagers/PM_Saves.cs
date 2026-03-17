@@ -58,11 +58,16 @@ namespace GameClient.PacketManagers
 
                 MainThreadHandler.Instance.Enqueue(delegate
                 {
-                    FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
-                    FticksSinceSave.SetValue(Current.Game.autosaver, 0);
+                    ResetAutosaveTicks();
                     GameDataSaveLoader.SaveGame(CustomSaveName);
                 });
             });
+        }
+
+        private static void ResetAutosaveTicks()
+        {
+            FieldInfo FticksSinceSave = AccessTools.Field(typeof(Autosaver), "ticksSinceSave");
+            FticksSinceSave.SetValue(Current.Game.autosaver, 0);
         }
 
         public static void RequestResetSave()

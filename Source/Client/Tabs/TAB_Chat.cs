@@ -24,8 +24,6 @@ namespace GameClient.Tabs
             draggable = true;
             focusWhenOpened = false;
             drawShadow = false;
-            closeOnAccept = false;
-            closeOnCancel = false;
             preventCameraMotion = false;
             drawInScreenshotMode = false;
 
