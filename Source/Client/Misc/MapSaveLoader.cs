@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO.Compression;
 using System.Linq;
+using System.Numerics;
 using System.Security.Cryptography;
 using Verse;
 using Verse.Noise;
@@ -35,6 +36,8 @@ namespace GameClient.Misc
 
             GetMapTerrain(mapFile, map);
 
+            TogglePollution(OperationType.Get, mapFile, map);
+
             GetMapThings(mapFile, map);
 
             GetMapPawns(mapFile, map);
@@ -47,6 +50,8 @@ namespace GameClient.Misc
             Map map = GetOrGenerateMapUtility.GetOrGenerateMap(mapFile.Tile, ValueParser.ArrayToIntVec3(mapFile.Size), null);
 
             SetMapTerrain(mapFile, map);
+
+            TogglePollution(OperationType.Set, mapFile, map);
 
             SetMapThings(mapFile, map, enforceIDs);
 
@@ -71,8 +76,6 @@ namespace GameClient.Misc
                     IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
 
                     component.TileString = map.terrainGrid.TerrainAt(vectorToCheck).defName;
-
-                    component.IsPolluted = map.pollutionGrid.IsPolluted(vectorToCheck);
 
                     try { component.RoofString = map.roofGrid.RoofAt(vectorToCheck).defName; }
                     catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Extreme); }
@@ -112,7 +115,6 @@ namespace GameClient.Misc
                     {
                         MapTile component = mapFile.Tiles[index];
                         IntVec3 vectorToCheck = new IntVec3(x, map.Size.y, z);
-                        map.pollutionGrid.SetPolluted(vectorToCheck, component.IsPolluted);
 
                         if (component.TileString != null)
                         {
@@ -180,6 +182,23 @@ namespace GameClient.Misc
         {
             if (type == OperationType.Set) map.weatherManager.TransitionTo(DefDatabase<WeatherDef>.AllDefs.ToList()[mapFile.WeatherByte]);
             else mapFile.WeatherByte = (byte)DefDatabase<WeatherDef>.AllDefs.FirstIndexOf(fetch => fetch == map.weatherManager.curWeather);
+        }
+
+        private static void TogglePollution(OperationType type, MapFile mapfile, Map map)
+        {
+            int index = 0;
+
+            for (int z = 0; z < map.Size.z; ++z)
+            {
+                for (int x = 0; x < map.Size.x; ++x)
+                {
+                    IntVec3 vector = new IntVec3(x, map.Size.y, z);
+                    if (type == OperationType.Get) mapfile.Pollutions.Add(map.pollutionGrid.IsPolluted(vector));
+                    else map.pollutionGrid.SetPolluted(vector, mapfile.Pollutions[index]);
+
+                    index++;
+                }
+            }
         }
     }
 }
