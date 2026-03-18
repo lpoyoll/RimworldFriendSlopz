@@ -25,14 +25,14 @@ namespace GameClient.Core
             static RimworldTogether()
             {
                 ClientPrinter.CreateLogger();
-
-                HarmonyHandler.EnableStartPatches();
                 PrepareCulture();
                 PreparePaths();
 
-                CreateUnityDispatcher();
+                HarmonyHandler.EnableStartPatches();
                 MethodGatherer.CacheAllMethods(AssemblyType.Client);
                 MethodGatherer.CacheAllPackets(AssemblyType.Client);
+
+                CreateUnityDispatcher();
                 PersistentSettings.SetFilePath(Path.Combine(Master.AppdataRTPath, "PersistentSettings" + CommonValues.DefaultSaveFormat));
             }
         }
