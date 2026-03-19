@@ -1,1 +1,0 @@
-Changing any files in here will need a rebuild of the master server, contact the maintainer Eragon on any changes

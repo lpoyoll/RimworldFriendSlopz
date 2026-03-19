@@ -23,7 +23,7 @@ namespace TCPNetwork.Files.Client
             else
             {
                 CurrentIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
-                Listener = new Listener(this, tcp, ruleset, Listener.ListenerMode.Server);
+                Listener = new Listener(this, tcp, ruleset);
             }
         }
 

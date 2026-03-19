@@ -25,7 +25,7 @@ namespace GameClient.Core
             static RimworldTogether()
             {
                 ClientPrinter.CreateLogger();
-                PrepareCulture();
+                CultureHandler.SetCulture();
                 PreparePaths();
 
                 HarmonyHandler.EnableStartPatches();
@@ -35,14 +35,6 @@ namespace GameClient.Core
                 CreateUnityDispatcher();
                 PersistentSettings.SetFilePath(Path.Combine(Master.AppdataRTPath, "PersistentSettings" + CommonValues.DefaultSaveFormat));
             }
-        }
-
-        private static void PrepareCulture()
-        {
-            CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
-            CultureInfo.CurrentUICulture = new CultureInfo("en-US", false);
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
-            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
         }
 
         private static void PreparePaths()

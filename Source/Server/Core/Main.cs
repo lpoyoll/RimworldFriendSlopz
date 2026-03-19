@@ -12,6 +12,8 @@ using GameServer.Hooks.TCPNetwork;
 using GameServer.Hooks.Shared;
 using Shared.Files;
 using GameServer.PacketManager;
+using GameServer.Files;
+using GameServer.Hooks.ServerBrowser;
 
 namespace GameServer.Core
 {
@@ -19,31 +21,25 @@ namespace GameServer.Core
     {
         static void Main()
         {
-            Console.ForegroundColor = ConsoleColor.White;
             ServerPrinter.CreateLogger();
+            CultureHandler.SetCulture();
 
             SetPaths();
+            CreateFolders();
             LoadFiles();
-            SetCulture();
             LoadResources();
-
-            if (!File.Exists(ServerConfigFile.SavePath))
-            {
-                Printer.Error("If this is your first time installing Rimworld Together, please take a look at our wiki > " +
-                    "https://rimworldtogether.wiki.gg/");
-            }
+            CheckForFirstBoot();
 
             MethodGatherer.CacheAllMethods(AssemblyType.Server);
             MethodGatherer.CacheAllPackets(AssemblyType.Server);
-
-            PM_ServerBrowser.StartFeature();
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
             ServerNetwork _ = new ServerNetwork();
+            ServerBrowserManager.StartFeature();
             while (true) ConsoleManager.ListenForServerCommands();
         }
 
-        public static void SetPaths()
+        private static void SetPaths()
         {
             ServerConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ServerConfig.json");
             ActionsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
@@ -57,22 +53,21 @@ namespace GameServer.Core
             BackupsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
             ChatConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
             LeaderboardFile.SavePath = Path.Combine(Master.AssetsPath, "Leaderboard.json");
-
             CommonValues.ServerUsersPath = Master.UsersPath;
             CommonValues.ServerSitesPath = Master.SitesPath;
-
             GuildFile.SavePath = Path.Combine(Master.GuildsPath);
+        }
 
+        private static void CreateFolders()
+        {
             if (!Directory.Exists(Master.AssetsPath)) Directory.CreateDirectory(Master.AssetsPath);
             if (!Directory.Exists(Master.ConfigsPath)) Directory.CreateDirectory(Master.ConfigsPath);
-
             if (!Directory.Exists(Master.LogsPath)) Directory.CreateDirectory(Master.LogsPath);
             if (!Directory.Exists(Master.SystemLogsPath)) Directory.CreateDirectory(Master.SystemLogsPath);
             if (!Directory.Exists(Master.ChatLogsPath)) Directory.CreateDirectory(Master.ChatLogsPath);
             if (!Directory.Exists(Master.BackupsPath)) Directory.CreateDirectory(Master.BackupsPath);
             if (!Directory.Exists(Master.BackupUsersPath)) Directory.CreateDirectory(Master.BackupUsersPath);
             if (!Directory.Exists(Master.BackupServerPath)) Directory.CreateDirectory(Master.BackupServerPath);
-
             if (!Directory.Exists(Master.TempPath)) Directory.CreateDirectory(Master.TempPath);
             if (!Directory.Exists(Master.UsersPath)) Directory.CreateDirectory(Master.UsersPath);
             if (!Directory.Exists(Master.SavesPath)) Directory.CreateDirectory(Master.SavesPath);
@@ -84,23 +79,12 @@ namespace GameServer.Core
             if (!Directory.Exists(Master.CompatibilityPatchesPath)) Directory.CreateDirectory(Master.CompatibilityPatchesPath);
         }
 
-        private static void SetCulture()
-        {
-            CultureInfo.CurrentCulture = new CultureInfo("en-US", false);
-            CultureInfo.CurrentUICulture = new CultureInfo("en-US", false);
-            CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US", false);
-            CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US", false);
-
-            Printer.Title($"Server culture > [{CultureInfo.CurrentCulture}]");
-        }
-
         public static void LoadResources()
         {
             Printer.Title($"Server version {CommonValues.ExecutableVersion}");
             Printer.Title($"Loading all necessary resources");
             Printer.Title($"----------------------------------------");
 
-            LoadFiles();
             EventManagerH.LoadAllEvents();
             
             GC.Collect();
@@ -129,6 +113,15 @@ namespace GameServer.Core
         {
             Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - " +
                 $"Players [{ServerNetwork.GetConnectedClients().Length}/{Master.ServerConfig.MaxPlayers}]";
+        }
+
+        private static void CheckForFirstBoot()
+        {
+            if (!File.Exists(ServerConfigFile.SavePath))
+            {
+                Printer.Error("If this is your first time installing Rimworld Together, please take a look at our wiki > " +
+                    "https://rimworldtogether.wiki.gg/");
+            }
         }
     }
 }

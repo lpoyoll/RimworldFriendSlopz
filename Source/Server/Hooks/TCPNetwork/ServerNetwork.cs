@@ -21,10 +21,6 @@ namespace GameServer.Hooks.TCPNetwork
             method.Invoke(MethodGatherer.ServerMethodDictionary[header][0], new object[] { client, buffer, header });
         };
 
-        private Action<ServerClient> OnWritePacket { get; set; } = delegate (ServerClient client) { };
-
-        private Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client) { };
-
         private Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
         {
             try
@@ -66,7 +62,7 @@ namespace GameServer.Hooks.TCPNetwork
         private void ListenForNewClients()
         {
             ServerClient client = new ServerClient(Network.ServerListener.AcceptTcpClient(), 
-                new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, OnWritePacket));
+                new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
 
             if (GetConnectedClients().Length >= Master.ServerConfig.MaxPlayers) LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Full);
             else if (Master.WorldValues == null && GetConnectedClients().Length > 0) LoginManagerH.DenyConnectionWithReason(client, LoginResponse.NoWorld);

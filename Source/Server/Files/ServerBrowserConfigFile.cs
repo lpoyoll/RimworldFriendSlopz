@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Shared.Files;
+using System;
 using System.IO;
 
-namespace Shared.Files.Configs
+namespace GameServer.Files
 {
     public class ServerBrowserConfigFile : BaseFile
     {

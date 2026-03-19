@@ -33,7 +33,7 @@ namespace TCPNetwork
         
         public DateTime LastKAPacket { get; set; } = DateTime.Now;
 
-        public Listener(ServerClient clientToUse, TcpClient connection, NetworkRuleset ruleset, ListenerMode mode)
+        public Listener(ServerClient clientToUse, TcpClient connection, NetworkRuleset ruleset)
         {
             this.Connection = connection;
             this.TargetClient = clientToUse;
@@ -94,7 +94,8 @@ namespace TCPNetwork
                 }
             }
             catch (ObjectDisposedException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
-            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Normal); }
+            catch (System.IO.IOException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
+            catch (Exception e) { Printer.Warning(e); }
 
             Disconnect();
         }
@@ -131,7 +132,9 @@ namespace TCPNetwork
                     }
                 }
             }
-            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Extreme); }
+            catch (ObjectDisposedException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
+            catch (System.IO.IOException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
+            catch (Exception e) { Printer.Warning(e); }
 
             Disconnect();
         }

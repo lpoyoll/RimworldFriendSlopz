@@ -4,7 +4,6 @@ using Shared.Misc;
 
 namespace GameServer.Managers
 {
-
     public class ConsoleManager
     {
         public static string[] commandParameters;

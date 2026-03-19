@@ -21,11 +21,24 @@ namespace GameClient.Hooks.TCPNetwork
 {
     public class ClientNetwork
     {
+        private static readonly PacketHeader[] BypassReadyPackets =
+        {
+            PacketHeader.LoginManager,
+            PacketHeader.KeepAliveManager,
+            PacketHeader.VersionManager,
+            PacketHeader.SaveManager,
+            PacketHeader.WorldManager,
+            PacketHeader.GlobalDataManager,
+            PacketHeader.RecountManager,
+            PacketHeader.ChatManager,
+            PacketHeader.ConsoleManager
+        };
+
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
             Thread.Sleep(250 * (int)ModConfigGetter.CurrentSimulatedLag);
 
-            if (!SessionHandler.IsReadyToPlay && !Network.BypassReadyPackets.Contains(header)) return;
+            if (!SessionHandler.IsReadyToPlay && !BypassReadyPackets.Contains(header)) return;
             else
             {
                 MainThreadHandler.Instance.Enqueue(delegate
@@ -35,8 +48,6 @@ namespace GameClient.Hooks.TCPNetwork
                 });
             }
         };
-
-        private Action<ServerClient> OnWritePacket { get; set; } = delegate (ServerClient client) { };
 
         private Action<ServerClient> OnConnect { get; set; } = delegate
         {
@@ -84,9 +95,8 @@ namespace GameClient.Hooks.TCPNetwork
             {
                 try
                 {
-                    TcpClient tcpClient = new TcpClient(Network.Ip, Network.Port);
-                    NetworkRuleset ruleset = new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, OnWritePacket);
-                    Network.ServerEndpoint = new Listener(null, tcpClient, ruleset, Listener.ListenerMode.Client);
+                    ServerClient client = new ServerClient(new TcpClient(Network.Ip, Network.Port), new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, null));
+                    Network.ServerEndpoint = client.Listener;
                     return true;
                 }
                 catch { return false; }

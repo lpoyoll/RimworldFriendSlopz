@@ -21,28 +21,18 @@ namespace TCPNetwork
 
         public static Listener ServerEndpoint { get; set; } = null;
 
+        public static Listener BrowserEndpoint { get; set; } = null;
+
         public static TcpListener ServerListener { get; set; } = null;
 
         public static List<ServerClient> ServerClients { get; private set; } = new List<ServerClient>();
+
+        public static readonly TimeSpan BrowserTelemetryInterval = TimeSpan.FromSeconds(60);
 
         public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(3);
 
         public static readonly TimeSpan KeepAliveMaxTime = TimeSpan.FromSeconds(60);
 
         public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAliveManager };
-
-        public static readonly PacketHeader[] BypassReadyPackets =
-        {
-            PacketHeader.LoginManager,
-            PacketHeader.KeepAliveManager,
-            PacketHeader.VersionManager,
-            PacketHeader.SaveManager,
-            PacketHeader.WorldManager,
-            PacketHeader.GlobalDataManager,
-            PacketHeader.RecountManager,
-            PacketHeader.ChatManager,
-            PacketHeader.ConsoleManager,
-            PacketHeader.ServerBrowserReachability
-        };
     }
 }

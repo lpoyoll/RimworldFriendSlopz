@@ -12,7 +12,7 @@ namespace GameClient.Managers
         public static void ShowWelcomeDialogs() 
         {
             DLG_Base.PushNewDialog(new DLG_YesNo("Choose a login method:",
-                delegate { DLG_Base.PushNewDialog(new DLG_ServerListing()); },
+                delegate { },
                 delegate { ShowConnectDialogs(); },
                 "Server Browser",
                 "Login"
