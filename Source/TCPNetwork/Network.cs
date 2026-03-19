@@ -31,7 +31,7 @@ namespace TCPNetwork
 
         public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(3);
 
-        public static readonly TimeSpan KeepAliveMaxTime = TimeSpan.FromSeconds(60);
+        public static readonly TimeSpan KeepAliveMaxTime = TimeSpan.FromSeconds(15);
 
         public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAliveManager };
     }

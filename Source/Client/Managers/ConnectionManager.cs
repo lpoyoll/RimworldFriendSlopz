@@ -1,5 +1,6 @@
 using System.Linq;
 using GameClient.Dialogs;
+using GameClient.Hooks.ServerBrowser;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using Shared;
@@ -12,7 +13,7 @@ namespace GameClient.Managers
         public static void ShowWelcomeDialogs() 
         {
             DLG_Base.PushNewDialog(new DLG_YesNo("Choose a login method:",
-                delegate { },
+                delegate { ServerBrowserManager.ConnectToServerBrowser(); },
                 delegate { ShowConnectDialogs(); },
                 "Server Browser",
                 "Login"
