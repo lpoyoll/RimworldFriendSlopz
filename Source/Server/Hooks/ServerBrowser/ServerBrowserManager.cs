@@ -20,6 +20,8 @@ namespace GameServer.Hooks.ServerBrowser
     {
         private static string ServerIPV4 { get; set; } = string.Empty;
 
+        public enum BrowserMode { Normal, Lite }
+
         private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
             MethodInfo method = (MethodInfo)MethodGatherer.ServerMethodDictionary[header][1];
@@ -30,57 +32,49 @@ namespace GameServer.Hooks.ServerBrowser
         {
             Printer.Title(Printer.SeparatorString);
 
-            if (!Master.ServerBrowserConfig.EnableServerBrowser && !Master.ServerBrowserConfig.EnableServerTelemetry)
+            if (!Master.ServerBrowserConfig.EnableServerBrowser)
             {
-                Printer.Warning("Server discovery & telemetry are DISABLED");
+                ConnectToServerBrowser(BrowserMode.Lite);
+                Printer.Warning("Server discovery is DISABLED");
                 Printer.Warning("Please turn the service ON in the settings if you want your server listed publicly");
             }
 
             else
             {
-                if (Master.ServerBrowserConfig.EnableServerBrowser)
+                if (ConnectToServerBrowser(BrowserMode.Normal))
                 {
-                    if (ConnectToServerBrowser())
-                    {
-                        Printer.Warning("Server discovery is ENABLED");
-                        Printer.Warning("The server details are currently being transmitted to the public browser");
-                    }
-
-                    else
-                    {
-                        Printer.Warning("Server discovery is failed to initialize");
-                        Printer.Warning("Your server won't be listed publicly");
-                    }
+                    Printer.Warning("Server discovery is ENABLED");
+                    Printer.Warning("The server details are currently being transmitted to the public browser");
                 }
 
                 else
                 {
-                    Printer.Warning("Server discovery is DISABLED");
-                    Printer.Warning("Please turn the service ON in the settings if you want your server listed publicly");
+                    Printer.Warning("Server discovery is currently unavailable");
+                    Printer.Warning("Your server won't be listed publicly");
                 }
             }
 
             Printer.Title(Printer.SeparatorString);
         }
 
-        private static bool ConnectToServerBrowser()
+        private static bool ConnectToServerBrowser(BrowserMode mode)
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient("127.0.0.1", 7777), new NetworkRuleset(null, null, OnReadPacket, null));
+                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, null, OnReadPacket, null));
                 Network.BrowserEndpoint = client.Listener;
-                SetupConnection();
+                SetupConnection(mode);
                 return true;
             }
 
             catch (Exception ex) 
             { 
-                Printer.Error(ex);
+                Printer.Error(ex, CommonEnumerators.LogImportanceMode.Extreme);
                 return false;
             }
         }
 
-        private static async void SetupConnection()
+        private static async void SetupConnection(BrowserMode mode)
         {
             ServerIPV4 = await GetPublicIP();
 
@@ -90,6 +84,7 @@ namespace GameServer.Hooks.ServerBrowser
             telemetry.Endpoint = ServerIPV4;
             telemetry.Port = Master.ServerConfig.Port;
             telemetry.Mods = Master.ModConfig.ModConfigs;
+            telemetry.IsPrivate = mode == BrowserMode.Lite;
             telemetry.Hash = Hasher.GetHashFromString($"{telemetry.Endpoint}:{telemetry.Port}");
 
             SendTelemetry(telemetry);
@@ -102,7 +97,6 @@ namespace GameServer.Hooks.ServerBrowser
                 telemetry.Population = ServerNetwork.GetConnectedClients().Length;
                 Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
                 Thread.Sleep(Network.BrowserTelemetryInterval);
-                Printer.Warning(ServerIPV4);
             }
         }
 

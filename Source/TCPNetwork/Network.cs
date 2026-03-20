@@ -25,6 +25,10 @@ namespace TCPNetwork
 
         public static TcpListener ServerListener { get; set; } = null;
 
+        public static string BrowserIp { get; set; } = "127.0.0.1";
+
+        public static int BrowserPort { get; set; } = 7777;
+
         public static List<ServerClient> ServerClients { get; private set; } = new List<ServerClient>();
 
         public static readonly TimeSpan BrowserTelemetryInterval = TimeSpan.FromSeconds(60);

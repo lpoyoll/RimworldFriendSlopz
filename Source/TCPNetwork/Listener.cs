@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.Remoting.Contexts;
 using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,13 +18,11 @@ namespace TCPNetwork
 {
     public class Listener
     {
-        public enum ListenerMode { Client, Server }
-
         private ServerClient TargetClient { get; set; } = null;
 
-        public TcpClient Connection { get; set; } = null;
+        private TcpClient Connection { get; set; } = null;
 
-        public NetworkStream Stream { get; set; } = null;
+        private NetworkStream Stream { get; set; } = null;
 
         private NetworkRuleset Ruleset { get; set; } = null;
 
@@ -33,7 +32,7 @@ namespace TCPNetwork
 
         private bool SeveredConnection { get; set; } = false;
         
-        public DateTime LastKAPacket { get; set; } = DateTime.Now;
+        private DateTime LastKAPacket { get; set; } = DateTime.Now;
 
         private Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
@@ -69,8 +68,10 @@ namespace TCPNetwork
         {
             try
             {
+                int readBytes = 0;
                 byte[] headerBuffer = new byte[sizeof(PacketHeader)];
                 byte[] lengthBuffer = new byte[Network.PacketLengthSizeInBytes];
+                byte[] packetBuffer = new byte[Network.PacketLengthSizeInBytes];
 
                 while (!IsDisconnecting)
                 {
@@ -86,8 +87,12 @@ namespace TCPNetwork
                         Stream.Read(lengthBuffer, 0, Network.PacketLengthSizeInBytes);
 
                         // Read packet contents
-                        var packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
-                        ReadFullPacket(packetBuffer);
+                        readBytes = 0;
+                        packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
+                        while (readBytes < packetBuffer.Length) readBytes += Stream.Read(packetBuffer, readBytes, packetBuffer.Length - readBytes);
+
+                        // Reset KeepAlive
+                        LastKAPacket = DateTime.Now;
 
                         // Log packet contents
                         if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
@@ -175,22 +180,6 @@ namespace TCPNetwork
             catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
 
             Disconnect();
-        }
-
-        private void ReadFullPacket(byte[] content)
-        {
-            int readBytes = 0;
-
-            try
-            {
-                while (readBytes < content.Length)
-                {
-                    int read = Stream.Read(content, readBytes, content.Length - readBytes);
-                    if (read == 0) throw new ArgumentOutOfRangeException();
-                    readBytes += read;
-                }
-            }
-            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
         }
 
         public void MarkForDisconnect() { IsDisconnecting = true; }

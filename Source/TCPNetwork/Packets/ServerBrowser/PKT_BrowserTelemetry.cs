@@ -21,6 +21,8 @@ namespace TCPNetwork.Packets.ServerBrowser
 
         public int Population { get; set; } = int.MaxValue;
 
+        public bool IsPrivate { get; set; } = false;
+
         public List<ModConfig> Mods { get; set; } = new List<ModConfig>();
     }
 }

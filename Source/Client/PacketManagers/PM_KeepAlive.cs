@@ -18,12 +18,7 @@ namespace GameClient.PacketManagers
         public static int CurrentPing { get; set; } = int.MaxValue;
 
         [HandlesPacket(PacketHeader.KeepAliveManager)]
-        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
-        {
-            Network.ServerEndpoint.LastKAPacket = DateTime.Now;
-
-            ComparePing();
-        }
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) { ComparePing(); }
 
         [OnSessionStart]
         private static void StartTimer() { LatencyStopwatch.Restart(); }

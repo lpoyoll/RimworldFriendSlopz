@@ -35,9 +35,7 @@ namespace GameServer.Hooks.TCPNetwork
             catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
         };
 
-        public ServerNetwork() { Start(); }
-
-        private void Start()
+        public ServerNetwork() 
         {
             Network.Ip = Master.ServerConfig.IP;
             Network.Port = Master.ServerConfig.Port;

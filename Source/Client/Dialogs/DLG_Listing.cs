@@ -7,11 +7,15 @@ namespace GameClient.Dialogs
 {
     public class DLG_Listing : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(500f, 400f);
+        public override Vector2 InitialSize => new Vector2(350f, 400f);
 
-        public string[] Elements { get; private set; }
+        public string[] Elements { get; private set; } = null;
 
-        public DLG_Listing(string title, string description, string[] elements, Action actionOK = null)
+        private string ButtonText { get; set; } = "OK";
+
+        private string ButtonText2 { get; set; } = "Close";
+
+        public DLG_Listing(string title, string description, string[] elements, Action actionOK = null, string buttonText = null, string buttonText2 = null)
         {
             this.Title = title;
             this.Description = description;
@@ -20,6 +24,9 @@ namespace GameClient.Dialogs
 
             closeOnAccept = false;
             closeOnCancel = false;
+
+            if (buttonText != null) ButtonText = buttonText;
+            if (buttonText2 != null) ButtonText2 = buttonText2;
         }
 
         public override void DoWindowContents(Rect rect)
@@ -43,9 +50,14 @@ namespace GameClient.Dialogs
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - SlimButtonSize.y - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - SlimButtonSize.x / 2, rect.yMax - SlimButtonSize.y), SlimButtonSize), "OK"))
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), ButtonText))
             {
                 if (OnAccept != null) OnAccept.Invoke();
+                Close();
+            }
+
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), ButtonText2))
+            {
                 Close();
             }
         }

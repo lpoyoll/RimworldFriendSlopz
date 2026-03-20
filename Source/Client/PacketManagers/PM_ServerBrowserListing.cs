@@ -1,4 +1,5 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Hooks.TCPNetwork;
 using Shared;
 using Shared.Files.Configs.Mods;
 using Shared.Misc;
@@ -30,12 +31,25 @@ namespace GameClient.PacketManagers
                 PKT_BrowserTelemetry selectedServer = listing.Listings[DLG_ListingWithButton.DialogButtonListingResultInt];
 
                 List<string> modNames = new List<string>();
-                foreach (ModConfig mod in selectedServer.Mods) modNames.Add(mod.FileName);
-                DLG_Base.PushNewDialog(new DLG_Listing(selectedServer.Name, "Server Mods", modNames.ToArray()));
+                foreach (ModConfig mod in selectedServer.Mods.Where(fetch => fetch.Type != ModConfigFile.ModType.Forbidden)) modNames.Add(mod.FileName);
+
+                DLG_Listing dialog = new DLG_Listing(selectedServer.Name, "Server Mods", modNames.ToArray(), 
+                    delegate { ConnectToServer(selectedServer); }, "Connect");
+
+                DLG_Base.PushNewDialog(dialog);
             };
 
             DLG_Wait.Instance.Close();
             DLG_Base.PushNewDialog(new DLG_ListingWithButton(title, description, serverNames.ToArray(), r1));
+        }
+
+        private void ConnectToServer(PKT_BrowserTelemetry telemetry)
+        {
+            Network.Ip = telemetry.Endpoint;
+            Network.Port = telemetry.Port;
+
+            DLG_Base.PushNewDialog(new DLG_Wait("Trying to connect to server"));
+            ClientNetwork _ = new ClientNetwork();
         }
     }
 }
