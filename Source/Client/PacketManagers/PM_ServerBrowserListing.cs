@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using GameClient.Dialogs;
+using Shared;
 using Shared.Misc;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,14 @@ namespace GameClient.PacketManagers
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_BrowserListing listing = Serializer.ConvertBytesToObject<PKT_BrowserListing>(bytes);
-            Printer.Warning(listing.Listings.Count());
+
+            string title = "Server Browser";
+            string description = "Current available servers on the browser";
+            List<string> serverNames = new List<string>();
+            foreach (PKT_BrowserTelemetry telemetry in listing.Listings) serverNames.Add(telemetry.Name);
+
+            DLG_Wait.Instance.Close();
+            DLG_Base.PushNewDialog(new DLG_ListingWithButton(title, description, serverNames.ToArray()));
         }
     }
 }

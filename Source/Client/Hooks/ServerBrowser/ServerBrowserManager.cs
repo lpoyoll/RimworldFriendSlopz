@@ -1,4 +1,5 @@
 ﻿using GameClient.Core.Configs;
+using GameClient.Dialogs;
 using GameClient.Misc;
 using Shared;
 using Shared.Misc;
@@ -39,6 +40,10 @@ namespace GameClient.Hooks.ServerBrowser
 
             catch (Exception ex)
             {
+                string title = "ERROR";
+                string[] description = { "Server browser failed to respond in time" };
+                DLG_Base.PushNewDialog(new DLG_Message(title, description));
+
                 Printer.Error(ex);
                 return false;
             }
@@ -46,6 +51,7 @@ namespace GameClient.Hooks.ServerBrowser
 
         private static void AskForServerListings()
         {
+            DLG_Base.PushNewDialog(new DLG_Wait());
             PKT_BrowserListing listing = new PKT_BrowserListing();
             Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserListing, listing);
         }
