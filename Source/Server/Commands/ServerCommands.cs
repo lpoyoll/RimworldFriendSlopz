@@ -177,13 +177,13 @@ namespace GameServer.Commands
         public static void HelpCommandAction()
         {
             Printer.Title($"List of available commands: [{ConsoleCommands.Commands.Count()}]");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
 
             foreach (CommandBase command in ConsoleCommands.Commands.ToList().OrderBy(fetch => fetch.Prefix))
             {
                 Printer.Warning($"{command.Prefix} - {command.Description}");
             }
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
         }
         
         public static void BackupCommandAction()
@@ -216,12 +216,12 @@ namespace GameServer.Commands
         public static void ListCommandAction()
         {
             Printer.Title($"Connected players: [{ServerNetwork.GetConnectedClients().Count()}]");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
             foreach (ServerClient client in ServerNetwork.GetConnectedClients())
             {
                 Printer.Warning($"{client.CurrentIP} - {client.UserFile.Username}");
             }
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
         }
 
         public static void DeepListCommandAction()
@@ -229,12 +229,12 @@ namespace GameServer.Commands
             UserFile[] userFiles = UserManagerH.GetAllUserFiles();
 
             Printer.Title($"Server players: [{userFiles.Count()}]");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
             foreach (UserFile user in userFiles)
             {
                 Printer.Warning($"{user.Username}");
             }
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
         }
 
         public static void OpCommandAction()
@@ -329,9 +329,9 @@ namespace GameServer.Commands
             List<UserFile> userFiles = UserManagerH.GetAllUserFiles().ToList().FindAll(x => x.IsBanned);
 
             Printer.Title($"Banned players: [{userFiles.Count()}]");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
             foreach (UserFile user in userFiles) Printer.Warning($"{user.Username} - {user.LatestIP}");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
         }
 
         public static void BanCommandAction() { UserManager.BanPlayerFromName(ConsoleManager.commandParameters[0]); }
@@ -344,7 +344,7 @@ namespace GameServer.Commands
         {
             ModConfig[] required = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required).ToArray();
             Printer.Title($"Required Mods: {required.Length}");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
             foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required))
             {
                 Printer.Warning(config.FileName);
@@ -352,7 +352,7 @@ namespace GameServer.Commands
 
             ModConfig[] optional = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Optional).ToArray();
             Printer.Title($"Optional Mods: {optional.Length}");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
             foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Optional))
             {
                 Printer.Warning(config.FileName);
@@ -360,7 +360,7 @@ namespace GameServer.Commands
 
             ModConfig[] forbidden = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden).ToArray();
             Printer.Title($"Forbidden Mods: {forbidden.Length}");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
             foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden))
             {
                 Printer.Warning(config.FileName);
@@ -417,9 +417,9 @@ namespace GameServer.Commands
         public static void EventListCommandAction()
         {
             Printer.Title($"Available events: [{EventManagerH.LoadedEvents.Length}]");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
             foreach (EventFile eventFile in EventManagerH.LoadedEvents) Printer.Warning($"{eventFile.DefName}");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
         }
 
         public static void BroadcastCommandAction()
@@ -454,9 +454,9 @@ namespace GameServer.Commands
         public static void WhitelistCommandAction()
         {
             Printer.Title($"Whitelisted usernames: [{Master.Whitelist.WhitelistedUsers.Count()}]");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
             foreach (string str in Master.Whitelist.WhitelistedUsers) Printer.Warning($"{str}");
-            Printer.Title("----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
         }
 
         public static void WhitelistAddCommandAction()

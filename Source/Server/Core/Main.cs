@@ -83,14 +83,14 @@ namespace GameServer.Core
         {
             Printer.Title($"Server version {CommonValues.ExecutableVersion}");
             Printer.Title($"Loading all necessary resources");
-            Printer.Title($"----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
 
             EventManagerH.LoadAllEvents();
             
             GC.Collect();
             GC.WaitForPendingFinalizers();
             Printer.Warning($"{GC.GetTotalAllocatedBytes() / 1024 / 1024}MB in allocation after resource loading", LogImportanceMode.Verbose);
-            Printer.Title($"----------------------------------------", LogImportanceMode.Verbose);
+            Printer.Title(Printer.SeparatorString, LogImportanceMode.Verbose);
         }
 
         private static void LoadFiles()

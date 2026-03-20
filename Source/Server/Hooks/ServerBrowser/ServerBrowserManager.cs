@@ -25,7 +25,7 @@ namespace GameServer.Hooks.ServerBrowser
 
         public static void StartFeature()
         {
-            Printer.Title($"----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
 
             if (!Master.ServerBrowserConfig.EnableServerBrowser && !Master.ServerBrowserConfig.EnableServerTelemetry)
             {
@@ -57,7 +57,7 @@ namespace GameServer.Hooks.ServerBrowser
                 }
             }
 
-            Printer.Title($"----------------------------------------");
+            Printer.Title(Printer.SeparatorString);
         }
 
         private static bool ConnectToServerBrowser()

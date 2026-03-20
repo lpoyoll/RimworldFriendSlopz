@@ -44,7 +44,7 @@ namespace Shared
                 if (attribute != null) AddMethod(attribute.header, type, method, assembly);
             }
 
-            if (assembly == CommonEnumerators.AssemblyType.Server) Printer.Title($"----------------------------------------", LogImportanceMode.Extreme);
+            if (assembly == CommonEnumerators.AssemblyType.Server) Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
         }
 
         private static Type[] GetAllGameTypes()
