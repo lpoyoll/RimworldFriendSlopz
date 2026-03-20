@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared.Files.Configs.Mods;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,5 +20,7 @@ namespace TCPNetwork.Packets.ServerBrowser
         public int Port { get; set; } = int.MaxValue;
 
         public int Population { get; set; } = int.MaxValue;
+
+        public List<ModConfig> Mods { get; set; } = new List<ModConfig>();
     }
 }

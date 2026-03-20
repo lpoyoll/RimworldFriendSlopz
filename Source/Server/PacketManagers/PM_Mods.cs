@@ -26,7 +26,7 @@ namespace GameServer.PacketManager
             }
         }
 
-        private static void SaveModConfig(ServerClient client, ModsConfigFile file)
+        private static void SaveModConfig(ServerClient client, ModConfigFile file)
         {
             if (Master.WorldValues != null && !client.UserFile.IsAdmin)
             {
@@ -37,7 +37,7 @@ namespace GameServer.PacketManager
             else
             {
                 Master.ModConfig = file;
-                ModsConfigFile.Save(ModsConfigFile.SavePath, file);
+                ModConfigFile.Save(ModConfigFile.SavePath, file);
                 InformationDisplayer.DisplaySetMods(client);
             }
         }
@@ -48,7 +48,7 @@ namespace GameServer.PacketManager
 
             //Check if missing required mods
 
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required))
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Required))
             {
                 ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
                 if (toFind == null)
@@ -63,7 +63,7 @@ namespace GameServer.PacketManager
             foreach (ModConfig config in loginData._runningMods.ModConfigs)
             {
                 ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName 
-                    && (fetch.Type == ModsConfigFile.ModType.Required || fetch.Type == ModsConfigFile.ModType.Optional));
+                    && (fetch.Type == ModConfigFile.ModType.Required || fetch.Type == ModConfigFile.ModType.Optional));
 
                 if (toFind == null)
                 {

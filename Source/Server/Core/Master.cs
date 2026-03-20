@@ -63,7 +63,7 @@ namespace GameServer.Core
 
         public static BackupsConfigFile BackupConfig { get; set; } = null;
 
-        public static ModsConfigFile ModConfig { get; set; } = null;
+        public static ModConfigFile ModConfig { get; set; } = null;
 
         public static ChatConfigFile ChatConfig { get; set; } = null;
 

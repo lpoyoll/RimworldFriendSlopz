@@ -46,7 +46,7 @@ namespace GameServer.Core
             PlanetConfigFile.SavePath = Path.Combine(Master.AssetsPath, "WorldValuesFile.json");
             StorytellerConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
             ScenarioConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
-            ModsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ModConfig.json");
+            ModConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ModConfig.json");
             DifficultyConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
             ServerBrowserConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ServerBrowserConfig.json");
             WhitelistConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
@@ -102,7 +102,7 @@ namespace GameServer.Core
             Master.ScenarioValues = (ScenarioConfigFile)ScenarioConfigFile.Load<ScenarioConfigFile>(ScenarioConfigFile.SavePath);
             Master.StorytellerValues = (StorytellerConfigFile)StorytellerConfigFile.Load<StorytellerConfigFile>(StorytellerConfigFile.SavePath);
             Master.BackupConfig = (BackupsConfigFile)BackupsConfigFile.Load<BackupsConfigFile>(BackupsConfigFile.SavePath);
-            Master.ModConfig = (ModsConfigFile)ModsConfigFile.Load<ModsConfigFile>(ModsConfigFile.SavePath);
+            Master.ModConfig = (ModConfigFile)ModConfigFile.Load<ModConfigFile>(ModConfigFile.SavePath);
             Master.ChatConfig = (ChatConfigFile)ChatConfigFile.Load<ChatConfigFile>(ChatConfigFile.SavePath);
             Master.WorldValues = (PlanetConfigFile)PlanetConfigFile.Load<PlanetConfigFile>(PlanetConfigFile.SavePath, true, false);
             Master.ServerBrowserConfig = (ServerBrowserConfigFile)ServerBrowserConfigFile.Load<ServerBrowserConfigFile>(ServerBrowserConfigFile.SavePath);

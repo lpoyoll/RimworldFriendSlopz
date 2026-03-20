@@ -1,5 +1,6 @@
 ﻿using GameClient.Dialogs;
 using Shared;
+using Shared.Files.Configs.Mods;
 using Shared.Misc;
 using System;
 using System.Collections.Generic;
@@ -26,8 +27,11 @@ namespace GameClient.PacketManagers
 
             Action r1 = delegate
             {
-                PKT_BrowserTelemetry selected = listing.Listings[DLG_ListingWithButton.DialogButtonListingResultInt];
-                DLG_Base.PushNewDialog(new DLG_Message(selected.Name, new string[] { selected.Description })); 
+                PKT_BrowserTelemetry selectedServer = listing.Listings[DLG_ListingWithButton.DialogButtonListingResultInt];
+
+                List<string> modNames = new List<string>();
+                foreach (ModConfig mod in selectedServer.Mods) modNames.Add(mod.FileName);
+                DLG_Base.PushNewDialog(new DLG_Listing(selectedServer.Name, "Server Mods", modNames.ToArray()));
             };
 
             DLG_Wait.Instance.Close();

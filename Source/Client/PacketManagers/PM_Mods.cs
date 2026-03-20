@@ -15,7 +15,7 @@ using TCPNetwork.Packets;
 using Verse;
 using Verse.Steam;
 using static Shared.CommonEnumerators;
-using static Shared.Files.Configs.Mods.ModsConfigFile;
+using static Shared.Files.Configs.Mods.ModConfigFile;
 using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient.PacketManagers
@@ -70,9 +70,9 @@ namespace GameClient.PacketManagers
 
     public class ModManagerH
     {
-        public static ModsConfigFile GetRunningModList()
+        public static ModConfigFile GetRunningModList()
         {
-            ModsConfigFile configFile = new ModsConfigFile();
+            ModConfigFile configFile = new ModConfigFile();
 
             ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
             foreach (ModContentPack mod in runningMods)
@@ -92,9 +92,9 @@ namespace GameClient.PacketManagers
                 data._extraDetails.ToArray()));
         }
 
-        public static ModsConfigFile SortModsIntoCategories(string[] modNames, int[] categoryIndexes)
+        public static ModConfigFile SortModsIntoCategories(string[] modNames, int[] categoryIndexes)
         {
-            ModsConfigFile configFile = new ModsConfigFile();
+            ModConfigFile configFile = new ModConfigFile();
 
             for (int i = 0; i < modNames.Length; i++)
             {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Shared.Files.Configs.Mods.ModsConfigFile;
+using static Shared.Files.Configs.Mods.ModConfigFile;
 
 namespace Shared.Files.Configs.Mods
 {

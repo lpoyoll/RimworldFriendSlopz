@@ -1,6 +1,7 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using Shared;
+using Shared.Files.Configs.Mods;
 using Shared.Misc;
 using System;
 using System.Collections.Generic;
@@ -88,6 +89,7 @@ namespace GameServer.Hooks.ServerBrowser
                 telemetry.Port = Master.ServerConfig.Port;
                 telemetry.Population = ServerNetwork.GetConnectedClients().Length;
                 telemetry.Hash = Hasher.GetHashFromString($"{telemetry.Endpoint}:{telemetry.Port}");
+                telemetry.Mods = Master.ModConfig.ModConfigs;
 
                 Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
                 Thread.Sleep(Network.BrowserTelemetryInterval);

@@ -10,7 +10,7 @@ namespace TCPNetwork.Packets
 
         public string _password { get; set; } = string.Empty;
 
-        public ModsConfigFile _runningMods { get; set; } = null;
+        public ModConfigFile _runningMods { get; set; } = null;
 
         public LoginResponse _tryResponse { get; set; } = LoginResponse.Invalid;
 

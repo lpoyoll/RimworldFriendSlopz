@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Shared.Files.Configs.Mods
 {
-    public class ModsConfigFile : BaseFile
+    public class ModConfigFile : BaseFile
     {
         public static string SavePath { get; set; } = string.Empty;
 

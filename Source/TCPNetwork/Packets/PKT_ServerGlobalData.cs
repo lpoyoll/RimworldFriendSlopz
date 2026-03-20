@@ -39,6 +39,6 @@ namespace TCPNetwork.Packets
 
         public PollutionDetail[] _pollutedTiles { get; set; } = null;
 
-        public ModsConfigFile _modConfigs { get; set; } = null;
+        public ModConfigFile _modConfigs { get; set; } = null;
     }
 }

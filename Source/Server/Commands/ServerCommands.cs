@@ -342,29 +342,32 @@ namespace GameServer.Commands
 
         public static void ModListCommandAction()
         {
-            ModConfig[] required = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required).ToArray();
+            ModConfig[] required = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Required).ToArray();
             Printer.Title($"Required Mods: {required.Length}");
             Printer.Title(Printer.SeparatorString);
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Required))
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Required))
             {
                 Printer.Warning(config.FileName);
             }
+            Printer.Title(Printer.SeparatorString);
 
-            ModConfig[] optional = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Optional).ToArray();
+            ModConfig[] optional = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Optional).ToArray();
             Printer.Title($"Optional Mods: {optional.Length}");
             Printer.Title(Printer.SeparatorString);
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Optional))
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Optional))
             {
                 Printer.Warning(config.FileName);
             }
+            Printer.Title(Printer.SeparatorString);
 
-            ModConfig[] forbidden = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden).ToArray();
+            ModConfig[] forbidden = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Forbidden).ToArray();
             Printer.Title($"Forbidden Mods: {forbidden.Length}");
             Printer.Title(Printer.SeparatorString);
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModsConfigFile.ModType.Forbidden))
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Forbidden))
             {
                 Printer.Warning(config.FileName);
             }
+            Printer.Title(Printer.SeparatorString);
         }
 
         public static void EventCommandAction()
