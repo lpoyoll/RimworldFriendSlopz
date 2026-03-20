@@ -43,7 +43,7 @@ namespace GameClient.Patches.Pages
             if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, DLG_Base.SmallButtonSize, DLG_Base.RectLocation.BottomLeft), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
             {
                 __instance.Close();
-                Network.ServerEndpoint.Disconnect();
+                Network.ServerEndpoint.MarkForDisconnect();
             }
             
             if (!SessionHandler.IsGeneratingFreshWorld && SessionHandler.CurrentStoryteller.IsEnforced)

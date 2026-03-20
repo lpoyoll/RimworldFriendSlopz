@@ -320,7 +320,7 @@ namespace GameServer.Commands
                 return;
             }
 
-            toFind.Listener.Disconnect();
+            toFind.Listener.MarkForDisconnect();
             Printer.Warning($"User '{toFind.UserFile.Username}' has been kicked from the server");
         }
 

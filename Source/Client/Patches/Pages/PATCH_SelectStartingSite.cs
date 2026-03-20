@@ -71,7 +71,7 @@ namespace GameClient.Patches.Pages
         private static void Helper()
         {
             SceneManager.LoadScene(0);
-            Network.ServerEndpoint.Disconnect();
+            Network.ServerEndpoint.MarkForDisconnect();
         }
     }
 }

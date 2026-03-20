@@ -52,7 +52,7 @@ namespace GameServer.PacketManager
                 return;
             }
 
-            client.Listener.Disconnect();
+            client.Listener.MarkForDisconnect();
             ResetPlayerData(client, client.UserFile.Username);
         }
 
@@ -60,7 +60,7 @@ namespace GameServer.PacketManager
         {
             BackupManager.BackupUser(username);
 
-            if (client != null) client.Listener.Disconnect();
+            if (client != null) client.Listener.MarkForDisconnect();
 
             // Delete save file
             try { File.Delete(Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat)); }
@@ -102,7 +102,7 @@ namespace GameServer.PacketManager
             using (FileStream stream = new FileStream(savePath, FileMode.Create, FileAccess.Write)) stream.Write(data._fileBytes);
 
             InformationDisplayer.DisplaySaveGame(client);
-            if (data._forceDisconnect) client.Listener.Disconnect();
+            if (data._forceDisconnect) client.Listener.MarkForDisconnect();
         }
     }
 }

@@ -30,8 +30,12 @@ namespace TCPNetwork
         private ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
 
         private bool IsDisconnecting { get; set; } = false;
+
+        private bool SeveredConnection { get; set; } = false;
         
         public DateTime LastKAPacket { get; set; } = DateTime.Now;
+
+        private Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
         public Listener(ServerClient clientToUse, TcpClient connection, NetworkRuleset ruleset)
         {
@@ -85,9 +89,11 @@ namespace TCPNetwork
                         var packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
                         ReadFullPacket(packetBuffer);
 
+                        // Log packet contents
                         if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
                         else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
+                        // Execute ruleset action
                         try { Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient); }
                         catch (Exception e) { Printer.Warning(e, LogImportanceMode.Normal); }
                     }
@@ -105,7 +111,8 @@ namespace TCPNetwork
             try
             {
                 byte[] headerBuffer = new byte[sizeof(PacketHeader)];
-                while (!IsDisconnecting)
+
+                while (Connection.Client != null)
                 {
                     Thread.Sleep(1);
 
@@ -113,6 +120,7 @@ namespace TCPNetwork
                     {
                         if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
                         byte[] packetSize = BitConverter.GetBytes(packetData.Value.Length);
+
                         // Write packet header
                         headerBuffer[0] = packetData.Key;
                         Stream.Write(headerBuffer, 0, sizeof(PacketHeader));
@@ -124,7 +132,7 @@ namespace TCPNetwork
                         Stream.Write(packetData.Value, 0, packetData.Value.Length);
 
                         //Log the packet data
-                        if (!Network.IgnoreLogPackets.Contains((PacketHeader)(packetData.Key))) Printer.Message($"[Packet] Sent packet > {(PacketHeader)(packetData.Key)}", LogImportanceMode.Verbose);
+                        if (!Network.IgnoreLogPackets.Contains((PacketHeader)(packetData.Key))) Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Verbose);
                         else Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Extreme);
 
                         //Execute after writing
@@ -161,10 +169,7 @@ namespace TCPNetwork
                 {
                     Thread.Sleep(Network.KeepAliveInterval);
                     DateTime current = DateTime.Now;
-                    if (current - LastKAPacket > Network.KeepAliveMaxTime)
-                    {
-                        break;
-                    }
+                    if (current - LastKAPacket > Network.KeepAliveMaxTime) break;
                 }
             }
             catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
@@ -188,17 +193,27 @@ namespace TCPNetwork
             catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
         }
 
-        public void Disconnect()
+        public void MarkForDisconnect() { IsDisconnecting = true; }
+
+        private void Disconnect()
         {
-            if (IsDisconnecting) return;
+            Semaphore.WaitOne();
+
+            while (PacketQueue.Count > 0) Thread.Sleep(1);
+            Thread.Sleep(1000);
+
+            if (SeveredConnection) return;
             else
             {
-                IsDisconnecting = true;
+                MarkForDisconnect();
                 Connection.Dispose();
                 Stream.Dispose();
 
                 Ruleset.OnDisconnect?.Invoke(TargetClient);
+                SeveredConnection = true;
             }
+
+            Semaphore.Release();
         }
     }
 }

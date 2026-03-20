@@ -130,7 +130,7 @@ namespace GameServer.PacketManager
             else if (response == LoginResponse.Version) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
 
             client.Listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
-            client.Listener.Disconnect();
+            client.Listener.MarkForDisconnect();
         }
     }
 }
