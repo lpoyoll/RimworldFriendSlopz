@@ -18,6 +18,8 @@ namespace GameServer.Hooks.ServerBrowser
 {
     public static class ServerBrowserManager
     {
+        private static string ServerIPV4 { get; set; } = string.Empty;
+
         private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
             MethodInfo method = (MethodInfo)MethodGatherer.ServerMethodDictionary[header][1];
@@ -67,7 +69,7 @@ namespace GameServer.Hooks.ServerBrowser
             {
                 ServerClient client = new ServerClient(new TcpClient("127.0.0.1", 7777), new NetworkRuleset(null, null, OnReadPacket, null));
                 Network.BrowserEndpoint = client.Listener;
-                Task.Run(delegate { SendTelemetry(); });
+                SetupConnection();
                 return true;
             }
 
@@ -78,21 +80,38 @@ namespace GameServer.Hooks.ServerBrowser
             }
         }
 
-        private static void SendTelemetry()
+        private static async void SetupConnection()
+        {
+            ServerIPV4 = await GetPublicIP();
+
+            PKT_BrowserTelemetry telemetry = new PKT_BrowserTelemetry();
+            telemetry.Name = Master.ServerConfig.Name;
+            telemetry.Description = Master.ServerConfig.Description;
+            telemetry.Endpoint = ServerIPV4;
+            telemetry.Port = Master.ServerConfig.Port;
+            telemetry.Mods = Master.ModConfig.ModConfigs;
+            telemetry.Hash = Hasher.GetHashFromString($"{telemetry.Endpoint}:{telemetry.Port}");
+
+            SendTelemetry(telemetry);
+        }
+
+        private static void SendTelemetry(PKT_BrowserTelemetry telemetry)
         {
             while (true)
             {
-                PKT_BrowserTelemetry telemetry = new PKT_BrowserTelemetry();
-                telemetry.Name = Master.ServerConfig.Name;
-                telemetry.Description = Master.ServerConfig.Description;
-                telemetry.Endpoint = null;
-                telemetry.Port = Master.ServerConfig.Port;
                 telemetry.Population = ServerNetwork.GetConnectedClients().Length;
-                telemetry.Hash = Hasher.GetHashFromString($"{telemetry.Endpoint}:{telemetry.Port}");
-                telemetry.Mods = Master.ModConfig.ModConfigs;
-
                 Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
                 Thread.Sleep(Network.BrowserTelemetryInterval);
+                Printer.Warning(ServerIPV4);
+            }
+        }
+
+        private static async Task<string> GetPublicIP()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                string address = await client.GetStringAsync("https://api.ipify.org");
+                return address;
             }
         }
     }
