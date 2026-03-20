@@ -24,8 +24,14 @@ namespace GameClient.PacketManagers
             List<string> serverNames = new List<string>();
             foreach (PKT_BrowserTelemetry telemetry in listing.Listings) serverNames.Add(telemetry.Name);
 
+            Action r1 = delegate
+            {
+                PKT_BrowserTelemetry selected = listing.Listings[DLG_ListingWithButton.DialogButtonListingResultInt];
+                DLG_Base.PushNewDialog(new DLG_Message(selected.Name, new string[] { selected.Description })); 
+            };
+
             DLG_Wait.Instance.Close();
-            DLG_Base.PushNewDialog(new DLG_ListingWithButton(title, description, serverNames.ToArray()));
+            DLG_Base.PushNewDialog(new DLG_ListingWithButton(title, description, serverNames.ToArray(), r1));
         }
     }
 }
