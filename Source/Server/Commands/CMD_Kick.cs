@@ -26,7 +26,7 @@ namespace GameServer.Commands
             if (toFind == null) Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' was not found");
             else
             {
-                toFind.Listener.Disconnect();
+                toFind.Listener.MarkForDisconnect();
                 Printer.Warning($"User '{toFind.UserFile.Username}' has been kicked from the server");
             }
         }
