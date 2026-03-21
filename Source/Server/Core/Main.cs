@@ -14,6 +14,7 @@ using Shared.Files;
 using GameServer.PacketManager;
 using GameServer.Files;
 using GameServer.Hooks.ServerBrowser;
+using GameServer.Commands;
 
 namespace GameServer.Core
 {
@@ -29,6 +30,7 @@ namespace GameServer.Core
             LoadFiles();
             LoadResources();
             CheckForFirstBoot();
+            CMD_Base.GetAllCommands();
 
             MethodGatherer.CacheAllMethods(AssemblyType.Server);
             MethodGatherer.CacheAllPackets(AssemblyType.Server);
@@ -36,7 +38,7 @@ namespace GameServer.Core
 
             ServerNetwork _ = new ServerNetwork();
             ServerBrowserManager.StartFeature();
-            while (true) ConsoleManager.ListenForServerCommands();
+            while (true) CMD_Base.ListenForCommands();
         }
 
         private static void SetPaths()

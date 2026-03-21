@@ -29,7 +29,7 @@ namespace GameServer.Managers
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(username);
             ServerClient client = ServerNetwork.GetConnectedClientFromUsername(username);
-            if (userFile == null || client == null) ConsoleCommandActions.ThrowUserNotFoundError();
+            if (userFile == null || client == null) Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' was not found");
             else
             {
                 if (userFile.IsBanned) Printer.Warning($"User '{userFile.Username}' is already banned from the server");
@@ -45,7 +45,7 @@ namespace GameServer.Managers
         public static void PardonPlayerFromName(string username)
         {
             UserFile userFile = UserManagerH.GetUserFileFromName(username);
-            if (userFile == null) ConsoleCommandActions.ThrowUserNotFoundError();
+            if (userFile == null) Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' was not found");
             else
             {
                 if (!userFile.IsBanned) Printer.Warning($"User '{userFile.Username}' is not banned from the server");
