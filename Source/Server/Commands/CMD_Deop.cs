@@ -1,0 +1,51 @@
+﻿using GameServer.Hooks.TCPNetwork;
+using GameServer.Managers;
+using Shared;
+using Shared.Misc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
+using static Shared.CommonEnumerators;
+
+namespace GameServer.Commands
+{
+    public class CMD_Deop : CMD_Base
+    {
+        public CMD_Deop()
+        {
+            Prefix = "deop";
+            Description = "Removes admin privileges from the selected player";
+            ParameterCount = 1;
+        }
+
+        public override void Action()
+        {
+            UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Username == CMD_Base.CommandParameters[0]).FirstOrDefault();
+
+            if (toFind == null) Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' was not found");
+            else
+            {
+                if (toFind.IsAdmin) Printer.Warning($"User '{toFind.Username}' was not an admin");
+                else
+                {
+                    toFind.UpdateAdmin(false);
+                    ServerClient client = ServerNetwork.GetConnectedClientFromUsername(toFind.Username);
+                    if (client != null)
+                    {
+                        PKT_Command commandData = new PKT_Command();
+                        commandData._commandMode = CommandMode.Deop;
+
+                        client.UserFile.UpdateAdmin(false);
+                        client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                    }
+
+                    Printer.Warning($"User '{toFind.Username}' is no longer an admin");
+                }
+            }
+        }
+    }
+}

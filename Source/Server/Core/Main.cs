@@ -12,6 +12,7 @@ using GameServer.Hooks.TCPNetwork;
 using GameServer.Hooks.Shared;
 using Shared.Files;
 using GameServer.PacketManager;
+using GameServer.Commands;
 
 namespace GameServer.Core
 {
@@ -26,6 +27,7 @@ namespace GameServer.Core
             LoadFiles();
             SetCulture();
             LoadResources();
+            CMD_Base.GetAllCommands();
 
             if (!File.Exists(ServerConfigFile.SavePath))
             {
@@ -40,7 +42,7 @@ namespace GameServer.Core
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
             ServerNetwork _ = new ServerNetwork();
-            while (true) ConsoleManager.ListenForServerCommands();
+            while (true) CMD_Base.ListenForCommands();
         }
 
         public static void SetPaths()
