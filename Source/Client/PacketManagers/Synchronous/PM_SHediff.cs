@@ -1,20 +1,21 @@
 ﻿using GameClient;
+using GameClient.Hooks.Synchronous;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using Shared;
-using Synchronous.Misc;
-using Synchronous.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
 using Verse;
 
-namespace Synchronous.Managers
+namespace GameClient.PacketManagers.Synchronous
 {
-    public static class PM_SHediff
+    public class PM_SHediff : PM_Base
     {
         public static void Ask(Hediff hediff, BodyPartRecord bodyPart, Pawn pawn, PlayerHediff.HediffMode mode, float tendQuality = -1)
         {
@@ -28,11 +29,15 @@ namespace Synchronous.Managers
             playerHediff.IsPermanent = hediff.IsPermanent();
             playerHediff.TendQuality = tendQuality;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SPlayerHediff, Serializer.ConvertObjectToBytes(playerHediff));
+            PKT_Synchronous packet = new PKT_Synchronous();
+            packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
+            packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerHediff;
+            packet.Contents = Serializer.ConvertObjectToBytes(playerHediff);
+
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
         }
 
-        [HandlesPacket(PacketHeader.SPlayerHediff)]
-        private static void Receive(byte[] bytes)
+        public static void Handle(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PlayerHediff playerHediff = Serializer.ConvertBytesToObject<PlayerHediff>(bytes);
 
@@ -87,6 +92,11 @@ namespace Synchronous.Managers
                 HediffComp_TendDuration comp = hediff.TryGetComp<HediffComp_TendDuration>();
                 comp.CompTended(data.TendQuality, -1);
             }
+        }
+
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            throw new NotImplementedException();
         }
     }
 }

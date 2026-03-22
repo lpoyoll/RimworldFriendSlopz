@@ -1,5 +1,5 @@
-﻿using GameClient.Misc;
-using Synchronous.Objects;
+﻿using GameClient.Hooks.Synchronous;
+using GameClient.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using Verse.AI;
 
 namespace Synchronous.Misc
 {
-    public static class Converter
+    public static class TypeConverter
     {
         public static string IntVector3ToString(IntVec3 value)
         {
@@ -59,5 +59,9 @@ namespace Synchronous.Misc
 
             return job;
         }
+
+        public static int[] IntVec3ToArray(IntVec3 data) { return new int[] { data.x, data.y, data.z }; }
+
+        public static IntVec3 ArrayToIntVec3(int[] data) { return new IntVec3(data[0], data[1], data[2]); }
     }
 }

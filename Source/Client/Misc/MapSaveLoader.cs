@@ -4,6 +4,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared.Files;
 using Shared.Misc;
+using Synchronous.Misc;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
@@ -27,7 +28,7 @@ namespace GameClient.Misc
 
             mapFile.Tile = map.Tile;
 
-            mapFile.Size = ValueParser.IntVec3ToArray(map.Size);
+            mapFile.Size = TypeConverter.IntVec3ToArray(map.Size);
 
             mapFile.Wealth = (int)map.wealthWatcher.WealthTotal;
 
@@ -48,7 +49,7 @@ namespace GameClient.Misc
 
         public static Map StringToMap(MapFile mapFile, bool enforceIDs = false)
         {
-            Map map = GetOrGenerateMapUtility.GetOrGenerateMap(mapFile.Tile, ValueParser.ArrayToIntVec3(mapFile.Size), null);
+            Map map = GetOrGenerateMapUtility.GetOrGenerateMap(mapFile.Tile, TypeConverter.ArrayToIntVec3(mapFile.Size), null);
 
             ToggleTerrain(OperationType.Set, mapFile, map);
 

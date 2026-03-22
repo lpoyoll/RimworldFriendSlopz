@@ -1,9 +1,9 @@
-﻿using GameClient.Misc;
+﻿using GameClient.Hooks.Synchronous;
+using GameClient.Misc;
+using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
 using Synchronous.Core;
-using Synchronous.Managers;
 using Synchronous.Misc;
-using Synchronous.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;

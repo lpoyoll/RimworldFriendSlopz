@@ -1,15 +1,8 @@
 ﻿using GameClient.Misc;
+using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
 using RimWorld;
 using Synchronous.Core;
-using Synchronous.Managers;
-using Synchronous.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 
 namespace Synchronous.Patches

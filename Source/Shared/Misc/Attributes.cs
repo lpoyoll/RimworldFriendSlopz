@@ -63,16 +63,8 @@ namespace Shared
         ResponseShortcutManager,
         RecountManager,
         InformationManager,
-        SPlayerDraft,
-        SPlayerWeather,
-        SPlayerMentalState,
-        SPlayerGameSpeed,
         ServerBrowserReachability,
         SynchronousManager,
-        SPlayerJob,
-        SPlayerHediff,
-        SPlayerPosition,
-        SPlayerDestroy,
-        LeaderboardManager,
+        LeaderboardManager
     }
 }

@@ -1,22 +1,23 @@
 ﻿using GameClient;
+using GameClient.Hooks.Synchronous;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using RimWorld;
 using Shared;
 using Shared.Misc;
-using Synchronous.Misc;
-using Synchronous.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
 using Verse;
 
-namespace Synchronous.Managers
+namespace GameClient.PacketManagers.Synchronous
 {
-    public static class PM_SGameSpeed
+    public class PM_SGameSpeed : PM_Base
     {
         public static TimeSpeed LatestGameSpeed { get; private set; } = TimeSpeed.Paused;
 
@@ -28,7 +29,13 @@ namespace Synchronous.Managers
                 PlayerGameSpeed data = new PlayerGameSpeed();
                 data.CurrentGameSpeed = (int)TimeSpeed.Paused;
                 data.TimeTicks = Find.TickManager.TicksSinceSettle;
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SPlayerGameSpeed, data);
+
+                PKT_Synchronous packet = new PKT_Synchronous();
+                packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
+                packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerGameSpeed;
+                packet.Contents = Serializer.ConvertObjectToBytes(data);
+
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
             }
         }
 
@@ -41,12 +48,16 @@ namespace Synchronous.Managers
                 data.CurrentGameSpeed = (int)speed;
                 data.TimeTicks = Find.TickManager.TicksSinceSettle;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SPlayerGameSpeed, data);
+                PKT_Synchronous packet = new PKT_Synchronous();
+                packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
+                packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerGameSpeed;
+                packet.Contents = Serializer.ConvertObjectToBytes(data);
+
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
             }
         }
 
-        [HandlesPacket(PacketHeader.SPlayerGameSpeed)]
-        private static void Receive(byte[] bytes)
+        public static void Handle(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PlayerGameSpeed data = Serializer.ConvertBytesToObject<PlayerGameSpeed>(bytes);
 
@@ -56,6 +67,11 @@ namespace Synchronous.Managers
                 Find.TickManager.DebugSetTicksGame(data.TimeTicks);
                 LatestGameSpeed = Find.TickManager.CurTimeSpeed;
             });
+        }
+
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            throw new NotImplementedException();
         }
     }
 }

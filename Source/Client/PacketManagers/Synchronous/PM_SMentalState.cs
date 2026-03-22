@@ -1,21 +1,22 @@
 ﻿using GameClient;
+using GameClient.Hooks.Synchronous;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using Shared;
-using Synchronous.Misc;
-using Synchronous.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
 using Verse;
 using Verse.AI;
 
-namespace Synchronous.Managers
+namespace GameClient.PacketManagers.Synchronous
 {
-    public static class PM_SMentalState
+    public class PM_SMentalState : PM_Base
     {
         // We need a reference to the latest mental state so the game doesn't freak out while waiting for the server response
 
@@ -29,11 +30,15 @@ namespace Synchronous.Managers
             playerMentalState.MentalStateByte = value;
             playerMentalState.Mode = mode;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SPlayerMentalState, playerMentalState);
+            PKT_Synchronous packet = new PKT_Synchronous();
+            packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
+            packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerMentalState;
+            packet.Contents = Serializer.ConvertObjectToBytes(playerMentalState);
+
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
         }
 
-        [HandlesPacket(PacketHeader.SPlayerMentalState)]
-        private static void Receive(byte[] bytes)
+        public static void Handle(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PlayerMentalState data = Serializer.ConvertBytesToObject<PlayerMentalState>(bytes);
 
@@ -66,6 +71,11 @@ namespace Synchronous.Managers
                     pawn.MentalState.RecoverFromState();
                 }
             }
+        }
+
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            throw new NotImplementedException();
         }
     }
 }

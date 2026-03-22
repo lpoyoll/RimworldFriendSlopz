@@ -1,5 +1,6 @@
 ﻿using GameClient;
 using GameClient.Core.Configs;
+using GameClient.Hooks.Synchronous;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
@@ -7,7 +8,6 @@ using RimWorld;
 using Shared;
 using Shared.Misc;
 using Synchronous.Misc;
-using Synchronous.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,14 +15,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
 using UnityEngine;
 using UnityEngine.XR;
 using Verse;
 using Verse.AI;
 
-namespace Synchronous.Managers
+namespace GameClient.PacketManagers.Synchronous
 {
-    public static class PM_SJob
+    public class PM_SJob : PM_Base
     {
         private static List<PlayerJob> PlayerJobs { get; set; } = new List<PlayerJob>();
 
@@ -43,7 +45,13 @@ namespace Synchronous.Managers
             {
                 if (PlayerJobs.Count > 0)
                 {
-                    Network.ServerEndpoint.EnqueuePacket(PacketHeader.SPlayerJob, Serializer.ConvertObjectToBytes(PlayerJobs));
+                    PKT_Synchronous packet = new PKT_Synchronous();
+                    packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
+                    packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerJob;
+                    packet.Contents = Serializer.ConvertObjectToBytes(PlayerJobs);
+
+                    Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
+
                     PlayerJobs.Clear();
                 }
 
@@ -59,12 +67,12 @@ namespace Synchronous.Managers
             {
                 PlayerJob newJob = new PlayerJob();
                 newJob.PawnID = pawn.ThingID;
-                newJob.PawnPosition = Converter.IntVector3ToString(pawn.Position);
-                newJob.TargetA = Converter.LocalTargetInfoToString(job.GetTarget(TargetIndex.A));
-                newJob.TargetB = Converter.LocalTargetInfoToString(job.GetTarget(TargetIndex.B));
-                newJob.TargetC = Converter.LocalTargetInfoToString(job.GetTarget(TargetIndex.C));
-                newJob.QueueA = Converter.LocalTargetQueueToString(job.GetTargetQueue(TargetIndex.A));
-                newJob.QueueB = Converter.LocalTargetQueueToString(job.GetTargetQueue(TargetIndex.B));
+                newJob.PawnPosition = TypeConverter.IntVector3ToString(pawn.Position);
+                newJob.TargetA = TypeConverter.LocalTargetInfoToString(job.GetTarget(TargetIndex.A));
+                newJob.TargetB = TypeConverter.LocalTargetInfoToString(job.GetTarget(TargetIndex.B));
+                newJob.TargetC = TypeConverter.LocalTargetInfoToString(job.GetTarget(TargetIndex.C));
+                newJob.QueueA = TypeConverter.LocalTargetQueueToString(job.GetTargetQueue(TargetIndex.A));
+                newJob.QueueB = TypeConverter.LocalTargetQueueToString(job.GetTargetQueue(TargetIndex.B));
                 newJob.Job = ScribeManager.SerializeToString(job, ScribeManager.SerializableType.Other);
 
                 PlayerJobs.Add(newJob);
@@ -77,9 +85,7 @@ namespace Synchronous.Managers
             }
             catch { }
         }
-
-        [HandlesPacket(PacketHeader.SPlayerJob)]
-        private static void Receive(byte[] bytes)
+        public static void Handle(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PlayerJob[] jobs = Serializer.ConvertBytesToObject<PlayerJob[]>(bytes);
 
@@ -90,15 +96,20 @@ namespace Synchronous.Managers
                     try
                     {
                         Job newJob = ScribeManager.SerializeFromString<Job>(playerJob.Job);
-                        newJob = Converter.PlayerJobToJob(newJob, playerJob);
+                        newJob = TypeConverter.PlayerJobToJob(newJob, playerJob);
 
                         Pawn pawn = Finder.GetPawnFromID(SessionHandler.SynchronousMap, playerJob.PawnID);
-                        pawn.SetPositionDirect(Converter.StringToIntVec3(playerJob.PawnPosition));
+                        pawn.SetPositionDirect(TypeConverter.StringToIntVec3(playerJob.PawnPosition));
                         pawn.jobs.StartJob(newJob, JobCondition.InterruptForced);
                     }
                     catch { };
                 }
             });
+        }
+
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            throw new NotImplementedException();
         }
     }
 }

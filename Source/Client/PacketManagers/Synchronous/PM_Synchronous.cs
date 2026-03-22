@@ -21,7 +21,7 @@ using Verse;
 using Verse.Noise;
 using static Shared.CommonEnumerators;
 
-namespace GameClient.Hooks.Synchronous
+namespace GameClient.PacketManagers.Synchronous
 {
     public class PM_Synchronous : PM_Base
     {
@@ -32,7 +32,7 @@ namespace GameClient.Hooks.Synchronous
         {
             PKT_Synchronous data = Serializer.ConvertBytesToObject<PKT_Synchronous>(bytes);
 
-            switch (data._stepMode)
+            switch (data.CurrentStepMode)
             {
                 case PKT_Synchronous.StepMode.Ask:
                     OnAsk(data);
@@ -49,7 +49,52 @@ namespace GameClient.Hooks.Synchronous
                 case PKT_Synchronous.StepMode.Start:
                     StartSession(SynchronousSide.Host);
                     break;
+
+                case PKT_Synchronous.StepMode.Action:
+                    RouteToManager(client, bytes, header, data.CurrentActionType);
+                    break;
             }
+        }
+
+        private static void RouteToManager(ServerClient client, byte[] bytes, PacketHeader header, PKT_Synchronous.ActionType currentAction)
+        {
+            switch (currentAction)
+            {
+                case PKT_Synchronous.ActionType.SPlayerDraft:
+                    PM_SDraft.Handle(client, bytes, header);
+                    break;
+
+                case PKT_Synchronous.ActionType.SPlayerWeather:
+                    PM_SWeather.Handle(client, bytes, header);
+                    break;
+
+                case PKT_Synchronous.ActionType.SPlayerMentalState:
+                    PM_SMentalState.Handle(client, bytes, header);
+                    break;
+
+                case PKT_Synchronous.ActionType.SPlayerGameSpeed:
+                    PM_SGameSpeed.Handle(client, bytes, header);
+                    break;
+
+                case PKT_Synchronous.ActionType.SPlayerJob:
+                    PM_SJob.Handle(client, bytes, header);
+                    break;
+
+                case PKT_Synchronous.ActionType.SPlayerHediff:
+                    PM_SHediff.Handle(client, bytes, header);
+                    break;
+
+                case PKT_Synchronous.ActionType.SPlayerDestroy:
+                    PM_SDestroy.Handle(client, bytes, header);
+                    break;
+            }
+        }
+
+        public static void DenyFeature()
+        {
+            string title = "ERROR";
+            string description = "This feature is only available in preview versions of the mod!";
+            DLG_Base.PushNewDialog(new DLG_Message(title, new string[] { description }));
         }
 
         public static void Ask(int tile, PKT_Synchronous.Type type)
@@ -57,10 +102,10 @@ namespace GameClient.Hooks.Synchronous
             DLG_Base.PushNewDialog(new DLG_Wait());
 
             PKT_Synchronous data = new PKT_Synchronous();
-            data._stepMode = PKT_Synchronous.StepMode.Ask;
-            data._toTile = tile;
-            data._type = type;
-            data._party = GetPawnParty(SynchronousSide.Guest);
+            data.CurrentStepMode = PKT_Synchronous.StepMode.Ask;
+            data.ToTile = tile;
+            data.CurrentType = type;
+            data.Party = GetPawnParty(SynchronousSide.Guest);
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, data);
         }
@@ -78,11 +123,11 @@ namespace GameClient.Hooks.Synchronous
                 MapManager.SendMapToServer(SessionHandler.SynchronousMap);
 
                 PKT_Synchronous _ = new PKT_Synchronous();
-                _._stepMode = PKT_Synchronous.StepMode.Accept;
-                _._type = data._type;
-                _._fromTile = data._toTile;
-                _._toTile = data._fromTile;
-                _._party = GetPawnParty(SynchronousSide.Host);
+                _.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
+                _.CurrentType = data.CurrentType;
+                _.FromTile = data.ToTile;
+                _.ToTile = data.FromTile;
+                _.Party = GetPawnParty(SynchronousSide.Host);
 
                 SpawnOtherPawns(SynchronousSide.Host, data);
 
@@ -92,14 +137,14 @@ namespace GameClient.Hooks.Synchronous
             Action actionNo = delegate
             {
                 PKT_Synchronous _ = new PKT_Synchronous();
-                _._stepMode = PKT_Synchronous.StepMode.Reject;
-                _._fromTile = data._toTile;
-                _._toTile = data._fromTile;
+                _.CurrentStepMode = PKT_Synchronous.StepMode.Reject;
+                _.FromTile = data.ToTile;
+                _.ToTile = data.FromTile;
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, _);
             };
 
-            string description = $"Player '{data._username}' wants to interact, accept?";
+            string description = $"Player '{data.Username}' wants to interact, accept?";
             DLG_Base.PushNewDialog(new DLG_YesNo(description, actionYes, actionNo));
         }
 
@@ -139,7 +184,7 @@ namespace GameClient.Hooks.Synchronous
             else
             {
                 PKT_Synchronous data = new PKT_Synchronous();
-                data._stepMode = PKT_Synchronous.StepMode.Start;
+                data.CurrentStepMode = PKT_Synchronous.StepMode.Start;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, data);
 
                 MainThreadHandler.Instance.DoOnSynchronousStartMethods();
@@ -160,7 +205,7 @@ namespace GameClient.Hooks.Synchronous
             if (side == SynchronousSide.Host) SessionHandler.SynchronousMap = Find.AnyPlayerHomeMap;
             else
             {
-                MapFile file = Serializer.ConvertBytesToObject<MapFile>(data._contents);
+                MapFile file = Serializer.ConvertBytesToObject<MapFile>(data.Contents);
                 SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(file, true);
             }
         }
@@ -183,14 +228,14 @@ namespace GameClient.Hooks.Synchronous
 
         private static void SpawnOtherPawns(SynchronousSide side, PKT_Synchronous data)
         {
-            foreach (string str in data._party.Pawns)
+            foreach (string str in data.Party.Pawns)
             {
                 Pawn pawn = ScribeManager.SerializeFromString<Pawn>(str, ScribeManager.SerializableType.Pawn, true);
 
                 RimworldManager.PlaceThingIntoMap(pawn, SessionHandler.SynchronousMap, 
                     side == SynchronousSide.Host ? SessionHandler.SynchronousMap.Center : pawn.PositionHeld);
 
-                if (data._type == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionHandler.NeutralFaction);
+                if (data.CurrentType == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionHandler.NeutralFaction);
                 else pawn.SetFactionDirect(SessionHandler.EnemyFaction);
             }
         }

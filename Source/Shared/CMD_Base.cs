@@ -29,7 +29,7 @@ namespace Shared
 
         public static void GetAllCommands()
         {
-            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(fetch => fetch.IsSubclassOf(typeof(CMD_Base))))
+            foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.IsSubclassOf(typeof(CMD_Base))))
             {
                 Commands.Add((CMD_Base)Activator.CreateInstance(type));
                 Printer.Warning($"Added command '{type.Name}' to server", CommonEnumerators.LogImportanceMode.Extreme);

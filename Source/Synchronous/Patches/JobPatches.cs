@@ -1,13 +1,7 @@
 ﻿using GameClient.Misc;
+using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
 using Synchronous.Core;
-using Synchronous.Managers;
-using Synchronous.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Verse;
 using Verse.AI;
 

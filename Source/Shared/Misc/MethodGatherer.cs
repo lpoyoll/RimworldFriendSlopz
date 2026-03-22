@@ -27,11 +27,11 @@ namespace Shared
         {
             if (assembly == CommonEnumerators.AssemblyType.Client)
             {
-                OnStartMethods = GetSessionStartMethods(GetAllGameTypes());
-                OnEndMethods = GetSessionEndMethods(GetAllGameTypes());
-                PerFrameMethods = GetPerFrameMethods(GetAllGameTypes());
-                OnSynchronousStartMethods = GetSynchronousStartMethods(GetAllGameTypes());
-                OnSynchronousEndMethods = GetSynchronousEndMethods(GetAllGameTypes());
+                OnStartMethods = GetSessionStartMethods(Assembly.GetExecutingAssembly().GetTypes());
+                OnEndMethods = GetSessionEndMethods(Assembly.GetExecutingAssembly().GetTypes());
+                PerFrameMethods = GetPerFrameMethods(Assembly.GetExecutingAssembly().GetTypes());
+                OnSynchronousStartMethods = GetSynchronousStartMethods(Assembly.GetExecutingAssembly().GetTypes());
+                OnSynchronousEndMethods = GetSynchronousEndMethods(Assembly.GetExecutingAssembly().GetTypes());
             }
         }
 
@@ -43,27 +43,6 @@ namespace Shared
                 HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
                 if (attribute != null) AddMethod(attribute.header, type, method, assembly);
             }
-
-            if (assembly == CommonEnumerators.AssemblyType.Server) Printer.Title($"----------------------------------------", LogImportanceMode.Extreme);
-        }
-
-        private static Type[] GetAllGameTypes()
-        {
-            List<Type> allTypes = new List<Type>();
-
-            Assembly toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "GameClient");
-            allTypes.AddRange(toUse.GetTypes().ToList());
-
-            //Just in case we're not loading the dll for now
-
-            try
-            {
-                toUse = AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(fetch => fetch.GetName().Name == "Synchronous");
-                allTypes.AddRange(toUse.GetTypes().ToList());
-            }
-            catch { }
-
-            return allTypes.ToArray();
         }
 
         private static MethodInfo[] GetSessionStartMethods(Type[] types)
@@ -128,11 +107,6 @@ namespace Shared
 
         private static void AddMethod(PacketHeader header, Type type, MethodInfo method, CommonEnumerators.AssemblyType assembly)
         {
-            if (assembly == CommonEnumerators.AssemblyType.Server)
-            {
-                Printer.Warning($"Adding {method.DeclaringType.FullName}.{method.Name} to the packet cache", CommonEnumerators.LogImportanceMode.Extreme);
-            }
-
             switch (assembly)
             {
                 case CommonEnumerators.AssemblyType.Client:
