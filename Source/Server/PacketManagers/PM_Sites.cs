@@ -10,6 +10,7 @@ using TCPNetwork;
 using Shared.Misc;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
+using static TCPNetwork.Packets.PKT_Site;
 
 namespace GameServer.PacketManager
 {

@@ -10,6 +10,7 @@ using System.Reflection;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using static Shared.CommonEnumerators;
+using static TCPNetwork.Packets.PKT_Login;
 
 namespace GameServer.Hooks.TCPNetwork
 {

@@ -6,6 +6,8 @@ namespace TCPNetwork.Packets
     {
         public WorldStepMode _stepMode { get; set; } = WorldStepMode.AskFor;
 
+        public enum WorldStepMode { AskFor, Required, Sent }
+
         public byte[] _fileBytes { get; set; } = null;
     }
 }

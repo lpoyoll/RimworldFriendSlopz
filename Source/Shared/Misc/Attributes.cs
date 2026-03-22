@@ -66,14 +66,7 @@ namespace Shared
         LeaderboardManager,
         ServerBrowserTelemetry,
         ServerBrowserListing,
-        SPlayerDraft,
-        SPlayerWeather,
-        SPlayerMentalState,
-        SPlayerGameSpeed,
         SynchronousManager,
-        SPlayerJob,
-        SPlayerHediff,
-        SPlayerPosition,
-        SPlayerDestroy,
+        ServerBrowserReachability
     }
 }

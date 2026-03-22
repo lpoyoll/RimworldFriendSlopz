@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Synchronous.Objects
+namespace GameClient.Hooks.Synchronous
 {
-    public class PlayerWeather
+    public class PlayerDraft
     {
         public int MapTile { get; set; } = -1;
 
-        public byte WeatherByte { get; set; } = byte.MaxValue;
+        public string PawnID { get; set; } = string.Empty;
+
+        public bool DraftValue { get; set; } = false;
     }
 }

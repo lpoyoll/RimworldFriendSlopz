@@ -10,6 +10,7 @@ using Shared.Files.Sites;
 using Shared.Misc;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
+using static TCPNetwork.Packets.PKT_Login;
 
 namespace GameServer.Managers
 {

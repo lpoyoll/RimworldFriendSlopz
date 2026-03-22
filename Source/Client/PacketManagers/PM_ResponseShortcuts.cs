@@ -5,6 +5,7 @@ using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
+using static TCPNetwork.Packets.PKT_ResponseShortcut;
 
 namespace GameClient.PacketManagers
 {
@@ -17,22 +18,22 @@ namespace GameClient.PacketManagers
 
             switch (data._stepMode)
             {
-                case CommonEnumerators.ResponseStepMode.IllegalAction:
+                case ResponseStepMode.IllegalAction:
                     DLG_Wait.Instance.Close();
                     DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Kicked for ilegal actions!" }));
                     break;
 
-                case CommonEnumerators.ResponseStepMode.UserUnavailable:
+                case ResponseStepMode.UserUnavailable:
                     DLG_Wait.Instance.Close();
                     DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Player is not currently available!" }));
                     break;
 
-                case CommonEnumerators.ResponseStepMode.NoPower:
+                case ResponseStepMode.NoPower:
                     DLG_Wait.Instance.Close();
                     DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You don't have enough power for this action!" }));
                     break;
 
-                case CommonEnumerators.ResponseStepMode.Pop:
+                case ResponseStepMode.Pop:
                     DLG_Wait.Instance.Close();
                     break;
             }

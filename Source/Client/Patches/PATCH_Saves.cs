@@ -7,6 +7,7 @@ using Shared.Misc;
 using System;
 using Verse;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
 
 namespace GameClient.Patches
 {

@@ -1,7 +1,8 @@
-﻿using HarmonyLib;
+﻿using GameClient.Misc;
+using GameClient.PacketManagers.Synchronous;
+using HarmonyLib;
 using RimWorld;
 using Synchronous.Core;
-using Synchronous.Managers;
 using Synchronous.Misc;
 using System;
 using System.Collections.Generic;

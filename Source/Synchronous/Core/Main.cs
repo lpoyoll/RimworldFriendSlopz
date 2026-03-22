@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
 
 namespace Synchronous.Core
 {

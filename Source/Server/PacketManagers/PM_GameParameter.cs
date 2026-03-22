@@ -8,6 +8,7 @@ using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
+using static TCPNetwork.Packets.GameParameterData;
 
 namespace GameServer.PacketManager
 {

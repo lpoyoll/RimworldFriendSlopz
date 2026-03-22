@@ -5,6 +5,8 @@ namespace TCPNetwork.Packets
 {
     public class PKT_Site : PKT_Base
     {
+        public enum SiteStepMode { Accept, Build, Destroy, Info, Config, Rewards, Worker }
+
         public SiteStepMode _stepMode { get; set; } = SiteStepMode.Accept;
 
         public SiteFile _file { get; set; } = new SiteFile();

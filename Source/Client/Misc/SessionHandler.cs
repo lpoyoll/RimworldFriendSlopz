@@ -13,7 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using TCPNetwork.Packets;
 using Verse;
+using static GameClient.Hooks.TCPNetwork.ClientNetwork;
 using static Shared.CommonEnumerators;
+using static TCPNetwork.Packets.PKT_Activity;
 
 namespace GameClient.Misc
 {
@@ -23,7 +25,7 @@ namespace GameClient.Misc
 
         public static ClientNetworkState CurrentNetworkState { get; set; } = ClientNetworkState.Disconnected;
 
-        public static ActivityType latestActivity { get; set; } = ActivityType.None;
+        public static ActivityType latestActivity { get; set; } = ActivityType.Raid;
 
         public static WO_Settlement ChosenSettlement { get; set; } = null;
 
@@ -126,8 +128,6 @@ namespace GameClient.Misc
         [OnSessionEnd]
         private static void CleanValues()
         {
-            latestActivity = ActivityType.None;
-
             ChosenSettlement = null;
             ChosenCaravan = null;
             ChosenSite = null;

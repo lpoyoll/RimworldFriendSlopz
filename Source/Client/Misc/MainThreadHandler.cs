@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using static GameClient.Hooks.TCPNetwork.ClientNetwork;
 
 namespace GameClient.Misc
 {
@@ -27,7 +28,7 @@ namespace GameClient.Misc
         { 
             ExecuteAllQueue();
 
-            if (SessionHandler.CurrentNetworkState == CommonEnumerators.ClientNetworkState.Connected)
+            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
             {
                 DoPerFrameMethods();
             }

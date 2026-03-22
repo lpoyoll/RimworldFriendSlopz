@@ -6,6 +6,7 @@ using System;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
 
 namespace GameClient.Hooks.Shared
 {
@@ -65,8 +66,8 @@ namespace GameClient.Hooks.Shared
         private static bool CheckIfShouldPrint(LogImportanceMode importance)
         {
             if (importance == LogImportanceMode.Normal) return true;
-            else if (importance == LogImportanceMode.Verbose && ModConfigGetter.CurrentVerboseMode >= CommonEnumerators.VerboseMode.Verbose) return true;
-            else if (importance == LogImportanceMode.Extreme && ModConfigGetter.CurrentVerboseMode == CommonEnumerators.VerboseMode.Extreme) return true;
+            else if (importance == LogImportanceMode.Verbose && ModConfigGetter.CurrentVerboseMode >= Printer.LogImportanceMode.Verbose) return true;
+            else if (importance == LogImportanceMode.Extreme && ModConfigGetter.CurrentVerboseMode == Printer.LogImportanceMode.Extreme) return true;
             else return false;
         }
     }

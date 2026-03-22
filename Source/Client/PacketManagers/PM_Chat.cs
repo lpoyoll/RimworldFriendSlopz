@@ -18,6 +18,7 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 using static Shared.CommonEnumerators;
+using static TCPNetwork.Packets.PKT_Chat;
 
 namespace GameClient.PacketManagers
 {

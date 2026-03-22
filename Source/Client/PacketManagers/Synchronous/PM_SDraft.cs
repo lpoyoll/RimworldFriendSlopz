@@ -1,23 +1,24 @@
 ﻿using GameClient;
 using GameClient.Core;
+using GameClient.Hooks.Synchronous;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using RimWorld;
 using Shared;
 using Shared.Misc;
-using Synchronous.Misc;
-using Synchronous.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.Packets;
 using Verse;
 
-namespace Synchronous.Managers
+namespace GameClient.PacketManagers.Synchronous
 {
-    public static class PM_SDraft
+    public class PM_SDraft : PM_Base
     {
         private static List<PlayerDraft> PlayerDrafts { get; set; } = new List<PlayerDraft>();
 
@@ -29,7 +30,12 @@ namespace Synchronous.Managers
         {
             if (PlayerDrafts.Count > 0)
             {
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SPlayerDraft, Serializer.ConvertObjectToBytes(PlayerDrafts));
+                PKT_Synchronous packet = new PKT_Synchronous();
+                packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
+                packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerDraft;
+                packet.Contents = Serializer.ConvertObjectToBytes(PlayerDrafts);
+
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
 
                 PlayerDrafts.Clear();
             }
@@ -45,8 +51,7 @@ namespace Synchronous.Managers
             PlayerDrafts.Add(draft); 
         }
 
-        [HandlesPacket(PacketHeader.SPlayerDraft)]
-        private static void Receive(byte[] bytes)
+        public static void Handle(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PlayerDraft[] drafts = Serializer.ConvertBytesToObject<PlayerDraft[]>(bytes);
 
@@ -61,6 +66,11 @@ namespace Synchronous.Managers
                     pawn.drafter.Drafted = playerDraft.DraftValue;
                 }
             });
+        }
+
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            throw new NotImplementedException();
         }
     }
 }

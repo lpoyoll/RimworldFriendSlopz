@@ -7,6 +7,7 @@ using TCPNetwork;
 using TCPNetwork.Packets;
 using Verse;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
 
 namespace GameClient.Managers
 {

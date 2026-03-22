@@ -2,6 +2,7 @@
 using Shared.Misc;
 using System.Text;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
 
 namespace GameServer.Hooks.Shared
 {

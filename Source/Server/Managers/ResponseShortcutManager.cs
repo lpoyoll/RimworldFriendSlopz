@@ -4,6 +4,7 @@ using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using Shared.Misc;
+using static TCPNetwork.Packets.PKT_ResponseShortcut;
 
 namespace GameServer.Managers
 {

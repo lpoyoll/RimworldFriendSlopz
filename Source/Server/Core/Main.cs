@@ -15,6 +15,7 @@ using GameServer.PacketManager;
 using GameServer.Files;
 using GameServer.Hooks.ServerBrowser;
 using GameServer.Commands;
+using static Shared.Misc.Printer;
 
 namespace GameServer.Core
 {

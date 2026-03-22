@@ -13,6 +13,7 @@ using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
 using static Shared.CommonValues;
+using static Shared.Misc.Printer;
 
 namespace TCPNetwork
 {

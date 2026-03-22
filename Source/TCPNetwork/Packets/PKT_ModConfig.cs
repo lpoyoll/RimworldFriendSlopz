@@ -8,5 +8,7 @@ namespace TCPNetwork.Packets
         public ModConfigStepMode _stepMode { get; set; } = ModConfigStepMode.Send;
 
         public ModConfigFile _configFile { get; set; } = new ModConfigFile();
+
+        public enum ModConfigStepMode { Send, Ask }
     }
 }

@@ -16,6 +16,8 @@ using Verse;
 using Verse.Steam;
 using static Shared.CommonEnumerators;
 using static Shared.Files.Configs.Mods.ModConfigFile;
+using static Shared.Misc.Printer;
+using static TCPNetwork.Packets.PKT_ModConfig;
 using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient.PacketManagers

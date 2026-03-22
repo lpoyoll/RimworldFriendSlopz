@@ -1,6 +1,7 @@
 ﻿using System;
 using Verse;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
 
 namespace GameClient.Core.Configs
 {
@@ -12,11 +13,13 @@ namespace GameClient.Core.Configs
 
         public static bool RejectSiteRewardsBool;
 
-        public static VerboseMode CurrentVerboseMode;
+        public static bool ShowDiagnosticsBool;
+
+        public static LogImportanceMode CurrentVerboseMode;
 
         public static EnforcedSimulatedLag CurrentSimulatedLag;
 
-        public static bool ShowDiagnosticsBool;
+        public enum EnforcedSimulatedLag { None, Small, Medium, Big, ENORMOUS }
 
         public override void ExposeData()
         {

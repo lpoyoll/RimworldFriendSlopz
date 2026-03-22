@@ -61,7 +61,7 @@ namespace GameClient.Tabs
                 PM_Saves.RequestResetSave();
             };
 
-            DLG_YesNo d1 = new DLG_YesNo("Are you sure you want to delete your save?", r1, null, "DELETE!", "no", Color.red);
+            DLG_YesNo d1 = new DLG_YesNo("Are you sure you want to delete your save?", r1, null, "DELETE!", "No", Color.red);
             DLG_Base.PushNewDialog(d1);
         }
     }

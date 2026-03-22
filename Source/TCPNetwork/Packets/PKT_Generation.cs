@@ -7,6 +7,8 @@ namespace TCPNetwork.Packets
     {
         public GenStepMode _stepMode { get; set; } = GenStepMode.Scenario;
 
+        public enum GenStepMode { Scenario, Storyteller, Difficulty }
+
         public byte[] _bytes { get; set; } = null;
     }
 }
