@@ -105,7 +105,7 @@ namespace GameServer.Hooks.ServerBrowser
             }
         }
 
-        private static async Task<string> GetPublicIP()
+        public static async Task<string> GetPublicIP()
         {
             using (HttpClient client = new HttpClient())
             {
