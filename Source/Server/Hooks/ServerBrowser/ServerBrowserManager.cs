@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets.ServerBrowser;
+using static Shared.Misc.Printer;
 
 namespace GameServer.Hooks.ServerBrowser
 {
@@ -69,7 +70,7 @@ namespace GameServer.Hooks.ServerBrowser
 
             catch (Exception ex) 
             { 
-                Printer.Error(ex, CommonEnumerators.LogImportanceMode.Extreme);
+                Printer.Error(ex, LogImportanceMode.Extreme);
                 return false;
             }
         }
