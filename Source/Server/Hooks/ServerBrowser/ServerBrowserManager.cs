@@ -32,6 +32,7 @@ namespace GameServer.Hooks.ServerBrowser
         public static void StartFeature()
         {
             if (Network.BrowserEndpoint != null) Printer.Error("Server was already connected to browser");
+            else if (!Master.ServerConfig.EnableServerTelemetry) return;
             else
             {
                 Printer.Title(Printer.SeparatorString);

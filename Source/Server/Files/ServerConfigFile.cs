@@ -28,5 +28,7 @@ namespace GameServer.Files
         public bool SyncLocalSave { get; set; } = true;
 
         public bool EnableServerBrowser { get; set; } = true;
+
+        public bool EnableServerTelemetry { get; set; } = true;
     }
 }
