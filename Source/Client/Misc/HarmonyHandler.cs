@@ -11,12 +11,15 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
+using static Shared.Misc.Printer;
 
 namespace GameClient.Misc
 {
     public static class HarmonyHandler
     {
-        private static Harmony Instance { get; set; } = null;
+        private static Harmony MainInstance { get; set; } = null;
+
+        public static Harmony SynchronousInstance { get; private set; } = null;
 
         private static readonly string HarmonyStartID = $"{Master.ModID}-Start";
 
@@ -26,8 +29,8 @@ namespace GameClient.Misc
 
         public static void EnableMainPatches()
         {
-            if (Instance == null) Instance = new Harmony(HarmonyMainID);
-            Instance.PatchAllUncategorized(Assembly.GetExecutingAssembly());
+            if (MainInstance == null) MainInstance = new Harmony(HarmonyMainID);
+            MainInstance.PatchAllUncategorized(Assembly.GetExecutingAssembly());
         }
 
         [OnSessionEnd]
@@ -42,7 +45,26 @@ namespace GameClient.Misc
             });
         }
 
-        private static PatchClassProcessor CreateClassProcessor(Type type) { return new PatchClassProcessor(Instance, type); }
+        [OnSynchronousStart]
+        private static void EnableSynchronousPatches()
+        {
+            if (SynchronousInstance == null) SynchronousInstance = new Harmony("RimWorld Together Synchronous");
+            SynchronousInstance.PatchCategory("Synchronous");
+            Printer.Warning("Patched Synchronous methods", LogImportanceMode.Verbose);
+        }
+
+        [OnSessionEnd]
+        [OnSynchronousEnd]
+        private static void DisableSynchronousPatches()
+        {
+            if (SynchronousInstance != null)
+            {
+                SynchronousInstance.UnpatchCategory("Synchronous");
+                Printer.Warning("Unpatched Synchronous methods", LogImportanceMode.Verbose);
+            }
+        }
+
+        private static PatchClassProcessor CreateClassProcessor(Type type) { return new PatchClassProcessor(MainInstance, type); }
 
         public static bool CheckForModCollision()
         {
@@ -50,7 +72,7 @@ namespace GameClient.Misc
 
             List<string> collidingMods = new List<string>();
 
-            foreach (MethodBase method in Instance.GetPatchedMethods())
+            foreach (MethodBase method in MainInstance.GetPatchedMethods())
             {
                 HarmonyLib.Patches patchInfo = Harmony.GetPatchInfo(method);
 

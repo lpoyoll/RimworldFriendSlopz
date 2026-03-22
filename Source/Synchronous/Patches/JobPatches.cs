@@ -1,7 +1,7 @@
-﻿using GameClient.Misc;
+﻿using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
-using Synchronous.Core;
 using Verse;
 using Verse.AI;
 
@@ -15,7 +15,7 @@ namespace Synchronous.Patches
         public static bool StartJob(Pawn ___pawn, Job newJob)
         {
             if (PatchHandler.BypassFlag) return true;
-            else if (!Main_.CheckIfShouldPatch(___pawn.MapHeld)) return true;
+            else if (!SynchronousManager.CheckIfShouldPatch(___pawn.MapHeld)) return true;
             else if (___pawn.Faction == SessionHandler.NeutralFaction) return false;
             else
             {

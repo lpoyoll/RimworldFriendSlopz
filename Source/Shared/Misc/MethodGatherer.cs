@@ -27,11 +27,11 @@ namespace Shared
         {
             if (assembly == CommonEnumerators.AssemblyType.Client)
             {
-                OnStartMethods = GetSessionStartMethods(Assembly.GetExecutingAssembly().GetTypes());
-                OnEndMethods = GetSessionEndMethods(Assembly.GetExecutingAssembly().GetTypes());
-                PerFrameMethods = GetPerFrameMethods(Assembly.GetExecutingAssembly().GetTypes());
-                OnSynchronousStartMethods = GetSynchronousStartMethods(Assembly.GetExecutingAssembly().GetTypes());
-                OnSynchronousEndMethods = GetSynchronousEndMethods(Assembly.GetExecutingAssembly().GetTypes());
+                OnStartMethods = GetSessionStartMethods(Assembly.GetCallingAssembly().GetTypes());
+                OnEndMethods = GetSessionEndMethods(Assembly.GetCallingAssembly().GetTypes());
+                PerFrameMethods = GetPerFrameMethods(Assembly.GetCallingAssembly().GetTypes());
+                OnSynchronousStartMethods = GetSynchronousStartMethods(Assembly.GetCallingAssembly().GetTypes());
+                OnSynchronousEndMethods = GetSynchronousEndMethods(Assembly.GetCallingAssembly().GetTypes());
             }
         }
 

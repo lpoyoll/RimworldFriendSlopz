@@ -1,8 +1,8 @@
-﻿using GameClient.Misc;
+﻿using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
 using RimWorld;
-using Synchronous.Core;
 using Verse;
 
 namespace Synchronous.Patches
@@ -18,7 +18,7 @@ namespace Synchronous.Patches
             else
             {
                 if (!SessionHandler.IsSynchronousHost) return false;
-                else if (!Main_.CheckIfShouldPatch(__instance.map)) return true;
+                else if (!SynchronousManager.CheckIfShouldPatch(__instance.map)) return true;
                 else
                 {
                     byte value = (byte)DefDatabase<WeatherDef>.AllDefs.FirstIndexOf(fetch => fetch == newWeather);
