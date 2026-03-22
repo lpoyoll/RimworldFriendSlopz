@@ -8,6 +8,6 @@ namespace GameServer.Files
     {
         public static string SavePath { get; set; } = string.Empty;
 
-        public bool EnableServerBrowser { get; set; } = false;
+        public bool EnableServerBrowser { get; set; } = true;
     }
 }
