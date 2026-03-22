@@ -26,5 +26,7 @@ namespace GameServer.Files
         public bool UseUPnP { get; set; } = false;
 
         public bool SyncLocalSave { get; set; } = true;
+
+        public bool EnableServerBrowser { get; set; } = true;
     }
 }

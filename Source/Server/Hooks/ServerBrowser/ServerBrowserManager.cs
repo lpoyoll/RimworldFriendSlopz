@@ -36,7 +36,7 @@ namespace GameServer.Hooks.ServerBrowser
             {
                 Printer.Title(Printer.SeparatorString);
 
-                if (!Master.ServerBrowserConfig.EnableServerBrowser)
+                if (!Master.ServerConfig.EnableServerBrowser)
                 {
                     ConnectToServerBrowser(BrowserMode.Lite);
                     Printer.Warning("Server discovery is DISABLED");

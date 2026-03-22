@@ -67,8 +67,6 @@ namespace GameServer.Core
 
         public static ChatConfigFile ChatConfig { get; set; } = null;
 
-        public static ServerBrowserConfigFile ServerBrowserConfig { get; set; } = null;
-
         public static LeaderboardFile LeaderboardFile { get; set; } = null;
     }
 }
