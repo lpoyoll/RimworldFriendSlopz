@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using System.Reflection.Emit;
-using GameClient.Hooks.TCPNetwork;
+﻿using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using HarmonyLib;
 using RimWorld;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 using TCPNetwork;
 using UnityEngine.SceneManagement;
+using Verse;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Pages
@@ -23,6 +24,7 @@ namespace GameClient.Patches.Pages
             {
                 PM_World.SetPlanetFeatures();
                 PM_World.SetPlanetFactions();
+                Find.WindowStack.Add(new Dialog_AdvancedGameConfig());
             }
 
             PlanetManager.BuildPlanet();
