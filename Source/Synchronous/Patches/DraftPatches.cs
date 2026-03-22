@@ -1,8 +1,8 @@
-﻿using GameClient.Misc;
+﻿using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
 using RimWorld;
-using Synchronous.Core;
 using Synchronous.Misc;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace Synchronous.Patches
         public static bool Drafted(Pawn_DraftController __instance, bool value)
         {
             if (PatchHandler.BypassFlag) return true;
-            else if (!Main_.CheckIfShouldPatch(__instance.pawn.MapHeld)) return true;
+            else if (!SynchronousManager.CheckIfShouldPatch(__instance.pawn.MapHeld)) return true;
             else
             {
                 PM_SDraft.Ask(__instance.pawn, value);

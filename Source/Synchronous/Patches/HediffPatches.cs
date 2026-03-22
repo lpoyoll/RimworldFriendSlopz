@@ -1,9 +1,9 @@
 ﻿using GameClient.Hooks.Synchronous;
+using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
 using RimWorld;
-using Synchronous.Core;
 using Synchronous.Misc;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace Synchronous.Patches
         public static bool AddHediff(Hediff hediff, BodyPartRecord part, DamageInfo dinfo, Pawn ___pawn)
         {
             if (PatchHandler.BypassFlag) return true;
-            else if (!Main_.CheckIfShouldPatch(___pawn.MapHeld)) return true;
+            else if (!SynchronousManager.CheckIfShouldPatch(___pawn.MapHeld)) return true;
             else if (!SessionHandler.IsSynchronousHost) return false;
             else
             {
@@ -42,7 +42,7 @@ namespace Synchronous.Patches
         public static bool RemoveHediff(Hediff hediff, Pawn ___pawn)
         {
             if (PatchHandler.BypassFlag) return true;
-            else if (!Main_.CheckIfShouldPatch(___pawn.MapHeld)) return true;
+            else if (!SynchronousManager.CheckIfShouldPatch(___pawn.MapHeld)) return true;
             else if (!SessionHandler.IsSynchronousHost) return false;
             else
             {

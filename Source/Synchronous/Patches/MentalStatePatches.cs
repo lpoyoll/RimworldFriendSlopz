@@ -1,8 +1,8 @@
 ﻿using GameClient.Hooks.Synchronous;
+using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
-using Synchronous.Core;
 using Synchronous.Misc;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace Synchronous.Patches
         {
             if (PatchHandler.BypassFlag) return true;
             else if (!SessionHandler.IsSynchronousHost) return false;
-            else if (!Main_.CheckIfShouldPatch(___pawn.MapHeld)) return true;
+            else if (!SynchronousManager.CheckIfShouldPatch(___pawn.MapHeld)) return true;
             else
             {
                 byte value = (byte)DefDatabase<MentalStateDef>.AllDefs.FirstIndexOf(fetch => fetch == stateDef);
@@ -43,7 +43,7 @@ namespace Synchronous.Patches
         {
             if (PatchHandler.BypassFlag) return true;
             else if (!SessionHandler.IsSynchronousHost) return false;
-            else if (!Main_.CheckIfShouldPatch(__instance.pawn.MapHeld)) return true;
+            else if (!SynchronousManager.CheckIfShouldPatch(__instance.pawn.MapHeld)) return true;
             else if (PM_SMentalState.LatestMentalState == __instance) return false;
             else
             {
