@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameClient.Misc;
 using GameClient.PacketManagers;
+using static GameClient.Hooks.TCPNetwork.ClientNetwork;
 
 namespace GameClient.Patches.Pages
 {

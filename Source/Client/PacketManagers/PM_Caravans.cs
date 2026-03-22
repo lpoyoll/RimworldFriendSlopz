@@ -17,6 +17,8 @@ using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using Verse;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
+using static TCPNetwork.Packets.PKT_Caravan;
 
 namespace GameClient.PacketManagers
 {

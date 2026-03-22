@@ -13,6 +13,8 @@ namespace TCPNetwork.Packets
     {
         public SaveStepMode _stepMode { get; set; } = SaveStepMode.Send;
 
+        public enum SaveStepMode { Send, Receive, Reset }
+
         public bool _forceDisconnect { get; set; } = false;
 
         public bool _forceUseSave { get; set; } = false;

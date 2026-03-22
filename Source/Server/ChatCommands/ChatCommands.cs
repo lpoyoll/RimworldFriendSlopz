@@ -5,6 +5,7 @@ using static GameServer.Commands.ChatCommands;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using GameServer.PacketManager;
+using static TCPNetwork.Packets.PKT_Chat;
 
 namespace GameServer.Commands
 {

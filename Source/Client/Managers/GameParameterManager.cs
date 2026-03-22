@@ -13,6 +13,8 @@ using Shared.Files.Configs;
 using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.PacketManagers;
+using static TCPNetwork.Packets.GameParameterData;
+using static TCPNetwork.Packets.PKT_ModConfig;
 
 namespace GameClient.Managers
 {

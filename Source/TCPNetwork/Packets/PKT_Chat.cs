@@ -4,6 +4,8 @@ namespace TCPNetwork.Packets
 {
     public class PKT_Chat : PKT_Base
     {
+        public enum ChatColor { Normal, Admin, Console, Private, Discord, Server }
+
         public ChatColor _usernameColor { get; set; } = ChatColor.Normal;
 
         public ChatColor _messageColor { get; set; } = ChatColor.Normal;

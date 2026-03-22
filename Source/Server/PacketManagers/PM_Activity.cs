@@ -6,6 +6,7 @@ using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using GameServer.Managers;
 using TCPNetwork;
+using static TCPNetwork.Packets.PKT_Activity;
 
 namespace GameServer.PacketManager
 {

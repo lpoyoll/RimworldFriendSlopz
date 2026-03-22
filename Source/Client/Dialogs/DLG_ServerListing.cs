@@ -6,6 +6,7 @@ using Verse;
 using Shared.Misc;
 using Reachability = TCPNetwork.ServerBrowser.Reachability;
 using TCPNetwork.ServerBrowser;
+using static Shared.Misc.Printer;
 
 namespace GameClient.Dialogs
 {
@@ -38,7 +39,7 @@ namespace GameClient.Dialogs
             if (servers == null || servers.Length == 0) return false;
             else
             {
-                Printer.Warning($"Found {servers.Count()} servers in the server browser", CommonEnumerators.LogImportanceMode.Verbose);
+                Printer.Warning($"Found {servers.Count()} servers in the server browser", LogImportanceMode.Verbose);
 
                 return true;
             }

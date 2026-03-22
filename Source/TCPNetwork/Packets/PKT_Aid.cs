@@ -7,6 +7,8 @@ namespace TCPNetwork.Packets
     {
         public AidStepMode _stepMode { get; set; } = AidStepMode.Send;
 
+        public enum AidStepMode { Send, Receive, Accept, Reject }
+
         public int _fromTile { get; set; } = -1;
 
         public int _toTile { get; set; } = -1;

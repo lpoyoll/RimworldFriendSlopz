@@ -13,6 +13,7 @@ using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.Managers;
 using TCPNetwork.Files.Client;
+using static TCPNetwork.Packets.PKT_Event;
 
 namespace GameClient.PacketManagers
 {
@@ -100,7 +101,7 @@ namespace GameClient.PacketManagers
                 }
 
                 PKT_Event data = new PKT_Event();
-                data._stepMode = CommonEnumerators.EventStepMode.Customize;
+                data._stepMode = EventStepMode.Customize;
                 data._eventFiles = EventManagerH.AvailableEvents;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, data);
 

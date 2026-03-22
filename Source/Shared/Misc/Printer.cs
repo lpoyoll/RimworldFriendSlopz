@@ -19,6 +19,10 @@ namespace Shared.Misc
 
         public virtual Action<object, LogImportanceMode> OnTitle { get; set; }
 
+        public enum LogMode { Message, Warning, Error, Title, Outsider }
+
+        public enum LogImportanceMode { Normal, Verbose, Extreme }
+
         public Printer(Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, Action<object, 
             LogImportanceMode> onError, Action<object, LogImportanceMode> onTitle)
         {

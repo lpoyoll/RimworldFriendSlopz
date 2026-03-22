@@ -16,11 +16,14 @@ using TCPNetwork;
 using TCPNetwork.Files.Client;
 using Verse;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
 
 namespace GameClient.Hooks.TCPNetwork
 {
     public class ClientNetwork
     {
+        public enum ClientNetworkState { Disconnected, Connected }
+
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
             Thread.Sleep(250 * (int)ModConfigGetter.CurrentSimulatedLag);

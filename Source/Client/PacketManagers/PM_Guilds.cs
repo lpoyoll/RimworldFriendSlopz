@@ -13,6 +13,7 @@ using TCPNetwork.Packets;
 using Verse;
 using static Shared.CommonEnumerators;
 using static Shared.Files.Guilds.GuildMember;
+using static TCPNetwork.Packets.PKT_PlayerGuild;
 
 namespace GameClient.PacketManagers
 {

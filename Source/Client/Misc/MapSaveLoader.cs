@@ -14,6 +14,7 @@ using System.Security.Cryptography;
 using Verse;
 using Verse.Noise;
 using static Shared.CommonEnumerators;
+using static Shared.Misc.Printer;
 using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient.Misc

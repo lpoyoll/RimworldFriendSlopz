@@ -14,6 +14,7 @@ using static Shared.CommonEnumerators;
 using Shared;
 using Shared.Misc;
 using GameClient.PacketManagers;
+using static Shared.Misc.Printer;
 
 namespace GameClient.Patches
 {

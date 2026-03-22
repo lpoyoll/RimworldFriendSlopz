@@ -6,6 +6,10 @@ namespace TCPNetwork.Packets
     {
         public ActivityStepMode _stepMode { get; set; } = ActivityStepMode.Request;
 
+        public enum ActivityStepMode { Request, Deny }
+
+        public enum ActivityType { Raid, Zoom }
+
         public int _targetTile { get; set; } = -1;
 
         public byte[] _mapRawData { get; set; } = null;

@@ -13,6 +13,7 @@ using GameServer.Hooks.Shared;
 using Shared.Files;
 using GameServer.PacketManager;
 using GameServer.Commands;
+using static Shared.Misc.Printer;
 
 namespace GameServer.Core
 {

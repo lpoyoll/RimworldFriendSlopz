@@ -11,7 +11,9 @@ using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using UnityEngine;
 using Verse;
+using static GameClient.Hooks.TCPNetwork.ClientNetwork;
 using static Shared.CommonEnumerators;
+using static TCPNetwork.Packets.PKT_Login;
 
 namespace GameClient.PacketManagers
 {
@@ -60,7 +62,7 @@ namespace GameClient.PacketManagers
 
         public static void UseLoginData()
         {
-            if (SessionHandler.CurrentNetworkState != CommonEnumerators.ClientNetworkState.Connected) return;
+            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return;
             else
             {
                 PKT_Login data = new PKT_Login();

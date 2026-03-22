@@ -7,6 +7,8 @@ namespace TCPNetwork.Packets
     {
         public RoadStepMode _stepMode { get; set; } = RoadStepMode.Add;
 
+        public enum RoadStepMode { Add, Remove }
+
         public RoadDetail _details { get; set; } = null;
     }
 }
