@@ -21,7 +21,9 @@ namespace TCPNetwork.Packets.ServerBrowser
 
         public int Port { get; set; } = int.MaxValue;
 
-        public int Population { get; set; } = int.MaxValue;
+        public int CurrentPopulation { get; set; } = int.MaxValue;
+
+        public int MaxPopulation { get; set; } = int.MaxValue;
 
         public bool IsPrivate { get; set; } = false;
 

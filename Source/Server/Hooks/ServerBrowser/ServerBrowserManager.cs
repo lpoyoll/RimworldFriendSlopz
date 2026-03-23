@@ -88,7 +88,7 @@ namespace GameServer.Hooks.ServerBrowser
             telemetry.Port = Master.ServerConfig.Port;
             telemetry.Mods = Master.ModConfig.ModConfigs;
             telemetry.IsPrivate = mode == BrowserMode.Lite;
-            telemetry.Hash = Hasher.GetHashFromString($"{telemetry.Endpoint}:{telemetry.Port}");
+            telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
 
             SendTelemetry(telemetry);
         }
@@ -97,7 +97,7 @@ namespace GameServer.Hooks.ServerBrowser
         {
             while (true)
             {
-                telemetry.Population = ServerNetwork.GetConnectedClients().Length;
+                telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
                 Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
                 Thread.Sleep(Network.BrowserTelemetryInterval);
             }
