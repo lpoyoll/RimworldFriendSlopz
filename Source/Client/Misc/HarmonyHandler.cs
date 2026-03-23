@@ -102,7 +102,7 @@ namespace GameClient.Misc
             else
             {
                 string title = "Problematic mods found";
-                string description = "The following mods might cause issues during gameplay";
+                string description = "Enable mod bypass or disable these mods!";
                 DLG_Base.PushNewDialog(new DLG_Listing(title, description, collidingMods.ToArray()));
                 return false;
             }
