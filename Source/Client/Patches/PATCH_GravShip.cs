@@ -32,18 +32,6 @@ namespace GameClient.Patches
         public static void DoPost(Gravship gravship)
         {
             PM_Settlements.SendNewPlayerSettlement(gravship.destinationTile);
-            //PM_Saves.ForceSave();
-        }
-    }
-
-    [HarmonyPatch(typeof(GravshipUtility), nameof(GravshipUtility.ArriveExistingMap))]
-    public static class Patch_GravshipUtility_ArriveExistingMap
-    {
-        [HarmonyPostfix]
-        public static void DoPost(Gravship gravship)
-        {
-            PM_Settlements.SendNewPlayerSettlement(gravship.destinationTile);
-            //PM_Saves.ForceSave();
         }
     }
 }
