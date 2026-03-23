@@ -52,7 +52,9 @@ namespace GameClient.Hooks.ServerBrowser
         private static void AskForServerListings()
         {
             DLG_Base.PushNewDialog(new DLG_Wait());
+
             PKT_BrowserListing listing = new PKT_BrowserListing();
+            listing.ClientVersion = CommonValues.ExecutableVersion;
             Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserListing, listing);
         }
     }

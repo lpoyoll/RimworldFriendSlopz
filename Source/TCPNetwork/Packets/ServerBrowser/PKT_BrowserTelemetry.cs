@@ -15,6 +15,8 @@ namespace TCPNetwork.Packets.ServerBrowser
 
         public string Description { get; set; } = string.Empty;
 
+        public string Version { get; set; } = string.Empty;
+
         public string Endpoint { get; set; } = string.Empty;
 
         public int Port { get; set; } = int.MaxValue;

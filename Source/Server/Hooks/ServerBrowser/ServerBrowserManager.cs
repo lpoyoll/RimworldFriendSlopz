@@ -87,6 +87,7 @@ namespace GameServer.Hooks.ServerBrowser
             PKT_BrowserTelemetry telemetry = new PKT_BrowserTelemetry();
             telemetry.Name = Master.ServerConfig.Name;
             telemetry.Description = Master.ServerConfig.Description;
+            telemetry.Version = CommonValues.ExecutableVersion;
             telemetry.Endpoint = ServerIPV4;
             telemetry.Port = Master.ServerConfig.Port;
             telemetry.Mods = Master.ModConfig.ModConfigs;
