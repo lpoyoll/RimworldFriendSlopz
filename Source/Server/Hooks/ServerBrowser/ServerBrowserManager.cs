@@ -35,31 +35,27 @@ namespace GameServer.Hooks.ServerBrowser
             else if (!Master.ServerConfig.EnableServerTelemetry) return;
             else
             {
-                Printer.Title(Printer.SeparatorString);
-
-                if (!Master.ServerConfig.EnableServerBrowser)
+                while (Network.BrowserEndpoint == null)
                 {
-                    ConnectToServerBrowser(BrowserMode.Lite);
-                    Printer.Warning("Server discovery is DISABLED");
-                    Printer.Warning("Please turn the service ON in the settings if you want your server listed publicly");
+                    if (!Master.ServerConfig.EnableServerBrowser) ConnectToServerBrowser(BrowserMode.Lite);
+                    else ConnectToServerBrowser(BrowserMode.Normal);
+                }
+
+                if (Master.ServerConfig.EnableServerBrowser)
+                {
+                    Printer.Title(Printer.SeparatorString);
+                    Printer.Warning("Server discovery is ENABLED");
+                    Printer.Warning("The server details are currently being transmitted to the public browser");
+                    Printer.Title(Printer.SeparatorString);
                 }
 
                 else
                 {
-                    if (ConnectToServerBrowser(BrowserMode.Normal))
-                    {
-                        Printer.Warning("Server discovery is ENABLED");
-                        Printer.Warning("The server details are currently being transmitted to the public browser");
-                    }
-
-                    else
-                    {
-                        Printer.Warning("Server discovery is currently unavailable");
-                        Printer.Warning("Your server won't be listed publicly");
-                    }
+                    Printer.Title(Printer.SeparatorString);
+                    Printer.Warning("Server discovery is DISABLED");
+                    Printer.Warning("Please turn the service ON in the settings if you want your server listed publicly");
+                    Printer.Title(Printer.SeparatorString);
                 }
-
-                Printer.Title(Printer.SeparatorString);
             }
         }
 

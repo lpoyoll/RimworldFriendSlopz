@@ -38,7 +38,7 @@ namespace GameServer.Core
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
             ServerNetwork _ = new ServerNetwork();
-            ServerBrowserManager.StartFeature();
+            Task.Run(ServerBrowserManager.StartFeature);
             while (true) CMD_Base.ListenForCommands();
         }
 
