@@ -29,7 +29,7 @@ namespace GameServer.Commands
             if (toFind == null) Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' was not found");
             else
             {
-                if (toFind.IsAdmin) Printer.Warning($"User '{toFind.Username}' was not an admin");
+                if (!toFind.IsAdmin) Printer.Warning($"User '{toFind.Username}' was not an admin");
                 else
                 {
                     toFind.UpdateAdmin(false);
