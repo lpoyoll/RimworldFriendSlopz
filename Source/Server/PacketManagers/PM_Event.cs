@@ -4,6 +4,7 @@ using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
 using Shared.Files;
+using Shared.Misc;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
@@ -123,7 +124,10 @@ namespace GameServer.PacketManager
             List<EventFile> toLoad = new List<EventFile>();
             foreach (string str in Directory.GetFiles(Master.EventsPath))
             {
-                toLoad.Add(Serializer.SerializeFromFile<EventFile>(str));
+                EventFile file = Serializer.SerializeFromFile<EventFile>(str);
+                toLoad.Add(file);
+
+                Printer.Warning($"Loaded event '{file.Name}'", Printer.LogImportanceMode.Extreme);
             }
 
             LoadedEvents = toLoad.OrderBy(fetch => fetch.Name).ToArray();

@@ -29,12 +29,18 @@ namespace GameServer.Core
             SetPaths();
             CreateFolders();
             LoadFiles();
-            LoadResources();
-            CheckForFirstBoot();
-            CMD_Base.GetAllCommands();
 
-            MethodGatherer.CacheAllMethods(AssemblyType.Server);
+            Printer.Title($"Server version {CommonValues.ExecutableVersion}");
+            Printer.Title($"Loading all necessary resources");
+            Printer.Title(Printer.SeparatorString);
+
+            EventManagerH.LoadAllEvents();
+            Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
+            CMD_Base.GetAllCommands();
+            Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
             MethodGatherer.CacheAllPackets(AssemblyType.Server);
+            Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
+
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
 
             ServerNetwork _ = new ServerNetwork();
@@ -81,20 +87,6 @@ namespace GameServer.Core
             if (!Directory.Exists(Master.CompatibilityPatchesPath)) Directory.CreateDirectory(Master.CompatibilityPatchesPath);
         }
 
-        public static void LoadResources()
-        {
-            Printer.Title($"Server version {CommonValues.ExecutableVersion}");
-            Printer.Title($"Loading all necessary resources");
-            Printer.Title(Printer.SeparatorString);
-
-            EventManagerH.LoadAllEvents();
-            
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            Printer.Warning($"{GC.GetTotalAllocatedBytes() / 1024 / 1024}MB in allocation after resource loading", LogImportanceMode.Verbose);
-            Printer.Title(Printer.SeparatorString, LogImportanceMode.Verbose);
-        }
-
         private static void LoadFiles()
         {
             Master.ServerConfig = (ServerConfigFile)ServerConfigFile.Load<ServerConfigFile>(ServerConfigFile.SavePath);
@@ -114,15 +106,6 @@ namespace GameServer.Core
         {
             Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - " +
                 $"Players [{ServerNetwork.GetConnectedClients().Length}/{Master.ServerConfig.MaxPlayers}]";
-        }
-
-        private static void CheckForFirstBoot()
-        {
-            if (!File.Exists(ServerConfigFile.SavePath))
-            {
-                Printer.Error("If this is your first time installing Rimworld Together, please take a look at our wiki > " +
-                    "https://rimworldtogether.wiki.gg/");
-            }
         }
     }
 }

@@ -110,12 +110,20 @@ namespace Shared
             switch (assembly)
             {
                 case CommonEnumerators.AssemblyType.Client:
-                    try { MethodGatherer.ClientMethodDictionary.Add(header, new object[] { Activator.CreateInstance(type), method }); }
+                    try 
+                    { 
+                        MethodGatherer.ClientMethodDictionary.Add(header, new object[] { Activator.CreateInstance(type), method });
+                        Printer.Warning($"Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme);
+                    }
                     catch (Exception ex) { Printer.Error(ex); }
                     break;
 
                 case CommonEnumerators.AssemblyType.Server:
-                    try { MethodGatherer.ServerMethodDictionary.Add(header, new object[] { Activator.CreateInstance(type), method }); }
+                    try 
+                    { 
+                        MethodGatherer.ServerMethodDictionary.Add(header, new object[] { Activator.CreateInstance(type), method });
+                        Printer.Warning($"Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme);
+                    }
                     catch (Exception ex) { Printer.Error(ex); }
                     break;
             }

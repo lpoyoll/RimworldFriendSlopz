@@ -33,7 +33,7 @@ namespace Shared
             foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.IsSubclassOf(typeof(CMD_Base))))
             {
                 Commands.Add((CMD_Base)Activator.CreateInstance(type));
-                Printer.Warning($"Added command '{type.Name}' to server", LogImportanceMode.Extreme);
+                Printer.Warning($"Added command '{type.Name}'", LogImportanceMode.Extreme);
             }
         }
 
