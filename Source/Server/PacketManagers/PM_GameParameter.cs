@@ -37,12 +37,7 @@ namespace GameServer.PacketManager
 
         private static void SetScenario(ServerClient client, byte[] bytes)
         {
-            if (!client.UserFile.IsAdmin && Master.WorldValues != null)
-            {
-                UserManager.BanPlayerFromName(client.UserFile.Username);
-                Printer.Warning($"Player {client.UserFile.Username} attempted to set the scenario while not being an admin");
-            }
-
+            if (!client.UserFile.IsAdmin && Master.WorldValues != null) ResponseShortcutManager.SendIllegalPacket(client, "Illegal setting of scenario!");
             else
             {
                 ScenarioConfigFile file = Serializer.ConvertBytesToObject<ScenarioConfigFile>(bytes);
@@ -55,12 +50,7 @@ namespace GameServer.PacketManager
 
         private static void SetStoryteller(ServerClient client, byte[] bytes)
         {
-            if (!client.UserFile.IsAdmin && Master.WorldValues != null)
-            {
-                UserManager.BanPlayerFromName(client.UserFile.Username);
-                Printer.Warning($"Player {client.UserFile.Username} attempted to set the storyteller while not being an admin");
-            }
-
+            if (!client.UserFile.IsAdmin && Master.WorldValues != null) ResponseShortcutManager.SendIllegalPacket(client, "Illegal setting of storyteller!");
             else
             {
                 StorytellerConfigFile file = Serializer.ConvertBytesToObject<StorytellerConfigFile>(bytes);
@@ -73,12 +63,7 @@ namespace GameServer.PacketManager
 
         private static void SetDifficulty(ServerClient client, byte[] bytes)
         {
-            if (!client.UserFile.IsAdmin && Master.WorldValues != null)
-            {
-                UserManager.BanPlayerFromName(client.UserFile.Username);
-                Printer.Warning($"Player {client.UserFile.Username} attempted to set the difficulty while not being an admin");
-            }
-
+            if (!client.UserFile.IsAdmin && Master.WorldValues != null) ResponseShortcutManager.SendIllegalPacket(client, "Illegal setting of difficulty!");
             else
             {
                 DifficultyConfigFile file = Serializer.ConvertBytesToObject<DifficultyConfigFile>(bytes);

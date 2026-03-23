@@ -106,34 +106,6 @@ namespace GameClient.PacketManagers
             return result;
         }
 
-        public static void OpenSaveUploaderMenu()
-        {
-            Dictionary<string, string> saves = PM_Saves.GetAllSaveFiles();
-            DLG_ListingWithButton dialog = new DLG_ListingWithButton("Save uploader",
-                "Select a save to upload:",
-                saves.Keys.ToArray(),
-                delegate
-                {
-                    DLG_YesNo D2 = new DLG_YesNo("This feature is in beta and might fail, are you sure?", delegate
-                    {
-                        if (saves.TryGetValue(DLG_ListingWithButton.DialogButtonListingResultString, out string file))
-                        {
-                            byte[] data = File.ReadAllBytes(file);
-                            File.WriteAllBytes(PM_Saves.SaveFilePath, data);
-                            DLG_Base.PushNewDialog(new DLG_Wait("Waiting for save upload"));
-
-                            PM_Saves.LatestSavePath = PM_Saves.SaveFilePath;
-                            SessionHandler.IsExiting = true;
-                            PM_Saves.SendSaveToServer();
-                        }
-                    });
-
-                    DLG_Base.PushNewDialog(D2);
-                });
-
-            DLG_Base.PushNewDialog(dialog);
-        }
-
         public static void SendSaveToServer()
         {
             Printer.Message("Sending save to server", LogImportanceMode.Verbose);

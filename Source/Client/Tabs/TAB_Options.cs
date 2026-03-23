@@ -1,6 +1,7 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Dialogs;
 using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.PacketManagers;
 using RimWorld;
 using System;
@@ -14,7 +15,7 @@ namespace GameClient.Tabs
 {
     public class TAB_Options : MainTabWindow
     {
-        public override Vector2 RequestedTabSize => new Vector2(200f, 195f);
+        public override Vector2 RequestedTabSize => new Vector2(200f, 165f);
 
         public TAB_Options()
         {
@@ -38,13 +39,11 @@ namespace GameClient.Tabs
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(rect);
 
-            if (listingStandard.ButtonText("Mod Manager")) PM_Mods.OpenModManagerMenu();
+            if (listingStandard.ButtonText("Mod Manager") && SessionHandler.IsAdmin) PM_Mods.OpenModManagerMenu();
 
-            if (listingStandard.ButtonText("Event Manager")) PM_Events.OpenEventManagerMenu();
+            if (listingStandard.ButtonText("Event Manager") && SessionHandler.IsAdmin) PM_Events.OpenEventManagerMenu();
 
-            if (listingStandard.ButtonText("Difficulty Manager")) DifficultyManager.OpenDifficultyManagerMenu();
-
-            if (listingStandard.ButtonText("Save Uploader")) PM_Saves.OpenSaveUploaderMenu();
+            if (listingStandard.ButtonText("Difficulty Manager") && SessionHandler.IsAdmin) DifficultyManager.OpenDifficultyManagerMenu();
 
             GUI.color = Color.red;
             if (listingStandard.ButtonText("Reset Save")) ShowResetMenu();
