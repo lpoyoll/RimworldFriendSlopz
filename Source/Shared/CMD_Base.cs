@@ -18,11 +18,15 @@ namespace Shared
 
         public int ParameterCount { get; set; } = 0;
 
+        public bool IsChatCommand { get; set; } = false;
+
         public abstract void Action();
 
         public static string[] CommandParameters { get; set; } = null;
 
         public static List<CMD_Base> Commands { get; set; } = new List<CMD_Base>();
+
+        public static List<CMD_Base> ChatCommands { get; set; } = new List<CMD_Base>();
 
         private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
@@ -32,8 +36,13 @@ namespace Shared
         {
             foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.IsSubclassOf(typeof(CMD_Base))))
             {
-                Commands.Add((CMD_Base)Activator.CreateInstance(type));
-                Printer.Warning($"Added command '{type.Name}'", LogImportanceMode.Extreme);
+                CMD_Base command = (CMD_Base)Activator.CreateInstance(type);
+                if (command.IsChatCommand) ChatCommands.Add(command);
+                else
+                {
+                    Commands.Add(command);
+                    Printer.Warning($"Added command '{type.Name}'", LogImportanceMode.Extreme);
+                }
             }
         }
 

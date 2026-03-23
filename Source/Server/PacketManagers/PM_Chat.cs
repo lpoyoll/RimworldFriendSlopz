@@ -23,6 +23,10 @@ namespace GameServer.PacketManager
 
         private static string NotificationName { get; set; } = "SERVER";
 
+        public static ServerClient TargetClient { get; set; } = null;
+
+        public static string[] LatestCommand { get; set; } = null;
+
         public static string[] DefaultJoinMessages { get; set; } = new string[]
         {
             "Welcome to the global chat!",
@@ -51,13 +55,13 @@ namespace GameServer.PacketManager
         {
             CommandSemaphore.WaitOne();
 
-            CommandBase toFind = ChatManagerHelper.GetCommandFromName(command[0]);
+            CMD_Base toFind = CMD_Base.ChatCommands.FirstOrDefault(fetch => fetch.Prefix == command[0]);
             if (toFind == null) SendConsoleMessage(client, "Command was not found.");
             else
             {
-                ChatCommandActions.TargetClient = client;
-                ChatCommandActions.Command = command;
-                toFind.CommandAction.Invoke();
+                TargetClient = client;
+                LatestCommand = command;
+                toFind.Action();
             }
 
             string chatCommand = "";
@@ -170,11 +174,6 @@ namespace GameServer.PacketManager
         public static ServerClient GetUserFromName(string username)
         {
             return ServerNetwork.GetConnectedClientFromUsername(username);
-        }
-
-        public static CommandBase GetCommandFromName(string commandName)
-        {
-            return ChatCommands.commands.ToArray().FirstOrDefault(x => x.Prefix == commandName);
         }
 
         public static string GetUsernameFromMention(string mention)
