@@ -1,4 +1,5 @@
 ﻿using GameClient.Core;
+using GameClient.Core.Configs;
 using GameClient.Dialogs;
 using HarmonyLib;
 using Shared;
@@ -68,6 +69,8 @@ namespace GameClient.Misc
 
         public static bool CheckForModCollision()
         {
+            if (ModConfigGetter.BypassModCompatibilityCheck) return true;
+
             EnableMainPatches();
 
             List<string> collidingMods = new List<string>();

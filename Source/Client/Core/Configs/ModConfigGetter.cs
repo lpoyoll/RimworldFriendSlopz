@@ -15,6 +15,8 @@ namespace GameClient.Core.Configs
 
         public static bool ShowDiagnosticsBool;
 
+        public static bool BypassModCompatibilityCheck;
+
         public static LogImportanceMode CurrentVerboseMode;
 
         public static EnforcedSimulatedLag CurrentSimulatedLag;
@@ -29,6 +31,7 @@ namespace GameClient.Core.Configs
             Scribe_Values.Look(ref CurrentVerboseMode, nameof(CurrentVerboseMode));
             Scribe_Values.Look(ref CurrentSimulatedLag, nameof(CurrentSimulatedLag));
             Scribe_Values.Look(ref ShowDiagnosticsBool, nameof(ShowDiagnosticsBool));
+            Scribe_Values.Look(ref BypassModCompatibilityCheck, nameof(BypassModCompatibilityCheck));
 
             base.ExposeData();
         }

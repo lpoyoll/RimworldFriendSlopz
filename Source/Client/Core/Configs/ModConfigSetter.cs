@@ -42,6 +42,7 @@ namespace GameClient.Core.Configs
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.AppdataPath);
             if (listingStandard.ButtonTextLabeled("Simulated lag", $"{ModConfigGetter.CurrentSimulatedLag}")) ShowSimulatedLagMenu();
             listingStandard.CheckboxLabeled("Show diagnostic data", ref ModConfigGetter.ShowDiagnosticsBool, "Show diagnostics data");
+            listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
