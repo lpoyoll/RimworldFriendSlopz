@@ -14,25 +14,25 @@ namespace Shared
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = true)]
-    public class ManagesPacket() : Attribute { }
+    public class ManagesPacket : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnSessionStart() : Attribute { }
+    public class OnSessionStart : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnSessionEnd() : Attribute { }
+    public class OnSessionEnd : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnSynchronousStart() : Attribute { }
+    public class OnSynchronousStart : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnSynchronousEnd() : Attribute { }
+    public class OnSynchronousEnd : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnSynchronousUpdate() : Attribute { }
+    public class OnSynchronousUpdate : Attribute { }
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class OnUpdate() : Attribute { }
+    public class OnUpdate : Attribute { }
 
     public enum PacketHeader : byte
     {

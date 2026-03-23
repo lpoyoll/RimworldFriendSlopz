@@ -19,9 +19,9 @@ namespace Shared
 
         public static MethodInfo[] OnSynchronousEndMethods { get; private set; } = null;
 
-        public static Dictionary<PacketHeader, object[]> ClientMethodDictionary { get; set; } = new();
+        public static Dictionary<PacketHeader, object[]> ClientMethodDictionary { get; set; } = new Dictionary<PacketHeader, object[]>();
 
-        public static Dictionary<PacketHeader, object[]> ServerMethodDictionary { get; set; } = new();
+        public static Dictionary<PacketHeader, object[]> ServerMethodDictionary { get; set; } = new Dictionary<PacketHeader, object[]>();
 
         public static void CacheAllMethods(CommonEnumerators.AssemblyType assembly)
         {

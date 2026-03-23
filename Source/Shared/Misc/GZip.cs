@@ -7,24 +7,20 @@ namespace Shared
     {
         public static byte[] CompressBytes(byte[] bytes)
         {
-            using MemoryStream memoryStream = new MemoryStream();
-            using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal))
-            {
-                gzipStream.Write(bytes, 0, bytes.Length);
-            }
+            MemoryStream memoryStream = new MemoryStream();
+            GZipStream gzipStream = new GZipStream(memoryStream, CompressionLevel.Optimal);
 
+            gzipStream.Write(bytes, 0, bytes.Length);
             return memoryStream.ToArray();
         }
 
         public static byte[] DecompressBytes(byte[] bytes)
         {
-            using MemoryStream memoryStream = new MemoryStream(bytes);
-            using MemoryStream outputStream = new MemoryStream();
-            using (GZipStream decompressStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-            {
-                decompressStream.CopyTo(outputStream);
-            }
+            MemoryStream memoryStream = new MemoryStream(bytes);
+            MemoryStream outputStream = new MemoryStream();
+            GZipStream decompressStream = new GZipStream(memoryStream, CompressionMode.Decompress);
 
+            decompressStream.CopyTo(outputStream);
             return outputStream.ToArray();
         }
     }
