@@ -223,7 +223,7 @@ namespace GameClient.PacketManagers
             Action selectWorker = delegate
             {
                 Pawn toSend = SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)).ToList()
-                    [DLG_ListingWithButton.DialogButtonListingResultInt];
+                    [DLG_ListingWithButton.ResultInt];
 
                 PKT_Site siteData = new PKT_Site();
                 siteData._stepMode = SiteStepMode.Worker;

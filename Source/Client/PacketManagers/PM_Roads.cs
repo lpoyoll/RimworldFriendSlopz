@@ -280,13 +280,13 @@ namespace GameClient.PacketManagers
 
             Action r1 = delegate
             {
-                int selectedTile = selectableTiles[DLG_ListingWithButton.DialogButtonListingResultInt];
+                int selectedTile = selectableTiles[DLG_ListingWithButton.ResultInt];
 
                 DLG_ListingWithButton d1 = new DLG_ListingWithButton("Road builder", "Select road type to use",
                     GetAvailableRoadLabels(true),
                     delegate
                     {
-                        int selectedIndex = DLG_ListingWithButton.DialogButtonListingResultInt;
+                        int selectedIndex = DLG_ListingWithButton.ResultInt;
 
                         if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionHandler.ChosenCaravan, allowedRoadCosts[selectedIndex]))
                         {
@@ -322,7 +322,7 @@ namespace GameClient.PacketManagers
 
             Action r1 = delegate
             {
-                int selectedTile = selectableTiles[DLG_ListingWithButton.DialogButtonListingResultInt];
+                int selectedTile = selectableTiles[DLG_ListingWithButton.ResultInt];
 
                 PM_Roads.SendRoadRemoveRequest(SessionHandler.ChosenCaravan.Tile, selectedTile);
             };

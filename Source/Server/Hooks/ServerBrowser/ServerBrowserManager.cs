@@ -86,7 +86,7 @@ namespace GameServer.Hooks.ServerBrowser
             telemetry.Version = CommonValues.ExecutableVersion;
             telemetry.Endpoint = ServerIPV4;
             telemetry.Port = Master.ServerConfig.Port;
-            telemetry.Mods = Master.ModConfig.ModConfigs;
+            telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != ModConfigFile.ModType.Forbidden).OrderBy(fetch => fetch.FileName).ToList();
             telemetry.IsPrivate = mode == BrowserMode.Lite;
             telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
 

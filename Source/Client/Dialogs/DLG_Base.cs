@@ -71,5 +71,7 @@ namespace GameClient.Dialogs
                 _ => throw new IndexOutOfRangeException()
             };
         }
+
+        public static float GetRectMiddle(Rect rect) { return rect.width / 2; }
     }
 }

@@ -1,27 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TCPNetwork.Packets.ServerBrowser;
 using UnityEngine;
 using Verse;
 
-namespace GameClient.Dialogs
+namespace GameClient.Dialogs.ServerBrowser
 {
-    public class DLG_ListingWithButton : DLG_Base
+    public class DLG_ServerBrowser : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(400f, 400f);
+        public override Vector2 InitialSize => new Vector2(600f, 400f);
 
-        public string[] Elements { get; private set; }
-
-        public static string ResultString { get; private set; }
+        private List<PKT_BrowserTelemetry> Elements { get; set; } = new List<PKT_BrowserTelemetry>();
 
         public static int ResultInt { get; private set; }
 
-        public DLG_ListingWithButton(string title, string description, string[] elements, Action actionClick = null, Action actionCancel = null)
+        public DLG_ServerBrowser(List<PKT_BrowserTelemetry> elements, Action onAccept) 
         {
-            this.Title = title;
-            this.Description = description;
+            this.Title = "Server Browser";
+            this.Description = "Available servers in the browser";
             this.Elements = elements;
-            this.OnAccept = actionClick;
-            this.OnCancel = actionCancel;
+            this.OnAccept = onAccept;
 
             closeOnAccept = false;
             closeOnCancel = false;
@@ -29,29 +30,25 @@ namespace GameClient.Dialogs
 
         public override void DoWindowContents(Rect rect)
         {
-            float centeredX = rect.width / 2;
-
             float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
             float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
             float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(Description).y * 1.1f;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
+            Widgets.Label(new Rect(DLG_Base.GetRectMiddle(rect) - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
+            Text.Font = GameFont.Small;
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
+            Widgets.Label(new Rect(DLG_Base.GetRectMiddle(rect) - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
             Text.Font = GameFont.Medium;
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - SlimButtonSize.y - 85f));
 
             Text.Font = GameFont.Small;
-            if (Widgets.ButtonText(new Rect(new Vector2(centeredX - SlimButtonSize.x / 2, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Close"))
-            {
-                if (OnCancel != null) OnCancel.Invoke();
-                Close();
-            }
+
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter), "Close")) { Close(); }
         }
 
         private void FillMainRect(Rect mainRect)
@@ -79,17 +76,16 @@ namespace GameClient.Dialogs
             Widgets.EndScrollView();
         }
 
-        private void DrawCustomRow(Rect rect, string element, int index)
+        private void DrawCustomRow(Rect rect, PKT_BrowserTelemetry element, int index)
         {
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            Widgets.Label(fixedRect, $"{element}");
+            Widgets.Label(fixedRect, $"[{element.CurrentPopulation}/{element.MaxPopulation}] - {element.Name}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Select"))
             {
                 ResultInt = index;
-                ResultString = element;
                 if (OnAccept != null) OnAccept.Invoke();
                 Close();
             }
