@@ -1,5 +1,6 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
 using HarmonyLib;

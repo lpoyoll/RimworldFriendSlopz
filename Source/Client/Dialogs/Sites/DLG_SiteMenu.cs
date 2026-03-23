@@ -7,7 +7,7 @@ using UnityEngine;
 using Verse;
 using Verse.Steam;
 
-namespace GameClient.Dialogs
+namespace GameClient.Dialogs.Sites
 {
     public class DLG_SiteMenu : DLG_Base
     {

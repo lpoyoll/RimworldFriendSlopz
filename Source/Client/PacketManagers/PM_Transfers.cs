@@ -19,6 +19,7 @@ using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.Managers;
 using TCPNetwork.Files.Client;
+using GameClient.Dialogs.Default;
 
 namespace GameClient.PacketManagers
 {
@@ -129,7 +130,7 @@ namespace GameClient.PacketManagers
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                DLG_ItemListing.Instance.Close();
+                DLG_TradeListing.Instance.Close();
 
                 SessionHandler.OutgoingManifest._stepMode = TransferStepMode.TradeReRequest;
                 SessionHandler.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
@@ -243,7 +244,7 @@ namespace GameClient.PacketManagers
                 {
                     Action r1 = delegate
                     {
-                        DLG_ItemListing d1 = new DLG_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), 
+                        DLG_TradeListing d1 = new DLG_TradeListing(TransferManagerHelper.GetAllTransferedItems(transferData), 
                             transferData._transferMode);
 
                         DLG_Base.PushNewDialog(d1);
@@ -275,7 +276,7 @@ namespace GameClient.PacketManagers
             {
                 SessionHandler.IncomingManifest = transferData;
 
-                DLG_ItemListing d1 = new DLG_ItemListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Rebound);
+                DLG_TradeListing d1 = new DLG_TradeListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Rebound);
                 DLG_Base.PushNewDialog(d1);
             }
 

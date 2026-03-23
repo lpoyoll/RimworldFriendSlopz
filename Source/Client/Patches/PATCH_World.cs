@@ -1,4 +1,6 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
+using GameClient.Dialogs.Sites;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;

@@ -15,6 +15,7 @@ using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.Managers;
 using TCPNetwork.Files.Client;
+using GameClient.Dialogs.Default;
 
 
 namespace GameClient.PacketManagers

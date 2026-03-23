@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 
-namespace GameClient.Dialogs
+namespace GameClient.Dialogs.Default
 {
     public class DLG_Listing : DLG_Base
     {

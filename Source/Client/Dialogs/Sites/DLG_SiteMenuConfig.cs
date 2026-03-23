@@ -9,12 +9,13 @@ using GameClient.Misc;
 using Shared.Files.Sites;
 using Shared.Misc;
 using GameClient.PacketManagers;
+using GameClient.Dialogs.Default;
 
-namespace GameClient.Dialogs
+namespace GameClient.Dialogs.Sites
 {
-    public class DLG_SiteMenuInfo : DLG_Base
+    public class DLG_SiteMenuConfig : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(450f, 250f);
+        public override Vector2 InitialSize => new Vector2(600f, 250f);
 
         public SitePartDef SitePartDef { get; private set; }
 
@@ -26,14 +27,14 @@ namespace GameClient.Dialogs
 
         private bool IsInvalid { get; set; }
 
-        public static DLG_SiteMenuInfo Instance { get; private set; }
+        public static DLG_Base Instance { get; private set; } = null;
 
-        public DLG_SiteMenuInfo(SitePartDef thingChosen)
+        public DLG_SiteMenuConfig(SitePartDef thingChosen)
         {
+            Instance = this;
             SitePartDef = thingChosen;
             this.Title = thingChosen.label;
             ConfigFile = PM_Sites.SiteValues.Where(f => f.DefName == thingChosen.defName).First();
-            Instance = this;
 
             ThingDef cost = DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName);
             if (cost != null) CostThing.Add(cost, ConfigFile.Cost);
@@ -53,7 +54,6 @@ namespace GameClient.Dialogs
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Site could not be loaded because of invalid configuration" }));
                 Close();
             }
-
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.y - 1, mainRect.width);
             Widgets.DrawLineHorizontal(mainRect.x, mainRect.yMax + 1, mainRect.width);
 
@@ -63,45 +63,36 @@ namespace GameClient.Dialogs
             Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, mainRect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Rect leftColumn = new Rect(mainRect.x, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 20f);
-            Widgets.DrawTextureFitted(leftColumn, SitePartDef.ExpandingIconTexture, 1f); // Icon of the site
+            Widgets.DrawTextureFitted(leftColumn, SitePartDef.ExpandingIconTexture, 1f);
 
-            Rect rightColumn = new Rect(mainRect.width / 2, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 70f);
+            Rect rightColumn = new Rect(mainRect.width / 2, mainRect.y + 30f, mainRect.width / 2, mainRect.height - 20f);
             float heightDesc = Text.CalcHeight(SitePartDef.description, rightColumn.width - 16f) / 2 + 9f;
-            float height = 40f + CostThing.Count() * 25f + RewardThing.Count() * 25f + heightDesc;
+            float height = 40f + RewardThing.Count() * 25f + heightDesc;
             Rect viewRightColumn = new Rect(rightColumn.x, rightColumn.y, rightColumn.width - 16f, height);
 
             Widgets.BeginScrollView(rightColumn, ref ScrollPosition, viewRightColumn);
             Text.Font = GameFont.Small;
             float num = viewRightColumn.y;
 
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), SitePartDef.description); // Description of site
+            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, heightDesc), SitePartDef.description);
             num += heightDesc;
-            Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), "Cost:");
-            num += 20f;
 
-            foreach (ThingDef thing in CostThing.Keys)
-            {
-                Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25), $"- {thing.label} {CostThing[thing].ToString()}");
-                num += 25;
-            }
-
-            Text.Font = GameFont.Small;
             Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 20f), $"Produces:");
             num += 20f;
-
+            Text.Font = GameFont.Small;
             foreach (ThingDef thing in RewardThing.Keys)
             {
-                Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25), $"- {thing.label} {RewardThing[thing].ToString()} ");
+                Widgets.Label(new Rect(viewRightColumn.x, num, viewRightColumn.width, 25f), $"- {thing.label} {RewardThing[thing].ToString()} ");
+                if (Widgets.ButtonText(new Rect(viewRightColumn.width + 210f, num, viewRightColumn.width - 210f, 25f), "Choose"))
+                {
+                    PM_Sites.RequestSiteChangeConfig(ConfigFile, thing.defName);
+                    DLG_SiteMenu.Instance.Close();
+                    DLG_SiteMenuConfig.Instance.Close();
+                }
                 num += 25;
             }
 
             Widgets.EndScrollView();
-            if (Widgets.ButtonText(new Rect(rightColumn.x + 5f, rightColumn.yMax, rightColumn.width - 10f, 40f), "Build"))
-            {
-                PM_Sites.RequestSiteBuild(ConfigFile);
-                DLG_SiteMenu.Instance.Close();
-                DLG_SiteMenuInfo.Instance.Close();
-            }
         }
     }
 }

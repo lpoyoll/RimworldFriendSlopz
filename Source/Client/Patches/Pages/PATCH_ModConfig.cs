@@ -3,6 +3,7 @@ using RimWorld;
 using static Shared.CommonEnumerators;
 using GameClient.Dialogs;
 using GameClient.Misc;
+using GameClient.Dialogs.Default;
 
 namespace GameClient.Patches.Pages
 {

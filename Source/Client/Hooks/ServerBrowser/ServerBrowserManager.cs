@@ -1,5 +1,6 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
 using GameClient.Misc;
 using Shared;
 using Shared.Misc;

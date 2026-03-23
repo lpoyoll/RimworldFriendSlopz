@@ -1,5 +1,6 @@
 using System.Linq;
 using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
 using GameClient.Hooks.ServerBrowser;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;

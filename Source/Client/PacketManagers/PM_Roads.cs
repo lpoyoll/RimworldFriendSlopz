@@ -17,6 +17,7 @@ using TCPNetwork;
 using GameClient.Managers;
 using TCPNetwork.Files.Client;
 using static TCPNetwork.Packets.PKT_Road;
+using GameClient.Dialogs.Default;
 
 namespace GameClient.PacketManagers
 {

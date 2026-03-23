@@ -1,4 +1,5 @@
 using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
 using GameClient.Misc;
 using Shared;
 using TCPNetwork;

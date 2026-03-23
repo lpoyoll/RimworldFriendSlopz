@@ -1,4 +1,5 @@
 ﻿using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;

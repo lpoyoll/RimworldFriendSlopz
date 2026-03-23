@@ -12,10 +12,11 @@ using GameClient.Misc;
 using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.PacketManagers;
+using GameClient.Dialogs.Default;
 
 namespace GameClient.Dialogs
 {
-    public class DLG_ItemListing : DLG_Base
+    public class DLG_TradeListing : DLG_Base
     {
         public override Vector2 InitialSize => new Vector2(400f, 512f);
 
@@ -25,7 +26,7 @@ namespace GameClient.Dialogs
 
         public static DLG_Base Instance { get; private set; } = null;
 
-        public DLG_ItemListing(Thing[] listedThings, TransferMode transferMode)
+        public DLG_TradeListing(Thing[] listedThings, TransferMode transferMode)
         {
             this.ListedThings = listedThings;
             this.TransferMode = transferMode;

@@ -15,6 +15,7 @@ using GameClient.Managers;
 using TCPNetwork.Files.Client;
 using Shared.Files;
 using static TCPNetwork.Packets.PKT_Activity;
+using GameClient.Dialogs.Default;
 
 namespace GameClient.PacketManagers
 {

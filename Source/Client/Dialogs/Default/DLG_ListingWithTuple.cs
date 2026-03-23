@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
-namespace GameClient.Dialogs
+namespace GameClient.Dialogs.Default
 {
     public class DLG_ListingWithTuple : DLG_Base
     {

@@ -15,6 +15,7 @@ using TCPNetwork;
 using GameClient.PacketManagers;
 using static TCPNetwork.Packets.GameParameterData;
 using static TCPNetwork.Packets.PKT_ModConfig;
+using GameClient.Dialogs.Default;
 
 namespace GameClient.Managers
 {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace GameClient.Dialogs
+namespace GameClient.Dialogs.Default
 {
     public class DLG_Wait : DLG_Base
     {
