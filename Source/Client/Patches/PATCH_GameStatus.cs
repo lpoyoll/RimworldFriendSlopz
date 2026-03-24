@@ -9,6 +9,7 @@ using GameClient.Misc;
 using GameClient.Dialogs;
 using System;
 using GameClient.PacketManagers;
+using GameClient.Dialogs.Default;
 
 namespace GameClient.Patches
 {
@@ -19,16 +20,16 @@ namespace GameClient.Patches
         public static void ModifyPost(Game __instance)
         {
             PM_Settlements.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
+            MainThreadHandler.Instance.DoOnStartMethods();
             SessionHandler.IsReadyToPlay = true;
+
+            DLG_Base.PushNewDialog(new DLG_Message("Save", new string[] { "Game will save now" }, PM_Saves.ForceSave));
 
             if (SessionHandler.IsGeneratingFreshWorld)
             {
                 GameParameterManager.SetFirstTimeSetup();
                 PM_Mods.OpenModManagerMenu();
             }
-
-            MainThreadHandler.Instance.DoOnStartMethods();
-            PM_Saves.ForceSave();
         }
     }
 
