@@ -20,6 +20,10 @@ namespace GameClient.PacketManagers
 {
     public class PM_Events : PM_Base
     {
+        public static List<EventFile> AvailableEvents { get; private set; } = new List<EventFile>();
+
+        public static List<EventFile> EnabledEvents { get; private set; } = new List<EventFile>();
+
         [HandlesPacket(PacketHeader.EventManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
@@ -37,6 +41,10 @@ namespace GameClient.PacketManagers
 
                 case EventStepMode.Recover:
                     OnRecoverEventSilver();
+                    break;
+
+                case EventStepMode.Set:
+                    SetValues(data._eventFiles);
                     break;
             }
         }
@@ -58,18 +66,17 @@ namespace GameClient.PacketManagers
             PKT_Event eventData = new PKT_Event();
             eventData._stepMode = EventStepMode.Set;
             eventData._eventFiles = existingEvents;
-
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, eventData);
         }
 
         public static void ShowEventMenu()
         {
             List<string> eventNames = new List<string>();
-            foreach (EventFile eventFile in PM_EventsHelper.EnabledEvents) eventNames.Add(eventFile.Name);
+            foreach (EventFile eventFile in EnabledEvents) eventNames.Add(eventFile.Name);
 
             Action a1 = delegate
             {
-                DLG_YesNo d2 = new DLG_YesNo($"This event will cost you {PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost} " +
+                DLG_YesNo d2 = new DLG_YesNo($"This event will cost you {EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost} " +
                     $"silver, continue?", SendEvent, null);
 
                 DLG_Base.PushNewDialog(d2);
@@ -88,26 +95,23 @@ namespace GameClient.PacketManagers
             string[] values = { "Disabled", "Enabled" };
 
             List<string> eventNames = new List<string>();
-            foreach (EventFile ev in PM_EventsHelper.AvailableEvents) eventNames.Add(ev.Name);
+            foreach (EventFile ev in AvailableEvents.OrderBy(fetch => fetch.Name)) eventNames.Add(ev.Name);
 
             List<int> defaultValues = new List<int>();
-            foreach (EventFile ev in PM_EventsHelper.AvailableEvents) defaultValues.Add(ev.IsEnabled == true ? 1 : 0);
+            foreach (EventFile ev in AvailableEvents.OrderBy(fetch => fetch.Name)) defaultValues.Add(ev.IsEnabled == true ? 1 : 0);
 
             Action toDo = delegate
             {
-                for (int i = 0; i < PM_EventsHelper.AvailableEvents.Count; i++)
+                for (int i = 0; i < AvailableEvents.Count; i++)
                 {
-                    EventFile file = PM_EventsHelper.AvailableEvents[i];
+                    EventFile file = AvailableEvents[i];
                     file.IsEnabled = DLG_ListingWithTuple.DialogTupleListingResultInt[i] == 1 ? true : false;
                 }
 
                 PKT_Event data = new PKT_Event();
-                data._stepMode = EventStepMode.Customize;
-                data._eventFiles = PM_EventsHelper.AvailableEvents;
+                data._stepMode = EventStepMode.Set;
+                data._eventFiles = AvailableEvents;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, data);
-
-                DLG_Base.PushNewDialog(new DLG_Message("SUCCESS",
-                    new string[] { "Changes will apply to new connecting players" }));
             };
 
             DLG_Base.PushNewDialog(new DLG_ListingWithTuple(title, description, eventNames.ToArray(), values, defaultValues.ToArray(), toDo));
@@ -121,25 +125,31 @@ namespace GameClient.PacketManagers
             //MAKE IT SO ALL MAPS ARE ACCOUNTED FOR
             Map toGetSilverFrom = Find.AnyPlayerHomeMap;
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost))
+            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost);
+                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost);
 
                 PKT_Event eventData = new PKT_Event();
                 eventData._stepMode = EventStepMode.Send;
                 eventData._fromTile = toGetSilverFrom.Tile;
                 eventData._toTile = SessionHandler.ChosenSettlement.Tile;
-                eventData._eventFile = PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton];
+                eventData._eventFile = EnabledEvents[DLG_ScrollButtons.SelectedScrollButton];
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, eventData);
 
                 DLG_Base.PushNewDialog(new DLG_Wait("Waiting for event"));
             }
+        }
+
+        public static void SetValues(List<EventFile> events)
+        {
+            AvailableEvents = events;
+            EnabledEvents = AvailableEvents.Where(fetch => fetch.IsEnabled).ToList();
         }
 
         public static void TriggerEvent(IncidentDef eventToTrigger, Map targetMap)
@@ -183,24 +193,11 @@ namespace GameClient.PacketManagers
             Map toReturnTo = Find.AnyPlayerHomeMap;
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
-            silverToReturn.stackCount = PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost;
+            silverToReturn.stackCount = EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost;
 
             RimworldManager.PlaceThingIntoMap(silverToReturn, toReturnTo, toReturnTo.Center, false);
 
             DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Player is not currently available!" }));
-        }
-    }
-
-    public class PM_EventsHelper
-    {
-        public static List<EventFile> AvailableEvents { get; private set; } = null;
-
-        public static List<EventFile> EnabledEvents { get; private set; } = null;
-
-        public static void SetValues() 
-        { 
-            AvailableEvents = SessionHandler.GlobalData._eventValues;
-            EnabledEvents = AvailableEvents.Where(fetch => fetch.IsEnabled).ToList();
         }
     }
 }

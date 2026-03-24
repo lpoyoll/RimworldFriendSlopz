@@ -13,7 +13,7 @@ using static TCPNetwork.Packets.PKT_Event;
 
 namespace GameServer.PacketManager
 {
-    public class PM_Event : PM_Base
+    public class PM_Events : PM_Base
     {
         [HandlesPacket(PacketHeader.EventManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
@@ -35,23 +35,19 @@ namespace GameServer.PacketManager
                 case EventStepMode.Set:
                     SetEvents(client, data);
                     break;
-
-                case EventStepMode.Customize:
-                    ModifyEvents(client, data);
-                    break;
             }
         }
 
-        public static void SendEvent(ServerClient client, PKT_Event eventData)
+        public static void SendEvent(ServerClient client, PKT_Event data)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(eventData._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send an event to settlement at tile {eventData._toTile}, but it has no settlement");
+            if (!PM_Settlements.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send an event to settlement at tile {data._toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(eventData._toTile);
+                SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(data._toTile);
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
                 {
-                    eventData._stepMode = EventStepMode.Recover;
-                    client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                    data._stepMode = EventStepMode.Recover;
+                    client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
                 }
 
                 else
@@ -60,55 +56,41 @@ namespace GameServer.PacketManager
 
                     if (!PlayerCooldown.CheckIfCanEvent(target.UserFile, Master.ActionConfigs.EventAction.IsEnabled, Master.ActionConfigs.EventAction.Cooldown))
                     {
-                        eventData._stepMode = EventStepMode.Recover;
-                        client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        data._stepMode = EventStepMode.Recover;
+                        client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
                     }
 
                     else
                     {
                         //Back to player
 
-                        client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
 
                         //To the person that should receive it
 
-                        eventData._stepMode = EventStepMode.Receive;
+                        data._stepMode = EventStepMode.Receive;
 
                         target.UserFile.Cooldowns.SetEventTimer(TimeConverter.GetCurrentTimeToEpoch(), target.UserFile);
 
-                        target.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                        target.Listener.EnqueuePacket(PacketHeader.EventManager, data);
                     }
                 }
             }
         }
 
-        public static void SetEvents(ServerClient client, PKT_Event eventData)
-        {
-            if (EventManagerH.LoadedEvents.Count() > 0) ResponseShortcutManager.SendIllegalPacket(client, "Illegal setting of events!");
-            else
-            {
-                foreach (EventFile file in eventData._eventFiles)
-                {
-                    Serializer.SerializeToFile(Path.Combine(Master.EventsPath, file.DefName + EventManagerH.FileExtension), file);
-                }
-
-                EventManagerH.LoadAllEvents();
-                InformationDisplayer.DisplaySetEvents(client);
-            }
-        }
-
-        private static void ModifyEvents(ServerClient client, PKT_Event data)
+        private static void SetEvents(ServerClient client, PKT_Event data)
         {
             if (!client.UserFile.IsAdmin) ResponseShortcutManager.SendIllegalPacket(client, "Tried to modify events without being admin!");
             else
             {
                 foreach (EventFile file in data._eventFiles)
                 {
-                    Serializer.SerializeToFile(Path.Combine(Master.EventsPath, file.DefName + EventManagerH.FileExtension), file);
+                    Serializer.SerializeToFile(Path.Combine(Master.EventsPath, file.DefName + CommonValues.DefaultSaveFormat), file);
                 }
 
                 EventManagerH.LoadAllEvents();
                 InformationDisplayer.DisplaySetEvents(client);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.EventManager, data);
             }
         }
     }

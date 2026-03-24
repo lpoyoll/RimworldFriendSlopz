@@ -17,11 +17,11 @@ namespace GameClient.PacketManagers
             SessionHandler.GlobalData = serverGlobalData;
 
             SessionHandler.SetValues();
-            PM_EventsHelper.SetValues();
             GameParameterManager.SetValues();
             PM_Sites.SetValues();
             PM_RoadsHelper.SetValues();
             PM_Mods.SetValues(SessionHandler.GlobalData._modConfigs);
+            PM_Events.SetValues(SessionHandler.GlobalData._eventValues);
         }
     }
 }

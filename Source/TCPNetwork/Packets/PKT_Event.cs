@@ -6,7 +6,7 @@ namespace TCPNetwork.Packets
 {
     public class PKT_Event : PKT_Base
     {
-        public enum EventStepMode { Send, Receive, Recover, Customize, Set }
+        public enum EventStepMode { Send, Receive, Recover, Set }
 
         public EventStepMode _stepMode { get; set; } = EventStepMode.Send;
 

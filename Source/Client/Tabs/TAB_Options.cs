@@ -21,7 +21,7 @@ namespace GameClient.Tabs
         public TAB_Options() 
         { 
             layer = WindowLayer.Dialog;
-            closeOnCancel = true;
+            absorbInputAroundWindow = false;
         }
 
         public override void DoWindowContents(Rect rect)
