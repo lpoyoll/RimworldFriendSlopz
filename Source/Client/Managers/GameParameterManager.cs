@@ -32,11 +32,11 @@ namespace GameClient.Managers
                 GameParameterManager.SendFirstTimeSetup));
         }
 
-        public static void SetValues(PKT_ServerGlobalData data)
+        public static void SetValues()
         {
-            SessionHandler.CurrentScenario = data._scenarioValues;
-            SessionHandler.CurrentStoryteller = data._storytellerValues;
-            SessionHandler.CurrentDifficulty = data._difficultyValues;
+            SessionHandler.CurrentScenario = SessionHandler.GlobalData._scenarioValues;
+            SessionHandler.CurrentStoryteller = SessionHandler.GlobalData._storytellerValues;
+            SessionHandler.CurrentDifficulty = SessionHandler.GlobalData._difficultyValues;
         }
 
         public static void SetScenario(ScenarioConfigFile file)

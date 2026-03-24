@@ -115,7 +115,7 @@ namespace GameClient.Patches
                             Find.WorldGrid.GetTileNeighbors(SessionHandler.ChosenCaravan.Tile, neighborTiles);
 
                             SurfaceTile selectedTile = (SurfaceTile)Find.WorldGrid[__instance.Tile];
-                            RoadManagerHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), selectedTile.Roads != null);
+                            PM_RoadsHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), selectedTile.Roads != null);
                         }
                         else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                     }

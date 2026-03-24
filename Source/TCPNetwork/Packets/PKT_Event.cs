@@ -1,4 +1,5 @@
 ﻿using Shared.Files;
+using System.Collections.Generic;
 using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
@@ -15,6 +16,6 @@ namespace TCPNetwork.Packets
 
         public EventFile _eventFile { get; set; } = null;
 
-        public EventFile[] _eventFiles { get; set; } = null;
+        public List<EventFile> _eventFiles { get; set; } = null;
     }
 }

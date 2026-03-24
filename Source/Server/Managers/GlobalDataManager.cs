@@ -23,16 +23,16 @@ namespace GameServer.Managers
             globalData._storytellerValues = Master.StorytellerValues;
             globalData._actionValues = Master.ActionConfigs;
             globalData._roadValues = Master.ActionConfigs.RoadsAction.RoadValues;
-            globalData._modConfigs = Master.ModConfig;
             globalData._siteValues = Master.ActionConfigs.SiteAction.SiteTypes;
+            globalData._playerSettlements = GlobalDataManagerHelper.GetServerSettlements(client);
+            globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
 
             if (Master.WorldValues != null)
             {
+                globalData._modConfigs = Master.ModConfig;
                 globalData._roads = Master.WorldValues.Roads;
                 globalData._pollutedTiles = Master.WorldValues.PollutedTiles;
-                globalData._playerSettlements = GlobalDataManagerHelper.GetServerSettlements(client);
                 globalData._npcSettlements = Master.WorldValues.NPCSettlements;
-                globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
             }
 
             client.Listener.EnqueuePacket(PacketHeader.GlobalDataManager, globalData);
@@ -41,7 +41,7 @@ namespace GameServer.Managers
 
     public class GlobalDataManagerHelper
     {
-        public static SettlementFile[] GetServerSettlements(ServerClient client)
+        public static List<SettlementFile> GetServerSettlements(ServerClient client)
         {
             List<SettlementFile> tempList = new List<SettlementFile>();
             foreach (SettlementFile settlement in PM_Settlements.GetAllSettlements())
@@ -60,10 +60,10 @@ namespace GameServer.Managers
                 }
             }
 
-            return tempList.ToArray();
+            return tempList;
         }
 
-        public static SiteFile[] GetServerSites(ServerClient client)
+        public static List<SiteFile> GetServerSites(ServerClient client)
         {
             List<SiteFile> tempList = new List<SiteFile>();
             foreach (SiteFile site in SiteManagerHelper.GetAllSites())
@@ -79,7 +79,7 @@ namespace GameServer.Managers
                 tempList.Add(file);
             }
 
-            return tempList.ToArray();
+            return tempList;
         }
     }
 }

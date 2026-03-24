@@ -14,16 +14,14 @@ namespace GameClient.PacketManagers
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<PKT_ServerGlobalData>(bytes);
+            SessionHandler.GlobalData = serverGlobalData;
 
-            SessionHandler.SetValues(serverGlobalData);
-            EventManagerH.SetValues(serverGlobalData);
-            GameParameterManager.SetValues(serverGlobalData);
-            PlayerSettlementManagerHelper.SetValues(serverGlobalData);
-            NPCManagerH.SetValues(serverGlobalData);
-            SiteManagerH.SetValues(serverGlobalData);
-            RoadManagerHelper.SetValues(serverGlobalData);
-            PollutionManagerHelper.SetValues(serverGlobalData);
-            PM_Mods.ReceiveModConfigs(serverGlobalData._modConfigs);
+            SessionHandler.SetValues();
+            PM_EventsHelper.SetValues();
+            GameParameterManager.SetValues();
+            PM_Sites.SetValues();
+            PM_RoadsHelper.SetValues();
+            PM_Mods.SetValues(SessionHandler.GlobalData._modConfigs);
         }
     }
 }

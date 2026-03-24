@@ -15,7 +15,7 @@ namespace Shared.Files.Actions
 
         public double TimeInterval { get; set; } = 1800000;
 
-        public SiteType[] SiteTypes { get; set; } = new SiteType[]
+        public List<SiteType> SiteTypes { get; set; } = new List<SiteType>()
         {
             new SiteType()
             {

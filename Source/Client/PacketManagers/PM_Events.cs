@@ -57,7 +57,7 @@ namespace GameClient.PacketManagers
 
             PKT_Event eventData = new PKT_Event();
             eventData._stepMode = EventStepMode.Set;
-            eventData._eventFiles = existingEvents.ToArray();
+            eventData._eventFiles = existingEvents;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, eventData);
         }
@@ -65,11 +65,11 @@ namespace GameClient.PacketManagers
         public static void ShowEventMenu()
         {
             List<string> eventNames = new List<string>();
-            foreach (EventFile eventFile in EventManagerH.EnabledEvents) eventNames.Add(eventFile.Name);
+            foreach (EventFile eventFile in PM_EventsHelper.EnabledEvents) eventNames.Add(eventFile.Name);
 
             Action a1 = delegate
             {
-                DLG_YesNo d2 = new DLG_YesNo($"This event will cost you {EventManagerH.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost} " +
+                DLG_YesNo d2 = new DLG_YesNo($"This event will cost you {PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost} " +
                     $"silver, continue?", SendEvent, null);
 
                 DLG_Base.PushNewDialog(d2);
@@ -88,22 +88,22 @@ namespace GameClient.PacketManagers
             string[] values = { "Disabled", "Enabled" };
 
             List<string> eventNames = new List<string>();
-            foreach (EventFile ev in EventManagerH.AvailableEvents) eventNames.Add(ev.Name);
+            foreach (EventFile ev in PM_EventsHelper.AvailableEvents) eventNames.Add(ev.Name);
 
             List<int> defaultValues = new List<int>();
-            foreach (EventFile ev in EventManagerH.AvailableEvents) defaultValues.Add(ev.IsEnabled == true ? 1 : 0);
+            foreach (EventFile ev in PM_EventsHelper.AvailableEvents) defaultValues.Add(ev.IsEnabled == true ? 1 : 0);
 
             Action toDo = delegate
             {
-                for (int i = 0; i < EventManagerH.AvailableEvents.Length; i++)
+                for (int i = 0; i < PM_EventsHelper.AvailableEvents.Count; i++)
                 {
-                    EventFile file = EventManagerH.AvailableEvents[i];
+                    EventFile file = PM_EventsHelper.AvailableEvents[i];
                     file.IsEnabled = DLG_ListingWithTuple.DialogTupleListingResultInt[i] == 1 ? true : false;
                 }
 
                 PKT_Event data = new PKT_Event();
                 data._stepMode = EventStepMode.Customize;
-                data._eventFiles = EventManagerH.AvailableEvents;
+                data._eventFiles = PM_EventsHelper.AvailableEvents;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, data);
 
                 DLG_Base.PushNewDialog(new DLG_Message("SUCCESS",
@@ -121,20 +121,20 @@ namespace GameClient.PacketManagers
             //MAKE IT SO ALL MAPS ARE ACCOUNTED FOR
             Map toGetSilverFrom = Find.AnyPlayerHomeMap;
 
-            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, EventManagerH.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost))
+            if (!RimworldManager.CheckIfHasEnoughSilverInMap(toGetSilverFrom, PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
             }
 
             else
             {
-                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, EventManagerH.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost);
+                RimworldManager.RemoveThingFromSettlement(toGetSilverFrom, ThingDefOf.Silver, PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost);
 
                 PKT_Event eventData = new PKT_Event();
                 eventData._stepMode = EventStepMode.Send;
                 eventData._fromTile = toGetSilverFrom.Tile;
                 eventData._toTile = SessionHandler.ChosenSettlement.Tile;
-                eventData._eventFile = EventManagerH.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton];
+                eventData._eventFile = PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton];
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, eventData);
 
@@ -183,7 +183,7 @@ namespace GameClient.PacketManagers
             Map toReturnTo = Find.AnyPlayerHomeMap;
 
             Thing silverToReturn = ThingMaker.MakeThing(ThingDefOf.Silver);
-            silverToReturn.stackCount = EventManagerH.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost;
+            silverToReturn.stackCount = PM_EventsHelper.EnabledEvents[DLG_ScrollButtons.SelectedScrollButton].Cost;
 
             RimworldManager.PlaceThingIntoMap(silverToReturn, toReturnTo, toReturnTo.Center, false);
 
@@ -191,16 +191,16 @@ namespace GameClient.PacketManagers
         }
     }
 
-    public class EventManagerH
+    public class PM_EventsHelper
     {
-        public static EventFile[] AvailableEvents { get; private set; } = null;
+        public static List<EventFile> AvailableEvents { get; private set; } = null;
 
-        public static EventFile[] EnabledEvents { get; private set; } = null;
+        public static List<EventFile> EnabledEvents { get; private set; } = null;
 
-        public static void SetValues(PKT_ServerGlobalData serverGlobalData) 
+        public static void SetValues() 
         { 
-            AvailableEvents = serverGlobalData._eventValues;
-            EnabledEvents = AvailableEvents.Where(fetch => fetch.IsEnabled).ToArray();
+            AvailableEvents = SessionHandler.GlobalData._eventValues;
+            EnabledEvents = AvailableEvents.Where(fetch => fetch.IsEnabled).ToList();
         }
     }
 }

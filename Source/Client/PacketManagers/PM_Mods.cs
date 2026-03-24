@@ -34,7 +34,7 @@ namespace GameClient.PacketManagers
             switch (data._stepMode)
             {
                 case ModConfigStepMode.Send:
-                    ReceiveModConfigs(data._configFile);
+                    SetValues(data._configFile);
                     break;
             }
         }
@@ -45,9 +45,9 @@ namespace GameClient.PacketManagers
             else DLG_Base.PushNewDialog(new DLG_ModConfig(ModManagerH.GetRunningModList().ModConfigs));
         }
 
-        public static void ReceiveModConfigs(ModConfigFile file)
+        public static void SetValues(ModConfigFile file)
         {
-            SessionHandler.CurrentModConfig = file;
+            SessionHandler.CurrentModConfig = SessionHandler.GlobalData._modConfigs;
             Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
         }
     }

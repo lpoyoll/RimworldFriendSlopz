@@ -23,7 +23,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void AddPollutedTiles(PollutionDetail[] details, bool forceRefresh)
+        public static void AddPollutedTiles(List<PollutionDetail> details, bool forceRefresh)
         {
             if (details == null) return;
 
@@ -65,14 +65,7 @@ namespace GameClient.PacketManagers
 
     public class PollutionManagerHelper
     {
-        public static PollutionDetail[] tempPollutionDetails;
-
-        public static void SetValues(PKT_ServerGlobalData serverGlobalData)
-        {
-            tempPollutionDetails = serverGlobalData._pollutedTiles;
-        }
-
-        public static PollutionDetail[] GetPlanetPollutedTiles()
+        public static List<PollutionDetail> GetPlanetPollutedTiles()
         {
             List<PollutionDetail> toGet = new List<PollutionDetail>();
             foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
@@ -87,7 +80,7 @@ namespace GameClient.PacketManagers
                 }
             }
 
-            return toGet.ToArray();
+            return toGet;
         }
 
         public static void ForcePollutionLayerRefresh()

@@ -1,5 +1,6 @@
 ﻿using Shared.Details.Planet;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Shared.Files.Configs
@@ -8,30 +9,30 @@ namespace Shared.Files.Configs
     {
         public static string SavePath { get; set; } = string.Empty;
 
-        public int PersistentRandomValue { get; set; } = -1;
+        public int PersistentRandomValue { get; set; } = int.MaxValue;
 
         public string SeedString { get; set; } = string.Empty;
 
-        public float PlanetCoverage { get; set; } = -1f;
+        public float PlanetCoverage { get; set; } = float.MaxValue;
 
         public int Rainfall { get; set; } = -1;
 
-        public int Temperature { get; set; } = -1;
+        public int Temperature { get; set; } = int.MaxValue;
 
-        public int Population { get; set; } = -1;
+        public int Population { get; set; } = int.MaxValue;
 
-        public int LandmarkDensity { get; set; } = -1;
+        public int LandmarkDensity { get; set; } = int.MaxValue;
 
-        public float Pollution { get; set; } = -1f;
+        public float Pollution { get; set; } = float.MaxValue;
 
-        public FeatureDetail[] Features { get; set; } = null;
+        public List<FeatureDetail> Features { get; set; } = new List<FeatureDetail>();
 
-        public RoadDetail[] Roads { get; set; } = null;
+        public List<RoadDetail> Roads { get; set; } = new List<RoadDetail>();
 
-        public PollutionDetail[] PollutedTiles { get; set; } = null;
+        public List<PollutionDetail> PollutedTiles { get; set; } = new List<PollutionDetail>();
 
-        public NPCFactionDetail[] NPCFactions { get; set; } = null;
+        public List<NPCFactionDetail> NPCFactions { get; set; } = new List<NPCFactionDetail>();
 
-        public NPCSettlementDetail[] NPCSettlements { get; set; } = null;
+        public List<NPCSettlementDetail> NPCSettlements { get; set; } = new List<NPCSettlementDetail>();
     }
 }

@@ -32,7 +32,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Sites : PM_Base
     {
-        public static SiteType[] SiteValues { get; set; }
+        public static List<SiteType> SiteValues { get; set; }
 
         public static List<WO_Site> PlayerSites { get; set; } = new List<WO_Site>();
 
@@ -144,7 +144,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void AddSites(SiteFile[] sites)
+        public static void AddSites(List<SiteFile> sites)
         {
             foreach (SiteFile toAdd in sites)
             {
@@ -310,19 +310,11 @@ namespace GameClient.PacketManagers
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
+
+        public static void SetValues()
+        {
+            PM_Sites.SiteValues = SessionHandler.GlobalData._siteValues;
+            PM_Sites.RewardDelay = SessionHandler.GlobalData._actionValues.SiteAction.TimeInterval;
+        }
     }
 }
-
-public class SiteManagerH
-{
-    public static SiteFile[] tempSites;
-
-    public static void SetValues(PKT_ServerGlobalData serverGlobalData)
-    {
-        tempSites = serverGlobalData._playerSites;
-        PM_Sites.SiteValues = serverGlobalData._siteValues;
-        PM_Sites.RewardDelay = serverGlobalData._actionValues.SiteAction.TimeInterval;
-    }
-}
-
-

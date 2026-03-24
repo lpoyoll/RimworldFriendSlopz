@@ -48,7 +48,7 @@ namespace GameServer.PacketManager
                 {
                     List<PollutionDetail> existingPollutedTiles = Master.WorldValues.PollutedTiles.ToList();
                     existingPollutedTiles.Add(toSearch);
-                    Master.WorldValues.PollutedTiles = existingPollutedTiles.ToArray();
+                    Master.WorldValues.PollutedTiles = existingPollutedTiles;
                 }
 
                 if (shouldBroadcast) ServerNetwork.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);

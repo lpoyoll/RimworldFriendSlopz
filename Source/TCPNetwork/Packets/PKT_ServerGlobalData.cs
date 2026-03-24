@@ -4,6 +4,7 @@ using Shared.Files.Actions;
 using Shared.Files.Configs;
 using Shared.Files.Configs.Mods;
 using Shared.Files.Sites;
+using System.Collections.Generic;
 
 namespace TCPNetwork.Packets
 {
@@ -15,9 +16,9 @@ namespace TCPNetwork.Packets
 
         public bool _isClientFactionMember { get; set; } = false;
 
-        public SiteType[] _siteValues { get; set; } = null;
+        public List<SiteType> _siteValues { get; set; } = new List<SiteType>();
 
-        public EventFile[] _eventValues { get; set; } = null;
+        public List<EventFile> _eventValues { get; set; } = new List<EventFile>();
 
         public ActionsConfigFile _actionValues { get; set; } = null;
 
@@ -29,15 +30,15 @@ namespace TCPNetwork.Packets
 
         public DifficultyConfigFile _difficultyValues { get; set; } = null;
 
-        public NPCSettlementDetail[] _npcSettlements { get; set; } = null;
+        public List<NPCSettlementDetail> _npcSettlements { get; set; } = new List<NPCSettlementDetail>();
 
-        public SettlementFile[] _playerSettlements { get; set; } = null;
+        public List<SettlementFile> _playerSettlements { get; set; } = new List<SettlementFile>();
 
-        public SiteFile[] _playerSites { get; set; } = null;
+        public List<SiteFile> _playerSites { get; set; } = new List<SiteFile>();
 
-        public RoadDetail[] _roads { get; set; } = null;
+        public List<RoadDetail> _roads { get; set; } = new List<RoadDetail>();
 
-        public PollutionDetail[] _pollutedTiles { get; set; } = null;
+        public List<PollutionDetail> _pollutedTiles { get; set; } = new List<PollutionDetail>();
 
         public ModConfigFile _modConfigs { get; set; } = null;
     }

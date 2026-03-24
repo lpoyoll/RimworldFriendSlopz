@@ -85,11 +85,13 @@ namespace GameClient.Misc
 
         public static Map SynchronousMap { get; set; } = null;
 
-        public static void SetValues(PKT_ServerGlobalData serverGlobalData)
+        public static PKT_ServerGlobalData GlobalData { get; set; } = null;
+
+        public static void SetValues()
         {
-            IsAdmin = serverGlobalData._isClientAdmin;
-            HasFaction = serverGlobalData._isClientFactionMember;
-            CurrentActionValues = serverGlobalData._actionValues;
+            IsAdmin = GlobalData._isClientAdmin;
+            HasFaction = GlobalData._isClientFactionMember;
+            CurrentActionValues = GlobalData._actionValues;
         }
 
         [OnUpdate]

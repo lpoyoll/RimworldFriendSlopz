@@ -99,7 +99,7 @@ namespace TCPNetwork.Files.Client
             SaveUserFile();
         }
 
-        public void UpdateSiteConfigs(SiteType[] configs)
+        public void UpdateSiteConfigs(List<SiteType> configs)
         {
             List<PlayerSiteConfig> newConfigs = new List<PlayerSiteConfig>();
             foreach (SiteType type in configs)

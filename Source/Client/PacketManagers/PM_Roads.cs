@@ -31,7 +31,7 @@ namespace GameClient.PacketManagers
             switch (data._stepMode)
             {
                 case RoadStepMode.Add:
-                    AddRoadSimple(data._details.FromTile, data._details.ToTile, RoadManagerHelper.GetRoadDefFromDefName(data._details.DefName), true);
+                    AddRoadSimple(data._details.FromTile, data._details.ToTile, PM_RoadsHelper.GetRoadDefFromDefName(data._details.DefName), true);
                     break;
 
                 case RoadStepMode.Remove:
@@ -65,22 +65,20 @@ namespace GameClient.PacketManagers
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.RoadManager, data);
         }
 
-        public static void AddRoads(RoadDetail[] details, bool forceRefresh)
+        public static void AddRoads(List<RoadDetail> details, bool forceRefresh)
         {
-            if (details == null) return;
-
             foreach (RoadDetail detail in details)
             {
-                AddRoadSimple(detail.FromTile, detail.ToTile, RoadManagerHelper.GetRoadDefFromDefName(detail.DefName), forceRefresh);
+                AddRoadSimple(detail.FromTile, detail.ToTile, PM_RoadsHelper.GetRoadDefFromDefName(detail.DefName), forceRefresh);
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
-            if (!forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
+            if (!forceRefresh) PM_RoadsHelper.ForceRoadLayerRefresh();
         }
 
         public static void AddRoadSimple(int tileAID, int tileBID, RoadDef roadDef, bool forceRefresh)
         {
-            if (!RoadManagerHelper.CheckIfCanBuildRoadOnTile(tileBID))
+            if (!PM_RoadsHelper.CheckIfCanBuildRoadOnTile(tileBID))
             {
                 Printer.Warning($"Tried building a road at '{tileBID}' when it's not possible");
                 return;
@@ -92,7 +90,7 @@ namespace GameClient.PacketManagers
             AddRoadLink(tileA, tileBID, roadDef);
             AddRoadLink(tileB, tileAID, roadDef);
 
-            if (forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
+            if (forceRefresh) PM_RoadsHelper.ForceRoadLayerRefresh();
         }
 
         private static void AddRoadLink(SurfaceTile toAddTo, int neighborTileID, RoadDef roadDef)
@@ -125,7 +123,7 @@ namespace GameClient.PacketManagers
                 tile.potentialRoads = null;
             }
 
-            RoadManagerHelper.ForceRoadLayerRefresh();
+            PM_RoadsHelper.ForceRoadLayerRefresh();
         }
 
         private static void RemoveRoadSimple(int tileAID, int tileBID, bool forceRefresh)
@@ -157,14 +155,12 @@ namespace GameClient.PacketManagers
                 }
             }
 
-            if (forceRefresh) RoadManagerHelper.ForceRoadLayerRefresh();
+            if (forceRefresh) PM_RoadsHelper.ForceRoadLayerRefresh();
         }
     }
 
-    public class RoadManagerHelper
+    public class PM_RoadsHelper
     {
-        public static RoadDetail[] tempRoadDetails;
-
         public static RoadDef[] allowedRoadDefs;
 
         public static int[] allowedRoadCosts;
@@ -179,24 +175,22 @@ namespace GameClient.PacketManagers
 
         public static RoadDef AncientAsphaltHighwayDef => DefDatabase<RoadDef>.AllDefs.First(fetch => fetch.defName == "AncientAsphaltHighway");
 
-        public static void SetValues(PKT_ServerGlobalData serverGlobalData)
+        public static void SetValues()
         {
-            tempRoadDetails = serverGlobalData._roads;
-
             List<RoadDef> allowedRoads = new List<RoadDef>();
-            if (serverGlobalData._roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
-            if (serverGlobalData._roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
-            if (serverGlobalData._roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
-            if (serverGlobalData._roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
-            if (serverGlobalData._roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
+            if (SessionHandler.GlobalData._roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
+            if (SessionHandler.GlobalData._roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
+            if (SessionHandler.GlobalData._roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
+            if (SessionHandler.GlobalData._roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
+            if (SessionHandler.GlobalData._roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
             allowedRoadDefs = allowedRoads.ToArray();
 
             List<int> allowedCosts = new List<int>();
-            if (serverGlobalData._roadValues.AllowDirtPath) allowedCosts.Add(serverGlobalData._roadValues.DirtPathCost);
-            if (serverGlobalData._roadValues.AllowDirtRoad) allowedCosts.Add(serverGlobalData._roadValues.DirtRoadCost);
-            if (serverGlobalData._roadValues.AllowStoneRoad) allowedCosts.Add(serverGlobalData._roadValues.StoneRoadCost);
-            if (serverGlobalData._roadValues.AllowAsphaltPath) allowedCosts.Add(serverGlobalData._roadValues.AsphaltPathCost);
-            if (serverGlobalData._roadValues.AllowAsphaltHighway) allowedCosts.Add(serverGlobalData._roadValues.AsphaltHighwayCost);
+            if (SessionHandler.GlobalData._roadValues.AllowDirtPath) allowedCosts.Add(SessionHandler.GlobalData._roadValues.DirtPathCost);
+            if (SessionHandler.GlobalData._roadValues.AllowDirtRoad) allowedCosts.Add(SessionHandler.GlobalData._roadValues.DirtRoadCost);
+            if (SessionHandler.GlobalData._roadValues.AllowStoneRoad) allowedCosts.Add(SessionHandler.GlobalData._roadValues.StoneRoadCost);
+            if (SessionHandler.GlobalData._roadValues.AllowAsphaltPath) allowedCosts.Add(SessionHandler.GlobalData._roadValues.AsphaltPathCost);
+            if (SessionHandler.GlobalData._roadValues.AllowAsphaltHighway) allowedCosts.Add(SessionHandler.GlobalData._roadValues.AsphaltHighwayCost);
             allowedRoadCosts = allowedCosts.ToArray();
         }
 
@@ -332,7 +326,7 @@ namespace GameClient.PacketManagers
                 selectableTilesLabels.ToArray(), r1));
         }
 
-        public static RoadDetail[] GetPlanetRoads()
+        public static List<RoadDetail> GetPlanetRoads()
         {
             List<RoadDetail> toGet = new List<RoadDetail>();
             foreach (SurfaceTile tile in Find.WorldGrid.Tiles)
@@ -350,7 +344,7 @@ namespace GameClient.PacketManagers
                     }
                 }
             }
-            return toGet.ToArray();
+            return toGet;
 
             bool CheckIfExists(int tileA, int tileB)
             {

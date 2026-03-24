@@ -187,7 +187,7 @@ namespace GameClient.PacketManagers
             WorldFeature[] worldFeatures = Find.WorldFeatures.features.ToArray();
             foreach (WorldFeature feature in worldFeatures) Find.WorldFeatures.features.Remove(feature);
 
-            for (int i = 0; i < SessionHandler.CurrentWorld.Features.Length; i++)
+            for (int i = 0; i < SessionHandler.CurrentWorld.Features.Count; i++)
             {
                 FeatureDetail planetFeature = SessionHandler.CurrentWorld.Features[i];
 
@@ -215,7 +215,7 @@ namespace GameClient.PacketManagers
         {
             Faction[] planetFactions = Find.World.factionManager.AllFactions.ToArray();
 
-            for (int i = 0; i < SessionHandler.CurrentWorld.NPCFactions.Length; i++)
+            for (int i = 0; i < SessionHandler.CurrentWorld.NPCFactions.Count; i++)
             {
                 try
                 {
@@ -241,13 +241,13 @@ namespace GameClient.PacketManagers
         {
             Printer.Warning("Populating world values", LogImportanceMode.Verbose);
             SessionHandler.CurrentWorld.Features = GetPlanetFeatures();
-            SessionHandler.CurrentWorld.Roads = RoadManagerHelper.GetPlanetRoads();
+            SessionHandler.CurrentWorld.Roads = PM_RoadsHelper.GetPlanetRoads();
             SessionHandler.CurrentWorld.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
             SessionHandler.CurrentWorld.NPCSettlements = GetPlanetNPCSettlements();
             SessionHandler.CurrentWorld.NPCFactions = GetPlanetNPCFactions();
         }
 
-        public static NPCFactionDetail[] GetNPCFactionsFromDef(FactionDef[] factionDefs)
+        public static List<NPCFactionDetail> GetNPCFactionsFromDef(FactionDef[] factionDefs)
         {
             List<NPCFactionDetail> npcFactions = new List<NPCFactionDetail>();
             foreach (FactionDef faction in factionDefs)
@@ -260,10 +260,10 @@ namespace GameClient.PacketManagers
                 }
                 catch (Exception e) { Printer.Warning($"Failed to get faction '{faction.defName}' from game. Reason: {e}"); }
             }
-            return npcFactions.ToArray();
+            return npcFactions;
         }
 
-        public static List<FactionDef> GetFactionDefsFromNPCFaction(NPCFactionDetail[] factions)
+        public static List<FactionDef> GetFactionDefsFromNPCFaction(List<NPCFactionDetail> factions)
         {
             List<FactionDef> defList = new List<FactionDef>();
             foreach (NPCFactionDetail faction in factions) defList.Add(DefDatabase<FactionDef>.GetNamed(faction.DefName));
@@ -271,7 +271,7 @@ namespace GameClient.PacketManagers
             return defList;
         }
 
-        public static NPCFactionDetail[] GetPlanetNPCFactions()
+        public static List<NPCFactionDetail> GetPlanetNPCFactions()
         {
             List<NPCFactionDetail> planetFactions = new List<NPCFactionDetail>();
             Faction[] existingFactions = Find.World.factionManager.AllFactions.ToArray();
@@ -294,10 +294,10 @@ namespace GameClient.PacketManagers
                 catch (Exception e) { Printer.Warning($"Failed to get NPC faction '{faction.def.defName}' to populate. Reason: {e}"); }
             }
 
-            return planetFactions.ToArray();
+            return planetFactions;
         }
 
-        public static NPCSettlementDetail[] GetPlanetNPCSettlements()
+        public static List<NPCSettlementDetail> GetPlanetNPCSettlements()
         {
             Faction[] worldNPCFactions = Find.FactionManager.AllFactions.Where(fetch => !SessionHandler.PlayerFactions.Contains(fetch) &&
                 fetch != Faction.OfPlayer).ToArray();
@@ -319,10 +319,10 @@ namespace GameClient.PacketManagers
                 }
                 catch (Exception e) { Printer.Warning($"Failed to get NPC settlement '{settlement.Tile}' to populate. Reason: {e}"); }
             }
-            return npcSettlements.ToArray();
+            return npcSettlements;
         }
 
-        public static FeatureDetail[] GetPlanetFeatures()
+        public static List<FeatureDetail> GetPlanetFeatures()
         {
             List<FeatureDetail> planetFeatures = new List<FeatureDetail>();
             WorldFeature[] worldFeatures = Find.World.features.features.ToArray();
@@ -341,7 +341,7 @@ namespace GameClient.PacketManagers
                 catch (Exception e) { Printer.Warning($"Failed to get feature '{worldFeature.def.defName}' to populate. Reason: {e}"); }
             }
 
-            return planetFeatures.ToArray();
+            return planetFeatures;
         }
     }
 }

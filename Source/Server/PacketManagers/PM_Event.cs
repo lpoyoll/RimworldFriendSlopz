@@ -117,7 +117,7 @@ namespace GameServer.PacketManager
     {
         public static string FileExtension { get; private set; } = ".mpevent";
 
-        public static EventFile[] LoadedEvents { get; private set; } = null;
+        public static List<EventFile> LoadedEvents { get; private set; } = null;
 
         public static void LoadAllEvents()
         {
@@ -130,7 +130,7 @@ namespace GameServer.PacketManager
                 Printer.Warning($"Loaded event '{file.Name}'", Printer.LogImportanceMode.Extreme);
             }
 
-            LoadedEvents = toLoad.OrderBy(fetch => fetch.Name).ToArray();
+            LoadedEvents = toLoad.OrderBy(fetch => fetch.Name).ToList();
         }
     }
 }

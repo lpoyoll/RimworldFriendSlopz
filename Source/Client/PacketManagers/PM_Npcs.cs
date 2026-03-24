@@ -37,7 +37,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void AddSettlements(NPCSettlementDetail[] settlements)
+        public static void AddSettlements(List<NPCSettlementDetail> settlements)
         {
             foreach (NPCSettlementDetail settlement in settlements)
             {
@@ -152,16 +152,9 @@ namespace GameClient.PacketManagers
 
     public class NPCManagerH
     {
-        public static NPCSettlementDetail[] tempNPCSettlements;
-
         public static Settlement lastRemovedSettlement;
 
         private static Dictionary<int, List<QuestPart>> questToFixTemp = new Dictionary<int, List<QuestPart>>();
-
-        public static void SetValues(PKT_ServerGlobalData serverGlobalData)
-        {
-            tempNPCSettlements = serverGlobalData._npcSettlements;
-        }
 
         public static void SaveAllQuests() 
         {

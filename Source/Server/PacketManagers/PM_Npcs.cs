@@ -60,7 +60,7 @@ namespace GameServer.PacketManager
         {
             List<NPCSettlementDetail> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
             finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.Tile));
-            Master.WorldValues.NPCSettlements = finalSettlements.ToArray();
+            Master.WorldValues.NPCSettlements = finalSettlements;
             PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues, true);
         }
 

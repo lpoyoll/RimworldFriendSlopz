@@ -40,7 +40,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void AddSettlements(SettlementFile[] settlements)
+        public static void AddSettlements(List<SettlementFile> settlements)
         {
             foreach (SettlementFile toAdd in settlements)
             {
@@ -125,16 +125,6 @@ namespace GameClient.PacketManagers
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
             PM_Saves.ForceSave();
-        }
-    }
-
-    public class PlayerSettlementManagerHelper
-    {
-        public static SettlementFile[] tempSettlements;
-
-        public static void SetValues(PKT_ServerGlobalData serverGlobalData)
-        {
-            tempSettlements = serverGlobalData._playerSettlements;
         }
     }
 }
