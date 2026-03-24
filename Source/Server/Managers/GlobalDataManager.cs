@@ -17,15 +17,14 @@ namespace GameServer.Managers
             globalData._serverName = Master.ServerConfig.Name;
             globalData._isClientAdmin = client.UserFile.IsAdmin;
             globalData._isClientFactionMember = GuildManagerH.GetFactionFromName(client.UserFile.GuildName) != null;
-            globalData._eventValues = EventManagerH.LoadedEvents;
-            globalData._difficultyValues = Master.DifficultyValues;
-            globalData._scenarioValues = Master.ScenarioValues;
-            globalData._storytellerValues = Master.StorytellerValues;
             globalData._actionValues = Master.ActionConfigs;
             globalData._roadValues = Master.ActionConfigs.RoadsAction.RoadValues;
             globalData._siteValues = Master.ActionConfigs.SiteAction.SiteTypes;
             globalData._playerSettlements = GlobalDataManagerHelper.GetServerSettlements(client);
             globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
+            globalData._scenarioValues = Master.ScenarioValues;
+            globalData._difficultyValues = Master.DifficultyValues;
+            globalData._storytellerValues = Master.StorytellerValues;
 
             if (Master.WorldValues != null)
             {
@@ -33,6 +32,7 @@ namespace GameServer.Managers
                 globalData._roads = Master.WorldValues.Roads;
                 globalData._pollutedTiles = Master.WorldValues.PollutedTiles;
                 globalData._npcSettlements = Master.WorldValues.NPCSettlements;
+                globalData._eventValues = EventManagerH.LoadedEvents;
             }
 
             client.Listener.EnqueuePacket(PacketHeader.GlobalDataManager, globalData);
