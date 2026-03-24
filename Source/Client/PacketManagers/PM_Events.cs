@@ -88,34 +88,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        public static void OpenEventManagerMenu()
-        {
-            string title = "Event Manager";
-            string description = "Configure the availability of each event";
-            string[] values = { "Disabled", "Enabled" };
-
-            List<string> eventNames = new List<string>();
-            foreach (EventFile ev in AvailableEvents.OrderBy(fetch => fetch.Name)) eventNames.Add(ev.Name);
-
-            List<int> defaultValues = new List<int>();
-            foreach (EventFile ev in AvailableEvents.OrderBy(fetch => fetch.Name)) defaultValues.Add(ev.IsEnabled == true ? 1 : 0);
-
-            Action toDo = delegate
-            {
-                for (int i = 0; i < AvailableEvents.Count; i++)
-                {
-                    EventFile file = AvailableEvents[i];
-                    file.IsEnabled = DLG_ListingWithTuple.DialogTupleListingResultInt[i] == 1 ? true : false;
-                }
-
-                PKT_Event data = new PKT_Event();
-                data._stepMode = EventStepMode.Set;
-                data._eventFiles = AvailableEvents;
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, data);
-            };
-
-            DLG_Base.PushNewDialog(new DLG_ListingWithTuple(title, description, eventNames.ToArray(), values, defaultValues.ToArray(), toDo));
-        }
+        public static void OpenEventManagerMenu() { DLG_Base.PushNewDialog(new DLG_EventConfig(AvailableEvents)); }
 
         public static void SendEvent()
         {
