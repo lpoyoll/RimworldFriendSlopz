@@ -10,8 +10,6 @@ namespace Shared.Files.Configs.Mods
 
         public enum ModType { Required, Optional, Forbidden };
 
-        public bool IsEnforced { get; set; } = false;
-
         public List<ModConfig> ModConfigs { get; set; } = new List<ModConfig>();
     }
 }

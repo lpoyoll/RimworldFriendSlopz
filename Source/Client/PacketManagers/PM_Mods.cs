@@ -61,13 +61,7 @@ namespace GameClient.PacketManagers
         public static void ReceiveModConfigs(PKT_ServerGlobalData data)
         {
             SessionHandler.CurrentModConfig = data._modConfigs;
-
-            if (!SessionHandler.CurrentModConfig.IsEnforced) return;
-            else
-            {
-                Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
-                Printer.Warning("Currently doing nothing with the configs", LogImportanceMode.Verbose);
-            }
+            Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
         }
     }
 

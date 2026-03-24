@@ -117,7 +117,6 @@ namespace GameClient.Managers
         {
             PKT_ModConfig data = new PKT_ModConfig();
             data._stepMode = ModConfigStepMode.Send;
-            data._configFile.IsEnforced = isEnforced;
             data._configFile = ModManagerH.SortModsIntoCategories(DLG_ListingWithTuple.DialogTupleListingResultString,
                 DLG_ListingWithTuple.DialogTupleListingResultInt);
 
