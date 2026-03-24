@@ -33,17 +33,17 @@ namespace GameClient.Core.Configs
 
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming transfers", ref ModConfigGetter.RejectTransfersBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("[When Playing] Deny all incoming site rewards", ref ModConfigGetter.RejectSiteRewardsBool, "Automatically site rewards");
-            listingStandard.CheckboxLabeled("[When Playing] Mute incomming chat messages", ref ModConfigGetter.MuteChatSoundBool, "Mute chat messages");
+            listingStandard.CheckboxLabeled("Deny all incoming transfers", ref ModConfigGetter.RejectTransfersBool, "Automatically denies transfers");
+            listingStandard.CheckboxLabeled("Deny all incoming site rewards", ref ModConfigGetter.RejectSiteRewardsBool, "Automatically site rewards");
+            listingStandard.CheckboxLabeled("Mute incomming chat messages", ref ModConfigGetter.MuteChatSoundBool, "Mute chat messages");
+            listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
+            listingStandard.CheckboxLabeled("Show diagnostic data", ref ModConfigGetter.ShowDiagnosticsBool, "Show diagnostics data");
 
             listingStandard.GapLine();
             listingStandard.Label("Debugging");
             if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ModConfigGetter.CurrentVerboseMode}")) ShowVerboseFloatMenu();
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.AppdataPath);
             if (listingStandard.ButtonTextLabeled("Simulated lag", $"{ModConfigGetter.CurrentSimulatedLag}")) ShowSimulatedLagMenu();
-            listingStandard.CheckboxLabeled("Show diagnostic data", ref ModConfigGetter.ShowDiagnosticsBool, "Show diagnostics data");
-            listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");

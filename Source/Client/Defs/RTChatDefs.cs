@@ -12,9 +12,9 @@ namespace GameClient.Defs
     [StaticConstructorOnStartup]
     public static class RTChatDefs
     {
-        public static Texture2D ChatOn = ContentFinder<Texture2D>.Get("UI/ChatOn");
+        public static Texture2D Chat = ContentFinder<Texture2D>.Get("UI/Chat");
 
-        public static Texture2D ChatOff = ContentFinder<Texture2D>.Get("UI/ChatOff");
+        public static Texture2D Options = ContentFinder<Texture2D>.Get("UI/Options");
     }
 
     [DefOf]

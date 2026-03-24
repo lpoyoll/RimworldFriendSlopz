@@ -34,9 +34,6 @@ namespace GameClient.Dialogs
             Instance = this;
 
             SessionHandler.IsInTransfer = true;
-
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
         public override void DoWindowContents(Rect rect)

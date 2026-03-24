@@ -22,9 +22,6 @@ namespace GameClient.Dialogs.Default
             this.Messages = messages;
             this.OnAccept = onConfirm;
             CurrentMessage = messages[Index];
-
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
         public override void DoWindowContents(Rect rect)

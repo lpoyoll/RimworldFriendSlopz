@@ -22,9 +22,6 @@ namespace GameClient.Dialogs.Default
             this.Elements = elements;
             this.OnAccept = actionOK;
 
-            closeOnAccept = false;
-            closeOnCancel = false;
-
             if (buttonText != null) ButtonText = buttonText;
             if (buttonText2 != null) ButtonText2 = buttonText2;
         }

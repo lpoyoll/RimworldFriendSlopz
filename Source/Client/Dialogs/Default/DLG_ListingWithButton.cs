@@ -22,9 +22,6 @@ namespace GameClient.Dialogs.Default
             this.Elements = elements;
             this.OnAccept = actionClick;
             this.OnCancel = actionCancel;
-
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
         public override void DoWindowContents(Rect rect)

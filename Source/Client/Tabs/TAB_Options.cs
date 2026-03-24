@@ -14,24 +14,13 @@ using Verse.Noise;
 
 namespace GameClient.Tabs
 {
-    public class TAB_Options : MainTabWindow
+    public class TAB_Options : DLG_Base
     {
-        public override Vector2 RequestedTabSize => new Vector2(200f, 165f);
+        public override Vector2 InitialSize => new Vector2(200f, 165f);
 
-        public TAB_Options()
-        {
-            layer = WindowLayer.GameUI;
-
-            forcePause = false;
-            draggable = false;
-            focusWhenOpened = false;
-            drawShadow = false;
-            preventCameraMotion = false;
-            drawInScreenshotMode = false;
-
-            soundAppear = SoundDefOf.CommsWindow_Open;
-
-            closeOnAccept = false;
+        public TAB_Options() 
+        { 
+            layer = WindowLayer.Dialog;
             closeOnCancel = true;
         }
 

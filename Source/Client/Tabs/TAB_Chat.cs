@@ -5,12 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using GameClient.Managers;
 using GameClient.PacketManagers;
+using GameClient.Dialogs;
 
 namespace GameClient.Tabs
 {
-    public class TAB_Chat : MainTabWindow
+    public class TAB_Chat : DLG_Base
     {
-        public override Vector2 RequestedTabSize => new Vector2(800f, 600f);
+        public override Vector2 InitialSize => new Vector2(600f, 400f);
+
+        public static TAB_Chat Instance { get; private set; } = null;
 
         private Vector2 scrollPositionPlayers = Vector2.zero;
 
@@ -19,18 +22,12 @@ namespace GameClient.Tabs
         public TAB_Chat()
         {
             layer = WindowLayer.GameUI;
+            Instance = this;
 
-            forcePause = false;
             draggable = true;
-            focusWhenOpened = false;
-            drawShadow = false;
+            forcePause = false;
             preventCameraMotion = false;
-            drawInScreenshotMode = false;
-
-            soundAppear = SoundDefOf.CommsWindow_Open;
-
-            closeOnAccept = false;
-            closeOnCancel = true;
+            absorbInputAroundWindow = false;
         }
 
         public override void PreOpen()
@@ -46,7 +43,6 @@ namespace GameClient.Tabs
             base.PostOpen();
 
             PM_Chat.IsChatTabOpen = true;
-            PM_Chat.ToggleChatIcon(false);
         }
 
         public override void PostClose()

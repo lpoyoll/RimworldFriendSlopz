@@ -33,9 +33,6 @@ namespace GameClient.Dialogs.Default
             
             YesColor = yesColor.Value;
             NoColor = noColor.Value;
-            
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
         public override void DoWindowContents(Rect rect)

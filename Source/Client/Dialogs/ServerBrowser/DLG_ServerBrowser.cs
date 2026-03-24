@@ -23,9 +23,6 @@ namespace GameClient.Dialogs.ServerBrowser
             this.Description = "Available servers in the browser";
             this.Elements = elements;
             this.OnAccept = onAccept;
-
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
         public override void DoWindowContents(Rect rect)

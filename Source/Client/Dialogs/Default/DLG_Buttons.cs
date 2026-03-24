@@ -17,9 +17,6 @@ namespace GameClient.Dialogs.Default
             this.Labels = labels;
             this.Actions = actions;
             this.OnCancel = onCancel;
-
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
         public override void PreOpen() { CalculateWindowSize(); }

@@ -23,9 +23,6 @@ namespace GameClient.Dialogs.ServerBrowser
             this.OnAccept = actionOK;
             this.Title = Element.Name;
             this.Description = "Server Mods";
-
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
         public override void DoWindowContents(Rect rect)

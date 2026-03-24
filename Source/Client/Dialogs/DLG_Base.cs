@@ -23,6 +23,8 @@ namespace GameClient.Dialogs
 
         public static Vector2 LongButtonSize { get; private set; } = new Vector2(100f, 25f);
 
+        public static float DefaultMargin { get; private set; } = 8.0f;
+
         public string Title { get; set; } = string.Empty;
 
         public string Description { get; set; } = string.Empty;
@@ -40,6 +42,9 @@ namespace GameClient.Dialogs
         public DLG_Base() 
         { 
             forcePause = true;
+            closeOnAccept = false;
+            closeOnCancel = false;
+            preventCameraMotion = true;
             absorbInputAroundWindow = true;
             soundAppear = SoundDefOf.CommsWindow_Open;
         }

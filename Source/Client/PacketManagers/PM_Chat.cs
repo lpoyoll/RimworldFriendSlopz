@@ -25,8 +25,6 @@ namespace GameClient.PacketManagers
     [StaticConstructorOnStartup]
     public class PM_Chat : PM_Base
     {
-        private static MainButtonDef ChatButtonDef { get; set; } = DefDatabase<MainButtonDef>.GetNamed("Chat");
-
         public static string CurrentChatInput { get; set; } = string.Empty;
 
         public static List<string> ChatMessageCache { get; set; } = new List<string>();
@@ -37,7 +35,7 @@ namespace GameClient.PacketManagers
 
         //No accessors zone
 
-        public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 600f);
+        public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 400f);
 
         public static bool ChatAutoscroll = true;
 
@@ -73,12 +71,7 @@ namespace GameClient.PacketManagers
 
             if (ChatAutoscroll) ShouldScrollChat = true;
 
-            if (!IsChatTabOpen)
-            {
-                ToggleChatIcon(true);
-
-                if (!ModConfigGetter.MuteChatSoundBool) RTChatDefSounds.ChatReceive.PlayOneShotOnCamera();
-            }
+            if (!IsChatTabOpen & !ModConfigGetter.MuteChatSoundBool) RTChatDefSounds.ChatReceive.PlayOneShotOnCamera();
         }
 
         [OnSessionEnd]
@@ -87,12 +80,6 @@ namespace GameClient.PacketManagers
             CurrentChatInput = string.Empty;
             ChatMessageCache = new List<string>();
             IsChatTabOpen = false;
-        }
-
-        public static void ToggleChatIcon(bool mode)
-        {
-            if (mode) AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(ChatButtonDef, RTChatDefs.ChatOn);
-            else AccessTools.Field(typeof(MainButtonDef), "icon").SetValue(ChatButtonDef, RTChatDefs.ChatOff);
         }
     }
 

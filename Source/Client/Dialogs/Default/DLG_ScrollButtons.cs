@@ -23,9 +23,6 @@ namespace GameClient.Dialogs.Default
             this.OnAccept = actionSelect;
             this.OnCancel = actionCancel;
             Instance = this;
-
-            closeOnAccept = false;
-            closeOnCancel = true;
         }
 
         public override void DoWindowContents(Rect rect)

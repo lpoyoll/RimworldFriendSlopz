@@ -29,9 +29,6 @@ namespace GameClient.Dialogs.Default
             this.Values = values;
             this.OnAccept = actionAccept;
 
-            closeOnAccept = false;
-            closeOnCancel = false;
-
             List<string> strings = new List<string>();
             for (int i = 0; i < keys.Length; i++) strings.Add(values[0]);
             ValueString = strings.ToArray();

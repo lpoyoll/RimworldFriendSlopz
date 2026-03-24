@@ -16,9 +16,6 @@ namespace GameClient.Dialogs.Default
 
             if (description != null) this.Description = description;
             else this.Description = "Waiting...";
-
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
 

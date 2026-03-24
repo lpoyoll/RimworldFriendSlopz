@@ -36,9 +36,6 @@ namespace GameClient.Dialogs.Default
             this.Censors = censors;
             Results = new string[] { "", "", "" };
             CensorResult = new string[] { "", "", "" };
-
-            closeOnAccept = false;
-            closeOnCancel = false;
         }
 
         public override void PreOpen() { CalculateWindowSize(); }
