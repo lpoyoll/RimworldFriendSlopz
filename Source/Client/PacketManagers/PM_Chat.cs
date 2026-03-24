@@ -2,6 +2,7 @@
 using GameClient.Defs;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Misc;
+using GameClient.Tabs;
 using HarmonyLib;
 using RimWorld;
 using Shared;
@@ -28,8 +29,6 @@ namespace GameClient.PacketManagers
         public static string CurrentChatInput { get; set; } = string.Empty;
 
         public static List<string> ChatMessageCache { get; set; } = new List<string>();
-
-        public static bool IsChatTabOpen { get; set; } = false;
 
         public static bool ShouldScrollChat { get; set; } = false;
 
@@ -71,7 +70,7 @@ namespace GameClient.PacketManagers
 
             if (ChatAutoscroll) ShouldScrollChat = true;
 
-            if (!IsChatTabOpen & !ModConfigGetter.MuteChatSoundBool) RTChatDefSounds.ChatReceive.PlayOneShotOnCamera();
+            if (!TAB_Chat.IsTabOpen & !ModConfigGetter.MuteChatSoundBool) RTChatDefSounds.ChatReceive.PlayOneShotOnCamera();
         }
 
         [OnSessionEnd]
@@ -79,7 +78,6 @@ namespace GameClient.PacketManagers
         {
             CurrentChatInput = string.Empty;
             ChatMessageCache = new List<string>();
-            IsChatTabOpen = false;
         }
     }
 

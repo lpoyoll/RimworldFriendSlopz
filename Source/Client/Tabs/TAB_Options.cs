@@ -18,10 +18,27 @@ namespace GameClient.Tabs
     {
         public override Vector2 InitialSize => new Vector2(200f, 165f);
 
+        public static TAB_Options Instance { get; private set; } = null;
+
+        public static bool IsTabOpen { get; set; } = false;
+
         public TAB_Options() 
-        { 
+        {
+            Instance = this;
             layer = WindowLayer.Dialog;
             absorbInputAroundWindow = false;
+        }
+
+        public override void PostOpen()
+        {
+            base.PostOpen();
+            IsTabOpen = true;
+        }
+
+        public override void PostClose()
+        {
+            base.PostClose();
+            IsTabOpen = false;
         }
 
         public override void DoWindowContents(Rect rect)

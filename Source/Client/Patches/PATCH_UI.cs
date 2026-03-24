@@ -29,12 +29,16 @@ namespace GameClient.Patches
             Rect chatRect = new Rect(new Vector2(UI.screenWidth - ButtonSize.x - 2f, 2f), ButtonSize);
             if (Widgets.ButtonImageWithBG(chatRect, RTChatDefs.Chat))
             {
-                if (PM_Chat.IsChatTabOpen != true) Find.WindowStack.Add(new TAB_Chat());
+                if (!TAB_Chat.IsTabOpen) Find.WindowStack.Add(new TAB_Chat());
                 else TAB_Chat.Instance.Close();
             }
 
             Rect optionsRect = new Rect(new Vector2(chatRect.x - ButtonSize.x - 2f, 2f), ButtonSize);
-            if (Widgets.ButtonImageWithBG(optionsRect, RTChatDefs.Options)) Find.WindowStack.Add(new TAB_Options());
+            if (Widgets.ButtonImageWithBG(optionsRect, RTChatDefs.Options))
+            {
+                if (!TAB_Options.IsTabOpen) Find.WindowStack.Add(new TAB_Options());
+                else TAB_Options.Instance.Close();
+            }
 
             if (ModConfigGetter.ShowDiagnosticsBool)
             {

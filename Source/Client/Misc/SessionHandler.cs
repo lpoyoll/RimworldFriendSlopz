@@ -2,6 +2,7 @@ using GameClient.Defs;
 using GameClient.Managers;
 using GameClient.PacketManagers;
 using GameClient.Patches.Pages;
+using GameClient.Tabs;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
@@ -136,22 +137,23 @@ namespace GameClient.Misc
 
             OutgoingManifest = new PKT_Transfer();
             IncomingManifest = new PKT_Transfer();
+            LastTradeStep = TradeMode.None;
 
             IsGeneratingFreshWorld = false;
             IsReadyToPlay = false;
             IsInTransfer = false;
             IsSavingGame = false;
             IsUsingScriber = false;
-            LastTradeStep = TradeMode.None;
-            PM_Chat.ShouldScrollChat = true;
             IsExiting = false;
             IsSynchronousHost = false;
             SynchronousMap = null;
 
-            CurrentNetworkState = ClientNetworkState.Disconnected;
-
+            TAB_Chat.IsTabOpen = false;
+            TAB_Options.IsTabOpen = false;
             Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
             Patch_Page_SelectStoryteller_DoWindowContents.executedMessage = false;
+
+            CurrentNetworkState = ClientNetworkState.Disconnected;
         }
     }
 }

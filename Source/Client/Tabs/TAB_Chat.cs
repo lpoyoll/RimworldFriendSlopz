@@ -19,6 +19,8 @@ namespace GameClient.Tabs
 
         private Vector2 scrollPositionChat = Vector2.zero;
 
+        public static bool IsTabOpen { get; set; } = false;
+
         public TAB_Chat()
         {
             layer = WindowLayer.GameUI;
@@ -41,15 +43,13 @@ namespace GameClient.Tabs
         public override void PostOpen()
         {
             base.PostOpen();
-
-            PM_Chat.IsChatTabOpen = true;
+            IsTabOpen = true;
         }
 
         public override void PostClose()
         {
             base.PostClose();
-
-            PM_Chat.IsChatTabOpen = false;
+            IsTabOpen = false;
         }
 
         public override void DoWindowContents(Rect rect)
