@@ -14,11 +14,9 @@ namespace GameServer.Managers
         public static void SendServerGlobalData(ServerClient client)
         {
             PKT_ServerGlobalData globalData = new PKT_ServerGlobalData();
-
             globalData._serverName = Master.ServerConfig.Name;
             globalData._isClientAdmin = client.UserFile.IsAdmin;
             globalData._isClientFactionMember = GuildManagerH.GetFactionFromName(client.UserFile.GuildName) != null;
-
             globalData._eventValues = EventManagerH.LoadedEvents;
             globalData._difficultyValues = Master.DifficultyValues;
             globalData._scenarioValues = Master.ScenarioValues;
