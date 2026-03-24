@@ -47,7 +47,7 @@ namespace GameClient.PacketManagers
 
         public static void SetValues(ModConfigFile file)
         {
-            SessionHandler.CurrentModConfig = SessionHandler.GlobalData._modConfigs;
+            SessionHandler.CurrentModConfig = file;
             Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
         }
     }
