@@ -117,8 +117,7 @@ namespace GameClient.Managers
         {
             PKT_ModConfig data = new PKT_ModConfig();
             data._stepMode = ModConfigStepMode.Send;
-            data._configFile = ModManagerH.SortModsIntoCategories(DLG_ListingWithTuple.DialogTupleListingResultString,
-                DLG_ListingWithTuple.DialogTupleListingResultInt);
+            data._configFile = ModManagerH.SortModsIntoCategories(DLG_ModConfig.ResultMods, DLG_ModConfig.ResultInt);
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.ModManager, data);
         }

@@ -8,6 +8,7 @@ using Shared.Files.Configs.Mods;
 using Shared.Misc;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using TCPNetwork;
@@ -32,35 +33,21 @@ namespace GameClient.PacketManagers
 
             switch (data._stepMode)
             {
-                case ModConfigStepMode.Ask:
-                    OpenModManagerMenu();
+                case ModConfigStepMode.Send:
+                    ReceiveModConfigs(data._configFile);
                     break;
             }
         }
 
-        public static void OpenModManagerMenu(bool isFirstEdit = false)
-        {
-            Action toDo = delegate 
-            {
-                GameParameterManager.SendCurrentModConfigs(false);
-                if (isFirstEdit) GameParameterManager.SetFirstTimeSetup();
-            };
-
-            List<string> modNames = new List<string>();
-            foreach (ModConfig config in ModManagerH.GetRunningModList().ModConfigs) modNames.Add(config.FileName);
-
-            string[] keys = modNames.ToArray();
-            string[] values = new string[] { "Required", "Optional", "Forbidden" };
-
-            DLG_ListingWithTuple dialog = new DLG_ListingWithTuple("Mod Manager", "Manage mods for the server", 
-                keys, values, null, toDo);
-
-            DLG_Base.PushNewDialog(dialog);
+        public static void OpenModManagerMenu() 
+        { 
+            if (SessionHandler.CurrentModConfig != null) DLG_Base.PushNewDialog(new DLG_ModConfig(SessionHandler.CurrentModConfig.ModConfigs));
+            else DLG_Base.PushNewDialog(new DLG_ModConfig(ModManagerH.GetRunningModList().ModConfigs));
         }
 
-        public static void ReceiveModConfigs(PKT_ServerGlobalData data)
+        public static void ReceiveModConfigs(ModConfigFile file)
         {
-            SessionHandler.CurrentModConfig = data._modConfigs;
+            SessionHandler.CurrentModConfig = file;
             Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
         }
     }
@@ -89,14 +76,14 @@ namespace GameClient.PacketManagers
                 data._extraDetails.ToArray()));
         }
 
-        public static ModConfigFile SortModsIntoCategories(string[] modNames, int[] categoryIndexes)
+        public static ModConfigFile SortModsIntoCategories(List<ModConfig> mods, List<int> categoryIndexes)
         {
             ModConfigFile configFile = new ModConfigFile();
 
-            for (int i = 0; i < modNames.Length; i++)
+            for (int i = 0; i < mods.Count; i++)
             {
                 ModConfig newConfig = new ModConfig();
-                newConfig.FileName = modNames[i].Replace("steam_", "");
+                newConfig.FileName = mods[i].FileName.Replace("steam_", "");
                 newConfig.Type = (ModType)categoryIndexes[i];
 
                 configFile.ModConfigs.Add(newConfig);

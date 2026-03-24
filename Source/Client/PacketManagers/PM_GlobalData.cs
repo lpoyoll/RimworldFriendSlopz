@@ -23,7 +23,7 @@ namespace GameClient.PacketManagers
             SiteManagerH.SetValues(serverGlobalData);
             RoadManagerHelper.SetValues(serverGlobalData);
             PollutionManagerHelper.SetValues(serverGlobalData);
-            PM_Mods.ReceiveModConfigs(serverGlobalData);
+            PM_Mods.ReceiveModConfigs(serverGlobalData._modConfigs);
         }
     }
 }

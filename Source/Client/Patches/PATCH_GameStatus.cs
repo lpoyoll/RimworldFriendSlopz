@@ -21,7 +21,12 @@ namespace GameClient.Patches
             PM_Settlements.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
             SessionHandler.IsReadyToPlay = true;
 
-            if (SessionHandler.IsGeneratingFreshWorld) PM_Mods.OpenModManagerMenu(true);
+            if (SessionHandler.IsGeneratingFreshWorld)
+            {
+                GameParameterManager.SetFirstTimeSetup();
+                PM_Mods.OpenModManagerMenu();
+            }
+
             MainThreadHandler.Instance.DoOnStartMethods();
             PM_Saves.ForceSave();
         }

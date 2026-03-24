@@ -1,4 +1,5 @@
 ﻿using GameServer.Core;
+using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
@@ -41,6 +42,12 @@ namespace GameServer.PacketManager
                 Master.ModConfig = file;
                 ModConfigFile.Save(ModConfigFile.SavePath, file);
                 InformationDisplayer.DisplaySetMods(client);
+
+                PKT_ModConfig packet = new PKT_ModConfig();
+                packet._configFile = Master.ModConfig;
+                packet._stepMode = ModConfigStepMode.Send;
+
+                ServerNetwork.SendPacketToAllClients(PacketHeader.ModManager, packet);
             }
         }
 
