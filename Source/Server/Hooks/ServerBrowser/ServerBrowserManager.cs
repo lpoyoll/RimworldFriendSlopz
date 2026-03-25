@@ -21,12 +21,20 @@ namespace GameServer.Hooks.ServerBrowser
     {
         private static string ServerIPV4 { get; set; } = string.Empty;
 
+        private static bool WasStartedOnce { get; set; } = false;
+
         public enum BrowserMode { Normal, Lite }
 
         private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
             MethodInfo method = (MethodInfo)MethodGatherer.ServerMethodDictionary[header][1];
             method.Invoke(MethodGatherer.ServerMethodDictionary[header][0], new object[] { client, buffer, header });
+        };
+
+        private static Action<ServerClient> OnDisconnect { get; set; } = delegate
+        {
+            Network.BrowserEndpoint = null;
+            StartFeature();
         };
 
         public static void StartFeature()
@@ -43,10 +51,13 @@ namespace GameServer.Hooks.ServerBrowser
 
                 if (Master.ServerConfig.EnableServerBrowser)
                 {
-                    Printer.Title(Printer.SeparatorString);
-                    Printer.Warning("Server discovery is ENABLED");
-                    Printer.Warning("The server details are currently being transmitted to the public browser");
-                    Printer.Title(Printer.SeparatorString);
+                    if (!WasStartedOnce)
+                    {
+                        Printer.Title(Printer.SeparatorString);
+                        Printer.Warning("Server discovery is ENABLED");
+                        Printer.Warning("The server details are currently being transmitted to the public browser");
+                        Printer.Title(Printer.SeparatorString);
+                    }
                 }
 
                 else
@@ -63,7 +74,7 @@ namespace GameServer.Hooks.ServerBrowser
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, null, OnReadPacket, null));
+                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
                 Network.BrowserEndpoint = client.Listener;
                 SetupConnection(mode);
                 return true;
@@ -71,14 +82,14 @@ namespace GameServer.Hooks.ServerBrowser
 
             catch (Exception ex) 
             { 
-                Printer.Error(ex, LogImportanceMode.Extreme);
+                Printer.Error(ex, LogImportanceMode.Ludicrous);
                 return false;
             }
         }
 
         private static async void SetupConnection(BrowserMode mode)
         {
-            ServerIPV4 = await GetPublicIP();
+            if (!WasStartedOnce) ServerIPV4 = await GetPublicIP();
 
             PKT_BrowserTelemetry telemetry = new PKT_BrowserTelemetry();
             telemetry.Name = Master.ServerConfig.Name;
@@ -86,20 +97,29 @@ namespace GameServer.Hooks.ServerBrowser
             telemetry.Version = CommonValues.ExecutableVersion;
             telemetry.Endpoint = ServerIPV4;
             telemetry.Port = Master.ServerConfig.Port;
-            telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != ModConfigFile.ModType.Forbidden).OrderBy(fetch => fetch.FileName).ToList();
             telemetry.IsPrivate = mode == BrowserMode.Lite;
             telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
+            telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != ModConfigFile.ModType.Forbidden)
+                .OrderBy(fetch => fetch.FileName).ToList();
 
-            SendTelemetry(telemetry);
+            if (!WasStartedOnce) SendTelemetry(telemetry);
         }
 
         private static void SendTelemetry(PKT_BrowserTelemetry telemetry)
         {
+            WasStartedOnce = true;
+
             while (true)
             {
-                telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
-                Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
-                Thread.Sleep(Network.BrowserTelemetryInterval);
+                Thread.Sleep(1);
+
+                if (Network.BrowserEndpoint == null) continue;
+                else
+                {
+                    telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
+                    Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
+                    Thread.Sleep(Network.BrowserTelemetryInterval);
+                }
             }
         }
 
