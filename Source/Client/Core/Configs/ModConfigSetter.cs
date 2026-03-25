@@ -71,7 +71,8 @@ namespace GameClient.Core.Configs
             {
                 Tuple.Create("None", Printer.LogImportanceMode.Normal),
                 Tuple.Create("Verbose", Printer.LogImportanceMode.Verbose),
-                Tuple.Create("Extreme", Printer.LogImportanceMode.Extreme)
+                Tuple.Create("Extreme", Printer.LogImportanceMode.Extreme),
+                Tuple.Create("Ludicrous", Printer.LogImportanceMode.Ludicrous)
             };
 
             foreach (Tuple<string, Printer.LogImportanceMode> tuple in verboseModes)

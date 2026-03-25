@@ -23,7 +23,7 @@ namespace Shared.Misc
         
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
-        public enum LogImportanceMode { Normal, Verbose, Extreme }
+        public enum LogImportanceMode { Normal, Verbose, Extreme, Ludicrous }
 
         public Printer(Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, Action<object, 
             LogImportanceMode> onError, Action<object, LogImportanceMode> onTitle)

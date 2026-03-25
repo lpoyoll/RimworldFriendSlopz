@@ -81,7 +81,8 @@ namespace GameServer.Hooks.Shared
         {
             if (importance == LogImportanceMode.Normal) return true;
             else if (importance == LogImportanceMode.Verbose && Master.ServerConfig.Verbosity >= 1) return true;
-            else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.Verbosity == 2) return true;
+            else if (importance == LogImportanceMode.Extreme && Master.ServerConfig.Verbosity >= 2) return true;
+            else if (importance == LogImportanceMode.Ludicrous && Master.ServerConfig.Verbosity == 3) return true;
             else return false;
         }
     }

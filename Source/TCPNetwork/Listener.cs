@@ -98,14 +98,11 @@ namespace TCPNetwork
                         else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
                         // Execute ruleset action
-                        try { Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient); }
-                        catch (Exception e) { Printer.Warning(e, LogImportanceMode.Normal); }
+                        Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient);
                     }
                 }
             }
-            catch (ObjectDisposedException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
-            catch (System.IO.IOException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
-            catch (Exception e) { Printer.Warning(e); }
+            catch (Exception ex) { Printer.Warning(ex, LogImportanceMode.Ludicrous); }
 
             Disconnect();
         }
@@ -144,9 +141,7 @@ namespace TCPNetwork
                     }
                 }
             }
-            catch (ObjectDisposedException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
-            catch (System.IO.IOException _) { Printer.Warning("Disposed of connection", LogImportanceMode.Extreme); }
-            catch (Exception e) { Printer.Warning(e); }
+            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Ludicrous); }
 
             Disconnect();
         }

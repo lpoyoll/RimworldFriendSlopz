@@ -67,7 +67,8 @@ namespace GameClient.Hooks.Shared
         {
             if (importance == LogImportanceMode.Normal) return true;
             else if (importance == LogImportanceMode.Verbose && ModConfigGetter.CurrentVerboseMode >= Printer.LogImportanceMode.Verbose) return true;
-            else if (importance == LogImportanceMode.Extreme && ModConfigGetter.CurrentVerboseMode == Printer.LogImportanceMode.Extreme) return true;
+            else if (importance == LogImportanceMode.Extreme && ModConfigGetter.CurrentVerboseMode >= Printer.LogImportanceMode.Extreme) return true;
+            else if (importance == LogImportanceMode.Ludicrous && ModConfigGetter.CurrentVerboseMode == Printer.LogImportanceMode.Ludicrous) return true;
             else return false;
         }
     }
