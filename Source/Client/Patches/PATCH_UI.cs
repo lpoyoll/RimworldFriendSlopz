@@ -40,13 +40,10 @@ namespace GameClient.Patches
                 else TAB_Options.Instance.Close();
             }
 
-            if (ModConfigGetter.ShowDiagnosticsBool)
-            {
-                string text = $"{Math.Abs(PM_KeepAlive.CurrentPing)} ms";
-                Vector2 size = Text.CalcSize(text);
-                Vector2 position = new Vector2(UI.screenWidth - size.x - DLG_Base.DefaultMargin, LatencyHeight);
-                Widgets.Label(new Rect(position, size), text);
-            }
+            string text = $"{Math.Abs(PM_KeepAlive.CurrentPing)} ms";
+            Vector2 size = Text.CalcSize(text);
+            Vector2 position = new Vector2(UI.screenWidth - size.x - DLG_Base.DefaultMargin, LatencyHeight);
+            Widgets.Label(new Rect(position, size), text);
 
             return true;
         }

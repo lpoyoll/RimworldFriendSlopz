@@ -1,7 +1,9 @@
 ﻿using GameClient.Core;
+using GameClient.Core.Configs;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Hooks.TCPNetwork;
+using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
@@ -54,6 +56,7 @@ namespace GameClient.PacketManagers
         {
             Printer.Warning("Force saving", LogImportanceMode.Verbose);
             DLG_Base.PushNewDialog(new DLG_Wait("Saving your game"));
+            Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
 
             Task.Run(delegate
             {
@@ -62,6 +65,11 @@ namespace GameClient.PacketManagers
                 MainThreadHandler.Instance.Enqueue(delegate
                 {
                     ResetAutosaveTicks();
+
+                    GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
+                    GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
+                    GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
+
                     GameDataSaveLoader.SaveGame(CustomSaveName);
                 });
             });
@@ -107,7 +115,7 @@ namespace GameClient.PacketManagers
             return result;
         }
 
-        public static void SendSaveToServer()
+        private static void SendSaveToServer()
         {
             Printer.Message("Sending save to server", LogImportanceMode.Verbose);
 
@@ -156,6 +164,18 @@ namespace GameClient.PacketManagers
             }
 
             GameDataSaveLoader.LoadGame(PM_Saves.CustomSaveName);
+        }
+
+        public static void OnSave()
+        {
+            if (ModConfigGetter.CurrentSyncingMode == ModConfigGetter.SyncingMode.Complete || SessionHandler.IsExiting)
+            {
+                Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
+                MapManager.SendPlayerMapsToServer();
+            }
+
+            Printer.Message("Sending save to server", LogImportanceMode.Verbose);
+            PM_Saves.SendSaveToServer();
         }
     }
 }

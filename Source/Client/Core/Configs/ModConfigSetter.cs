@@ -33,17 +33,15 @@ namespace GameClient.Core.Configs
 
             listingStandard.GapLine();
             listingStandard.Label("Multiplayer Parameters");
-            listingStandard.CheckboxLabeled("Deny all incoming transfers", ref ModConfigGetter.RejectTransfersBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("Deny all incoming site rewards", ref ModConfigGetter.RejectSiteRewardsBool, "Automatically site rewards");
+            listingStandard.CheckboxLabeled("Reject all transfers", ref ModConfigGetter.RejectTransfersBool, "Automatically denies transfers");
+            listingStandard.CheckboxLabeled("Reject all site rewards", ref ModConfigGetter.RejectSiteRewardsBool, "Automatically site rewards");
             listingStandard.CheckboxLabeled("Mute incomming chat messages", ref ModConfigGetter.MuteChatSoundBool, "Mute chat messages");
             listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
-            listingStandard.CheckboxLabeled("Show diagnostic data", ref ModConfigGetter.ShowDiagnosticsBool, "Show diagnostics data");
 
             listingStandard.GapLine();
             listingStandard.Label("Debugging");
-            if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ModConfigGetter.CurrentVerboseMode}")) ShowVerboseFloatMenu();
+            if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ModConfigGetter.CurrentVerboseMode}")) ShowVerbosityMenu();
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.AppdataPath);
-            if (listingStandard.ButtonTextLabeled("Simulated lag", $"{ModConfigGetter.CurrentSimulatedLag}")) ShowSimulatedLagMenu();
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
@@ -55,19 +53,18 @@ namespace GameClient.Core.Configs
             GUI.color = Color.white;
 
             listingStandard.GapLine();
-            listingStandard.Label("Misc");
-            if (listingStandard.ButtonTextLabeled("Check the mod's Discord", "Open")) { StartProcess("https://discord.gg/yUF2ec8Vt8"); }
-            if (listingStandard.ButtonTextLabeled("Check the mod's Wiki", "Open")) { StartProcess("https://rimworldtogether.wiki.gg"); }
-            if (listingStandard.ButtonTextLabeled("Check the mod's GitHub", "Open")) { StartProcess("https://github.com/Byte-Nova/Rimworld-Together"); }
+            listingStandard.Label("Syncing");
+            if (listingStandard.ButtonTextLabeled("Syncing mode", $"{ModConfigGetter.CurrentSyncingMode}")) ShowSyncMenu();
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
         }
 
-        private void ShowVerboseFloatMenu()
+        private void ShowVerbosityMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            List<Tuple<string, Printer.LogImportanceMode>> verboseModes = new List<Tuple<string, Printer.LogImportanceMode>>()
+
+            List<Tuple<string, Printer.LogImportanceMode>> modes = new List<Tuple<string, Printer.LogImportanceMode>>()
             {
                 Tuple.Create("None", Printer.LogImportanceMode.Normal),
                 Tuple.Create("Verbose", Printer.LogImportanceMode.Verbose),
@@ -75,7 +72,7 @@ namespace GameClient.Core.Configs
                 Tuple.Create("Ludicrous", Printer.LogImportanceMode.Ludicrous)
             };
 
-            foreach (Tuple<string, Printer.LogImportanceMode> tuple in verboseModes)
+            foreach (Tuple<string, Printer.LogImportanceMode> tuple in modes)
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
@@ -88,23 +85,21 @@ namespace GameClient.Core.Configs
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private void ShowSimulatedLagMenu()
+        private void ShowSyncMenu()
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
-            List<Tuple<string, ModConfigGetter.EnforcedSimulatedLag>> verboseModes = new List<Tuple<string, ModConfigGetter.EnforcedSimulatedLag>>()
+
+            List<Tuple<string, ModConfigGetter.SyncingMode>> modes = new List<Tuple<string, ModConfigGetter.SyncingMode>>()
             {
-                Tuple.Create("None", ModConfigGetter.EnforcedSimulatedLag.None),
-                Tuple.Create("Small", ModConfigGetter.EnforcedSimulatedLag.Small),
-                Tuple.Create("Medium", ModConfigGetter.EnforcedSimulatedLag.Medium),
-                Tuple.Create("Big", ModConfigGetter.EnforcedSimulatedLag.Big),
-                Tuple.Create("ENORMOUS", ModConfigGetter.EnforcedSimulatedLag.ENORMOUS),
+                Tuple.Create("Fast", ModConfigGetter.SyncingMode.Fast),
+                Tuple.Create("Complete", ModConfigGetter.SyncingMode.Complete),
             };
 
-            foreach (Tuple<string, ModConfigGetter.EnforcedSimulatedLag> tuple in verboseModes)
+            foreach (Tuple<string, ModConfigGetter.SyncingMode> tuple in modes)
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
-                    ModConfigGetter.CurrentSimulatedLag = tuple.Item2;
+                    ModConfigGetter.CurrentSyncingMode = tuple.Item2;
                 });
 
                 list.Add(item);

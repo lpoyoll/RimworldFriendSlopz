@@ -7,21 +7,19 @@ namespace GameClient.Core.Configs
 {
     public class ModConfigGetter : Verse.ModSettings
     {
+        public enum SyncingMode { Fast, Complete }
+
         public static bool MuteChatSoundBool;
 
         public static bool RejectTransfersBool;
 
         public static bool RejectSiteRewardsBool;
 
-        public static bool ShowDiagnosticsBool;
-
         public static bool BypassModCompatibilityCheck;
 
         public static LogImportanceMode CurrentVerboseMode;
 
-        public static EnforcedSimulatedLag CurrentSimulatedLag;
-
-        public enum EnforcedSimulatedLag { None, Small, Medium, Big, ENORMOUS }
+        public static SyncingMode CurrentSyncingMode;
 
         public override void ExposeData()
         {
@@ -29,9 +27,8 @@ namespace GameClient.Core.Configs
             Scribe_Values.Look(ref RejectTransfersBool, nameof(RejectTransfersBool));
             Scribe_Values.Look(ref RejectSiteRewardsBool, nameof(RejectSiteRewardsBool));
             Scribe_Values.Look(ref CurrentVerboseMode, nameof(CurrentVerboseMode));
-            Scribe_Values.Look(ref CurrentSimulatedLag, nameof(CurrentSimulatedLag));
-            Scribe_Values.Look(ref ShowDiagnosticsBool, nameof(ShowDiagnosticsBool));
             Scribe_Values.Look(ref BypassModCompatibilityCheck, nameof(BypassModCompatibilityCheck));
+            Scribe_Values.Look(ref CurrentSyncingMode, nameof(CurrentSyncingMode));
 
             base.ExposeData();
         }

@@ -39,8 +39,6 @@ namespace GameClient.Hooks.TCPNetwork
 
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            Thread.Sleep(250 * (int)ModConfigGetter.CurrentSimulatedLag);
-
             if (!SessionHandler.IsReadyToPlay && !BypassReadyPackets.Contains(header)) return;
             else
             {

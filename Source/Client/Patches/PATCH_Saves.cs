@@ -23,17 +23,11 @@ namespace GameClient.Patches
                 if (SessionHandler.SynchronousMap != null) return false;
 
                 SessionHandler.IsSavingGame = true;
-                Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
+                PM_Saves.LatestSavePath = GenFilePaths.FilePathForSavedGame(fileName);
 
-                GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
-                GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
-                GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
-
-                string filePath = GenFilePaths.FilePathForSavedGame(fileName);
-                PM_Saves.LatestSavePath = filePath;
                 try
                 {
-                    SafeSaver.Save(filePath, "savegame", delegate
+                    SafeSaver.Save(PM_Saves.LatestSavePath, "savegame", delegate
                     {
                         ScribeMetaHeaderUtility.WriteMetaHeader();
                         Game target = Current.Game;
@@ -43,11 +37,7 @@ namespace GameClient.Patches
                 }
                 catch (Exception e) { Printer.Error("Exception while saving game: " + e); }
 
-                Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
-                MapManager.SendPlayerMapsToServer();
-
-                Printer.Message("Sending save to server", LogImportanceMode.Verbose);
-                PM_Saves.SendSaveToServer();
+                PM_Saves.OnSave();
 
                 DLG_Wait.Instance.Close();
             }
