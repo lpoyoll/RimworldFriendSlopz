@@ -137,7 +137,7 @@ namespace GameClient.WorldObjects
                         List<string> pawnNames = new List<string>();
                         foreach (Pawn pawn in RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
                         DLG_Base.PushNewDialog(new DLG_ListingWithButton("Aid menu", "Select the pawn you want to send for aid",
-                            pawnNames.ToArray(), PM_Aids.SendAidRequest));
+                            pawnNames.ToArray(), PM_Aid.SendAidRequest));
                     }
                     else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
