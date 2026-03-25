@@ -32,7 +32,7 @@ namespace GameClient.Core.Configs
             listingStandard.Begin(inRect);
 
             listingStandard.GapLine();
-            listingStandard.Label("Multiplayer Parameters");
+            listingStandard.Label("Parameters");
             listingStandard.CheckboxLabeled("Reject all transfers", ref ModConfigGetter.RejectTransfersBool, "Automatically denies transfers");
             listingStandard.CheckboxLabeled("Reject all site rewards", ref ModConfigGetter.RejectSiteRewardsBool, "Automatically site rewards");
             listingStandard.CheckboxLabeled("Mute incomming chat messages", ref ModConfigGetter.MuteChatSoundBool, "Mute chat messages");
@@ -48,13 +48,15 @@ namespace GameClient.Core.Configs
             if (listingStandard.ButtonTextLabeled("Change mod version [Windows only]", "Change")) { PM_Version.PromptChangeVersion(); }
             if (listingStandard.ButtonTextLabeled("Export account", "Export")) { ShowExportAccountQuestion(); }
 
-            GUI.color = Color.red;
-            if (listingStandard.ButtonTextLabeled("Reset account [DANGEROUS]", "Reset")) { ShowResetAccountQuestion(); }
-            GUI.color = Color.white;
-
             listingStandard.GapLine();
             listingStandard.Label("Syncing");
             if (listingStandard.ButtonTextLabeled("Syncing mode", $"{ModConfigGetter.CurrentSyncingMode}")) ShowSyncMenu();
+
+            listingStandard.GapLine();
+            listingStandard.Label("DANGEROUS");
+            GUI.color = Color.red;
+            if (listingStandard.ButtonTextLabeled("Reset account", "Reset")) { ShowResetAccountQuestion(); }
+            GUI.color = Color.white;
 
             listingStandard.End();
             base.DoSettingsWindowContents(inRect);
