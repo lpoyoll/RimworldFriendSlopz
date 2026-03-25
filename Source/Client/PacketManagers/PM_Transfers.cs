@@ -1,30 +1,29 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
+using GameClient.Hooks.TCPNetwork;
+using GameClient.Managers;
 using GameClient.Misc;
-using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
+using Shared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Verse;
-using Verse.Sound;
-using static TCPNetwork.Packets.PKT_Transfer;
-using static Shared.CommonEnumerators;
-using Shared.Misc;
-using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
-using GameClient.Managers;
 using TCPNetwork.Files.Client;
-using GameClient.Dialogs.Default;
+using TCPNetwork.Packets;
+using Verse;
+using Verse.Noise;
+using Verse.Sound;
+using static Shared.CommonEnumerators;
+using static TCPNetwork.Packets.PKT_Transfer;
 
 namespace GameClient.PacketManagers
 {
-    //Class that handles all the thing transfers between clients in the mod
-
     public class PM_Transfers : PM_Base
     {
         [HandlesPacket(PacketHeader.TransferManager)]
@@ -32,320 +31,158 @@ namespace GameClient.PacketManagers
         {
             PKT_Transfer data = Serializer.ConvertBytesToObject<PKT_Transfer>(bytes);
 
-            switch (data._stepMode)
+            switch (data.CurrentStepMode)
             {
                 case TransferStepMode.TradeRequest:
-                    ReceiveTransferRequest(data);
-                    break;
-
-                case TransferStepMode.TradeAccept:
-                    DLG_Wait.Instance.Close();
-                    DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Transfer was a success!" }));
-                    if (data._transferMode == TransferMode.Pod) LaunchDropPods();
-                    FinishTransfer(true);
-                    break;
-
-                case TransferStepMode.TradeReject:
-                    DLG_Wait.Instance.Close();
-                    DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Player rejected the trade!" }));
-                    RecoverTradeItems(TransferLocation.Caravan);
+                    ReceiveRequest(data, false);
                     break;
 
                 case TransferStepMode.TradeReRequest:
                     DLG_Wait.Instance.Close();
-                    ReceiveReboundRequest(data);
+                    ReceiveRequest(data, true);
+                    break;
+
+                case TransferStepMode.TradeAccept:
+                    FinishRequest(data.CurrentStepMode);
                     break;
 
                 case TransferStepMode.TradeReAccept:
                     DLG_Wait.Instance.Close();
-                    GetTransferedItemsToSettlement(TransferManagerHelper.GetAllTransferedItems(SessionHandler.IncomingManifest));
+                    FinishRequest(data.CurrentStepMode);
+                    break;
+
+                case TransferStepMode.TradeReject:
+                    DLG_Wait.Instance.Close();
+                    FinishRequest(data.CurrentStepMode);
                     break;
 
                 case TransferStepMode.TradeReReject:
                     DLG_Wait.Instance.Close();
-                    DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Player rejected the trade!" }));
-                    RecoverTradeItems(TransferLocation.Settlement);
+                    FinishRequest(data.CurrentStepMode);
                     break;
 
                 case TransferStepMode.Recover:
                     DLG_Wait.Instance.Close();
-                    DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Player is not currently available!" }));
-                    RecoverTradeItems(TransferLocation.Caravan);
+                    FinishRequest(data.CurrentStepMode);
                     break;
             }
         }
 
-        //Takes transferable items from desired location
-
-        public static void TakeTransferItems(TransferLocation transferLocation)
-        {
-            if (TradeSession.deal.TryExecute(out bool actuallyTraded))
-            {
-                SoundDefOf.ExecuteTrade.PlayOneShotOnCamera();
-
-                if (transferLocation == TransferLocation.Caravan)
-                {
-                    TradeSession.playerNegotiator.GetCaravan().RecacheInventory();
-                }
-            }
-        }
-
-        //Takes transferable items from drop pods
-
-        public static void TakeTransferItemsFromPods(IEnumerable<IThingHolder> pods)
-        {
-            SessionHandler.OutgoingManifest._transferMode = TransferMode.Pod;
-
-            foreach (IThingHolder pod in pods)
-            {
-                try
-                {
-                    ThingOwner directlyHeldThings = pod.GetDirectlyHeldThings();
-
-                    for (int i = 0; i < directlyHeldThings.Count(); i++)
-                    {
-                        TransferManagerHelper.AddThingToTransferManifest(directlyHeldThings[i], directlyHeldThings[i].stackCount);
-                    }
-                }
-                catch { continue; }
-            }
-        }
-
-        //Sends a transfer request to the server
-
-        public static void SendTransferRequestToServer(TransferLocation transferLocation)
+        public static void SendRequest(TransferLocation transferLocation)
         {
             DLG_Base.PushNewDialog(new DLG_Wait("Waiting for transfer response"));
 
             if (transferLocation == TransferLocation.Caravan)
             {
-                SessionHandler.ChosenCaravan = TradeSession.playerNegotiator.GetCaravan();
-
-                SessionHandler.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
-                SessionHandler.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
-                SessionHandler.OutgoingManifest._toTile = TradeSession.playerNegotiator.Tile;
-
+                SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeRequest;
+                SessionHandler.OutgoingManifest.ToTile = TradeSession.playerNegotiator.Tile;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                DLG_TradeListing.Instance.Close();
-
-                SessionHandler.OutgoingManifest._stepMode = TransferStepMode.TradeReRequest;
-                SessionHandler.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
-                SessionHandler.OutgoingManifest._toTile = SessionHandler.IncomingManifest._fromTile;
-
+                SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeReRequest;
+                SessionHandler.OutgoingManifest.ToTile = SessionHandler.IncomingManifest.FromTile;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Pod)
             {
-                SessionHandler.OutgoingManifest._stepMode = TransferStepMode.TradeRequest;
-                SessionHandler.OutgoingManifest._fromTile = Find.AnyPlayerHomeMap.Tile;
-                SessionHandler.OutgoingManifest._toTile = SessionHandler.ChosenSettlement.Tile;
-
+                SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeRequest;
+                SessionHandler.OutgoingManifest.ToTile = SessionHandler.ChosenSettlement.Tile;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.OutgoingManifest);
             }
         }
 
-        //Recovers transfered items when trade fails
-
-        public static void RecoverTradeItems(TransferLocation transferLocation)
-        {
-            try
-            {
-                Thing[] toRecover = TransferManagerHelper.GetAllTransferedItems(SessionHandler.OutgoingManifest);
-
-                if (transferLocation == TransferLocation.Caravan) GetTransferedItemsToCaravan(toRecover, false);
-                else if (transferLocation == TransferLocation.Settlement) GetTransferedItemsToSettlement(toRecover, false);
-            }
-
-            catch
-            {
-                Printer.Warning("Rethrowing transfer items, might be RimWorld's fault");
-
-                Thread.Sleep(100);
-
-                RecoverTradeItems(transferLocation);
-            }
-        }
-
-        //Receives the transfered items into the settlement
-
-        public static void GetTransferedItemsToSettlement(Thing[] things, bool success = true, bool customMap = true, bool invokeMessage = true)
-        {
-            Action r1 = delegate
-            {
-                Map map = null;
-                if (customMap) map = Find.Maps.Find(x => x.Tile == SessionHandler.IncomingManifest._toTile);
-                else map = Find.AnyPlayerHomeMap;
-
-                foreach (Thing thing in things)
-                {
-                    if (thing.def.CanHaveFaction) thing.SetFactionDirect(Faction.OfPlayer);
-                    RimworldManager.PlaceThingIntoMap(thing, map, TransferManagerHelper.GetTransferLocationInMap(map), true);
-                }
-
-                FinishTransfer(success);
-            };
-
-            if (invokeMessage)
-            {
-                if (success) DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Transfer was a success!" }, r1));
-                else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Transfer was cancelled!" }, r1));
-            }
-            else r1.Invoke();
-        }
-
-        //Receives the transfered items into the caravan
-
-        public static void GetTransferedItemsToCaravan(Thing[] things, bool success = true, bool invokeMessage = true)
-        {
-            Action r1 = delegate
-            {
-                foreach (Thing thing in things) RimworldManager.PlaceThingIntoCaravan(thing, SessionHandler.ChosenCaravan);
-
-                FinishTransfer(success);
-            };
-
-            if (invokeMessage)
-            {
-                if (success) DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Transfer was a success!" }, r1));
-                else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Transfer was cancelled!" }, r1));
-            }
-            else r1.Invoke();
-        }
-
-        //Finishes the transfer order
-
         public static void FinishTransfer(bool success)
         {
-            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.None;
-
             if (success) PM_Saves.ForceSave();
 
+            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.None;
             SessionHandler.IncomingManifest = new PKT_Transfer();
             SessionHandler.OutgoingManifest = new PKT_Transfer();
-
             SessionHandler.IsInTransfer = false;
         }
 
-        //Executes when receiving a transfer request
-
-        public static void ReceiveTransferRequest(PKT_Transfer transferData)
+        public static void FinishRequest(TransferStepMode mode)
         {
-            try
+            if (mode == TransferStepMode.TradeAccept)
             {
-                SessionHandler.IncomingManifest = transferData;
-
-                if (SessionHandler.IsInTransfer || ModConfigGetter.RejectTransfersBool) RejectRequest(transferData._transferMode, false);
-                else
-                {
-                    Action r1 = delegate
-                    {
-                        DLG_TradeListing d1 = new DLG_TradeListing(TransferManagerHelper.GetAllTransferedItems(transferData), 
-                            transferData._transferMode);
-
-                        DLG_Base.PushNewDialog(d1);
-                    };
-
-                    string description = string.Empty;
-                    if (transferData._transferMode == TransferMode.Trade) description = "You are receiving a trade request";
-                    else description = "You are receiving a gift request";
-
-                    DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { description }, r1));
-                }
+                FinishTransfer(true);
+                RimworldManager.GenerateLetter("Transfer completed", "The transfer was completed", LetterDefOf.PositiveEvent);
             }
 
-            catch
+            else if (mode == TransferStepMode.TradeReAccept)
             {
-                Printer.Warning("Rethrowing transfer items, might be RimWorld's fault");
+                List<Thing> allTransferedItems = GetAllTransferedItems(SessionHandler.IncomingManifest);
+                Map map = Find.Maps.Find(x => x.Tile == SessionHandler.IncomingManifest.ToTile);
+                IntVec3 location = RimworldManager.GetTransferLocationInMap(map);
+                foreach (Thing thing in allTransferedItems) RimworldManager.PlaceThingIntoMap(thing, map, location);
 
-                Thread.Sleep(100);
+                FinishTransfer(true);
+                RimworldManager.GenerateLetter("Transfer completed", "The transfer was completed", LetterDefOf.PositiveEvent);
+            }
 
-                ReceiveTransferRequest(transferData);
+            else if (mode == TransferStepMode.TradeReject)
+            {
+                RimworldManager.GenerateLetter("Transfer cancelled", "The transfer was cancelled", LetterDefOf.NeutralEvent);
+                RecoverTransferManifest(TransferLocation.Caravan);
+                FinishTransfer(false);
+            }
+
+            else if (mode == TransferStepMode.TradeReReject)
+            {
+                RimworldManager.GenerateLetter("Transfer cancelled", "The transfer was cancelled", LetterDefOf.NeutralEvent);
+                RecoverTransferManifest(TransferLocation.Settlement);
+                FinishTransfer(false);
+            }
+
+            else if (mode == TransferStepMode.Recover)
+            {
+                RimworldManager.GenerateLetter("Transfer cancelled", "Player is not currently available!", LetterDefOf.NeutralEvent);
+                RecoverTransferManifest(TransferLocation.Caravan);
+                FinishTransfer(false);
             }
         }
 
-        //Executes after receiving a rebound transfer request
-
-        public static void ReceiveReboundRequest(PKT_Transfer transferData)
+        public static void ReceiveRequest(PKT_Transfer transferData, bool isRebound)
         {
-            try
+            if (ModConfigGetter.RejectTransfersBool || (!isRebound && SessionHandler.IsInTransfer)) RejectRequest(transferData.CurrentTransferMode);
+            else
             {
+                SessionHandler.IsInTransfer = true;
                 SessionHandler.IncomingManifest = transferData;
-
-                DLG_TradeListing d1 = new DLG_TradeListing(TransferManagerHelper.GetAllTransferedItems(transferData), TransferMode.Rebound);
-                DLG_Base.PushNewDialog(d1);
-            }
-
-            catch
-            {
-                Printer.Warning("Rethrowing transfer items, might be RimWorld's fault");
-
-                Thread.Sleep(100);
-
-                ReceiveReboundRequest(transferData);
+                DLG_Base.PushNewDialog(new DLG_TradeListing(GetAllTransferedItems(transferData),
+                    transferData.CurrentTransferMode));
             }
         }
 
-        //Executes when rejecting a transfer request
-
-        public static void RejectRequest(TransferMode transferMode, bool finishTransfer = true)
+        public static void RejectRequest(TransferMode transferMode)
         {
-            if (transferMode == TransferMode.Gift)
+            if (transferMode == TransferMode.Trade)
             {
-                //Nothing should happen here
-            }
-
-            else if (transferMode == TransferMode.Trade)
-            {
-                SessionHandler.IncomingManifest._stepMode = TransferStepMode.TradeReject;
-
+                SessionHandler.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReject;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.IncomingManifest);
-            }
-
-            else if (transferMode == TransferMode.Pod)
-            {
-                //Nothing should happen here
             }
 
             else if (transferMode == TransferMode.Rebound)
             {
-                SessionHandler.IncomingManifest._stepMode = TransferStepMode.TradeReReject;
-
+                SessionHandler.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReReject;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.IncomingManifest);
-
-                RecoverTradeItems(TransferLocation.Caravan);
+                RecoverTransferManifest(TransferLocation.Caravan);
             }
 
-            if (finishTransfer) FinishTransfer(false);
+            FinishTransfer(false);
         }
 
-        //Launchs the drop pods with the desired transfer request
-
-        public static void LaunchDropPods()
-        {
-            foreach (IThingHolder holder in SessionHandler.ChosenPods.ToArray())
-            {
-                holder.GetDirectlyHeldThings().ClearAndDestroyContents();
-            }
-        }
-    }
-
-    //Helper class of the TransferManager class
-
-    public class TransferManagerHelper
-    {
-        public static void AddThingToTransferManifest(Thing thing, int thingCount)
+        public static void AddToTransferManifest(Thing thing, int thingCount)
         {
             if (RimworldManager.CheckIfThingIsCorpse(thing))
             {
                 Corpse corpse = thing as Corpse;
                 Pawn pawn = corpse.InnerPawn;
 
-                SessionHandler.OutgoingManifest._pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn));
+                SessionHandler.OutgoingManifest.Pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn));
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
@@ -353,46 +190,56 @@ namespace GameClient.PacketManagers
             {
                 Pawn pawn = thing as Pawn;
 
-                SessionHandler.OutgoingManifest._pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn));
+                SessionHandler.OutgoingManifest.Pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn));
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
-            else SessionHandler.OutgoingManifest._things.Add(ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thingCount));
-        }
-
-        //Gets the transfer location in the desired map
-
-        public static IntVec3 GetTransferLocationInMap(Map map)
-        {
-            Thing tradingSpot = map.listerThings.AllThings.Find(x => x.def.defName == "RTTransferSpot");
-            if (tradingSpot != null) return tradingSpot.Position;
             else
             {
-                string title = "Missing transfer spot";
-                string description = "Received things will appear in the center of the map";
-                RimworldManager.GenerateLetter(title, description, LetterDefOf.NeutralEvent);
-
-                return new IntVec3(map.Center.x, map.Center.y, map.Center.z);
+                SessionHandler.OutgoingManifest.Things.Add(ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thingCount));
             }
         }
 
-        //Gets all the transfered items from the transfer into usable objects
+        public static void RecoverTransferManifest(TransferLocation transferLocation)
+        {
+            if (transferLocation == TransferLocation.Caravan)
+            {
+                foreach (Thing thing in GetAllTransferedItems(SessionHandler.OutgoingManifest))
+                {
+                    try { RimworldManager.PlaceThingIntoCaravan(thing, SessionHandler.ChosenCaravan); }
+                    catch { continue; }
+                }
+            }
 
-        public static Thing[] GetAllTransferedItems(PKT_Transfer transferData)
+            else if (transferLocation == TransferLocation.Settlement)
+            {
+                IntVec3 location = RimworldManager.GetTransferLocationInMap(Find.AnyPlayerHomeMap);
+
+                foreach (Thing thing in GetAllTransferedItems(SessionHandler.OutgoingManifest))
+                {
+                    try { RimworldManager.PlaceThingIntoMap(thing, Find.AnyPlayerHomeMap, location); }
+                    catch { continue; }
+                }
+            }
+        }
+
+        public static List<Thing> GetAllTransferedItems(PKT_Transfer transferData)
         {
             List<Thing> allTransferedItems = new List<Thing>();
 
-            foreach (string file in transferData._pawns)
+            foreach (string data in transferData.Pawns)
             {
-                allTransferedItems.Add(ScribeManager.SerializeFromString<Pawn>(file));
+                try { allTransferedItems.Add(ScribeManager.SerializeFromString<Pawn>(data, ScribeManager.SerializableType.Pawn)); }
+                catch { continue; }
             }
 
-            foreach (string data in transferData._things)
+            foreach (string data in transferData.Things)
             {
-                allTransferedItems.Add((Thing)ScribeManager.SerializeFromString<Thing>(data));
+                try { allTransferedItems.Add(ScribeManager.SerializeFromString<Thing>(data, ScribeManager.SerializableType.Thing)); }
+                catch { continue; }
             }
 
-            return allTransferedItems.ToArray();
+            return allTransferedItems;
         }
     }
 }

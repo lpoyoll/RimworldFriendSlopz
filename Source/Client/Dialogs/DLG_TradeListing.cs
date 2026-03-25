@@ -13,6 +13,7 @@ using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.PacketManagers;
 using GameClient.Dialogs.Default;
+using System.Collections.Generic;
 
 namespace GameClient.Dialogs
 {
@@ -20,20 +21,18 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(400f, 512f);
 
-        private Thing[] ListedThings { get; set; }
+        private List<Thing> ListedThings { get; set; } = new List<Thing>();
 
-        private TransferMode TransferMode { get; set; }
+        private TransferMode TransferMode { get; set; } = TransferMode.Gift;
 
         public static DLG_Base Instance { get; private set; } = null;
 
-        public DLG_TradeListing(Thing[] listedThings, TransferMode transferMode)
+        public DLG_TradeListing(List<Thing> listedThings, TransferMode transferMode)
         {
             this.ListedThings = listedThings;
             this.TransferMode = transferMode;
             this.Title = "Item Listing";
             Instance = this;
-
-            SessionHandler.IsInTransfer = true;
         }
 
         public override void DoWindowContents(Rect rect)
@@ -43,15 +42,8 @@ namespace GameClient.Dialogs
             FillMainRect(new Rect(0f, 35f, rect.width, rect.height - SlimButtonSize.y - 45));
             Text.Font = GameFont.Small;
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept"))
-            {
-                Accept();
-            }
-
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel"))
-            {
-                Reject();
-            }
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Accept")) Accept();
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), "Cancel")) Reject();
         }
 
         private void FillMainRect(Rect mainRect)
@@ -101,7 +93,12 @@ namespace GameClient.Dialogs
 
             if (TransferMode == TransferMode.Gift)
             {
-                PM_Transfers.GetTransferedItemsToSettlement(ListedThings);
+                Map map = Find.AnyPlayerHomeMap;
+                IntVec3 position = RimworldManager.GetTransferLocationInMap(map);
+                foreach (Thing thing in ListedThings) RimworldManager.PlaceThingIntoMap(thing, map, position, true);
+
+                PM_Transfers.FinishTransfer(true);
+                RimworldManager.GenerateLetter("Transfer completed", "The transfer was completed", LetterDefOf.PositiveEvent);
                 Close();
             }
 
@@ -124,18 +121,12 @@ namespace GameClient.Dialogs
 
             else if (TransferMode == TransferMode.Rebound)
             {
-                SessionHandler.IncomingManifest._stepMode = TransferStepMode.TradeReAccept;
-
+                SessionHandler.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReAccept;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.IncomingManifest);
+                foreach (Thing thing in ListedThings) RimworldManager.PlaceThingIntoCaravan(thing, SessionHandler.ChosenCaravan);
 
-                PM_Transfers.GetTransferedItemsToCaravan(ListedThings);
-
-                Close();
-            }
-
-            else if (TransferMode == TransferMode.Pod)
-            {
-                PM_Transfers.GetTransferedItemsToSettlement(ListedThings);
+                PM_Transfers.FinishTransfer(true);
+                RimworldManager.GenerateLetter("Transfer completed", "The transfer was completed", LetterDefOf.PositiveEvent);
                 Close();
             }
         }
@@ -143,7 +134,6 @@ namespace GameClient.Dialogs
         private void Reject()
         {
             PM_Transfers.RejectRequest(TransferMode);
-
             Close();
         }
     }

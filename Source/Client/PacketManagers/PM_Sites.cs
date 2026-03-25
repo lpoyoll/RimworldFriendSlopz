@@ -138,7 +138,10 @@ namespace GameClient.PacketManagers
 
             if (rewards.Count > 0)
             {
-                PM_Transfers.GetTransferedItemsToSettlement(rewards.ToArray(), true, false, false);
+                Map map = Find.AnyPlayerHomeMap;
+                IntVec3 position = RimworldManager.GetTransferLocationInMap(map);
+                foreach (Thing thing in rewards) RimworldManager.PlaceThingIntoMap(thing, map, position, true);
+
                 RimworldManager.GenerateLetter("Site rewards", $"You've received your site rewards", LetterDefOf.PositiveEvent);
                 Printer.Message("Rewards delivered", LogImportanceMode.Verbose);
             }

@@ -27,11 +27,17 @@ namespace GameClient.Patches
             if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return;
             else
             {
-                if (TradeSession.giftMode) SessionHandler.OutgoingManifest._transferMode = TransferMode.Gift;
-                else SessionHandler.OutgoingManifest._transferMode = TransferMode.Trade;
+                SessionHandler.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
 
-                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving) PM_Transfers.SendTransferRequestToServer(TransferLocation.Caravan);
-                else PM_Transfers.SendTransferRequestToServer(TransferLocation.Settlement);
+                if (TradeSession.giftMode) SessionHandler.OutgoingManifest.CurrentTransferMode = TransferMode.Gift;
+                else SessionHandler.OutgoingManifest.CurrentTransferMode = TransferMode.Trade;
+
+                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving) PM_Transfers.SendRequest(TransferLocation.Caravan);
+                else
+                {
+                    PM_Transfers.SendRequest(TransferLocation.Settlement);
+                    DLG_TradeListing.Instance.Close();
+                }
             }
         }
     }
@@ -168,7 +174,7 @@ namespace GameClient.Patches
 
                 if (toTransfer > 0)
                 {
-                    TransferManagerHelper.AddThingToTransferManifest(___thingsColony[0], toTransfer);
+                    PM_Transfers.AddToTransferManifest(___thingsColony[0], toTransfer);
                     Printer.Warning($"Transfered {Math.Abs(___countToTransfer)} of thing {___thingsColony[0]}", LogImportanceMode.Verbose);
                 }
 
@@ -191,7 +197,7 @@ namespace GameClient.Patches
 
                 if (toTransfer > 0)
                 {
-                    TransferManagerHelper.AddThingToTransferManifest(__instance.thingsColony[0], toTransfer);
+                    PM_Transfers.AddToTransferManifest(__instance.thingsColony[0], toTransfer);
                     Printer.Warning($"Transfered {Math.Abs(__instance.CountToTransfer)} of thing {__instance.thingsColony[0]}", LogImportanceMode.Verbose);
                 }
 

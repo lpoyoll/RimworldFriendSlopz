@@ -104,6 +104,17 @@ namespace GameClient.Managers
             Find.LetterStack.ReceiveLetter(title, description, letterType);
         }
 
+        private static IntVec3 FindVectorNear(IntVec3 center, Map map)
+        {
+            if (!DropCellFinder.TryFindDropSpotNear(center, map, out IntVec3 vectorForUse, false, true))
+            {
+                Printer.Warning("Couldn't find any good drop spot near " + center + "Will use random valid location instead.", LogImportanceMode.Verbose);
+                vectorForUse = CellFinderLoose.RandomCellWith(c => c.Standable(map) && !c.Fogged(map), map);
+            }
+
+            return vectorForUse;
+        }
+
         public static void PlaceThingIntoMap(Thing thing, Map map, IntVec3 position, bool byDropPod = false)
         {
             IntVec3 positionToPlaceAt = IntVec3.Zero;
@@ -118,23 +129,11 @@ namespace GameClient.Managers
             }
         }
 
-        private static IntVec3 FindVectorNear(IntVec3 center, Map map)
-        {
-            if (!DropCellFinder.TryFindDropSpotNear(center, map, out IntVec3 vectorForUse, false, true))
-            {
-                Printer.Warning("Couldn't find any good drop spot near " + center + "Will use random valid location instead.", LogImportanceMode.Verbose);
-                vectorForUse = CellFinderLoose.RandomCellWith(c => c.Standable(map) && !c.Fogged(map), map);
-            }
-
-            return vectorForUse;
-        }
-
         public static void PlaceThingIntoCaravan(Thing thing, Caravan caravan)
         {
             if (thing is Pawn)
             {
                 Pawn pawn = thing as Pawn;
-
                 if (!Find.WorldPawns.AllPawnsAliveOrDead.Contains(pawn)) Find.WorldPawns.PassToWorld(pawn);
                 if (pawn.def.CanHaveFaction) pawn.SetFactionDirect(Faction.OfPlayer);
 
@@ -144,7 +143,6 @@ namespace GameClient.Managers
             else
             {
                 if (thing.stackCount == 0) return;
-
                 caravan.AddPawnOrItem(thing, false);
             }
         }
@@ -298,6 +296,20 @@ namespace GameClient.Managers
         {
             if (thing is Corpse corpse) return true;
             else return false;
+        }
+
+        public static IntVec3 GetTransferLocationInMap(Map map)
+        {
+            Thing tradingSpot = map.listerThings.AllThings.Find(x => x.def.defName == "RTTransferSpot");
+            if (tradingSpot != null) return tradingSpot.Position;
+            else
+            {
+                string title = "Missing transfer spot";
+                string description = "Received things will appear in the center of the map";
+                RimworldManager.GenerateLetter(title, description, LetterDefOf.NeutralEvent);
+
+                return new IntVec3(map.Center.x, map.Center.y, map.Center.z);
+            }
         }
     }
 }
