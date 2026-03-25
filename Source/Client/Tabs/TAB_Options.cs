@@ -16,7 +16,9 @@ namespace GameClient.Tabs
 {
     public class TAB_Options : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(200f, 165f);
+        // Add 30 Y value per button
+
+        public override Vector2 InitialSize => new Vector2(250f, 194f);
 
         public static TAB_Options Instance { get; private set; } = null;
 
@@ -51,6 +53,8 @@ namespace GameClient.Tabs
             if (listingStandard.ButtonText("Event Manager") && SessionHandler.IsAdmin) PM_Events.OpenEventManagerMenu();
 
             if (listingStandard.ButtonText("Difficulty Manager") && SessionHandler.IsAdmin) DifficultyManager.OpenDifficultyManagerMenu();
+
+            if (listingStandard.ButtonText("Force Save") && SessionHandler.IsAdmin) PM_Saves.ForceSave();
 
             GUI.color = Color.red;
             if (listingStandard.ButtonText("Reset Save")) ShowResetMenu();
