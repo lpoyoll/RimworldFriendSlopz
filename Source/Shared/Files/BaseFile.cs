@@ -1,4 +1,5 @@
 ﻿using Shared.Files.Configs;
+using Shared.Misc;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,34 +18,58 @@ namespace Shared.Files
         {
             Semaphore.WaitOne();
 
-            try 
-            { 
+            try
+            {
                 if (inBytes) Serializer.ObjectBytesToFile(savePath, obj);
-                else Serializer.SerializeToFile(savePath, obj); 
+                else Serializer.SerializeToFile(savePath, obj);
             }
-            catch (Exception e) { throw new Exception(e.ToString()); }
+            catch (Exception ex) { Printer.Error(ex); }
 
             Semaphore.Release();
         }
 
         public static object Load<T>(string savePath, bool inBytes = false, bool generateIfNull = true)
         {
-            if (File.Exists(savePath))
-            {
-                if (inBytes) return Serializer.FileBytesToObject<T>(savePath);
-                else return Serializer.SerializeFromFile<T>(savePath);
-            }
+            Semaphore.WaitOne();
 
-            else
+            try
             {
-                if (!generateIfNull) return null;
+                if (File.Exists(savePath))
+                {
+                    if (inBytes)
+                    {
+                        Semaphore.Release();
+                        return Serializer.FileBytesToObject<T>(savePath);
+                    }
+
+                    else
+                    {
+                        Semaphore.Release();
+                        return Serializer.SerializeFromFile<T>(savePath);
+                    }
+                }
+
                 else
                 {
-                    object file = (T)Activator.CreateInstance(typeof(T));
-                    Serializer.SerializeToFile(savePath, file);
-                    return file;
+                    if (!generateIfNull)
+                    {
+                        Semaphore.Release();
+                        return null;
+                    }
+
+                    else
+                    {
+                        object file = (T)Activator.CreateInstance(typeof(T));
+                        Serializer.SerializeToFile(savePath, file);
+                        Semaphore.Release();
+                        return file;
+                    }
                 }
             }
+            catch (Exception ex) { Printer.Error(ex); }
+
+            Semaphore.Release();
+            return null;
         }
     }
 }

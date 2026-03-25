@@ -21,8 +21,6 @@ namespace Shared
             Formatting = Formatting.Indented
         };
 
-        //Serialize from and to byte arrays
-
         public static byte[] ConvertObjectToBytes<T>(T toConvert, bool compression = true)
         {
             try 
@@ -59,8 +57,6 @@ namespace Shared
             catch (Exception ex) { throw ex; }
         }
 
-        // Serialize from and to strings
-
         public static string SerializeToString(object serializable)
         {
             try { return JsonConvert.SerializeObject(serializable, DefaultSettings); }
@@ -81,9 +77,6 @@ namespace Shared
             }
         }
 
-        /// <summary>
-        /// Serializes an object to a JSON at the path specified, deserialized by <see cref="SerializeToFile"/>
-        /// </summary>
         public static void SerializeToFile(string path, object serializable)
         {
             try { File.WriteAllText(path, JsonConvert.SerializeObject(serializable, IndentedSettings)); }
@@ -94,9 +87,6 @@ namespace Shared
             }
         }
 
-        /// <summary>
-        /// Deserializes an object from JSON, serialized by <see cref="SerializeFromString"/>
-        /// </summary>
         public static T SerializeFromFile<T>(string path)
         {
             try { return JsonConvert.DeserializeObject<T>(File.ReadAllText(path), DefaultSettings); }
@@ -107,9 +97,6 @@ namespace Shared
             }
         }
 
-        /// <summary>
-        /// Serializes an object to binary to a file, deserialized by <see cref="FileBytesToObject{T}"/>
-        /// </summary>
         public static void ObjectBytesToFile(string path, object serializable)
         {
             try { File.WriteAllBytes(path, ConvertObjectToBytes(serializable)); }
@@ -120,9 +107,6 @@ namespace Shared
             }
         }
 
-        /// <summary>
-        /// Deserializes an object from binary from a file, serialize by <see cref="ObjectBytesToFile"/>
-        /// </summary>
         public static T FileBytesToObject<T>(string path)
         {
             try { return ConvertBytesToObject<T>(File.ReadAllBytes(path)); }
