@@ -16,15 +16,23 @@ namespace GameClient.Tabs
 {
     public class TAB_Chat : DLG_Base
     {
+        public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 400f);
+
         public override Vector2 InitialSize => new Vector2(600f, 400f);
-
-        public static TAB_Chat Instance { get; private set; } = null;
-
-        private Vector2 scrollPositionPlayers = Vector2.zero;
 
         private Vector2 scrollPositionChat = Vector2.zero;
 
+        public static TAB_Chat Instance { get; private set; } = null;
+
         public static bool IsTabOpen { get; set; } = false;
+
+        public static bool ShouldScrollChat { get; set; } = true;
+
+        public static bool ShouldPlaySounds { get; set; } = false;
+
+        public static string CurrentChatInput { get; set; } = string.Empty;
+
+        public static List<string> ChatMessages { get; set; } = new List<string>();
 
         public TAB_Chat()
         {
@@ -41,8 +49,8 @@ namespace GameClient.Tabs
         {
             base.PreOpen();
 
-            windowRect.x = PM_Chat.ChatBoxPosition.x;
-            windowRect.y = PM_Chat.ChatBoxPosition.y;
+            windowRect.x = ChatBoxPosition.x;
+            windowRect.y = ChatBoxPosition.y;
         }
 
         public override void PostOpen()
@@ -55,8 +63,8 @@ namespace GameClient.Tabs
         {
             base.PostClose();
 
-            PM_Chat.ChatBoxPosition.x = windowRect.x;
-            PM_Chat.ChatBoxPosition.y = windowRect.y;
+            ChatBoxPosition.x = windowRect.x;
+            ChatBoxPosition.y = windowRect.y;
 
             IsTabOpen = false;
         }
@@ -74,7 +82,7 @@ namespace GameClient.Tabs
             DrawInput(new Rect(rect.xMin, rect.yMax - 25f, rect.width, 25f));
             CheckForEnterKey();
 
-            if (PM_Chat.ShouldScrollChat) ScrollToLastMessage();
+            if (TAB_Chat.ShouldScrollChat) ScrollToLastMessage();
         }
 
         private void DrawToolsButton()
@@ -91,7 +99,7 @@ namespace GameClient.Tabs
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
-                    PM_Chat.CurrentChatInput += tuple.Item2;
+                    CurrentChatInput += tuple.Item2;
                 });
 
                 list.Add(item);
@@ -114,7 +122,7 @@ namespace GameClient.Tabs
             float heightCalcWidthOffset = 160f;
             float chatScrollbarSafezone = 30f;
 
-            foreach (string str in PM_Chat.ChatMessageCache.ToArray()) height += Text.CalcHeight(str, mainRect.width - chatScrollbarSafezone);
+            foreach (string str in ChatMessages.ToArray()) height += Text.CalcHeight(str, mainRect.width - chatScrollbarSafezone);
 
             Rect viewRect = new(mainRect.x, mainRect.y, mainRect.width - chatScrollbarSafezone, height);
 
@@ -124,7 +132,7 @@ namespace GameClient.Tabs
             float num2 = scrollPositionChat.y - chatScrollbarSafezone;
             float num3 = scrollPositionChat.y + mainRect.height;
 
-            foreach (string str in PM_Chat.ChatMessageCache.ToArray())
+            foreach (string str in ChatMessages.ToArray())
             {
                 if (num > num2 && num < num3)
                 {
@@ -143,19 +151,19 @@ namespace GameClient.Tabs
         private void DrawInput(Rect rect)
         {
             Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(rect, PM_Chat.CurrentChatInput);
-            if (inputOne.Length <= 512) PM_Chat.CurrentChatInput = inputOne;
+            string inputOne = Widgets.TextField(rect, CurrentChatInput);
+            if (inputOne.Length <= 512) CurrentChatInput = inputOne;
         }
 
         private void DrawPinCheckbox(Rect rect)
         {
             Action toDo = delegate 
             { 
-                PM_Chat.ChatAutoscroll = !PM_Chat.ChatAutoscroll;
+                ShouldScrollChat = !ShouldScrollChat;
                 SoundDefOf.Click.PlayOneShotOnCamera();
             };
 
-            if (PM_Chat.ChatAutoscroll)
+            if (ShouldScrollChat)
             {
                 if (Widgets.ButtonImage(rect, RTTextureDefs.PinOff, true, "Unpin chat")) toDo();
             }
@@ -170,11 +178,11 @@ namespace GameClient.Tabs
         {
             Action toDo = delegate
             {
-                PM_Chat.ShouldPlaySounds = !PM_Chat.ShouldPlaySounds;
+                TAB_Chat.ShouldPlaySounds = !TAB_Chat.ShouldPlaySounds;
                 SoundDefOf.Click.PlayOneShotOnCamera();
             };
 
-            if (PM_Chat.ShouldPlaySounds)
+            if (TAB_Chat.ShouldPlaySounds)
             {
                 if (Widgets.ButtonImage(rect, RTTextureDefs.SoundOff, true, "Unmute sounds")) toDo();
             }
@@ -187,38 +195,23 @@ namespace GameClient.Tabs
 
         private void CheckForEnterKey()
         {
-            bool keyPressed = !string.IsNullOrWhiteSpace(PM_Chat.CurrentChatInput) && (Event.current.keyCode == KeyCode.Return ||
+            bool keyPressed = !string.IsNullOrWhiteSpace(CurrentChatInput) && (Event.current.keyCode == KeyCode.Return ||
                 Event.current.keyCode == KeyCode.KeypadEnter);
 
             if (keyPressed)
             {
-                PM_Chat.SendMessage(PM_Chat.CurrentChatInput);
-                PM_Chat.CurrentChatInput = "";
+                PM_Chat.SendMessage(CurrentChatInput);
+                CurrentChatInput = "";
             }
         }
 
-        private void ScrollToLastMessage()
-        {
-            scrollPositionChat.Set(scrollPositionChat.x, scrollPositionChat.y + Mathf.Infinity);
-            PM_Chat.ShouldScrollChat = false;
-        }
+        private void ScrollToLastMessage() { scrollPositionChat.Set(scrollPositionChat.x, scrollPositionChat.y + Mathf.Infinity); }
 
         private void DrawCustomRow(Rect rect, string message)
         {
             Text.Font = GameFont.Small;
             Rect fixedRect = new(rect.x + 10f, rect.y + 5f, rect.width, rect.height);
             Widgets.Label(fixedRect, message);
-        }
-
-        private void DrawCustomRowPlayerList(Rect rect, string str)
-        {
-            Text.Font = GameFont.Small;
-
-            Rect fixedRect = new(rect.x + 10f, rect.y + 5f, rect.width - 10f, rect.height);
-            Widgets.Label(fixedRect, str);
-
-            if (Widgets.ButtonInvisible(fixedRect, false)) PM_Chat.CurrentChatInput += $"@{str}";
-            Widgets.DrawHighlightIfMouseover(fixedRect);
         }
     }
 }

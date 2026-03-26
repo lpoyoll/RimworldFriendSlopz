@@ -26,22 +26,6 @@ namespace GameClient.PacketManagers
     [StaticConstructorOnStartup]
     public class PM_Chat : PM_Base
     {
-        public static string CurrentChatInput { get; set; } = string.Empty;
-
-        public static List<string> ChatMessageCache { get; set; } = new List<string>();
-
-        public static bool ShouldScrollChat { get; set; } = false;
-
-        public static bool ShouldPlaySounds { get; set; } = false;
-
-        //No accessors zone
-
-        public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 400f);
-
-        public static bool ChatAutoscroll = true;
-
-        //No accessors zone
-
         [HandlesPacket(PacketHeader.ChatManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
@@ -63,23 +47,21 @@ namespace GameClient.PacketManagers
 
         public static void AddMessageToChat(string username, string message, ChatColor userColor, ChatColor messageColor)
         {
-            if (ChatMessageCache.Count() > 100) ChatMessageCache.RemoveAt(0);
+            if (TAB_Chat.ChatMessages.Count() > 100) TAB_Chat.ChatMessages.RemoveAt(0);
 
             if (ChatManagerH.CheckIfHasBeenTagged(message)) message = message.Replace($"@{SessionHandler.Username}", $"<color=red>@{SessionHandler.Username}</color>");
 
-            ChatMessageCache.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerH.messageColorDictionary[userColor]}{username}</color>: " +
+            TAB_Chat.ChatMessages.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerH.messageColorDictionary[userColor]}{username}</color>: " +
                 $"{ChatManagerH.messageColorDictionary[messageColor]}{ChatManagerH.ParseMessage(message)}</color>");
 
-            if (ChatAutoscroll) ShouldScrollChat = true;
-
-            if (!TAB_Chat.IsTabOpen & !ShouldPlaySounds) RTSoundDefs.ChatReceive.PlayOneShotOnCamera();
+            if (!TAB_Chat.IsTabOpen & !TAB_Chat.ShouldPlaySounds) RTSoundDefs.ChatReceive.PlayOneShotOnCamera();
         }
 
         [OnSessionEnd]
         private static void CleanChat()
         {
-            CurrentChatInput = string.Empty;
-            ChatMessageCache = new List<string>();
+            TAB_Chat.CurrentChatInput = string.Empty;
+            TAB_Chat.ChatMessages = new List<string>();
         }
     }
 
