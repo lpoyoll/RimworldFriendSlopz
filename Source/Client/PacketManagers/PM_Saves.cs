@@ -168,7 +168,7 @@ namespace GameClient.PacketManagers
 
         public static void OnSave()
         {
-            if (ModConfigGetter.CurrentSyncingMode == ModConfigGetter.SyncingMode.Complete || SessionHandler.IsExiting)
+            if (DLG_Options.CurrentSyncingMode == DLG_Options.SyncingMode.Complete || SessionHandler.IsExiting)
             {
                 Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
                 MapManager.SendPlayerMapsToServer();

@@ -1,4 +1,5 @@
 using GameClient.Defs;
+using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.PacketManagers;
 using GameClient.Patches.Pages;
@@ -149,7 +150,7 @@ namespace GameClient.Misc
             SynchronousMap = null;
 
             TAB_Chat.IsTabOpen = false;
-            TAB_Options.IsTabOpen = false;
+            DLG_Admin.IsDialogOpen = false;
             Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
             Patch_Page_SelectStoryteller_DoWindowContents.executedMessage = false;
 

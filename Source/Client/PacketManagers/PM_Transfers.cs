@@ -147,7 +147,7 @@ namespace GameClient.PacketManagers
 
         public static void ReceiveRequest(PKT_Transfer transferData, bool isRebound)
         {
-            if (ModConfigGetter.RejectTransfersBool || (!isRebound && SessionHandler.IsInTransfer)) RejectRequest(transferData.CurrentTransferMode);
+            if (DLG_Options.AutorejectTransfersBool || (!isRebound && SessionHandler.IsInTransfer)) RejectRequest(transferData.CurrentTransferMode);
             else
             {
                 SessionHandler.IsInTransfer = true;

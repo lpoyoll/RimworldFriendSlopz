@@ -20,6 +20,10 @@ namespace GameClient.Defs
 
         public static Texture2D OptionsOff = ContentFinder<Texture2D>.Get("UI/OptionsOFF");
 
+        public static Texture2D AdminOn = ContentFinder<Texture2D>.Get("UI/AdminON");
+
+        public static Texture2D AdminOff = ContentFinder<Texture2D>.Get("UI/AdminOFF");
+
         public static Texture2D PinOn = ContentFinder<Texture2D>.Get("UI/PinON");
 
         public static Texture2D PinOff = ContentFinder<Texture2D>.Get("UI/PinOFF");

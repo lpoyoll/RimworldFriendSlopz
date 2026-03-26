@@ -1,5 +1,4 @@
 ﻿using GameClient.Core.Configs;
-using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
 using GameClient.Misc;
@@ -12,35 +11,33 @@ using UnityEngine;
 using Verse;
 using Verse.Noise;
 
-namespace GameClient.Tabs
+namespace GameClient.Dialogs
 {
-    public class TAB_Options : DLG_Base
+    public class DLG_Admin : DLG_Base
     {
-        // Add 30 Y value per button
+        public override Vector2 InitialSize => new Vector2(300f, 162f);
 
-        public override Vector2 InitialSize => new Vector2(250f, 194f);
+        public static DLG_Admin Instance { get; private set; } = null;
 
-        public static TAB_Options Instance { get; private set; } = null;
+        public static bool IsDialogOpen { get; set; } = false;
 
-        public static bool IsTabOpen { get; set; } = false;
-
-        public TAB_Options() 
+        public DLG_Admin() 
         {
             Instance = this;
-            layer = WindowLayer.Dialog;
+            closeOnCancel = true;
             absorbInputAroundWindow = false;
         }
 
         public override void PostOpen()
         {
             base.PostOpen();
-            IsTabOpen = true;
+            IsDialogOpen = true;
         }
 
         public override void PostClose()
         {
             base.PostClose();
-            IsTabOpen = false;
+            IsDialogOpen = false;
         }
 
         public override void DoWindowContents(Rect rect)
@@ -55,10 +52,6 @@ namespace GameClient.Tabs
             if (listingStandard.ButtonText("Difficulty Manager") && SessionHandler.IsAdmin) DifficultyManager.OpenDifficultyManagerMenu();
 
             if (listingStandard.ButtonText("Force Save") && SessionHandler.IsAdmin) PM_Saves.ForceSave();
-
-            GUI.color = Color.red;
-            if (listingStandard.ButtonText("Reset Save")) ShowResetMenu();
-            GUI.color = Color.white;
 
             listingStandard.End();
         }

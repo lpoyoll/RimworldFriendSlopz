@@ -30,6 +30,8 @@ namespace GameClient.Patches
 
             DrawOptionsButton(new Rect(new Vector2(UI.screenWidth - (ButtonSize.x * 2) - 4f, 2f), ButtonSize));
 
+            DrawAdminButton(new Rect(new Vector2(UI.screenWidth - (ButtonSize.x * 3) - 6f, 2f), ButtonSize));
+
             DrawLatencyText();
 
             return true;
@@ -50,14 +52,29 @@ namespace GameClient.Patches
 
         private static void DrawOptionsButton(Rect rect)
         {
-            if (!TAB_Options.IsTabOpen)
+            if (!DLG_Options.IsDialogOpen)
             {
-                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.OptionsOn)) Find.WindowStack.Add(new TAB_Options());
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.OptionsOn)) Find.WindowStack.Add(new DLG_Options());
             }
 
             else
             {
-                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.OptionsOff)) TAB_Options.Instance.Close();
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.OptionsOff)) DLG_Options.Instance.Close();
+            }
+        }
+
+        private static void DrawAdminButton(Rect rect)
+        {
+            if (!SessionHandler.IsAdmin) return;
+
+            if (!DLG_Admin.IsDialogOpen)
+            {
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.AdminOn)) Find.WindowStack.Add(new DLG_Admin());
+            }
+
+            else
+            {
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.AdminOff)) DLG_Admin.Instance.Close();
             }
         }
 

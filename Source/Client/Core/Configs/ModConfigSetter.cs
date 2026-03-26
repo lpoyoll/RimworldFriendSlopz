@@ -31,25 +31,15 @@ namespace GameClient.Core.Configs
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(inRect);
 
-            listingStandard.GapLine();
-            listingStandard.Label("Parameters");
-            listingStandard.CheckboxLabeled("Reject all transfers", ref ModConfigGetter.RejectTransfersBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("Reject all site rewards", ref ModConfigGetter.RejectSiteRewardsBool, "Automatically site rewards");
-            listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
-
-            listingStandard.GapLine();
             listingStandard.Label("Debugging");
             if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ModConfigGetter.CurrentVerboseMode}")) ShowVerbosityMenu();
             if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.AppdataPath);
+            listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
             if (listingStandard.ButtonTextLabeled("Change mod version [Windows only]", "Change")) { PM_Version.PromptChangeVersion(); }
             if (listingStandard.ButtonTextLabeled("Export account", "Export")) { ShowExportAccountQuestion(); }
-
-            listingStandard.GapLine();
-            listingStandard.Label("Syncing");
-            if (listingStandard.ButtonTextLabeled("Syncing mode", $"{ModConfigGetter.CurrentSyncingMode}")) ShowSyncMenu();
 
             listingStandard.GapLine();
             listingStandard.Label("DANGEROUS");
@@ -78,29 +68,6 @@ namespace GameClient.Core.Configs
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {
                     ModConfigGetter.CurrentVerboseMode = tuple.Item2;
-                });
-
-                list.Add(item);
-            }
-
-            Find.WindowStack.Add(new FloatMenu(list));
-        }
-
-        private void ShowSyncMenu()
-        {
-            List<FloatMenuOption> list = new List<FloatMenuOption>();
-
-            List<Tuple<string, ModConfigGetter.SyncingMode>> modes = new List<Tuple<string, ModConfigGetter.SyncingMode>>()
-            {
-                Tuple.Create("Fast", ModConfigGetter.SyncingMode.Fast),
-                Tuple.Create("Complete", ModConfigGetter.SyncingMode.Complete),
-            };
-
-            foreach (Tuple<string, ModConfigGetter.SyncingMode> tuple in modes)
-            {
-                FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
-                {
-                    ModConfigGetter.CurrentSyncingMode = tuple.Item2;
                 });
 
                 list.Add(item);
