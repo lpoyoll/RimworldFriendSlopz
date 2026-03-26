@@ -33,7 +33,6 @@ namespace GameClient.Dialogs
         {
             Instance = this;
             closeOnCancel = true;
-            absorbInputAroundWindow = false;
         }
 
         public override void PostOpen()
