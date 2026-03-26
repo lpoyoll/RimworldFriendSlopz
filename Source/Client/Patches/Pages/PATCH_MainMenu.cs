@@ -10,6 +10,8 @@ using System.Linq;
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
+using GameClient.Dialogs;
+using GameClient.Tabs;
 
 namespace GameClient.Patches.Pages
 {

@@ -9,8 +9,6 @@ namespace GameClient.Core.Configs
     {
         public enum SyncingMode { Fast, Complete }
 
-        public static bool MuteChatSoundBool;
-
         public static bool RejectTransfersBool;
 
         public static bool RejectSiteRewardsBool;
@@ -23,7 +21,6 @@ namespace GameClient.Core.Configs
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref MuteChatSoundBool, nameof(MuteChatSoundBool));
             Scribe_Values.Look(ref RejectTransfersBool, nameof(RejectTransfersBool));
             Scribe_Values.Look(ref RejectSiteRewardsBool, nameof(RejectSiteRewardsBool));
             Scribe_Values.Look(ref CurrentVerboseMode, nameof(CurrentVerboseMode));

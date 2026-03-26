@@ -32,6 +32,8 @@ namespace GameClient.PacketManagers
 
         public static bool ShouldScrollChat { get; set; } = false;
 
+        public static bool ShouldPlaySounds { get; set; } = false;
+
         //No accessors zone
 
         public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 400f);
@@ -50,7 +52,7 @@ namespace GameClient.PacketManagers
 
         public static void SendMessage(string messageToSend)
         {
-            RTChatDefSounds.ChatSend.PlayOneShotOnCamera();
+            RTSoundDefs.ChatSend.PlayOneShotOnCamera();
 
             PKT_Chat chatData = new PKT_Chat();
             chatData._username = SessionHandler.Username;
@@ -70,7 +72,7 @@ namespace GameClient.PacketManagers
 
             if (ChatAutoscroll) ShouldScrollChat = true;
 
-            if (!TAB_Chat.IsTabOpen & !ModConfigGetter.MuteChatSoundBool) RTChatDefSounds.ChatReceive.PlayOneShotOnCamera();
+            if (!TAB_Chat.IsTabOpen & !ShouldPlaySounds) RTSoundDefs.ChatReceive.PlayOneShotOnCamera();
         }
 
         [OnSessionEnd]

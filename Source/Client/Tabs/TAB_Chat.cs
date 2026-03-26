@@ -1,11 +1,16 @@
-﻿using RimWorld;
-using UnityEngine;
-using Verse;
-using System.Collections.Generic;
-using System.Linq;
+﻿using GameClient.Core.Configs;
+using GameClient.Defs;
+using GameClient.Dialogs;
 using GameClient.Managers;
 using GameClient.PacketManagers;
-using GameClient.Dialogs;
+using RimWorld;
+using Shared.Misc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using Verse;
+using Verse.Sound;
 
 namespace GameClient.Tabs
 {
@@ -49,62 +54,58 @@ namespace GameClient.Tabs
         public override void PostClose()
         {
             base.PostClose();
+
+            PM_Chat.ChatBoxPosition.x = windowRect.x;
+            PM_Chat.ChatBoxPosition.y = windowRect.y;
+
             IsTabOpen = false;
         }
 
         public override void DoWindowContents(Rect rect)
         {
-            PM_Chat.ChatBoxPosition.x = windowRect.x;
-            PM_Chat.ChatBoxPosition.y = windowRect.y;
-
-            Widgets.DrawLineHorizontal(rect.x, rect.y + 25f, rect.width);
-            Widgets.DrawLineVertical(rect.x + 160f, rect.y + 25f, rect.height);
-
             DrawPlayerCount(rect);
-            DrawPlayerList(new(rect.x, rect.y + 25f, 160f, rect.height - 50f));
-            DrawMessageList(new(rect.x + 160f, rect.y + 32f, rect.width - 160f, rect.height - 60f));
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.width - LongButtonSize.x, rect.y), LongButtonSize), "Tools")) DrawToolsButton();
+            DrawPinCheckbox(new Rect(rect.width - LongButtonSize.x - 30f, rect.y, 25f, 25f));
+            DrawMuteCheckbox(new Rect(rect.width - LongButtonSize.x - (30f * 2), rect.y, 25f, 25f));
 
-            DrawPinCheckbox(rect);
-            DrawInput(rect);
+            Widgets.DrawLineHorizontal(rect.x, rect.y + LongButtonSize.y + 5f, rect.width);
+            DrawMessageList(new Rect(rect.x, rect.y + 32f, rect.width, rect.height - 60f));
 
+            DrawInput(new Rect(rect.xMin, rect.yMax - 25f, rect.width, 25f));
             CheckForEnterKey();
+
             if (PM_Chat.ShouldScrollChat) ScrollToLastMessage();
+        }
+
+        private void DrawToolsButton()
+        {
+            List<Tuple<string, string>> modes = new List<Tuple<string, string>>()
+            {
+                Tuple.Create("Whisper", "/w "),
+                Tuple.Create("Bold", "[b]"),
+                Tuple.Create("Italic", "[i]"),
+            };
+
+            List<FloatMenuOption> list = new List<FloatMenuOption>();
+            foreach (Tuple<string, string> tuple in modes)
+            {
+                FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
+                {
+                    PM_Chat.CurrentChatInput += tuple.Item2;
+                });
+
+                list.Add(item);
+            }
+
+            Find.WindowStack.Add(new FloatMenu(list));
         }
 
         private void DrawPlayerCount(Rect rect)
         {
-            string toShow = PM_Recount.CurrentPlayers > 1 ? $"{PM_Recount.CurrentPlayers} Players Online" : $"{PM_Recount.CurrentPlayers} Player Online";
+            string toShow = PM_Recount.CurrentPlayers > 1 ? $"{PM_Recount.CurrentPlayers} Players" : $"{PM_Recount.CurrentPlayers} Player";
 
             Text.Font = GameFont.Small;
             Widgets.Label(new(rect.x, rect.y, Text.CalcSize(toShow).x, Text.CalcSize(toShow).y), $"<color=grey>{toShow}</color>");
-        }
-
-        private void DrawPlayerList(Rect mainRect)
-        {
-            List<string> orderedList = PM_Recount.CurrentPlayerNames;
-            orderedList.Sort();
-
-            float height = 6f + orderedList.Count() * 25f;
-            Rect viewRect = new(mainRect.x, mainRect.y, mainRect.width - 16f, height);
-
-            Widgets.BeginScrollView(mainRect, ref scrollPositionPlayers, viewRect);
-
-            float num = 0;
-            float num2 = scrollPositionPlayers.y - 25f;
-            float num3 = scrollPositionPlayers.y + mainRect.height;
-
-            foreach (string str in orderedList)
-            {
-                if (num > num2 && num < num3)
-                {
-                    Rect rect = new(0f, mainRect.y + num, viewRect.width, 25f);
-                    DrawCustomRowPlayerList(rect, str);
-                }
-
-                num += 25f;
-            }
-
-            Widgets.EndScrollView();
         }
 
         private void DrawMessageList(Rect mainRect)
@@ -127,7 +128,9 @@ namespace GameClient.Tabs
             {
                 if (num > num2 && num < num3)
                 {
-                    Rect rect2 = new(160f, mainRect.y + num, viewRect.width, Text.CalcHeight(str, mainRect.width - heightCalcWidthOffset - chatScrollbarSafezone));
+                    Rect rect2 = new Rect(mainRect.x, mainRect.y + num, viewRect.width, 
+                        Text.CalcHeight(str, mainRect.width - heightCalcWidthOffset - chatScrollbarSafezone));
+
                     DrawCustomRow(rect2, str);
                 }
 
@@ -140,17 +143,46 @@ namespace GameClient.Tabs
         private void DrawInput(Rect rect)
         {
             Text.Font = GameFont.Small;
-            string inputOne = Widgets.TextField(new(rect.xMin + 165f, rect.yMax - 25f, rect.width - 165f, 25f), PM_Chat.CurrentChatInput);
+            string inputOne = Widgets.TextField(rect, PM_Chat.CurrentChatInput);
             if (inputOne.Length <= 512) PM_Chat.CurrentChatInput = inputOne;
         }
 
         private void DrawPinCheckbox(Rect rect)
         {
-            string pinText = "Auto Scroll";
+            Action toDo = delegate 
+            { 
+                PM_Chat.ChatAutoscroll = !PM_Chat.ChatAutoscroll;
+                SoundDefOf.Click.PlayOneShotOnCamera();
+            };
 
-            Text.Font = GameFont.Small;
-            Widgets.CheckboxLabeled(new Rect(rect.xMax - Text.CalcSize(pinText).x * 1.5f, rect.y, Text.CalcSize(pinText).x * 2,
-                Text.CalcSize(pinText).y), pinText, ref PM_Chat.ChatAutoscroll, placeCheckboxNearText: true);
+            if (PM_Chat.ChatAutoscroll)
+            {
+                if (Widgets.ButtonImage(rect, RTTextureDefs.PinOff, true, "Unpin chat")) toDo();
+            }
+
+            else
+            {
+                if (Widgets.ButtonImage(rect, RTTextureDefs.PinOn, true, "Pin chat")) toDo();
+            }
+        }
+
+        private void DrawMuteCheckbox(Rect rect)
+        {
+            Action toDo = delegate
+            {
+                PM_Chat.ShouldPlaySounds = !PM_Chat.ShouldPlaySounds;
+                SoundDefOf.Click.PlayOneShotOnCamera();
+            };
+
+            if (PM_Chat.ShouldPlaySounds)
+            {
+                if (Widgets.ButtonImage(rect, RTTextureDefs.SoundOff, true, "Unmute sounds")) toDo();
+            }
+
+            else
+            {
+                if (Widgets.ButtonImage(rect, RTTextureDefs.SoundOn, true, "Mute sounds")) toDo();
+            }
         }
 
         private void CheckForEnterKey()

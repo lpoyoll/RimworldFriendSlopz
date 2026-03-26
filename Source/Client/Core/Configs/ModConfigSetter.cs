@@ -35,7 +35,6 @@ namespace GameClient.Core.Configs
             listingStandard.Label("Parameters");
             listingStandard.CheckboxLabeled("Reject all transfers", ref ModConfigGetter.RejectTransfersBool, "Automatically denies transfers");
             listingStandard.CheckboxLabeled("Reject all site rewards", ref ModConfigGetter.RejectSiteRewardsBool, "Automatically site rewards");
-            listingStandard.CheckboxLabeled("Mute incomming chat messages", ref ModConfigGetter.MuteChatSoundBool, "Mute chat messages");
             listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
 
             listingStandard.GapLine();

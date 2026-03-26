@@ -26,26 +26,47 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            Rect chatRect = new Rect(new Vector2(UI.screenWidth - ButtonSize.x - 2f, 2f), ButtonSize);
-            if (Widgets.ButtonImageWithBG(chatRect, RTChatDefs.Chat))
+            DrawChatButton(new Rect(new Vector2(UI.screenWidth - ButtonSize.x - 2f, 2f), ButtonSize));
+
+            DrawOptionsButton(new Rect(new Vector2(UI.screenWidth - (ButtonSize.x * 2) - 4f, 2f), ButtonSize));
+
+            DrawLatencyText();
+
+            return true;
+        }
+
+        private static void DrawChatButton(Rect rect)
+        {
+            if (!TAB_Chat.IsTabOpen)
             {
-                if (!TAB_Chat.IsTabOpen) Find.WindowStack.Add(new TAB_Chat());
-                else TAB_Chat.Instance.Close();
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.ChatOn)) Find.WindowStack.Add(new TAB_Chat());
             }
 
-            Rect optionsRect = new Rect(new Vector2(chatRect.x - ButtonSize.x - 2f, 2f), ButtonSize);
-            if (Widgets.ButtonImageWithBG(optionsRect, RTChatDefs.Options))
+            else
             {
-                if (!TAB_Options.IsTabOpen) Find.WindowStack.Add(new TAB_Options());
-                else TAB_Options.Instance.Close();
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.ChatOff)) TAB_Chat.Instance.Close();
+            }
+        }
+
+        private static void DrawOptionsButton(Rect rect)
+        {
+            if (!TAB_Options.IsTabOpen)
+            {
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.OptionsOn)) Find.WindowStack.Add(new TAB_Options());
             }
 
+            else
+            {
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.OptionsOff)) TAB_Options.Instance.Close();
+            }
+        }
+
+        private static void DrawLatencyText()
+        {
             string text = $"{Math.Abs(PM_KeepAlive.CurrentPing)} ms";
             Vector2 size = Text.CalcSize(text);
             Vector2 position = new Vector2(UI.screenWidth - size.x - DLG_Base.DefaultMargin, LatencyHeight);
             Widgets.Label(new Rect(position, size), text);
-
-            return true;
         }
     }
 }

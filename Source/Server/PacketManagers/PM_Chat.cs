@@ -34,14 +34,6 @@ namespace GameServer.PacketManager
             "Use '/help' to check all the available commands."
         };
 
-        public static string[] DefaultTextTools { get; set; } = new string[]
-        {
-            "List of available text tools:",
-            "'b' inside brackets - Followed by the text you want to turn [b]bold",
-            "'i' inside brackets - Followed by the text you want to turn [i]cursive",
-            "HTML color inside brackets - Followed by the text you want to [ff0000]change color"
-        };
-
         [HandlesPacket(PacketHeader.ChatManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {

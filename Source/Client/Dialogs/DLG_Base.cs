@@ -23,6 +23,8 @@ namespace GameClient.Dialogs
 
         public static Vector2 LongButtonSize { get; private set; } = new Vector2(100f, 25f);
 
+        public static Vector2 KnobButtonSize { get; private set; } = new Vector2(30f, 30f);
+
         public static float DefaultMargin { get; private set; } = 8.0f;
 
         public string Title { get; set; } = string.Empty;
