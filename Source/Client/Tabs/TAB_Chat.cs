@@ -16,9 +16,9 @@ namespace GameClient.Tabs
 {
     public class TAB_Chat : DLG_Base
     {
-        public static Vector2 ChatBoxPosition = new Vector2(0, UI.screenHeight - 35f - 400f);
+        public static Vector2 Position = new Vector2(0, UI.screenHeight - 35f - 250f);
 
-        public override Vector2 InitialSize => new Vector2(600f, 400f);
+        public override Vector2 InitialSize => new Vector2(500f, 250f);
 
         private Vector2 scrollPositionChat = Vector2.zero;
 
@@ -36,7 +36,7 @@ namespace GameClient.Tabs
 
         public TAB_Chat()
         {
-            layer = WindowLayer.GameUI;
+            layer = WindowLayer.Super;
             Instance = this;
 
             draggable = true;
@@ -49,13 +49,14 @@ namespace GameClient.Tabs
         {
             base.PreOpen();
 
-            windowRect.x = ChatBoxPosition.x;
-            windowRect.y = ChatBoxPosition.y;
+            windowRect.x = Position.x;
+            windowRect.y = Position.y;
         }
 
         public override void PostOpen()
         {
             base.PostOpen();
+
             IsTabOpen = true;
         }
 
@@ -63,10 +64,10 @@ namespace GameClient.Tabs
         {
             base.PostClose();
 
-            ChatBoxPosition.x = windowRect.x;
-            ChatBoxPosition.y = windowRect.y;
-
             IsTabOpen = false;
+
+            Position.x = windowRect.x;
+            Position.y = windowRect.y;
         }
 
         public override void DoWindowContents(Rect rect)
