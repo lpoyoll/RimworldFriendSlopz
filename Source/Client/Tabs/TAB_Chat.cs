@@ -165,12 +165,12 @@ namespace GameClient.Tabs
 
             if (ShouldScrollChat)
             {
-                if (Widgets.ButtonImage(rect, RTTextureDefs.PinOff, true, "Unpin chat")) toDo();
+                if (Widgets.ButtonImage(rect, RTTextureDefs.PinOn, true, "Pin chat")) toDo();
             }
 
             else
             {
-                if (Widgets.ButtonImage(rect, RTTextureDefs.PinOn, true, "Pin chat")) toDo();
+                if (Widgets.ButtonImage(rect, RTTextureDefs.PinOff, true, "Unpin chat")) toDo();
             }
         }
 
@@ -184,12 +184,12 @@ namespace GameClient.Tabs
 
             if (TAB_Chat.ShouldPlaySounds)
             {
-                if (Widgets.ButtonImage(rect, RTTextureDefs.SoundOff, true, "Unmute sounds")) toDo();
+                if (Widgets.ButtonImage(rect, RTTextureDefs.SoundOn, true, "Unmute sounds")) toDo();
             }
 
             else
             {
-                if (Widgets.ButtonImage(rect, RTTextureDefs.SoundOn, true, "Mute sounds")) toDo();
+                if (Widgets.ButtonImage(rect, RTTextureDefs.SoundOff, true, "Mute sounds")) toDo();
             }
         }
 
