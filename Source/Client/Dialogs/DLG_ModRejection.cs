@@ -16,7 +16,7 @@ namespace GameClient.Dialogs
         public DLG_ModRejection(List<string> elements)
         {
             Title = "Mod Conflicts";
-            Description = "The server is rejecting the following mods!";
+            Description = "Your mod list conflicts with the server!";
             Elements = elements;
         }
 
