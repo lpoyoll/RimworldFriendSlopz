@@ -2,7 +2,7 @@ namespace Shared
 {
     public static class CommonValues
     {
-        public static string ExecutableVersion { get; set; } = "26.3.23.1";
+        public static string ExecutableVersion { get; set; } = "26.3.27.1";
 
         public static string DefaultSaveFormat { get; set; } = ".json";
 
