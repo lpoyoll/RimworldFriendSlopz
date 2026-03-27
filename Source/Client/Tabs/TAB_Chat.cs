@@ -74,8 +74,9 @@ namespace GameClient.Tabs
         {
             DrawPlayerCount(rect);
             if (Widgets.ButtonText(new Rect(new Vector2(rect.width - LongButtonSize.x, rect.y), LongButtonSize), "Tools")) DrawToolsButton();
-            DrawPinCheckbox(new Rect(rect.width - LongButtonSize.x - 30f, rect.y, 25f, 25f));
-            DrawMuteCheckbox(new Rect(rect.width - LongButtonSize.x - (30f * 2), rect.y, 25f, 25f));
+            if (Widgets.ButtonText(new Rect(new Vector2(rect.width - LongButtonSize.x - 30f, rect.y), new Vector2(30f, 25f)), "C")) ClearChat();
+            DrawPinCheckbox(new Rect(rect.width - LongButtonSize.x - (30f * 2), rect.y, 25f, 25f));
+            DrawMuteCheckbox(new Rect(rect.width - LongButtonSize.x - (30f * 3), rect.y, 25f, 25f));
 
             Widgets.DrawLineHorizontal(rect.x, rect.y + LongButtonSize.y + 5f, rect.width);
             DrawMessageList(new Rect(rect.x, rect.y + 32f, rect.width, rect.height - 60f));
@@ -108,6 +109,8 @@ namespace GameClient.Tabs
 
             Find.WindowStack.Add(new FloatMenu(list));
         }
+
+        private void ClearChat() { TAB_Chat.ChatMessages.Clear(); }
 
         private void DrawPlayerCount(Rect rect)
         {
