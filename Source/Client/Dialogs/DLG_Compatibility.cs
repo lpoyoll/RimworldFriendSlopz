@@ -1,60 +1,47 @@
-﻿using System;
+﻿using Shared.Files;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 
-namespace GameClient.Dialogs.Default
+namespace GameClient.Dialogs
 {
-    public class DLG_Listing : DLG_Base
+    public class DLG_Compatibility : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(350f, 400f);
+        private List<string> Elements { get; set; } = new List<string>();
 
-        public string[] Elements { get; private set; } = null;
-
-        private string ButtonText { get; set; } = "OK";
-
-        private string ButtonText2 { get; set; } = "Close";
-
-        public DLG_Listing(string title, string description, string[] elements, Action actionOK = null, string buttonText = null, string buttonText2 = null)
+        public DLG_Compatibility(List<string> elements)
         {
-            this.Title = title;
-            this.Description = description;
-            this.Elements = elements;
-            this.OnAccept = actionOK;
-
-            if (buttonText != null) ButtonText = buttonText;
-            if (buttonText2 != null) ButtonText2 = buttonText2;
+            Title = "Problematic mods found";
+            Description = "Enable mod bypass or disable these mods!";
+            Elements = elements;
         }
 
         public override void DoWindowContents(Rect rect)
         {
-            float centeredX = rect.width / 2;
-
             float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
             float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
             float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(Description).y * 1.1f;
 
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
+            Widgets.Label(new Rect(DLG_Base.GetRectMiddle(rect) - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
 
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
+            Widgets.Label(new Rect(DLG_Base.GetRectMiddle(rect) - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
             Text.Font = GameFont.Medium;
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - SlimButtonSize.y - 85f));
 
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), ButtonText))
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomCenter), "Close"))
             {
                 if (OnAccept != null) OnAccept.Invoke();
-                Close();
-            }
-
-            if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - SlimButtonSize.x, rect.yMax - SlimButtonSize.y), SlimButtonSize), ButtonText2))
-            {
                 Close();
             }
         }
@@ -90,7 +77,7 @@ namespace GameClient.Dialogs.Default
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            Widgets.Label(fixedRect, $"{element}");
+            Widgets.Label(fixedRect, element);
         }
     }
 }

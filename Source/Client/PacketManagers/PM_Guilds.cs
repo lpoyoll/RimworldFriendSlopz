@@ -279,10 +279,7 @@ namespace GameClient.PacketManagers
                 toDisplay.Add($"{member.Username} - {(GuildRanks)member.Rank}");
             }
 
-            DLG_Listing d1 = new DLG_Listing("Guild Members",
-                "All guild members are depicted here", toDisplay.ToArray());
-
-            DLG_Base.PushNewDialog(d1);
+            DLG_Base.PushNewDialog(new DLG_GuildList(factionManifest._guild.GuildMembers));
         }
     }
 }

@@ -29,17 +29,6 @@ namespace GameClient.PacketManagers
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.LeaderboardManager, data);
         }
 
-        private static void DisplayLeaderboard(LeaderboardFile file)
-        {
-            List<string> toDisplay = new List<string>();
-            foreach (KeyValuePair<string, double> pair in file.Scores.OrderByDescending(fetch => fetch.Value))
-            {
-                toDisplay.Add($"{pair.Key} - {pair.Value} points");
-            }
-
-            string title = "Leaderboard";
-            string description = "Server's current leaderboard";
-            DLG_Base.PushNewDialog(new DLG_Listing(title, description, toDisplay.ToArray()));
-        }
+        private static void DisplayLeaderboard(LeaderboardFile file) { DLG_Base.PushNewDialog(new DLG_Leaderboard(file)); }
     }
 }

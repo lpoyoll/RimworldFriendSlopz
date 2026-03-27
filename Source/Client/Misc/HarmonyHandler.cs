@@ -100,11 +100,9 @@ namespace GameClient.Misc
             DisableMainPatches();
 
             if (collidingMods.Count == 0) return true;
-            else
+            else 
             {
-                string title = "Problematic mods found";
-                string description = "Enable mod bypass or disable these mods!";
-                DLG_Base.PushNewDialog(new DLG_Listing(title, description, collidingMods.ToArray()));
+                DLG_Base.PushNewDialog(new DLG_Compatibility(collidingMods));
                 return false;
             }
         }

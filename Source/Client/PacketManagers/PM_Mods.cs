@@ -70,11 +70,7 @@ namespace GameClient.PacketManagers
             return configFile;
         }
 
-        public static void GetConflictingMods(PKT_Login data)
-        {
-            DLG_Base.PushNewDialog(new DLG_Listing("Mod Conflicts", "The following mods are conflicting with the server",
-                data._extraDetails.ToArray()));
-        }
+        public static void GetConflictingMods(PKT_Login data) { DLG_Base.PushNewDialog(new DLG_ModRejection(data._extraDetails)); }
 
         public static ModConfigFile SortModsIntoCategories(List<ModConfig> mods, List<int> categoryIndexes)
         {
