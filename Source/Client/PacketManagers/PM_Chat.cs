@@ -31,7 +31,7 @@ namespace GameClient.PacketManagers
         {
             PKT_Chat data = Serializer.ConvertBytesToObject<PKT_Chat>(bytes);
 
-            AddMessageToChat(data._username, data._message, data._usernameColor, data._messageColor);
+            AddMessageToChat(data);
         }
 
         public static void SendMessage(string messageToSend)
@@ -39,49 +39,35 @@ namespace GameClient.PacketManagers
             RTSoundDefs.ChatSend.PlayOneShotOnCamera();
 
             PKT_Chat chatData = new PKT_Chat();
-            chatData._username = SessionHandler.Username;
-            chatData._message = messageToSend;
+            chatData.Username = SessionHandler.Username;
+            chatData.Message = messageToSend;
+            chatData.IsCommand = messageToSend.StartsWith("/");
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
 
-        public static void AddMessageToChat(string username, string message, ChatColor userColor, ChatColor messageColor)
+        public static void AddMessageToChat(PKT_Chat data)
         {
             if (TAB_Chat.ChatMessages.Count() > 100) TAB_Chat.ChatMessages.RemoveAt(0);
 
-            if (ChatManagerH.CheckIfHasBeenTagged(message)) message = message.Replace($"@{SessionHandler.Username}", $"<color=red>@{SessionHandler.Username}</color>");
+            if (PM_Chat.CheckIfHasBeenTagged(data.Message))
+            {
+                data.Message = data.Message.Replace($"@{SessionHandler.Username}", $"<color=red>@{SessionHandler.Username}</color>");
+            }
 
-            TAB_Chat.ChatMessages.Add($"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> " + $"{ChatManagerH.messageColorDictionary[userColor]}{username}</color>: " +
-                $"{ChatManagerH.messageColorDictionary[messageColor]}{ChatManagerH.ParseMessage(message)}</color>");
+            string timeString = $"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> ";
+            string usernameString = $"{PKT_Chat.MessageColorDictionary[data.UsernameColor]}{data.Username}</color>: ";
+            string textString = $"{PKT_Chat.MessageColorDictionary[data.MessageColor]}{PM_Chat.ParseMessage(data.Message, false)}</color>";
+            TAB_Chat.ChatMessages.Add(string.Concat(timeString, usernameString, textString));
 
             if (!TAB_Chat.IsTabOpen & !TAB_Chat.ShouldPlaySounds) RTSoundDefs.ChatReceive.PlayOneShotOnCamera();
         }
-
-        [OnSessionEnd]
-        private static void CleanChat()
-        {
-            TAB_Chat.CurrentChatInput = string.Empty;
-            TAB_Chat.ChatMessages = new List<string>();
-        }
-    }
-
-    public class ChatManagerH
-    {
-        public static Dictionary<ChatColor, string> messageColorDictionary = new Dictionary<ChatColor, string>()
-        {
-            { ChatColor.Normal, "<color=white>" },
-            { ChatColor.Admin, "<color=red>" },
-            { ChatColor.Console, "<color=yellow>" },
-            { ChatColor.Private, "<color=#3ae0dd>" },
-            { ChatColor.Discord, "<color=white>" },
-            { ChatColor.Server, " <color=white>" }
-        };
 
         public static string[] GetMessageWords(string message) { return message.Split(' '); }
 
         public static bool CheckIfHasBeenTagged(string message) { return GetMessageWords(message).Contains($"@{SessionHandler.Username}"); }
 
-        public static string ParseMessage(string message, bool fromBroadcast = false)
+        public static string ParseMessage(string message, bool fromBroadcast)
         {
             bool verifying = false;
             string verification = "";

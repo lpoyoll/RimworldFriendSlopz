@@ -41,8 +41,6 @@ namespace GameClient.PacketManagers
             }
         }
 
-        //Executes the command depending on the type
-
         private static void OnOpCommand()
         {
             SessionHandler.IsAdmin = true;
@@ -57,7 +55,7 @@ namespace GameClient.PacketManagers
 
         private static void OnBroadcastCommand(PKT_Command commandData)
         {
-            RimworldManager.GenerateLetter("Server Broadcast", ChatManagerH.ParseMessage(commandData._details, true), LetterDefOf.PositiveEvent);
+            RimworldManager.GenerateLetter("Server Broadcast", PM_Chat.ParseMessage(commandData._details, true), LetterDefOf.PositiveEvent);
         }
 
         private static void OnForceSaveCommand() { PM_Saves.ForceSave(); }

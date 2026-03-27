@@ -1,4 +1,5 @@
-﻿using GameServer.PacketManager;
+﻿using GameServer.Hooks.TCPNetwork;
+using GameServer.PacketManager;
 using Shared;
 using System;
 using System.Collections.Generic;
@@ -31,24 +32,23 @@ namespace GameServer.Commands.Chat
                 if (string.IsNullOrWhiteSpace(message)) PM_Chat.SendConsoleMessage(PM_Chat.TargetClient, "Message was empty.");
                 else
                 {
-                    ServerClient toFind = ChatManagerHelper.GetUserFromName(ChatManagerHelper.GetUsernameFromMention(PM_Chat.LatestCommand[1]));
+                    ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(PM_Chat.LatestCommand[1].Replace("@", ""));
                     if (toFind == null) PM_Chat.SendConsoleMessage(PM_Chat.TargetClient, "User was not found.");
                     else
                     {
                         PKT_Chat chatData = new PKT_Chat();
-                        chatData._message = message;
-                        chatData._usernameColor = ChatColor.Private;
-                        chatData._messageColor = ChatColor.Private;
+                        chatData.Message = message;
+                        chatData.UsernameColor = ChatColor.Private;
+                        chatData.MessageColor = ChatColor.Private;
 
                         //Send to sender
-                        chatData._username = $"Whisper to: {toFind.UserFile.Username}";
+                        chatData.Username = $"Whisper to '{toFind.UserFile.Username}'";
                         PM_Chat.TargetClient.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
                         //Send to recipient
-                        chatData._username = $"Whisper from: {PM_Chat.TargetClient.UserFile.Username}";
+                        chatData.Username = $"Whisper from '{PM_Chat.TargetClient.UserFile.Username}'";
                         toFind.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
-
-                        ChatManagerHelper.ShowChatInConsole(chatData._username, message);
+                        PM_Chat.WriteChatInConsole(chatData.Username, message);
                     }
                 }
             }

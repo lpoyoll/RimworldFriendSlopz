@@ -15,7 +15,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Chat : PM_Base
     {
-        private static Semaphore LogSemaphore = new Semaphore(1, 1);
+        private static Semaphore LogSemaphore { get; set; } = new Semaphore(1, 1);
 
         private static Semaphore CommandSemaphore { get; set; } = new Semaphore(1, 1);
 
@@ -30,7 +30,6 @@ namespace GameServer.PacketManager
         public static string[] DefaultJoinMessages { get; set; } = new string[]
         {
             "Welcome to the global chat!",
-            "Please be considerate with others and have fun!",
             "Use '/help' to check all the available commands."
         };
 
@@ -39,94 +38,17 @@ namespace GameServer.PacketManager
         {
             PKT_Chat data = Serializer.ConvertBytesToObject<PKT_Chat>(bytes);
 
-            if (data._message.StartsWith("/")) ExecuteChatCommand(client, data._message.Split(' '));
-            else BroadcastChatMessage(client, data._message);
-        }
-
-        private static void ExecuteChatCommand(ServerClient client, string[] command)
-        {
-            CommandSemaphore.WaitOne();
-
-            CMD_Base toFind = CMD_Base.ChatCommands.FirstOrDefault(fetch => fetch.Prefix == command[0]);
-            if (toFind == null) SendConsoleMessage(client, "Command was not found.");
-            else
-            {
-                TargetClient = client;
-                LatestCommand = command;
-                toFind.Action();
-            }
-
-            string chatCommand = "";
-            for (int i = 0; i < command.Length; i++) chatCommand += command[i] + "";
-
-            ChatManagerHelper.ShowChatInConsole(client.UserFile.Username, chatCommand);
-
-            CommandSemaphore.Release();
-        }
-
-        private static void BroadcastChatMessage(ServerClient client, string message)
-        {
-            PKT_Chat chatData = new PKT_Chat();
-            chatData._username = client.UserFile.Username;
-            chatData._message = message;
-            chatData._usernameColor = client.UserFile.IsAdmin ? ChatColor.Admin : ChatColor.Normal;
-            chatData._messageColor = ChatColor.Normal;
-
-            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
-
-            WriteToLogs(client.UserFile.Username, message);
-            ChatManagerHelper.ShowChatInConsole(client.UserFile.Username, message);
-        }
-
-        public static void BroadcastDiscordMessage(string client, string message)
-        {
-            PKT_Chat chatData = new PKT_Chat();
-            chatData._username = client;
-            chatData._message = message;
-            chatData._usernameColor = ChatColor.Discord;
-            chatData._messageColor = ChatColor.Discord;
-
-            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
-
-            WriteToLogs(client, message);
-            ChatManagerHelper.ShowChatInConsole(client, message, true);
-        }
-
-        public static void BroadcastConsoleMessage(string message)
-        {
-            PKT_Chat chatData = new PKT_Chat();
-            chatData._username = SystemName;
-            chatData._message = message;
-            chatData._usernameColor = ChatColor.Console;
-            chatData._messageColor = ChatColor.Console;
-
-            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
-
-            WriteToLogs(chatData._username, message);
-            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
-        }
-
-        public static void BroadcastServerNotification(string message)
-        {
-            PKT_Chat chatData = new PKT_Chat();
-            chatData._username = NotificationName;
-            chatData._message = message;
-            chatData._usernameColor = ChatColor.Server;
-            chatData._messageColor = ChatColor.Server;
-
-            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
-
-            WriteToLogs(chatData._username, message);
-            ChatManagerHelper.ShowChatInConsole(chatData._username, message);
+            if (data.IsCommand) ExecuteChatCommand(client, data.Message.Split(' '));
+            else BroadcastChatMessage(client, data.Message);
         }
 
         public static void SendConsoleMessage(ServerClient client, string message)
         {
             PKT_Chat chatData = new PKT_Chat();
-            chatData._username = SystemName;
-            chatData._message = message;
-            chatData._usernameColor = ChatColor.Console;
-            chatData._messageColor = ChatColor.Console;
+            chatData.Username = SystemName;
+            chatData.Message = message;
+            chatData.UsernameColor = ChatColor.Console;
+            chatData.MessageColor = ChatColor.Console;
 
             client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
         }
@@ -134,46 +56,101 @@ namespace GameServer.PacketManager
         public static void SendServerMessage(ServerClient client, string message)
         {
             PKT_Chat chatData = new PKT_Chat();
-            chatData._username = NotificationName;
-            chatData._message = message;
-            chatData._usernameColor = ChatColor.Server;
-            chatData._messageColor = ChatColor.Server;
+            chatData.Username = NotificationName;
+            chatData.Message = message;
+            chatData.UsernameColor = ChatColor.Server;
+            chatData.MessageColor = ChatColor.Server;
 
             client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+        }
+
+        private static void BroadcastChatMessage(ServerClient client, string message)
+        {
+            PKT_Chat chatData = new PKT_Chat();
+            chatData.Username = client.UserFile.Username;
+            chatData.Message = message;
+            chatData.UsernameColor = client.UserFile.IsAdmin ? ChatColor.Admin : ChatColor.Normal;
+            chatData.MessageColor = ChatColor.Normal;
+
+            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            PM_Chat.WriteChatInConsole(client.UserFile.Username, message);
+            WriteToLogs(client.UserFile.Username, message);
+        }
+
+        public static void BroadcastConsoleMessage(string message)
+        {
+            PKT_Chat chatData = new PKT_Chat();
+            chatData.Username = SystemName;
+            chatData.Message = message;
+            chatData.UsernameColor = ChatColor.Console;
+            chatData.MessageColor = ChatColor.Console;
+
+            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            PM_Chat.WriteChatInConsole(chatData.Username, message);
+            WriteToLogs(chatData.Username, message);
+        }
+
+        public static void BroadcastServerNotification(string message)
+        {
+            PKT_Chat chatData = new PKT_Chat();
+            chatData.Username = NotificationName;
+            chatData.Message = message;
+            chatData.UsernameColor = ChatColor.Server;
+            chatData.MessageColor = ChatColor.Server;
+
+            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            PM_Chat.WriteChatInConsole(chatData.Username, message);
+            WriteToLogs(chatData.Username, message);
+        }
+
+        private static void ExecuteChatCommand(ServerClient client, string[] command)
+        {
+            CommandSemaphore.WaitOne();
+
+            try
+            {
+                CMD_Base toFind = CMD_Base.ChatCommands.FirstOrDefault(fetch => fetch.Prefix == command[0]);
+                if (toFind == null) SendConsoleMessage(client, "Command was not found.");
+                else
+                {
+                    TargetClient = client;
+                    LatestCommand = command;
+                    toFind.Action();
+                }
+
+                string chatCommand = "";
+                for (int i = 0; i < command.Length; i++) chatCommand += command[i] + "";
+
+                PM_Chat.WriteChatInConsole(client.UserFile.Username, chatCommand);
+            }
+            catch (Exception ex) { Printer.Error(ex); }
+
+            CommandSemaphore.Release();
         }
 
         private static void WriteToLogs(string username, string message)
         {
             LogSemaphore.WaitOne();
 
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | [" + username + "]: " + message);
-            stringBuilder.Append(Environment.NewLine);
+            try
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.Append($"[{DateTime.Now:HH:mm:ss}] | [" + username + "]: " + message);
+                stringBuilder.Append(Environment.NewLine);
 
-            DateTime dateTime = DateTime.Now.Date;
-            string nowFileName = (dateTime.Year + "-" + dateTime.Month.ToString("D2") + "-" + dateTime.Day.ToString("D2")).ToString();
-            string nowFullPath = Master.ChatLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
+                DateTime dateTime = DateTime.Now.Date;
+                string nowFileName = (dateTime.Year + "-" + dateTime.Month.ToString("D2") + "-" + dateTime.Day.ToString("D2")).ToString();
+                string nowFullPath = Master.ChatLogsPath + Path.DirectorySeparatorChar + nowFileName + ".txt";
 
-            File.AppendAllText(nowFullPath, stringBuilder.ToString());
-            stringBuilder.Clear();
+                File.AppendAllText(nowFullPath, stringBuilder.ToString());
+                stringBuilder.Clear();
+            }
+            catch (Exception ex) { Printer.Error(ex); }
 
             LogSemaphore.Release();
         }
-    }
 
-    public class ChatManagerHelper
-    {
-        public static ServerClient GetUserFromName(string username)
-        {
-            return ServerNetwork.GetConnectedClientFromUsername(username);
-        }
-
-        public static string GetUsernameFromMention(string mention)
-        {
-            return mention.Replace("@", "");
-        }
-
-        public static void ShowChatInConsole(string username, string message, bool fromDiscord = false)
+        public static void WriteChatInConsole(string username, string message, bool fromDiscord = false)
         {
             if (!Master.ServerConfig.DisplayChatInConsole) return;
             else

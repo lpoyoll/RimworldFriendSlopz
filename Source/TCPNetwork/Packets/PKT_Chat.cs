@@ -1,17 +1,29 @@
-﻿using static Shared.CommonEnumerators;
+﻿using System.Collections.Generic;
+using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
 {
     public class PKT_Chat : PKT_Base
     {
-        public enum ChatColor { Normal, Admin, Console, Private, Discord, Server }
+        public static Dictionary<ChatColor, string> MessageColorDictionary { get; private set; } = new Dictionary<ChatColor, string>()
+        {
+            { ChatColor.Normal, "<color=white>" },
+            { ChatColor.Admin, "<color=red>" },
+            { ChatColor.Console, "<color=yellow>" },
+            { ChatColor.Private, "<color=#3ae0dd>" },
+            { ChatColor.Server, " <color=white>" }
+        };
 
-        public ChatColor _usernameColor { get; set; } = ChatColor.Normal;
+        public enum ChatColor { Normal, Admin, Console, Private, Server }
 
-        public ChatColor _messageColor { get; set; } = ChatColor.Normal;
+        public ChatColor UsernameColor { get; set; } = ChatColor.Normal;
 
-        public string _username { get; set; } = string.Empty;
+        public ChatColor MessageColor { get; set; } = ChatColor.Normal;
 
-        public string _message { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+
+        public string Message { get; set; } = string.Empty;
+
+        public bool IsCommand { get; set; } = false;
     }
 }
