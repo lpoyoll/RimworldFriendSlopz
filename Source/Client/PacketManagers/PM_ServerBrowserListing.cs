@@ -21,11 +21,11 @@ namespace GameClient.PacketManagers
         [HandlesPacket(PacketHeader.ServerBrowserListing)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PKT_BrowserListing listing = Serializer.ConvertBytesToObject<PKT_BrowserListing>(bytes);
+            PKT_ServerInformation listing = Serializer.ConvertBytesToObject<PKT_ServerInformation>(bytes);
 
             Action r1 = delegate
             {
-                PKT_BrowserTelemetry selectedServer = listing.Listings[DLG_ServerBrowser.ResultInt];
+                PKT_ServerTelemetry selectedServer = listing.Listings[DLG_ServerBrowser.ResultInt];
                 DLG_Base.PushNewDialog(new DLG_ServerListing(selectedServer, delegate { ConnectToServer(selectedServer); }));
             };
 
@@ -33,7 +33,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(new DLG_ServerBrowser(listing.Listings, r1));
         }
 
-        private void ConnectToServer(PKT_BrowserTelemetry telemetry)
+        private void ConnectToServer(PKT_ServerTelemetry telemetry)
         {
             Network.Ip = telemetry.Endpoint;
             Network.Port = telemetry.Port;

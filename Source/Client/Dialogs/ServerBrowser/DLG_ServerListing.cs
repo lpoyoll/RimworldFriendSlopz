@@ -15,9 +15,9 @@ namespace GameClient.Dialogs.ServerBrowser
     {
         public override Vector2 InitialSize => new Vector2(350f, 400f);
 
-        public PKT_BrowserTelemetry Element { get; private set; } = null;
+        public PKT_ServerTelemetry Element { get; private set; } = null;
 
-        public DLG_ServerListing(PKT_BrowserTelemetry element, Action actionOK)
+        public DLG_ServerListing(PKT_ServerTelemetry element, Action actionOK)
         {
             this.Element = element;
             this.OnAccept = actionOK;

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace TCPNetwork.Packets.ServerBrowser
 {
-    public class PKT_BrowserListing : PKT_Base
+    public class PKT_ServerInformation : PKT_Base
     {
         public string ClientVersion { get; set; } = string.Empty;
 
-        public List<PKT_BrowserTelemetry> Listings = new List<PKT_BrowserTelemetry>();
+        public List<PKT_ServerTelemetry> Listings = new List<PKT_ServerTelemetry>();
     }
 }

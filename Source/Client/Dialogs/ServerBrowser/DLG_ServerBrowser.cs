@@ -13,11 +13,11 @@ namespace GameClient.Dialogs.ServerBrowser
     {
         public override Vector2 InitialSize => new Vector2(600f, 400f);
 
-        private List<PKT_BrowserTelemetry> Elements { get; set; } = new List<PKT_BrowserTelemetry>();
+        private List<PKT_ServerTelemetry> Elements { get; set; } = new List<PKT_ServerTelemetry>();
 
         public static int ResultInt { get; private set; }
 
-        public DLG_ServerBrowser(List<PKT_BrowserTelemetry> elements, Action onAccept) 
+        public DLG_ServerBrowser(List<PKT_ServerTelemetry> elements, Action onAccept) 
         {
             this.Title = "Server Browser";
             this.Description = "Available servers in the browser";
@@ -73,7 +73,7 @@ namespace GameClient.Dialogs.ServerBrowser
             Widgets.EndScrollView();
         }
 
-        private void DrawCustomRow(Rect rect, PKT_BrowserTelemetry element, int index)
+        private void DrawCustomRow(Rect rect, PKT_ServerTelemetry element, int index)
         {
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));

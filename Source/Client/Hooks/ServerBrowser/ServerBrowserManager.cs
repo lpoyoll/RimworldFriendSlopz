@@ -54,7 +54,7 @@ namespace GameClient.Hooks.ServerBrowser
         {
             DLG_Base.PushNewDialog(new DLG_Wait());
 
-            PKT_BrowserListing listing = new PKT_BrowserListing();
+            PKT_ServerInformation listing = new PKT_ServerInformation();
             listing.ClientVersion = CommonValues.ExecutableVersion;
             Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserListing, listing);
         }

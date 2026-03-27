@@ -30,8 +30,6 @@ namespace Shared
 
         private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
-        private static bool InteractiveConsole { get; set; } = false;
-
         public static void GetAllCommands()
         {
             foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.IsSubclassOf(typeof(CMD_Base))))
@@ -48,15 +46,22 @@ namespace Shared
 
         public static void ListenForCommands()
         {
-            try { InteractiveConsole = Console.In.Peek() != -1 ? true : false; }
-            catch { Printer.Warning($"Couldn't find interactive console, disabling commands"); }
-
-            if (InteractiveConsole)
+            if (CheckIfConsoleIsInteractive())
             {
                 while (true)
                 {
                     ParseCommand(Console.ReadLine());
                 }
+            }
+        }
+
+        private static bool CheckIfConsoleIsInteractive()
+        {
+            try { return Console.In.Peek() != -1 ? true : false; }
+            catch 
+            { 
+                Printer.Warning($"Couldn't find interactive console, disabling commands");
+                return false;
             }
         }
 

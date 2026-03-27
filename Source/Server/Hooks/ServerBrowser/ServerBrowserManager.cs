@@ -91,7 +91,7 @@ namespace GameServer.Hooks.ServerBrowser
         {
             if (!WasStartedOnce) ServerIPV4 = await GetPublicIP();
 
-            PKT_BrowserTelemetry telemetry = new PKT_BrowserTelemetry();
+            PKT_ServerTelemetry telemetry = new PKT_ServerTelemetry();
             telemetry.Name = Master.ServerConfig.Name;
             telemetry.Description = Master.ServerConfig.Description;
             telemetry.Version = CommonValues.ExecutableVersion;
@@ -105,7 +105,7 @@ namespace GameServer.Hooks.ServerBrowser
             if (!WasStartedOnce) SendTelemetry(telemetry);
         }
 
-        private static void SendTelemetry(PKT_BrowserTelemetry telemetry)
+        private static void SendTelemetry(PKT_ServerTelemetry telemetry)
         {
             WasStartedOnce = true;
 

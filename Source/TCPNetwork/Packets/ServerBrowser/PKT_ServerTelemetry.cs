@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TCPNetwork.Packets.ServerBrowser
 {
-    public class PKT_BrowserTelemetry : PKT_Base
+    public class PKT_ServerTelemetry : PKT_Base
     {
         public string Hash { get; set; } = string.Empty;
 
