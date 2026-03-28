@@ -1,6 +1,4 @@
-﻿using System;
-using Verse;
-using static Shared.CommonEnumerators;
+﻿using Verse;
 using static Shared.Misc.Printer;
 
 namespace GameClient.Core.Configs

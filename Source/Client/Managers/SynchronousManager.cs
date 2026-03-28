@@ -1,15 +1,5 @@
-﻿using GameClient.Core;
-using GameClient.Misc;
-using HarmonyLib;
-using Shared;
-using Shared.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GameClient.Misc;
 using Verse;
-using static Shared.Misc.Printer;
 
 namespace GameClient.Managers
 {

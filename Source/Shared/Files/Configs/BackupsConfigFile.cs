@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace Shared.Files.Configs
+﻿namespace Shared.Files.Configs
 {
     public class BackupsConfigFile : BaseFile
     {

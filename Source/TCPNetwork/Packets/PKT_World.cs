@@ -1,6 +1,4 @@
-﻿using static Shared.CommonEnumerators;
-
-namespace TCPNetwork.Packets
+﻿namespace TCPNetwork.Packets
 {
     public class PKT_World : PKT_Base
     {

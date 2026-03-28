@@ -1,21 +1,11 @@
-﻿using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
+﻿using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.PacketManager;
 using Shared;
 using Shared.Files;
-using Shared.Misc;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
 
 namespace GameServer.PacketManagers
 {

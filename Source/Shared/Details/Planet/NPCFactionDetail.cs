@@ -1,5 +1,3 @@
-using System;
-
 namespace Shared.Details.Planet
 {
     public class NPCFactionDetail

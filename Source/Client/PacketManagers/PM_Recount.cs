@@ -1,10 +1,8 @@
-using GameClient.Misc;
 using Shared;
 using System.Collections.Generic;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.PacketManagers
 {

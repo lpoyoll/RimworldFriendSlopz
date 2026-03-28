@@ -1,25 +1,16 @@
-﻿using GameClient.Core.Configs;
-using GameClient.Defs;
-using GameClient.Hooks.TCPNetwork;
+﻿using GameClient.Defs;
 using GameClient.Misc;
 using GameClient.Tabs;
-using HarmonyLib;
-using RimWorld;
 using Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
-using UnityEngine;
 using Verse;
 using Verse.Sound;
-using static Shared.CommonEnumerators;
-using static TCPNetwork.Packets.PKT_Chat;
 
 namespace GameClient.PacketManagers
 {

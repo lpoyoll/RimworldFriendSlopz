@@ -9,7 +9,6 @@ using Shared.Files.Sites;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
 using static Shared.Files.Guilds.GuildMember;
 using static TCPNetwork.Packets.PKT_PlayerGuild;
 

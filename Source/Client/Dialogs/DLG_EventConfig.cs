@@ -1,20 +1,12 @@
-﻿using GameClient.Dialogs.Default;
-using GameClient.Managers;
-using GameClient.PacketManagers;
-using Newtonsoft.Json.Linq;
+﻿using GameClient.PacketManagers;
 using Shared;
 using Shared.Files;
-using Shared.Files.Configs.Mods;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Packets;
 using UnityEngine;
 using Verse;
-using static Mono.Security.X509.X520;
 using static TCPNetwork.Packets.PKT_Event;
 
 namespace GameClient.Dialogs

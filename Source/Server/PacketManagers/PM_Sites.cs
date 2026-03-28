@@ -1,9 +1,7 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
 using Shared;
-using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
-using Shared.Files.Guilds;
 using TCPNetwork.Files.Client;
 using Shared.Files.Sites;
 using TCPNetwork;

@@ -1,5 +1,3 @@
-using GameClient.Core.Configs;
-
 namespace GameClient.Core
 {
     public static class Master

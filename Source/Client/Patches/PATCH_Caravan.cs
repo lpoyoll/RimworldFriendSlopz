@@ -1,9 +1,6 @@
-﻿using GameClient.Managers;
-using GameClient.Misc;
-using GameClient.PacketManagers;
+﻿using GameClient.PacketManagers;
 using HarmonyLib;
 using RimWorld.Planet;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches
 {

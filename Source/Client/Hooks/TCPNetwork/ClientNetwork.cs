@@ -1,4 +1,3 @@
-using GameClient.Core.Configs;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Files;
@@ -10,13 +9,8 @@ using System;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-using System.Threading;
-using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
-using Verse;
-using static Shared.CommonEnumerators;
 using static Shared.Misc.Printer;
 
 namespace GameClient.Hooks.TCPNetwork

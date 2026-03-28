@@ -1,10 +1,8 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using GameServer.Misc;
 using Shared;
 using Shared.Details.Planet;
-using Shared.Files;
 using Shared.Files.Configs;
 using Shared.Misc;
 using TCPNetwork;

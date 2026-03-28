@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-
 namespace Shared.Files.Configs
 {
     public class ScenarioConfigFile : BaseFile

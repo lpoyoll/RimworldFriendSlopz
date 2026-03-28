@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using GameClient.WorldObjects;

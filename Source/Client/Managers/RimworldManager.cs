@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using GameClient.Misc;
 using RimWorld;
 using RimWorld.Planet;
 using Shared.Misc;
 using UnityEngine;
 using Verse;
 using Verse.AI.Group;
-using static Shared.CommonEnumerators;
 using static Shared.Misc.Printer;
 
 namespace GameClient.Managers

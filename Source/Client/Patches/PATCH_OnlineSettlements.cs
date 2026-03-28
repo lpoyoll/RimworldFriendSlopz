@@ -1,10 +1,8 @@
 ﻿using GameClient.Misc;
 using HarmonyLib;
-using RimWorld;
 using RimWorld.Planet;
 using System;
 using Verse;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches
 {

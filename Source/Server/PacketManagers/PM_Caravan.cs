@@ -1,11 +1,9 @@
 ﻿using GameServer.Hooks.TCPNetwork;
-using GameServer.Misc;
 using Shared;
 using Shared.Files;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
 using static TCPNetwork.Packets.PKT_Caravan;
 
 namespace GameServer.PacketManager

@@ -1,15 +1,10 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Patches;
-using GameClient.WorldObjects;
 using TCPNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using System.Reflection;
 using Verse;
-using static Shared.CommonEnumerators;
-using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.Managers;
 using TCPNetwork.Files.Client;

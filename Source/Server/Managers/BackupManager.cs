@@ -6,7 +6,6 @@ using Shared.Files;
 using Shared.Files.Sites;
 using Shared.Misc;
 using System.IO.Compression;
-using static Shared.CommonEnumerators;
 using static Shared.Misc.Printer;
 
 namespace GameServer.Managers

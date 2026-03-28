@@ -1,15 +1,9 @@
-﻿using GameClient.Core.Configs;
-using GameClient.Dialogs.Default;
-using GameClient.Managers;
-using GameClient.Misc;
+﻿using GameClient.Dialogs.Default;
 using GameClient.PacketManagers;
-using RimWorld;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Verse;
-using Verse.Noise;
 
 namespace GameClient.Dialogs
 {

@@ -1,7 +1,5 @@
 ﻿using GameServer.Core;
-using GameServer.Misc;
 using Shared;
-using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using GameServer.Managers;

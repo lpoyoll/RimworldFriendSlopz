@@ -1,18 +1,14 @@
-﻿using GameClient.Dialogs;
-using GameClient.Managers;
+﻿using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
-using GameClient.Tabs;
 using HarmonyLib;
 using RimWorld;
 using Shared;
 using System.Collections.Generic;
 using System.Linq;
-using TCPNetwork;
 using UnityEngine;
 using Verse;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Pages
 {

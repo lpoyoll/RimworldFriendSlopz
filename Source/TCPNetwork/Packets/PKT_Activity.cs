@@ -1,5 +1,3 @@
-using static Shared.CommonEnumerators;
-
 namespace TCPNetwork.Packets
 {
     public class PKT_Activity : PKT_Base

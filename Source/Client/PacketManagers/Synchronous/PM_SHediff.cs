@@ -1,13 +1,8 @@
-﻿using GameClient;
-using GameClient.Hooks.Synchronous;
-using GameClient.Hooks.TCPNetwork;
+﻿using GameClient.Hooks.Synchronous;
 using GameClient.Misc;
 using Shared;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;

@@ -1,4 +1,3 @@
-using GameServer.Commands;
 using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Misc;
@@ -8,7 +7,6 @@ using System.Text;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
 using static TCPNetwork.Packets.PKT_Chat;
 
 namespace GameServer.PacketManager

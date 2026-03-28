@@ -1,7 +1,5 @@
 using GameClient.Defs;
 using GameClient.Dialogs;
-using GameClient.Managers;
-using GameClient.PacketManagers;
 using GameClient.Patches.Pages;
 using GameClient.Tabs;
 using GameClient.WorldObjects;

@@ -1,20 +1,13 @@
 ﻿using GameClient.Defs;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.WorldObjects
 {

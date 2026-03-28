@@ -1,13 +1,10 @@
 ﻿using GameClient.Dialogs.Default;
-using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using HarmonyLib;
 using Shared.Misc;
 using System;
 using Verse;
-using static Shared.CommonEnumerators;
-using static Shared.Misc.Printer;
 
 namespace GameClient.Patches
 {

@@ -3,7 +3,6 @@ using GameClient.Dialogs.Default;
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using Verse;
-using static RimWorld.PsychicRitualRoleDef;
 
 namespace GameClient.Managers
 {

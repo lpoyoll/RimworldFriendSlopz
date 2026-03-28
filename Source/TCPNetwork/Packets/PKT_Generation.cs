@@ -1,6 +1,3 @@
-using Shared.Files.Configs;
-using static Shared.CommonEnumerators;
-
 namespace TCPNetwork.Packets
 {
     public class GameParameterData : PKT_Base

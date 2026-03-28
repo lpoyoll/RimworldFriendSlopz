@@ -1,13 +1,9 @@
-﻿using GameClient.Hooks.TCPNetwork;
-using GameClient.Misc;
+﻿using GameClient.Misc;
 using Shared;
 using Shared.Files;
-using Shared.Misc;
 using TCPNetwork;
 using TCPNetwork.Packets;
 using Verse;
-using static Shared.CommonEnumerators;
-using static Shared.Misc.Printer;
 
 namespace GameClient.Managers
 {

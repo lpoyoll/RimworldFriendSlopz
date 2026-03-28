@@ -1,12 +1,6 @@
 ﻿using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
 using Shared;
 using Shared.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;

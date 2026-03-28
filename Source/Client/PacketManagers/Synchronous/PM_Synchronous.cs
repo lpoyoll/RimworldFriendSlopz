@@ -1,26 +1,16 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
-using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
 using Shared.Files.Synchronous;
-using Shared.Misc;
 using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using Verse;
-using Verse.Noise;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.PacketManagers.Synchronous
 {

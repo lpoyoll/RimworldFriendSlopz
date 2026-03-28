@@ -1,6 +1,4 @@
-﻿using GameServer.Misc;
-using Shared;
-using static Shared.CommonEnumerators;
+﻿using Shared;
 using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using Shared.Misc;

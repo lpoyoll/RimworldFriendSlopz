@@ -1,7 +1,6 @@
 ﻿using GameClient.Core;
 using GameClient.Core.Configs;
 using GameClient.Dialogs;
-using GameClient.Dialogs.Default;
 using HarmonyLib;
 using Shared;
 using Shared.Misc;
@@ -9,10 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using Verse;
 using static Shared.Misc.Printer;
 
 namespace GameClient.Misc

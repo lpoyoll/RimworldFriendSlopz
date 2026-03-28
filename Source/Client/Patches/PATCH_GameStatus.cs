@@ -1,13 +1,8 @@
 ﻿using GameClient.Managers;
 using HarmonyLib;
-using RimWorld;
-using RimWorld.Planet;
-using Shared;
 using Verse;
-using static Shared.CommonEnumerators;
 using GameClient.Misc;
 using GameClient.Dialogs;
-using System;
 using GameClient.PacketManagers;
 using GameClient.Dialogs.Default;
 

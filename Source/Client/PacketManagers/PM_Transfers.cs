@@ -1,25 +1,14 @@
-﻿using GameClient.Core.Configs;
-using GameClient.Dialogs;
+﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
-using RimWorld.Planet;
 using Shared;
-using Shared.Files;
-using Shared.Misc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using Verse;
-using Verse.Noise;
-using Verse.Sound;
-using static Shared.CommonEnumerators;
 using static TCPNetwork.Packets.PKT_Transfer;
 
 namespace GameClient.PacketManagers

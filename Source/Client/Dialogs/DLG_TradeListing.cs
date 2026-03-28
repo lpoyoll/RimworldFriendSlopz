@@ -2,14 +2,11 @@
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using System;
 using System.Linq;
 using UnityEngine;
 using Verse;
 using static TCPNetwork.Packets.PKT_Transfer;
-using static Shared.CommonEnumerators;
 using GameClient.Misc;
-using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.PacketManagers;
 using GameClient.Dialogs.Default;

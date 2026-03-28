@@ -1,21 +1,15 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Hooks.TCPNetwork;
-using GameClient.Misc;
 using Shared;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using UnityEngine;
-using Verse;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.PacketManagers
 {

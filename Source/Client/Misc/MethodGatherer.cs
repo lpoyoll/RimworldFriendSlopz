@@ -1,9 +1,7 @@
-using Shared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using static Shared.CommonEnumerators;
 
 namespace Shared
 {

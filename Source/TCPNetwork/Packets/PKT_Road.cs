@@ -1,5 +1,4 @@
 using Shared.Details.Planet;
-using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
 {

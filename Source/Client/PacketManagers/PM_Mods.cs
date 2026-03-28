@@ -1,26 +1,18 @@
 ﻿using GameClient.Dialogs;
-using GameClient.Dialogs.Default;
-using GameClient.Managers;
 using GameClient.Misc;
-using RimWorld;
 using Shared;
 using Shared.Files.Configs.Mods;
 using Shared.Misc;
-using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using Verse;
-using Verse.Steam;
-using static Shared.CommonEnumerators;
 using static Shared.Files.Configs.Mods.ModConfigFile;
 using static Shared.Misc.Printer;
 using static TCPNetwork.Packets.PKT_ModConfig;
-using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient.PacketManagers
 {

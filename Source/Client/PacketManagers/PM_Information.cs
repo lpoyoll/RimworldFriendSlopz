@@ -2,7 +2,6 @@
 using TCPNetwork.Packets;
 using Shared;
 using GameClient.Misc;
-using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using Shared.Files;

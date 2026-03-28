@@ -1,15 +1,9 @@
 ﻿using GameClient.Managers;
-using GameClient.PacketManagers;
-using Newtonsoft.Json.Linq;
 using Shared.Files.Configs.Mods;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
-using static Mono.Security.X509.X520;
 
 namespace GameClient.Dialogs
 {

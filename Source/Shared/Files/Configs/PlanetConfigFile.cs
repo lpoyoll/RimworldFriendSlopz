@@ -1,7 +1,5 @@
 ﻿using Shared.Details.Planet;
-using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Shared.Files.Configs
 {

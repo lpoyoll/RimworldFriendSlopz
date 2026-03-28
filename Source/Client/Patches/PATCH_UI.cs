@@ -1,16 +1,9 @@
-﻿using GameClient.Core.Configs;
-using GameClient.Defs;
+﻿using GameClient.Defs;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.PacketManagers;
 using GameClient.Tabs;
 using HarmonyLib;
 using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TCPNetwork.PacketManagers;
 using UnityEngine;
 using Verse;

@@ -1,7 +1,3 @@
-using System;
-using Newtonsoft.Json;
-using Shared.Misc;
-
 namespace Shared.Details.Planet
 {
     public class FeatureDetail

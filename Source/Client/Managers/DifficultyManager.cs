@@ -1,14 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using RimWorld;
-using RimWorld.Planet;
-using Shared;
-using Shared.Files;
 using System;
-using System.Reflection;
-using Verse;
-using static Shared.CommonEnumerators;
-using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient.Managers
 {

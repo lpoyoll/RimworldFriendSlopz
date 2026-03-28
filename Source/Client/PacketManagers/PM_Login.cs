@@ -13,7 +13,6 @@ using TCPNetwork.Packets;
 using UnityEngine;
 using Verse;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
-using static Shared.CommonEnumerators;
 using static TCPNetwork.Packets.PKT_Login;
 
 namespace GameClient.PacketManagers

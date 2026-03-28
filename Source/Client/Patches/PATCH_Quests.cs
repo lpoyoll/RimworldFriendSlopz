@@ -3,7 +3,6 @@ using System.Linq;
 using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches
 {

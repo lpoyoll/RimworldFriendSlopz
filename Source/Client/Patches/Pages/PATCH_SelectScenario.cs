@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
@@ -8,12 +7,10 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Reflection.Emit;
 using TCPNetwork;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Pages
 {

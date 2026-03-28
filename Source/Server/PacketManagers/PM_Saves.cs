@@ -1,7 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Managers;
 using GameServer.Misc;
-using MessagePack;
 using Shared;
 using Shared.Files;
 using Shared.Files.Sites;
@@ -9,8 +8,6 @@ using Shared.Misc;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using static TCPNetwork.Packets.PKT_Save;
 
 namespace GameServer.PacketManager

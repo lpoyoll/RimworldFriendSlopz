@@ -1,5 +1,4 @@
-﻿using GameClient.Hooks.TCPNetwork;
-using GameClient.Managers;
+﻿using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.WorldObjects;
 using RimWorld;
@@ -14,7 +13,6 @@ using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using Verse;
-using Verse.Noise;
 using static Shared.CommonEnumerators;
 
 namespace GameClient.PacketManagers

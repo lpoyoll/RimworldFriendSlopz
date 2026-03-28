@@ -1,5 +1,3 @@
-using System;
-
 namespace Shared.Files
 {
     public class EventFile

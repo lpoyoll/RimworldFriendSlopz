@@ -1,21 +1,13 @@
-﻿using GameClient.Defs;
-using GameClient.Managers;
+﻿using GameClient.Managers;
 using RimWorld;
 using RimWorld.Planet;
 using Shared.Files;
 using Shared.Misc;
 using Synchronous.Misc;
 using System;
-using System.Collections.Generic;
-using System.IO.Compression;
 using System.Linq;
-using System.Numerics;
-using System.Security.Cryptography;
 using Verse;
-using Verse.Noise;
-using static Shared.CommonEnumerators;
 using static Shared.Misc.Printer;
-using static UnityEngine.GraphicsBuffer;
 
 namespace GameClient.Misc
 {

@@ -6,11 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Verse;
-using static Shared.CommonEnumerators;
 using TCPNetwork.Packets;
 using Shared.Details.Planet;
 using GameClient.Misc;
-using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 
 namespace GameClient.Patches

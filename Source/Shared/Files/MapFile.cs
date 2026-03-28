@@ -1,4 +1,3 @@
-using Shared.Files.Configs.Mods;
 using System.Collections.Generic;
 
 namespace Shared.Files

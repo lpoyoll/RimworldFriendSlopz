@@ -2,14 +2,12 @@
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using GameClient.Managers;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Verse;
 using TCPNetwork.Packets;
-using GameClient.Hooks.TCPNetwork;
 using TCPNetwork;
 using GameClient.PacketManagers;
 

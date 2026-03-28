@@ -1,5 +1,4 @@
 using Shared.Files.Configs.Mods;
-using static Shared.CommonEnumerators;
 
 namespace TCPNetwork.Packets
 {

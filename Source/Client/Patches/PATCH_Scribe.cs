@@ -7,7 +7,6 @@ using GameClient.Misc;
 using HarmonyLib;
 using Shared.Misc;
 using Verse;
-using static Shared.CommonEnumerators;
 using static Shared.Misc.Printer;
 
 namespace GameClient.Patches

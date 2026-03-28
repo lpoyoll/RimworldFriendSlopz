@@ -1,7 +1,6 @@
 ﻿using Shared.Files.Guilds;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using static Shared.CommonEnumerators;
 

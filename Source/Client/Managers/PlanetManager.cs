@@ -2,8 +2,6 @@
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using RimWorld;
-using Shared.Misc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;

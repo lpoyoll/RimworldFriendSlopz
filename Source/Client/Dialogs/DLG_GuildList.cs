@@ -1,10 +1,6 @@
-﻿using Shared.Files;
-using Shared.Files.Guilds;
-using System;
+﻿using Shared.Files.Guilds;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Verse;
 using static Shared.Files.Guilds.GuildMember;

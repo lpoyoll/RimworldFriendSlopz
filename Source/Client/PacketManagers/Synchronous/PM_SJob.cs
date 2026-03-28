@@ -1,24 +1,16 @@
-﻿using GameClient;
-using GameClient.Core.Configs;
-using GameClient.Hooks.Synchronous;
-using GameClient.Hooks.TCPNetwork;
+﻿using GameClient.Hooks.Synchronous;
 using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
 using Shared;
-using Shared.Misc;
 using Synchronous.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using UnityEngine;
-using UnityEngine.XR;
 using Verse;
 using Verse.AI;
 

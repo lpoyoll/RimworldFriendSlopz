@@ -1,11 +1,9 @@
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Misc;
 using Shared;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
 using static TCPNetwork.Packets.PKT_ResponseShortcut;
 
 namespace GameClient.PacketManagers

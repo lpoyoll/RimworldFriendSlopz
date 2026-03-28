@@ -1,13 +1,9 @@
-﻿using GameClient.Core.Configs;
-using GameClient.Defs;
+﻿using GameClient.Defs;
 using GameClient.Dialogs;
-using GameClient.Managers;
 using GameClient.PacketManagers;
 using RimWorld;
-using Shared.Misc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.Sound;

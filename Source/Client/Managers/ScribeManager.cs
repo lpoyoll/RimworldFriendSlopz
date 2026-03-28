@@ -1,14 +1,9 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 using GameClient.Misc;
-using RimWorld;
-using Shared;
-using Shared.Files;
 using Shared.Misc;
 using Verse;
-using static Shared.CommonEnumerators;
 using static Shared.Misc.Printer;
 
 namespace GameClient.Managers

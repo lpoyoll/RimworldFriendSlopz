@@ -1,5 +1,4 @@
-﻿using GameClient.Hooks.TCPNetwork;
-using GameClient.Managers;
+﻿using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using HarmonyLib;
@@ -10,7 +9,6 @@ using System.Reflection.Emit;
 using TCPNetwork;
 using UnityEngine.SceneManagement;
 using Verse;
-using static Shared.CommonEnumerators;
 
 namespace GameClient.Patches.Pages
 {

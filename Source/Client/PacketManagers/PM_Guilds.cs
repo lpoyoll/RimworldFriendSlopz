@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
@@ -12,7 +11,6 @@ using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using Verse;
-using static Shared.CommonEnumerators;
 using static Shared.Files.Guilds.GuildMember;
 using static TCPNetwork.Packets.PKT_PlayerGuild;
 

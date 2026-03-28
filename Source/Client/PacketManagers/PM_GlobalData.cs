@@ -1,4 +1,3 @@
-using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
 using Shared;

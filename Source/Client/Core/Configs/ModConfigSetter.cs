@@ -1,10 +1,7 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Files;
-using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.PacketManagers;
-using Shared;
 using Shared.Misc;
 using System;
 using System.Collections.Generic;

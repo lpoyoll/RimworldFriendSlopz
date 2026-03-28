@@ -1,11 +1,9 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Misc;
-using Shared;
 using Shared.Misc;
 using System;
 using UnityEngine;
 using Verse;
-using static Shared.CommonEnumerators;
 using static Shared.Misc.Printer;
 
 namespace GameClient.Hooks.Shared

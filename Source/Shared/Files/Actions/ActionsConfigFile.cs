@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-
-namespace Shared.Files.Actions
+﻿namespace Shared.Files.Actions
 {
     public class ActionsConfigFile : BaseFile
     {
