@@ -9,7 +9,7 @@ namespace GameClient.Dialogs.ServerBrowser
 {
     public class DLG_ServerListing : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(350f, 400f);
+        public override Vector2 InitialSize => new Vector2(550f, 400f);
 
         public PKT_ServerTelemetry Element { get; private set; } = null;
 
