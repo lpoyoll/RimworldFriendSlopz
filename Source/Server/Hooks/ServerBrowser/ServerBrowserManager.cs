@@ -62,10 +62,13 @@ namespace GameServer.Hooks.ServerBrowser
 
                 else
                 {
-                    Printer.Title(Printer.SeparatorString);
-                    Printer.Warning("Server discovery is DISABLED");
-                    Printer.Warning("Please turn the service ON in the settings if you want your server listed publicly");
-                    Printer.Title(Printer.SeparatorString);
+                    if (!WasStartedOnce)
+                    {
+                        Printer.Title(Printer.SeparatorString);
+                        Printer.Warning("Server discovery is DISABLED");
+                        Printer.Warning("Please turn the service ON in the settings if you want your server listed publicly");
+                        Printer.Title(Printer.SeparatorString);
+                    }
                 }
             }
         }
