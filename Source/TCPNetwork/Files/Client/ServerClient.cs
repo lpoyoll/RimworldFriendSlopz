@@ -21,7 +21,7 @@ namespace TCPNetwork.Files.Client
 
         public NetworkRuleset Ruleset { get; set; } = null;
 
-        public ServerClient(TcpClient tcp, NetworkRuleset ruleset, bool createListener)
+        public ServerClient(TcpClient tcp, NetworkRuleset ruleset, bool createListener = true)
         {
             if (tcp == null) return;
             else

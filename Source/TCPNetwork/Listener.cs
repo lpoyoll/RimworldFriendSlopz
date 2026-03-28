@@ -31,7 +31,9 @@ namespace TCPNetwork
 
         private bool SeveredConnection { get; set; } = false;
         
-        private DateTime LastKAPacket { get; set; } = DateTime.Now;
+        private DateTime LastKAReceivedPacket { get; set; } = DateTime.Now;
+
+        private DateTime LastKASentPacket { get; set; } = DateTime.Now;
 
         private Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
@@ -43,11 +45,34 @@ namespace TCPNetwork
             this.Ruleset = ruleset;
 
             Ruleset.OnConnect?.Invoke(clientToUse);
+            Task.Run(RunAllListenerTasks);
+        }
 
-            Task.Run(() => Read());
-            Task.Run(() => Write());
-            Task.Run(() => SendKAFlag());
-            Task.Run(() => CheckKAFlag());
+        private void RunAllListenerTasks()
+        {
+            while (true)
+            {
+                try
+                {
+                    Thread.Sleep(1);
+
+                    CheckKAFlag();
+                    SendKAFlag();
+
+                    Read();
+                    Write();
+
+                    if (IsDisconnecting) break;
+                }
+
+                catch (Exception ex)
+                {
+                    Printer.Error(ex, LogImportanceMode.Ludicrous);
+                    break; 
+                }
+            }
+
+            Disconnect();
         }
 
         public void EnqueuePacket(PacketHeader header, object obj)
@@ -65,120 +90,93 @@ namespace TCPNetwork
 
         private void Read()
         {
-            try
+            int readBytes = 0;
+            byte[] headerBuffer = new byte[sizeof(PacketHeader)];
+            byte[] lengthBuffer = new byte[Network.PacketLengthSizeInBytes];
+            byte[] packetBuffer = new byte[Network.PacketLengthSizeInBytes];
+
+            if (Stream.DataAvailable)
             {
-                int readBytes = 0;
-                byte[] headerBuffer = new byte[sizeof(PacketHeader)];
-                byte[] lengthBuffer = new byte[Network.PacketLengthSizeInBytes];
-                byte[] packetBuffer = new byte[Network.PacketLengthSizeInBytes];
+                // Read packet header
+                Stream.Read(headerBuffer, 0, sizeof(PacketHeader));
+                PacketHeader header = (PacketHeader)headerBuffer[0];
 
-                while (!IsDisconnecting)
-                {
-                    Thread.Sleep(1);
+                // Read packet size
+                Stream.Read(lengthBuffer, 0, Network.PacketLengthSizeInBytes);
 
-                    if (Stream.DataAvailable)
-                    {
-                        // Read packet header
-                        Stream.Read(headerBuffer, 0, sizeof(PacketHeader));
-                        PacketHeader header = (PacketHeader)headerBuffer[0];
+                // Read packet contents
+                readBytes = 0;
+                packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
+                while (readBytes < packetBuffer.Length) readBytes += Stream.Read(packetBuffer, readBytes, packetBuffer.Length - readBytes);
 
-                        // Read packet size
-                        Stream.Read(lengthBuffer, 0, Network.PacketLengthSizeInBytes);
+                // Reset KeepAlive
+                LastKAReceivedPacket = DateTime.Now;
 
-                        // Read packet contents
-                        readBytes = 0;
-                        packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
-                        while (readBytes < packetBuffer.Length) readBytes += Stream.Read(packetBuffer, readBytes, packetBuffer.Length - readBytes);
+                // Log packet contents
+                if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
+                else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
-                        // Reset KeepAlive
-                        LastKAPacket = DateTime.Now;
-
-                        // Log packet contents
-                        if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
-                        else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
-
-                        // Execute ruleset action
-                        Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient);
-                    }
-                }
+                // Execute ruleset action
+                Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient);
             }
-            catch (Exception ex) { Printer.Warning(ex, LogImportanceMode.Ludicrous); }
-
-            Disconnect();
         }
 
         private void Write()
         {
-            try
+            byte[] headerBuffer = new byte[sizeof(PacketHeader)];
+
+            if (PacketQueue.Count > 0)
             {
-                byte[] headerBuffer = new byte[sizeof(PacketHeader)];
+                if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
+                byte[] packetSize = BitConverter.GetBytes(packetData.Value.Length);
 
-                while (Connection.Client != null)
-                {
-                    Thread.Sleep(1);
+                // Write packet header
+                headerBuffer[0] = packetData.Key;
+                Stream.Write(headerBuffer, 0, sizeof(PacketHeader));
 
-                    if (PacketQueue.Count > 0)
-                    {
-                        if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
-                        byte[] packetSize = BitConverter.GetBytes(packetData.Value.Length);
+                // Write packet size
+                Stream.Write(packetSize, 0, packetSize.Length);
 
-                        // Write packet header
-                        headerBuffer[0] = packetData.Key;
-                        Stream.Write(headerBuffer, 0, sizeof(PacketHeader));
+                // Write packet data
+                Stream.Write(packetData.Value, 0, packetData.Value.Length);
 
-                        // Write packet size
-                        Stream.Write(packetSize, 0, packetSize.Length);
+                //Log the packet data
+                if (!Network.IgnoreLogPackets.Contains((PacketHeader)(packetData.Key))) Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Verbose);
+                else Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Extreme);
 
-                        // Write packet data
-                        Stream.Write(packetData.Value, 0, packetData.Value.Length);
-
-                        //Log the packet data
-                        if (!Network.IgnoreLogPackets.Contains((PacketHeader)(packetData.Key))) Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Verbose);
-                        else Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Extreme);
-
-                        //Execute after writing
-                        Ruleset.OnWrite?.Invoke(TargetClient);
-                    }
-                }
+                //Execute after writing
+                Ruleset.OnWrite?.Invoke(TargetClient);
             }
-            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Ludicrous); }
-
-            Disconnect();
         }
 
         private void SendKAFlag()
         {
-            try
+            if (Ruleset.HandleKeepAlive)
             {
-                if (!Ruleset.HandleKeepAlive) return;
-
-                while (!IsDisconnecting)
+                if (DateTime.Now - LastKASentPacket < TimeSpan.FromSeconds(Network.KeepAliveInterval.TotalSeconds)) return;
+                else
                 {
-                    Thread.Sleep(Network.KeepAliveInterval);
+                    LastKASentPacket = DateTime.Now;
                     PKT_KeepAlive keepAliveData = new PKT_KeepAlive();
                     EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
                 }
             }
-            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
         }
 
         private void CheckKAFlag()
         {
-            try
-            {
-                while (!IsDisconnecting)
-                {
-                    Thread.Sleep(Network.KeepAliveInterval);
-                    DateTime current = DateTime.Now;
-                    if (current - LastKAPacket > Network.KeepAliveMaxTime) break;
-                }
-            }
-            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
-
-            Disconnect();
+            if (DateTime.Now - LastKAReceivedPacket > Network.KeepAliveMaxTime) MarkForDisconnect();
+            else return;
         }
 
-        public void MarkForDisconnect() { IsDisconnecting = true; }
+        public void MarkForDisconnect() 
+        {
+            PKT_Command packet = new PKT_Command();
+            packet._commandMode = CommandMode.Disconnect;
+            EnqueuePacket(PacketHeader.ConsoleManager, packet);
+
+            IsDisconnecting = true; 
+        }
 
         private void Disconnect()
         {

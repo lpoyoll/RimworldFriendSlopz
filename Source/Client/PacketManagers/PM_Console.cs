@@ -1,5 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
+using GameClient.Hooks.TCPNetwork;
 using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
@@ -37,6 +38,10 @@ namespace GameClient.PacketManagers
 
                 case CommandMode.ForceSave:
                     OnForceSaveCommand();
+                    break;
+
+                case CommandMode.Disconnect:
+                    Network.ServerEndpoint.MarkForDisconnect();
                     break;
             }
         }

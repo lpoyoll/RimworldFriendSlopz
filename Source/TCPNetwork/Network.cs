@@ -33,7 +33,7 @@ namespace TCPNetwork
 
         public static readonly TimeSpan BrowserTelemetryInterval = TimeSpan.FromSeconds(60);
 
-        public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(30);
+        public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(3);
 
         public static readonly TimeSpan KeepAliveMaxTime = TimeSpan.FromSeconds(60);
 

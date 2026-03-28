@@ -33,7 +33,7 @@ namespace GameClient.Hooks.ServerBrowser
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, null, OnReadPacket, null, false), true);
+                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, null, OnReadPacket, null, false));
                 Network.BrowserEndpoint = client.Listener;
                 AskForServerListings();
                 return true;

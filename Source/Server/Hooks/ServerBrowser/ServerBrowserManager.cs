@@ -74,7 +74,7 @@ namespace GameServer.Hooks.ServerBrowser
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null, false), true);
+                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null, false));
                 Network.BrowserEndpoint = client.Listener;
                 SetupConnection(mode);
                 return true;
