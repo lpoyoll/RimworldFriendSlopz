@@ -150,6 +150,8 @@ namespace TCPNetwork
         {
             try
             {
+                if (!Ruleset.HandleKeepAlive) return;
+
                 while (!IsDisconnecting)
                 {
                     Thread.Sleep(Network.KeepAliveInterval);

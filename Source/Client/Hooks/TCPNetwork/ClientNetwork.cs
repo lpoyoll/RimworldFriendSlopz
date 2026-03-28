@@ -94,7 +94,7 @@ namespace GameClient.Hooks.TCPNetwork
             {
                 try
                 {
-                    ServerClient client = new ServerClient(new TcpClient(Network.Ip, Network.Port), new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, null));
+                    ServerClient client = new ServerClient(new TcpClient(Network.Ip, Network.Port), new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, null), true);
                     Network.ServerEndpoint = client.Listener;
                     return true;
                 }

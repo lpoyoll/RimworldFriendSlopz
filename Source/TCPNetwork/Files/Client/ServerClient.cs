@@ -17,15 +17,25 @@ namespace TCPNetwork.Files.Client
 
         public ServerClient SynchronousClient { get; set; } = null;
 
-        public ServerClient(TcpClient tcp, NetworkRuleset ruleset)
+        public TcpClient Tcp { get; set; } = null;
+
+        public NetworkRuleset Ruleset { get; set; } = null;
+
+        public ServerClient(TcpClient tcp, NetworkRuleset ruleset, bool createListener)
         {
             if (tcp == null) return;
             else
             {
+                Tcp = tcp;
+                Ruleset = ruleset;
                 CurrentIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
-                Listener = new Listener(this, tcp, ruleset);
+                if (createListener) CreateListener();
             }
         }
+
+        public void CreateListener() { Listener = new Listener(this, Tcp, Ruleset); }
+
+        public void DisposeTCP() { Tcp.Dispose(); }
 
         public void LoadUserFromFile(ServerClient client) 
         { 

@@ -31,11 +31,11 @@ namespace TCPNetwork
 
         public static List<ServerClient> ServerClients { get; private set; } = new List<ServerClient>();
 
-        public static readonly TimeSpan BrowserTelemetryInterval = TimeSpan.FromSeconds(20);
+        public static readonly TimeSpan BrowserTelemetryInterval = TimeSpan.FromSeconds(60);
 
-        public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(3);
+        public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(30);
 
-        public static readonly TimeSpan KeepAliveMaxTime = TimeSpan.FromSeconds(15);
+        public static readonly TimeSpan KeepAliveMaxTime = TimeSpan.FromSeconds(60);
 
         public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAliveManager };
     }
