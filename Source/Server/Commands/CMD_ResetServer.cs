@@ -4,12 +4,12 @@ using Shared;
 
 namespace GameServer.Commands
 {
-    public class CMD_ResetWorld : CMD_Base
+    public class CMD_ResetServer : CMD_Base
     {
-        public CMD_ResetWorld()
+        public CMD_ResetServer()
         {
-            Prefix = "resetworld";
-            Description = "Resets the server world";
+            Prefix = "resetserver";
+            Description = "Resets the server completely";
         }
 
         public override void Action()

@@ -1,4 +1,9 @@
-﻿using GameClient.Managers;
+﻿using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
+using GameClient.Files;
+using GameClient.Hooks.ServerBrowser;
+using GameClient.Hooks.TCPNetwork;
+using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
 using HarmonyLib;
@@ -6,6 +11,7 @@ using RimWorld;
 using Shared;
 using System.Collections.Generic;
 using System.Linq;
+using TCPNetwork;
 using UnityEngine;
 using Verse;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
@@ -32,7 +38,7 @@ namespace GameClient.Patches.Pages
 
     [HarmonyPatchCategory("Start")]
     [HarmonyPatch(typeof(Verse.OptionListingUtility), nameof(Verse.OptionListingUtility.DrawOptionListing))]
-    public static class Patch
+    public static class MainMenuPatch
     {
         [HarmonyPrefix]
         public static bool Prefix(Rect rect, List<ListableOption> optList)
@@ -42,17 +48,33 @@ namespace GameClient.Patches.Pages
             {
                 if (optList.First().GetType() == typeof(ListableOption))
                 {
-                    optList.Insert(0, new ListableOption("Play Together", delegate
+                    optList.Insert(0, new ListableOption("Server Browser", delegate
                     {
-                        if (!HarmonyHandler.CheckForModCollision()) return;
-                        else if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
-                        else if (!LoginManagerH.CheckIfLoginIsValid()) PM_Login.PromptCreateAccount(false);
-                        else ConnectionManager.ShowWelcomeDialogs();
+                        if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
+                        else if (!HarmonyHandler.CheckForModCollision()) return;
+                        else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
+                        else ServerBrowserManager.ConnectToServerBrowser();
+                    }));
+
+                    optList.Insert(0, new ListableOption("Direct Connect", delegate
+                    {
+                        if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
+                        else if (!HarmonyHandler.CheckForModCollision()) return;
+                        else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
+                        else DLG_Base.PushNewDialog(new DLG_Login());
                     }));
                 }
 
                 return true;
             }
+        }
+
+        public static bool CheckIfLoginIsValid()
+        {
+            PersistentSettings settings = PersistentSettings.Load();
+            if (!StringChecker.CheckIfStringValid(settings.UserSettings.Username)) return false;
+            else if (!StringChecker.CheckIfStringValid(settings.UserSettings.Password)) return false;
+            else return true;
         }
     }
 
@@ -71,7 +93,7 @@ namespace GameClient.Patches.Pages
                 {
                     if (!HarmonyHandler.CheckForModCollision()) return true;
                     else if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return true;
-                    else if (!LoginManagerH.CheckIfLoginIsValid()) PM_Login.PromptCreateAccount(true);
+                    else if (!MainMenuPatch.CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
                     else PM_Login.QuickConnectUser();
                 }
             }

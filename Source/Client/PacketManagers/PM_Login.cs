@@ -86,7 +86,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void PromptCreateAccount(bool isQuickConnect)
+        public static void PromptCreateAccount()
         {
             Action toDo = delegate
             {
@@ -106,8 +106,7 @@ namespace GameClient.PacketManagers
                     settings.UserSettings.Set(DLG_Inputs.DialogInputResults[0], Hasher.GetHashFromString(DLG_Inputs.DialogInputResults[1]));
                     settings.Save();
 
-                    if (isQuickConnect) QuickConnectUser();
-                    else ConnectionManager.ShowConnectDialogs();
+                    DLG_Base.PushNewDialog(new DLG_Message("Account Created", new string[] { "Your account has been created!" }));
                 }
             };
 
@@ -140,14 +139,6 @@ namespace GameClient.PacketManagers
 
     public class LoginManagerH
     {
-        public static bool CheckIfLoginIsValid()
-        {
-            PersistentSettings settings = PersistentSettings.Load();
-            if (!StringChecker.CheckIfStringValid(settings.UserSettings.Username)) return false;
-            else if (!StringChecker.CheckIfStringValid(settings.UserSettings.Password)) return false;
-            else return true;
-        }
-
         public static void ShowQuickConnectFloatMenu()
         {
             List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
