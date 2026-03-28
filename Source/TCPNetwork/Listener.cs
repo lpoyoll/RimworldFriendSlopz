@@ -125,7 +125,7 @@ namespace TCPNetwork
         {
             byte[] headerBuffer = new byte[sizeof(PacketHeader)];
 
-            if (PacketQueue.Count > 0)
+            while (PacketQueue.Count > 0)
             {
                 if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
                 byte[] packetSize = BitConverter.GetBytes(packetData.Value.Length);
@@ -181,9 +181,6 @@ namespace TCPNetwork
         private void Disconnect()
         {
             Semaphore.WaitOne();
-
-            while (PacketQueue.Count > 0) Thread.Sleep(1);
-            Thread.Sleep(1000);
 
             if (SeveredConnection) return;
             else
