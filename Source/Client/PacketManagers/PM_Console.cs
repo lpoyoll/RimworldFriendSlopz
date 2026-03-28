@@ -39,10 +39,6 @@ namespace GameClient.PacketManagers
                 case CommandMode.ForceSave:
                     OnForceSaveCommand();
                     break;
-
-                case CommandMode.Disconnect:
-                    Network.ServerEndpoint.MarkForDisconnect();
-                    break;
             }
         }
 

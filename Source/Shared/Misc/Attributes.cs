@@ -67,6 +67,7 @@ namespace Shared
         ServerBrowserTelemetry,
         ServerBrowserListing,
         SynchronousManager,
-        ServerBrowserReachability
+        ServerBrowserReachability,
+        DisconnectManager
     }
 }

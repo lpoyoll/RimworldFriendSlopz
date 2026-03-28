@@ -1,20 +1,21 @@
+using GameServer.Commands;
+using GameServer.Files;
+using GameServer.Hooks.ServerBrowser;
+using GameServer.Hooks.Shared;
+using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
+using GameServer.PacketManager;
 using Shared;
+using Shared.Files;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
 using Shared.Files.Configs.Mods;
 using Shared.Files.Guilds;
+using Shared.Misc;
 using System.Globalization;
 using System.Reflection;
-using Shared.Misc;
+using TCPNetwork;
 using static Shared.CommonEnumerators;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Hooks.Shared;
-using Shared.Files;
-using GameServer.PacketManager;
-using GameServer.Files;
-using GameServer.Hooks.ServerBrowser;
-using GameServer.Commands;
 using static Shared.Misc.Printer;
 
 namespace GameServer.Core
@@ -38,7 +39,7 @@ namespace GameServer.Core
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
             CMD_Base.GetAllCommands();
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
-            MethodGatherer.CacheAllPackets(AssemblyType.Server);
+            PacketGatherer.CacheAllPackets();
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
 
             if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);

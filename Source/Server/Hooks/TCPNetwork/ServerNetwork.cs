@@ -18,8 +18,8 @@ namespace GameServer.Hooks.TCPNetwork
     {
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            MethodInfo method = (MethodInfo)MethodGatherer.ServerMethodDictionary[header][1];
-            method.Invoke(MethodGatherer.ServerMethodDictionary[header][0], new object[] { client, buffer, header });
+            MethodInfo method = (MethodInfo)PacketGatherer.PacketDictionary[header][1];
+            method.Invoke(PacketGatherer.PacketDictionary[header][0], new object[] { client, buffer, header });
         };
 
         private Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 

@@ -19,30 +19,13 @@ namespace Shared
 
         public static MethodInfo[] OnSynchronousEndMethods { get; private set; } = null;
 
-        public static Dictionary<PacketHeader, object[]> ClientMethodDictionary { get; set; } = new Dictionary<PacketHeader, object[]>();
-
-        public static Dictionary<PacketHeader, object[]> ServerMethodDictionary { get; set; } = new Dictionary<PacketHeader, object[]>();
-
-        public static void CacheAllMethods(CommonEnumerators.AssemblyType assembly)
+        public static void CacheAllMethods()
         {
-            if (assembly == CommonEnumerators.AssemblyType.Client)
-            {
-                OnStartMethods = GetSessionStartMethods(Assembly.GetCallingAssembly().GetTypes());
-                OnEndMethods = GetSessionEndMethods(Assembly.GetCallingAssembly().GetTypes());
-                PerFrameMethods = GetPerFrameMethods(Assembly.GetCallingAssembly().GetTypes());
-                OnSynchronousStartMethods = GetSynchronousStartMethods(Assembly.GetCallingAssembly().GetTypes());
-                OnSynchronousEndMethods = GetSynchronousEndMethods(Assembly.GetCallingAssembly().GetTypes());
-            }
-        }
-
-        public static void CacheAllPackets(CommonEnumerators.AssemblyType assembly)
-        {
-            foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.GetCustomAttribute<ManagesPacket>() != null))
-            {
-                MethodInfo method = type.GetMethod("Receive", BindingFlags.Instance | BindingFlags.Public);
-                HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
-                if (attribute != null) AddMethod(attribute.header, type, method, assembly);
-            }
+            OnStartMethods = GetSessionStartMethods(Assembly.GetCallingAssembly().GetTypes());
+            OnEndMethods = GetSessionEndMethods(Assembly.GetCallingAssembly().GetTypes());
+            PerFrameMethods = GetPerFrameMethods(Assembly.GetCallingAssembly().GetTypes());
+            OnSynchronousStartMethods = GetSynchronousStartMethods(Assembly.GetCallingAssembly().GetTypes());
+            OnSynchronousEndMethods = GetSynchronousEndMethods(Assembly.GetCallingAssembly().GetTypes());
         }
 
         private static MethodInfo[] GetSessionStartMethods(Type[] types)
@@ -103,26 +86,6 @@ namespace Shared
             }
 
             return toAdd.ToArray();
-        }
-
-        private static void AddMethod(PacketHeader header, Type type, MethodInfo method, CommonEnumerators.AssemblyType assembly)
-        {
-            switch (assembly)
-            {
-                case CommonEnumerators.AssemblyType.Client:
-                    try { MethodGatherer.ClientMethodDictionary.Add(header, new object[] { Activator.CreateInstance(type), method }); }
-                    catch (Exception ex) { Printer.Error(ex); }
-                    break;
-
-                case CommonEnumerators.AssemblyType.Server:
-                    try 
-                    { 
-                        MethodGatherer.ServerMethodDictionary.Add(header, new object[] { Activator.CreateInstance(type), method });
-                        Printer.Warning($"Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme);
-                    }
-                    catch (Exception ex) { Printer.Error(ex); }
-                    break;
-            }
         }
     }
 }

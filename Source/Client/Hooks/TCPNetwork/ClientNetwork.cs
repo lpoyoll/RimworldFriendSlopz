@@ -44,8 +44,8 @@ namespace GameClient.Hooks.TCPNetwork
             {
                 MainThreadHandler.Instance.Enqueue(delegate
                 {
-                    MethodInfo method = (MethodInfo)MethodGatherer.ClientMethodDictionary[header][1];
-                    method.Invoke(MethodGatherer.ClientMethodDictionary[header][0], new object[] { client, buffer, header });
+                    MethodInfo method = (MethodInfo)PacketGatherer.PacketDictionary[header][1];
+                    method.Invoke(PacketGatherer.PacketDictionary[header][0], new object[] { client, buffer, header });
                 });
             }
         };

@@ -1,37 +1,30 @@
-using GameClient.Hooks.TCPNetwork;
-using GameClient.Misc;
-using Shared;
-using Shared.Misc;
+﻿using Shared;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using TCPNetwork;
+using System.Text;
 using TCPNetwork.Files.Client;
 
-namespace GameClient.PacketManagers
+namespace TCPNetwork.PacketManagers
 {
     public class PM_KeepAlive : PM_Base
     {
         private static Stopwatch LatencyStopwatch { get; set; } = new Stopwatch();
 
-        public static int RawPing { get; set; } = int.MaxValue;
+        public static int RawPing { get; set; } = 0;
 
-        public static int CurrentPing { get; set; } = int.MaxValue;
+        public static int CurrentPing { get; set; } = 0;
 
         [HandlesPacket(PacketHeader.KeepAliveManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) { ComparePing(); }
-
-        [OnSessionStart]
-        private static void StartTimer() { LatencyStopwatch.Restart(); }
-
-        [OnSessionEnd]
-        private static void EndTimer() { LatencyStopwatch.Stop(); }
 
         private static void ComparePing()
         {
             LatencyStopwatch.Stop();
 
             RawPing = (int)LatencyStopwatch.ElapsedMilliseconds;
-            CurrentPing = (int)(RawPing - Network.KeepAliveInterval.TotalMilliseconds);
+            int value = (int)(RawPing - Network.KeepAliveInterval.TotalMilliseconds);
+            CurrentPing = value > 0 ? value : 0;
 
             LatencyStopwatch.Restart();
         }

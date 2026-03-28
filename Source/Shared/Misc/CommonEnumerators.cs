@@ -2,9 +2,7 @@ namespace Shared
 {
     public class CommonEnumerators
     {
-        public enum AssemblyType { Client, Server }
-
-        public enum CommandMode { Op, Deop, Broadcast, ForceSave, Disconnect }
+        public enum CommandMode { Op, Deop, Broadcast, ForceSave }
 
         public enum Goodwill { Enemy, Neutral, Ally, Guild, Personal }
 

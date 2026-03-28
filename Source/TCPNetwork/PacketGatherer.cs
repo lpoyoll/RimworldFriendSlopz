@@ -1,0 +1,43 @@
+﻿using Shared;
+using Shared.Misc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+
+namespace TCPNetwork
+{
+    public static class PacketGatherer
+    {
+        public static Dictionary<PacketHeader, object[]> PacketDictionary { get; set; } = new Dictionary<PacketHeader, object[]>();
+
+        public static void CacheAllPackets()
+        {
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(fetch => fetch.GetCustomAttribute<ManagesPacket>() != null))
+            {
+                MethodInfo method = type.GetMethod("Receive", BindingFlags.Instance | BindingFlags.Public);
+                HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
+                if (attribute != null) GenerateInstance(attribute.header, type, method);
+            }
+
+            foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.GetCustomAttribute<ManagesPacket>() != null))
+            {
+                MethodInfo method = type.GetMethod("Receive", BindingFlags.Instance | BindingFlags.Public);
+                HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
+                if (attribute != null) GenerateInstance(attribute.header, type, method);
+            }
+        }
+
+        private static void GenerateInstance(PacketHeader header, Type type, MethodInfo method)
+        {
+            try { PacketDictionary.Add(header, new object[] { Activator.CreateInstance(type), method }); }
+            catch (Exception ex) { Printer.Error(ex); }
+
+            // Putting trycatch because the client can freak out during boot and cause issues printing
+
+            try { Printer.Warning($"Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme); }
+            catch { }
+        }
+    }
+}

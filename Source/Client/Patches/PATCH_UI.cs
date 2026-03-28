@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TCPNetwork.PacketManagers;
 using UnityEngine;
 using Verse;
 
@@ -80,7 +81,7 @@ namespace GameClient.Patches
 
         private static void DrawLatencyText()
         {
-            string text = $"{Math.Abs(PM_KeepAlive.CurrentPing)} ms";
+            string text = $"{PM_KeepAlive.CurrentPing} ms";
             Vector2 size = Text.CalcSize(text);
             Vector2 position = new Vector2(UI.screenWidth - size.x - DLG_Base.DefaultMargin, LatencyHeight);
             Widgets.Label(new Rect(position, size), text);

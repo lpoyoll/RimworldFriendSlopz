@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using TCPNetwork;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
@@ -28,11 +29,11 @@ namespace GameClient.Core
                 CultureHandler.SetCulture();
                 PreparePaths();
 
-                HarmonyHandler.EnableStartPatches();
-                MethodGatherer.CacheAllMethods(AssemblyType.Client);
-                MethodGatherer.CacheAllPackets(AssemblyType.Client);
+                MethodGatherer.CacheAllMethods();
+                PacketGatherer.CacheAllPackets();
 
                 CreateUnityDispatcher();
+                HarmonyHandler.EnableStartPatches();
                 PersistentSettings.SetFilePath(Path.Combine(Master.AppdataRTPath, "PersistentSettings" + CommonValues.DefaultSaveFormat));
             }
         }

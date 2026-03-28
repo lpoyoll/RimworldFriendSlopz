@@ -28,14 +28,10 @@ namespace TCPNetwork
         private ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
 
         private bool IsDisconnecting { get; set; } = false;
-
-        private bool SeveredConnection { get; set; } = false;
         
         private DateTime LastKAReceivedPacket { get; set; } = DateTime.Now;
 
         private DateTime LastKASentPacket { get; set; } = DateTime.Now;
-
-        private Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
         public Listener(ServerClient clientToUse, TcpClient connection, NetworkRuleset ruleset)
         {
@@ -169,31 +165,23 @@ namespace TCPNetwork
             else return;
         }
 
-        public void MarkForDisconnect() 
+        public void MarkForDisconnect(bool sendDisconnectPacket = true) 
         {
-            PKT_Command packet = new PKT_Command();
-            packet._commandMode = CommandMode.Disconnect;
-            EnqueuePacket(PacketHeader.ConsoleManager, packet);
+            if (sendDisconnectPacket)
+            {
+                PKT_Disconnect packet = new PKT_Disconnect();
+                EnqueuePacket(PacketHeader.DisconnectManager, packet);
+            }
 
-            IsDisconnecting = true; 
+            IsDisconnecting = true;
         }
 
         private void Disconnect()
         {
-            Semaphore.WaitOne();
+            Connection.Dispose();
+            Stream.Dispose();
 
-            if (SeveredConnection) return;
-            else
-            {
-                MarkForDisconnect();
-                Connection.Dispose();
-                Stream.Dispose();
-
-                Ruleset.OnDisconnect?.Invoke(TargetClient);
-                SeveredConnection = true;
-            }
-
-            Semaphore.Release();
+            Ruleset.OnDisconnect?.Invoke(TargetClient);
         }
     }
 }
