@@ -28,8 +28,12 @@ namespace GameServer.Hooks.ServerBrowser
 
         private static Action<ServerClient> OnDisconnect { get; set; } = delegate
         {
-            Network.BrowserEndpoint = null;
-            StartFeature();
+            Task.Run(delegate
+            {
+                Network.BrowserEndpoint = null;
+                Thread.Sleep(Network.BrowserTelemetryInterval);
+                StartFeature();
+            });
         };
 
         public static void StartFeature()
@@ -48,6 +52,8 @@ namespace GameServer.Hooks.ServerBrowser
                 {
                     if (!WasStartedOnce)
                     {
+                        WasStartedOnce = true;
+
                         Printer.Title(Printer.SeparatorString);
                         Printer.Warning("Server discovery is ENABLED");
                         Printer.Warning("The server details are currently being transmitted to the public browser");
@@ -59,6 +65,8 @@ namespace GameServer.Hooks.ServerBrowser
                 {
                     if (!WasStartedOnce)
                     {
+                        WasStartedOnce = true;
+
                         Printer.Title(Printer.SeparatorString);
                         Printer.Warning("Server discovery is DISABLED");
                         Printer.Warning("Please turn the service ON in the settings if you want your server listed publicly");
@@ -87,7 +95,7 @@ namespace GameServer.Hooks.ServerBrowser
 
         private static async void SetupConnection(BrowserMode mode)
         {
-            if (!WasStartedOnce) ServerIPV4 = await GetPublicIP();
+            ServerIPV4 = await GetPublicIP();
 
             PKT_ServerTelemetry telemetry = new PKT_ServerTelemetry();
             telemetry.Name = Master.ServerConfig.Name;
@@ -96,29 +104,12 @@ namespace GameServer.Hooks.ServerBrowser
             telemetry.Endpoint = ServerIPV4;
             telemetry.Port = Master.ServerConfig.Port;
             telemetry.IsPrivate = mode == BrowserMode.Lite;
+            telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
             telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
             telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != ModConfigFile.ModType.Forbidden)
                 .OrderBy(fetch => fetch.FileName).ToList();
-
-            if (!WasStartedOnce) SendTelemetry(telemetry);
-        }
-
-        private static void SendTelemetry(PKT_ServerTelemetry telemetry)
-        {
-            WasStartedOnce = true;
-
-            while (true)
-            {
-                Thread.Sleep(1);
-
-                if (Network.BrowserEndpoint == null) continue;
-                else
-                {
-                    telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
-                    Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
-                    Thread.Sleep(Network.BrowserTelemetryInterval);
-                }
-            }
+            
+            Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
         }
 
         public static async Task<string> GetPublicIP()
