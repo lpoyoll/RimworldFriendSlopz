@@ -15,8 +15,6 @@ namespace GameClient.Managers
     {
         public static void SendPlayerMapsToServer()
         {
-            Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
-
             foreach (Map map in Find.Maps.ToArray())
             {
                 if (map.IsPlayerHome)

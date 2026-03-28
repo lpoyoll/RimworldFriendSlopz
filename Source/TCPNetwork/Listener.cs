@@ -67,7 +67,7 @@ namespace TCPNetwork
 
                 catch (Exception ex)
                 {
-                    Printer.Error(ex, LogImportanceMode.Ludicrous);
+                    Printer.Warning(ex, LogImportanceMode.Ludicrous);
                     break; 
                 }
             }
