@@ -82,7 +82,6 @@ namespace GameClient.Dialogs.ServerBrowser
             {
                 ResultInt = index;
                 if (OnAccept != null) OnAccept.Invoke();
-                Close();
             }
         }
     }
