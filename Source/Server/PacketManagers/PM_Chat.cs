@@ -157,6 +157,15 @@ namespace GameServer.PacketManager
                 else InformationDisplayer.DisplayChatMap(username, message);
             }
         }
+
+        public static void DoOnConnectActions(ServerClient client)
+        {
+            foreach (string str in PM_Chat.DefaultJoinMessages) PM_Chat.SendConsoleMessage(client, str);
+
+            if (Master.ChatConfig.EnableMoTD) PM_Chat.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
+
+            if (Master.ChatConfig.LoginNotifications) PM_Chat.BroadcastServerNotification($"{client.UserFile.Username} has joined the server!");
+        }
     }
 }
 

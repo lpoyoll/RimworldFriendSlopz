@@ -79,11 +79,7 @@ namespace GameServer.PacketManager
 
             GlobalDataManager.SendServerGlobalData(client);
 
-            foreach (string str in PM_Chat.DefaultJoinMessages) PM_Chat.SendConsoleMessage(client, str);
-
-            if (Master.ChatConfig.EnableMoTD) PM_Chat.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
-
-            if (Master.ChatConfig.LoginNotifications) PM_Chat.BroadcastServerNotification($"{client.UserFile.Username} has joined the server!");
+            PM_Chat.DoOnConnectActions(client);
 
             if (PM_World.CheckIfWorldExists())
             {
@@ -93,14 +89,13 @@ namespace GameServer.PacketManager
 
             else
             {
-                Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
+                PM_World.RequireWorldFile(client);
 
                 client.UserFile.UpdateAdmin(true);
                 PKT_Command commandData = new PKT_Command();
                 commandData._commandMode = CommandMode.Op;
                 client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
-
-                PM_World.RequireWorldFile(client);
+                Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
             }
         }
     }

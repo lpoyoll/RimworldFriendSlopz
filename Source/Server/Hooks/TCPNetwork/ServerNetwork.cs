@@ -26,35 +26,34 @@ namespace GameServer.Hooks.TCPNetwork
             try
             {
                 Network.ServerClients.Remove(client);
-
-                Main_.ChangeTitle();
-                UserManager.SendPlayerRecount();
                 InformationDisplayer.DisplayDisconnect(client);
                 if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
+
+                UserManager.SendPlayerRecount();
             }
-            catch { Printer.Warning($"Error disconnecting user {client.UserFile.Username}, this will cause memory overhead"); }
+            catch (Exception ex) { Printer.Error(ex); }
         };
 
         public ServerNetwork() 
         {
-            Network.Ip = Master.ServerConfig.IP;
-            Network.Port = Master.ServerConfig.Port;
-
-            if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
-
             try
             {
+                Network.Ip = Master.ServerConfig.IP;
+                Network.Port = Master.ServerConfig.Port;
+
+                if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
+
+
                 Network.ServerListener = new TcpListener(IPAddress.Parse(Network.Ip), Network.Port);
                 Network.ServerListener.Start();
+
+                Printer.Warning("Server launched");
+                Printer.Warning($"Listening for users at {Network.Ip}:{Network.Port}");
+                Printer.Warning("Type 'help' to get a list of available commands");
+
+                Task.Run(delegate { while (true) ListenForNewClients(); });
             }
             catch (Exception e) { Printer.Error(e); }
-
-            Main_.ChangeTitle();
-            Printer.Warning("Server launched");
-            Printer.Warning($"Listening for users at {Network.Ip}:{Network.Port}");
-            Printer.Warning("Type 'help' to get a list of available commands");
-
-            Task.Run(delegate { while (true) ListenForNewClients(); });
         }
 
         private void ListenForNewClients()
@@ -66,11 +65,7 @@ namespace GameServer.Hooks.TCPNetwork
             else
             {
                 Network.ServerClients.Add(client);
-
-                Main_.ChangeTitle();
-
                 InformationDisplayer.DisplayConnect(client);
-
                 PM_Version.AskForClientVersion(client);
             }
         }

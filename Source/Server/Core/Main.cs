@@ -99,10 +99,6 @@ namespace GameServer.Core
             Master.LeaderboardFile = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>(LeaderboardFile.SavePath);
         }
 
-        public static void ChangeTitle()
-        {
-            Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion} - " +
-                $"Players [{ServerNetwork.GetConnectedClients().Length}/{Master.ServerConfig.MaxPlayers}]";
-        }
+        public static void ChangeTitle() { Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion}"; }
     }
 }

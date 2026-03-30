@@ -76,12 +76,6 @@ namespace TCPNetwork
             else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
         }
 
-        public void EnqueuePacket(PacketHeader header, byte[] bytes)
-        {
-            if (IsDisconnecting) return;
-            else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, bytes));
-        }
-
         private void Read()
         {
             int readBytes = 0;
@@ -159,16 +153,23 @@ namespace TCPNetwork
 
         private void CheckKAFlag()
         {
-            if (DateTime.Now - LastKAReceivedPacket > Network.KeepAliveMaxTime) MarkForDisconnect();
-            else return;
+            if (DateTime.Now - LastKAReceivedPacket < TimeSpan.FromSeconds(Network.KeepAliveInterval.TotalSeconds * 6)) return;
+            else
+            {
+                MarkForDisconnect();
+            }
         }
 
         public void MarkForDisconnect(bool sendDisconnectPacket = true) 
         {
             if (sendDisconnectPacket)
             {
-                PKT_Disconnect packet = new PKT_Disconnect();
-                EnqueuePacket(PacketHeader.DisconnectManager, packet);
+                try
+                {
+                    PKT_Disconnect packet = new PKT_Disconnect();
+                    EnqueuePacket(PacketHeader.DisconnectManager, packet);
+                }
+                catch (Exception ex) { Printer.Error(ex); }
             }
 
             IsDisconnecting = true;

@@ -35,15 +35,15 @@ namespace GameServer.PacketManagers
                     break;
 
                 case PKT_Synchronous.StepMode.Action:
-                    RouteToManager(client, bytes, header);
+                    RouteToManager(client, data, header);
                     break;
             }
         }
 
-        private static void RouteToManager(ServerClient client, byte[] bytes, PacketHeader header)
+        private static void RouteToManager(ServerClient client, PKT_Synchronous data, PacketHeader header)
         {
-            client.Listener.EnqueuePacket(header, bytes);
-            client.SynchronousClient.Listener.EnqueuePacket(header, bytes);
+            client.Listener.EnqueuePacket(header, data);
+            client.SynchronousClient.Listener.EnqueuePacket(header, data);
         }
 
         private static void TryStartSynchronousSession(ServerClient client, PKT_Synchronous data)
