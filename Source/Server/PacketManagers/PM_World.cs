@@ -37,20 +37,16 @@ namespace GameServer.PacketManager
         public static void SendWorld(ServerClient client)
         {
             PKT_World data = new PKT_World();
-            PlanetConfigFile file = Serializer.FileBytesToObject<PlanetConfigFile>(PlanetConfigFile.SavePath);
-
-            data._fileBytes = Serializer.ConvertObjectToBytes(file);
             data._stepMode = WorldStepMode.Sent;
+            data.File = Serializer.SerializeFromFile<PlanetConfigFile>(PlanetConfigFile.SavePath);
 
             client.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
         }
 
         public static void ReceiveWorld(ServerClient client, PKT_World data)
         {
-            PlanetConfigFile file = Serializer.ConvertBytesToObject<PlanetConfigFile>(data._fileBytes);
-            Serializer.ObjectBytesToFile(PlanetConfigFile.SavePath, file);
-            Master.WorldValues = file;
-
+            Master.WorldValues = data.File;
+            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
             InformationDisplayer.DisplaySetWorld(client);
         }
     }

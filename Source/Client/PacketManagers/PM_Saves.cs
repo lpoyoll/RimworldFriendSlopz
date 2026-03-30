@@ -31,7 +31,7 @@ namespace GameClient.PacketManagers
 
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
-        public static string TempSaveFilePath => SaveFilePath + ".rws.temp";
+        public static string TempSaveFilePath => SaveFilePath + ".temp";
 
         [HandlesPacket(PacketHeader.SaveManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
@@ -75,7 +75,6 @@ namespace GameClient.PacketManagers
         {
             PKT_Save data = new PKT_Save();
             data._stepMode = SaveStepMode.Reset;
-
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SaveManager, data);
         }
 
@@ -94,17 +93,6 @@ namespace GameClient.PacketManagers
             catch { return 0; }
         }
 
-        public static Dictionary<string, string> GetAllSaveFiles() 
-        {
-            Dictionary<string, string> result = new Dictionary<string, string>();
-            foreach (string str in Directory.GetFiles(Master.SavesFolderPath))
-            {
-                if (Path.GetExtension(str) == ".rws") result.Add(Path.GetFileNameWithoutExtension(str), str);
-            }
-
-            return result;
-        }
-
         private static void SendSaveToServer()
         {
             byte[] saveBytes;
@@ -114,7 +102,7 @@ namespace GameClient.PacketManagers
             PKT_Save data = new PKT_Save();
             data._stepMode = SaveStepMode.Receive;
             data._forceDisconnect = SessionHandler.IsExiting;
-            data._fileBytes = GZip.CompressBytes(saveBytes);
+            data._fileBytes = saveBytes;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SaveManager, data);
         }
@@ -122,12 +110,9 @@ namespace GameClient.PacketManagers
         private static void OnSaveReceived(PKT_Save data)
         {
             Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
+            File.WriteAllBytes(TempSaveFilePath, data._fileBytes);
 
-            byte[] saveBytes = GZip.DecompressBytes(data._fileBytes);
-            File.WriteAllBytes(TempSaveFilePath, saveBytes);
-            File.Delete(CommonValues.DefaultSaveFormat);
-
-            if (data._forceUseSave || !File.Exists(SaveFilePath))
+            if (data._forceUseSave)
             {
                 File.Delete(SaveFilePath);
                 File.Move(TempSaveFilePath, SaveFilePath);

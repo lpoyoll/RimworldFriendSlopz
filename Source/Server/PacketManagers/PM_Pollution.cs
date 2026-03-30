@@ -51,7 +51,7 @@ namespace GameServer.PacketManager
 
                 if (shouldBroadcast) ServerNetwork.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
 
-                PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues, true);
+                PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
             }
             catch { Printer.Warning($"Could not add pollution to tile {data}. Coming from {client.UserFile.Username}"); }
         }

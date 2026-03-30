@@ -9,21 +9,17 @@ namespace Shared.Files
     {
         private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 
-        public static void Save(string savePath, object obj, bool inBytes = false)
+        public static void Save(string savePath, object obj)
         {
             Semaphore.WaitOne();
 
-            try
-            {
-                if (inBytes) Serializer.ObjectBytesToFile(savePath, obj);
-                else Serializer.SerializeToFile(savePath, obj);
-            }
+            try { Serializer.SerializeToFile(savePath, obj); }
             catch (Exception ex) { Printer.Error(ex); }
 
             Semaphore.Release();
         }
 
-        public static object Load<T>(string savePath, bool inBytes = false, bool generateIfNull = true)
+        public static object Load<T>(string savePath, bool generateIfNull = true)
         {
             Semaphore.WaitOne();
 
@@ -31,17 +27,8 @@ namespace Shared.Files
             {
                 if (File.Exists(savePath))
                 {
-                    if (inBytes)
-                    {
-                        Semaphore.Release();
-                        return Serializer.FileBytesToObject<T>(savePath);
-                    }
-
-                    else
-                    {
-                        Semaphore.Release();
-                        return Serializer.SerializeFromFile<T>(savePath);
-                    }
+                    Semaphore.Release();
+                    return Serializer.SerializeFromFile<T>(savePath);
                 }
 
                 else

@@ -89,7 +89,7 @@ namespace GameServer.PacketManager
             currentRoads.Add(details);
 
             Master.WorldValues.Roads = currentRoads;
-            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues, true);
+            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
 
             InformationDisplayer.DisplayAddRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }
@@ -100,7 +100,7 @@ namespace GameServer.PacketManager
             currentRoads.Remove(details);
 
             Master.WorldValues.Roads = currentRoads;
-            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues, true);
+            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
 
             InformationDisplayer.DisplayRemoveRoad(details.FromTile.ToString(), details.ToTile.ToString());
         }

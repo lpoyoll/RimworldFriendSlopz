@@ -59,7 +59,7 @@ namespace GameServer.PacketManager
             List<NPCSettlementDetail> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
             finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.Tile));
             Master.WorldValues.NPCSettlements = finalSettlements;
-            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues, true);
+            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
         }
 
         private static void BroadcastSettlementDeletion(NPCSettlementDetail settlement)

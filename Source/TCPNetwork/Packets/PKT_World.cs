@@ -1,4 +1,6 @@
-﻿namespace TCPNetwork.Packets
+﻿using Shared.Files.Configs;
+
+namespace TCPNetwork.Packets
 {
     public class PKT_World : PKT_Base
     {
@@ -6,6 +8,6 @@
 
         public enum WorldStepMode { AskFor, Required, Sent }
 
-        public byte[] _fileBytes { get; set; } = null;
+        public PlanetConfigFile File { get; set; } = null;
     }
 }

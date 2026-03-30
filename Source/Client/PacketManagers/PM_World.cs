@@ -84,17 +84,11 @@ namespace GameClient.PacketManagers
 
             PKT_World data = new PKT_World();
             data._stepMode = WorldStepMode.Sent;
-            data._fileBytes = Serializer.ConvertObjectToBytes(SessionHandler.CurrentWorld);
+            data.File = SessionHandler.CurrentWorld;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.WorldManager, data);
 
-            OnWorldSent();
-        }
-
-        private static void OnWorldSent()
-        {
             File.Delete(PM_World.tempWorldPath);
-
             SessionHandler.IsGeneratingFreshWorld = false;
         }
 
@@ -119,10 +113,7 @@ namespace GameClient.PacketManagers
             SessionHandler.CurrentWorld.NPCFactions = WorldManagerH.GetNPCFactionsFromDef(factions.ToArray());
         }
 
-        private static void SetValuesFromServer(PKT_World data)
-        {
-            SessionHandler.CurrentWorld = Serializer.ConvertBytesToObject<PlanetConfigFile>(data._fileBytes);
-        }
+        private static void SetValuesFromServer(PKT_World data) { SessionHandler.CurrentWorld = data.File; }
 
         public static void GenerateNormalWorld()
         {
