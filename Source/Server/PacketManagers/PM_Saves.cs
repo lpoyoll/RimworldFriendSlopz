@@ -97,7 +97,7 @@ namespace GameServer.PacketManager
         public static void ReceiveSaveFromClient(ServerClient client, PKT_Save data)
         {
             string savePath = Path.Combine(Master.SavesPath, client.UserFile.Username + CommonValues.DefaultSaveFormat);
-            using (FileStream stream = new FileStream(savePath, FileMode.Create, FileAccess.Write)) stream.Write(data._fileBytes);
+            File.WriteAllBytes(savePath, data._fileBytes);
 
             InformationDisplayer.DisplaySaveGame(client);
             if (data._forceDisconnect) client.Listener.MarkForDisconnect();
