@@ -38,8 +38,7 @@ namespace GameServer.PacketManager
 
         private static void SendWealth(ServerClient client, PKT_Information data)
         {
-            data._settlementRawData = PM_Maps.GetMapFromTile(data._settlementTile);
-
+            data._settlementWealth = PM_Maps.GetMapFromTile(data._settlementTile).Wealth;
             client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
         }
     }

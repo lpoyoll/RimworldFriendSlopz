@@ -1,3 +1,5 @@
+using Shared.Files;
+
 namespace TCPNetwork.Packets
 {
     public class PKT_Activity : PKT_Base
@@ -10,6 +12,6 @@ namespace TCPNetwork.Packets
 
         public int _targetTile { get; set; } = -1;
 
-        public byte[] _mapRawData { get; set; } = null;
+        public MapFile _file { get; set; } = null;
     }
 }

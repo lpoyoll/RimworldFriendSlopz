@@ -10,6 +10,6 @@ namespace TCPNetwork.Packets
 
         public int _settlementTile { get; set; } = -1;
 
-        public byte[] _settlementRawData { get; set; } = null;
+        public int _settlementWealth { get; set; } = -1;
     }
 }

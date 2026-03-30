@@ -75,7 +75,7 @@ namespace GameServer.PacketManagers
             _.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
             _.FromTile = data.FromTile;
             _.ToTile = data.ToTile;
-            _.Contents = PM_Maps.GetMapFromTile(data.FromTile);
+            _.Map = PM_Maps.GetMapFromTile(data.FromTile);
             _.Party = data.Party;
             _.CurrentType = data.CurrentType;
 

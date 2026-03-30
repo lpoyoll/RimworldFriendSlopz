@@ -65,10 +65,8 @@ namespace GameClient.PacketManagers
         {
             DLG_Wait.Instance.Close();
 
-            MapFile file = Serializer.ConvertBytesToObject<MapFile>(data._settlementRawData);
-
             string title = "Information";
-            string[] messages = new string[] { $"The wealth of the map is {file.Wealth}" };
+            string[] messages = new string[] { $"The wealth of the map is {data._settlementWealth}" };
             DLG_Base.PushNewDialog(new DLG_Message(title, messages));
         }
     }

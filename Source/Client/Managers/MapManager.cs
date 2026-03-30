@@ -22,13 +22,8 @@ namespace GameClient.Managers
 
         public static void SendMapToServer(Map map)
         {
-            MapFile mapFile = MapSaveLoader.MapToString(map);
-
             PKT_Map mapData = new PKT_Map();
-            mapData._mapTile = mapFile.Tile;
-            mapData._mapFile.Wealth = mapFile.Wealth;
-            mapData._rawData = Serializer.ConvertObjectToBytes(mapFile);
-
+            mapData.File = MapSaveLoader.MapToString(map);
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.MapManager, mapData);
         }
     }

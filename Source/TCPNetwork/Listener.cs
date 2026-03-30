@@ -154,10 +154,7 @@ namespace TCPNetwork
         private void CheckKAFlag()
         {
             if (DateTime.Now - LastKAReceivedPacket < TimeSpan.FromSeconds(Network.KeepAliveInterval.TotalSeconds * 6)) return;
-            else
-            {
-                MarkForDisconnect();
-            }
+            else MarkForDisconnect();
         }
 
         public void MarkForDisconnect(bool sendDisconnectPacket = true) 

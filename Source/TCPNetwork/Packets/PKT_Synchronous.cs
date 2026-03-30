@@ -1,4 +1,5 @@
 ﻿using Shared;
+using Shared.Files;
 using Shared.Files.Synchronous;
 
 namespace TCPNetwork.Packets
@@ -24,6 +25,8 @@ namespace TCPNetwork.Packets
         public byte[] Contents { get; set; } = null;
 
         public PartyFile Party { get; set; } = null;
+
+        public MapFile Map { get; set; } = null;
 
         public enum ActionType
         {

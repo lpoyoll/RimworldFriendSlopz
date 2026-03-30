@@ -40,7 +40,7 @@ namespace GameServer.PacketManager
             else
             {
                 data._stepMode = ActivityStepMode.Request;
-                data._mapRawData = PM_Maps.GetMapFromTile(data._targetTile);
+                data._file = PM_Maps.GetMapFromTile(data._targetTile);
 
                 client.Listener.EnqueuePacket(PacketHeader.ActivityManager, data);
             }

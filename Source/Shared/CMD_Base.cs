@@ -51,6 +51,8 @@ namespace Shared
                     ParseCommand(Console.ReadLine());
                 }
             }
+
+            else Thread.Sleep(1);
         }
 
         private static bool CheckIfConsoleIsInteractive()

@@ -61,7 +61,7 @@ namespace GameClient.PacketManagers
         {
             DLG_Wait.Instance.Close();
 
-            PrepareMap(Serializer.ConvertBytesToObject<MapFile>(data._mapRawData)); 
+            PrepareMap(data._file); 
         }
 
         private static void OnDeny()

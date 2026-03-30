@@ -1,6 +1,7 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
 using Shared;
+using Shared.Files;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
@@ -19,8 +20,8 @@ namespace GameServer.PacketManager
 
         public static void SaveUserMap(ServerClient client, PKT_Map data)
         {
-            File.WriteAllBytes(Path.Combine(Master.MapsPath, data._mapTile + CommonValues.DefaultSaveFormat), data._rawData);
-            PM_Leaderboard.UpdateLeaderboard(client, data._mapFile);
+            Serializer.SerializeToFile(Path.Combine(Master.MapsPath, data.File.Tile + CommonValues.DefaultSaveFormat), data.File);
+            PM_Leaderboard.UpdateLeaderboard(client, data.File);
             InformationDisplayer.DisplaySaveMap(client);
         }
 
@@ -33,10 +34,10 @@ namespace GameServer.PacketManager
             else return false;
         }
 
-        public static byte[] GetMapFromTile(int mapTileToGet)
+        public static MapFile GetMapFromTile(int mapTileToGet)
         {
             string path = Path.Combine(Master.MapsPath, mapTileToGet + CommonValues.DefaultSaveFormat);
-            if (File.Exists(path)) return File.ReadAllBytes(path);
+            if (File.Exists(path)) return Serializer.SerializeFromFile<MapFile>(path);
             else return null;
         }
     }
