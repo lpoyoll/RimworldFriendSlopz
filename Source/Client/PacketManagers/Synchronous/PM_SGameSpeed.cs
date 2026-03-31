@@ -25,7 +25,7 @@ namespace GameClient.PacketManagers.Synchronous
                 PKT_Synchronous packet = new PKT_Synchronous();
                 packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
                 packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerGameSpeed;
-                packet.Contents = Serializer.ConvertObjectToBytes(data);
+                packet.Contents = Serializer.ConvertObjectToBytes(data, false);
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
             }
@@ -43,20 +43,20 @@ namespace GameClient.PacketManagers.Synchronous
                 PKT_Synchronous packet = new PKT_Synchronous();
                 packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
                 packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerGameSpeed;
-                packet.Contents = Serializer.ConvertObjectToBytes(data);
+                packet.Contents = Serializer.ConvertObjectToBytes(data, false);
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
             }
         }
 
-        public static void Handle(ServerClient client, byte[] bytes, PacketHeader header)
+        public static void Handle(ServerClient client, PKT_Synchronous data)
         {
-            PlayerGameSpeed data = Serializer.ConvertBytesToObject<PlayerGameSpeed>(bytes);
+            PlayerGameSpeed gameSpeed = Serializer.ConvertBytesToObject<PlayerGameSpeed>(data.Contents);
 
             PatchHandler.ExecuteInBypass(delegate
             {
-                Find.TickManager.CurTimeSpeed = (TimeSpeed)data.CurrentGameSpeed;
-                Find.TickManager.DebugSetTicksGame(data.TimeTicks);
+                Find.TickManager.CurTimeSpeed = (TimeSpeed)gameSpeed.CurrentGameSpeed;
+                Find.TickManager.DebugSetTicksGame(gameSpeed.TimeTicks);
                 LatestGameSpeed = Find.TickManager.CurTimeSpeed;
             });
         }

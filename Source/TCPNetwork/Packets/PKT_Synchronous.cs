@@ -26,8 +26,6 @@ namespace TCPNetwork.Packets
 
         public PartyFile Party { get; set; } = null;
 
-        public MapFile Map { get; set; } = null;
-
         public enum ActionType
         {
             SPlayerDraft,
@@ -38,7 +36,5 @@ namespace TCPNetwork.Packets
             SPlayerHediff,
             SPlayerDestroy
         }
-
-        public T GetPacketData<T>(object obj = null) { return Serializer.ConvertBytesToObject<T>(Contents); }
     }
 }

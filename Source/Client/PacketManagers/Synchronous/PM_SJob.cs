@@ -40,7 +40,7 @@ namespace GameClient.PacketManagers.Synchronous
                     PKT_Synchronous packet = new PKT_Synchronous();
                     packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
                     packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerJob;
-                    packet.Contents = Serializer.ConvertObjectToBytes(PlayerJobs);
+                    packet.Contents = Serializer.ConvertObjectToBytes(PlayerJobs, false);
 
                     Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
 
@@ -77,9 +77,9 @@ namespace GameClient.PacketManagers.Synchronous
             }
             catch { }
         }
-        public static void Handle(ServerClient client, byte[] bytes, PacketHeader header)
+        public static void Handle(ServerClient client, PKT_Synchronous data)
         {
-            PlayerJob[] jobs = Serializer.ConvertBytesToObject<PlayerJob[]>(bytes);
+            PlayerJob[] jobs = Serializer.ConvertBytesToObject<PlayerJob[]>(data.Contents, false);
 
             PatchHandler.ExecuteInBypass(delegate
             {

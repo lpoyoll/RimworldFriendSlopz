@@ -71,18 +71,11 @@ namespace GameServer.PacketManagers
             SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            PKT_Synchronous _ = new PKT_Synchronous();
-            _.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
-            _.FromTile = data.FromTile;
-            _.ToTile = data.ToTile;
-            _.Map = PM_Maps.GetMapFromTile(data.FromTile);
-            _.Party = data.Party;
-            _.CurrentType = data.CurrentType;
-
             client.SynchronousClient = toFind;
             toFind.SynchronousClient = client;
 
-            toFind.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
+            data.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
+            toFind.Listener.EnqueuePacket(PacketHeader.SynchronousManager, data);
         }
 
         private static void RejectSynchronousSession(ServerClient client, PKT_Synchronous data)

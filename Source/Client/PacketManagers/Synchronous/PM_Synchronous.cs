@@ -6,11 +6,13 @@ using RimWorld.Planet;
 using Shared;
 using Shared.Files;
 using Shared.Files.Synchronous;
+using Shared.Misc;
 using System;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using Verse;
+using Verse.Noise;
 
 namespace GameClient.PacketManagers.Synchronous
 {
@@ -42,41 +44,41 @@ namespace GameClient.PacketManagers.Synchronous
                     break;
 
                 case PKT_Synchronous.StepMode.Action:
-                    RouteToManager(client, bytes, header, data.CurrentActionType);
+                    RouteToManager(client, data, data.CurrentActionType);
                     break;
             }
         }
 
-        private static void RouteToManager(ServerClient client, byte[] bytes, PacketHeader header, PKT_Synchronous.ActionType currentAction)
+        private static void RouteToManager(ServerClient client, PKT_Synchronous data, PKT_Synchronous.ActionType currentAction)
         {
             switch (currentAction)
             {
                 case PKT_Synchronous.ActionType.SPlayerDraft:
-                    PM_SDraft.Handle(client, bytes, header);
+                    PM_SDraft.Handle(client, data);
                     break;
 
                 case PKT_Synchronous.ActionType.SPlayerWeather:
-                    PM_SWeather.Handle(client, bytes, header);
+                    PM_SWeather.Handle(client, data);
                     break;
 
                 case PKT_Synchronous.ActionType.SPlayerMentalState:
-                    PM_SMentalState.Handle(client, bytes, header);
+                    PM_SMentalState.Handle(client, data);
                     break;
 
                 case PKT_Synchronous.ActionType.SPlayerGameSpeed:
-                    PM_SGameSpeed.Handle(client, bytes, header);
+                    PM_SGameSpeed.Handle(client, data);
                     break;
 
                 case PKT_Synchronous.ActionType.SPlayerJob:
-                    PM_SJob.Handle(client, bytes, header);
+                    PM_SJob.Handle(client, data);
                     break;
 
                 case PKT_Synchronous.ActionType.SPlayerHediff:
-                    PM_SHediff.Handle(client, bytes, header);
+                    PM_SHediff.Handle(client, data);
                     break;
 
                 case PKT_Synchronous.ActionType.SPlayerDestroy:
-                    PM_SDestroy.Handle(client, bytes, header);
+                    PM_SDestroy.Handle(client, data);
                     break;
             }
         }
@@ -111,14 +113,13 @@ namespace GameClient.PacketManagers.Synchronous
 
                 SetMap(SynchronousSide.Host, null);
 
-                MapManager.SendMapToServer(SessionHandler.SynchronousMap);
-
                 PKT_Synchronous _ = new PKT_Synchronous();
                 _.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
                 _.CurrentType = data.CurrentType;
                 _.FromTile = data.ToTile;
                 _.ToTile = data.FromTile;
                 _.Party = GetPawnParty(SynchronousSide.Host);
+                _.Contents = Serializer.ConvertObjectToBytes(MapSaveLoader.MapToString(SessionHandler.SynchronousMap), false);
 
                 SpawnOtherPawns(SynchronousSide.Host, data);
 
@@ -141,13 +142,23 @@ namespace GameClient.PacketManagers.Synchronous
 
         private static void OnAccept(PKT_Synchronous data)
         {
+            Printer.Warning(1);
+
             DLG_Wait.Instance.Close();
+
+            Printer.Warning(2);
 
             SetMap(SynchronousSide.Guest, data);
 
+            Printer.Warning(3);
+
             EnterMap(SynchronousSide.Guest);
 
+            Printer.Warning(4);
+
             SpawnOtherPawns(SynchronousSide.Guest, data);
+
+            Printer.Warning(5);
 
             StartSession(SynchronousSide.Guest);
         }
@@ -194,11 +205,7 @@ namespace GameClient.PacketManagers.Synchronous
         private static void SetMap(SynchronousSide side, PKT_Synchronous data)
         {
             if (side == SynchronousSide.Host) SessionHandler.SynchronousMap = Find.AnyPlayerHomeMap;
-            else
-            {
-                MapFile file = Serializer.ConvertBytesToObject<MapFile>(data.Contents);
-                SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(file, true);
-            }
+            else SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(Serializer.ConvertBytesToObject<MapFile>(data.Contents, false));
         }
 
         private static void EnterMap(SynchronousSide side)

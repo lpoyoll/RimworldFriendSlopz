@@ -20,19 +20,19 @@ namespace GameClient.PacketManagers.Synchronous
             PKT_Synchronous packet = new PKT_Synchronous();
             packet.CurrentStepMode = PKT_Synchronous.StepMode.Action;
             packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerWeather;
-            packet.Contents = Serializer.ConvertObjectToBytes(weather);
+            packet.Contents = Serializer.ConvertObjectToBytes(weather, false);
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
         }
 
-        public static void Handle(ServerClient client, byte[] bytes, PacketHeader header)
+        public static void Handle(ServerClient client, PKT_Synchronous data)
         {
-            PlayerWeather data = Serializer.ConvertBytesToObject<PlayerWeather>(bytes);
+            PlayerWeather weather = Serializer.ConvertBytesToObject<PlayerWeather>(data.Contents, false);
 
             PatchHandler.ExecuteInBypass(delegate
             {
-                WeatherDef def = Finder.GetWeatherDefFromByte(data.WeatherByte);
-                Finder.GetMapFromTile(data.MapTile).weatherManager.TransitionTo(def);
+                WeatherDef def = Finder.GetWeatherDefFromByte(weather.WeatherByte);
+                Finder.GetMapFromTile(weather.MapTile).weatherManager.TransitionTo(def);
             });
         }
 
