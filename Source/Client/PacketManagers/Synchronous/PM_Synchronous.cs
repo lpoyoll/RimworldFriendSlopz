@@ -131,8 +131,12 @@ namespace GameClient.PacketManagers.Synchronous
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, _);
             };
 
-            string description = $"Player '{data.Username}' wants to interact, accept?";
-            DLG_Base.PushNewDialog(new DLG_YesNo(description, actionYes, actionNo));
+            if (!DLG_Options.EnablePreviewFeatures) actionNo();
+            else
+            {
+                string description = $"Player '{data.Username}' wants to interact, accept?";
+                DLG_Base.PushNewDialog(new DLG_YesNo(description, actionYes, actionNo));
+            }
         }
 
         private static void OnAccept(PKT_Synchronous data)
