@@ -30,6 +30,7 @@ namespace GameClient.Hooks.TCPNetwork
             PacketHeader.ChatManager,
             PacketHeader.ConsoleManager
         };
+
         public enum ClientNetworkState { Disconnected, Connected }
 
         private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
