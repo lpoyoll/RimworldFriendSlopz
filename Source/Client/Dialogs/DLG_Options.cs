@@ -1,5 +1,6 @@
 ﻿using GameClient.Dialogs.Default;
 using GameClient.PacketManagers;
+using Shared;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,15 +10,17 @@ namespace GameClient.Dialogs
 {
     public class DLG_Options : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(300f, 242f);
+        public override Vector2 InitialSize => new Vector2(300f, 267f);
 
         public static DLG_Options Instance { get; private set; } = null;
 
         public static bool IsDialogOpen { get; set; } = false;
 
-        public static bool AutorejectTransfersBool;
+        public static bool AutorejectTransfersBool = false;
 
-        public static bool AutorejectSiteRewardsBool;
+        public static bool AutorejectSiteRewardsBool = false;
+
+        public static bool EnablePreviewFeatures = false;
 
         public enum SyncingMode { Fast, Complete }
 
@@ -48,7 +51,8 @@ namespace GameClient.Dialogs
 
             listingStandard.Label("Parameters");
             listingStandard.CheckboxLabeled("Reject all transfers", ref AutorejectTransfersBool, "Automatically denies transfers");
-            listingStandard.CheckboxLabeled("Reject all site rewards", ref AutorejectSiteRewardsBool, "Automatically site rewards");
+            listingStandard.CheckboxLabeled("Reject all site rewards", ref AutorejectSiteRewardsBool, "Automatically denies site rewards");
+            listingStandard.CheckboxLabeled("Enable preview features", ref EnablePreviewFeatures, "Enable preview features");
 
             listingStandard.GapLine();
             listingStandard.Label("Syncing");
@@ -97,5 +101,8 @@ namespace GameClient.Dialogs
 
             Find.WindowStack.Add(new FloatMenu(list));
         }
+
+        [OnSessionEnd]
+        private static void CloseTab() { IsDialogOpen = false; }
     }
 }
