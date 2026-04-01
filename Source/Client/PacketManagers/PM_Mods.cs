@@ -37,11 +37,7 @@ namespace GameClient.PacketManagers
             else DLG_Base.PushNewDialog(new DLG_ModConfig(ModManagerH.GetRunningModList().ModConfigs));
         }
 
-        public static void SetValues(ModConfigFile file)
-        {
-            SessionHandler.CurrentModConfig = file;
-            Printer.Warning("Receiving mod configs from server", LogImportanceMode.Verbose);
-        }
+        public static void SetValues(ModConfigFile file) { SessionHandler.CurrentModConfig = file; }
     }
 
     public class ModManagerH

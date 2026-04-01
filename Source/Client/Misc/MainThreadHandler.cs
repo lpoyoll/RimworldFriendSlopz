@@ -21,7 +21,7 @@ namespace GameClient.Misc
         {
             DontDestroyOnLoad(gameObject);
 
-            Printer.Warning($"Created dispatcher for version > {CommonValues.ExecutableVersion}");
+            Printer.Message($"Created dispatcher for version > {CommonValues.ExecutableVersion}");
         }
 
         private void Update() 
