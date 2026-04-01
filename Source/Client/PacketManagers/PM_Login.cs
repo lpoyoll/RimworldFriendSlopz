@@ -51,7 +51,7 @@ namespace GameClient.PacketManagers
                     break;
 
                 case LoginResponse.Version:
-                    DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { $"Mod version mismatch! Expected version '{data._extraDetails[0]}'" }));
+                    DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { $"This server requires version '{data._extraDetails[0]}'!"}));
                     break;
 
                 case LoginResponse.NoWorld:
