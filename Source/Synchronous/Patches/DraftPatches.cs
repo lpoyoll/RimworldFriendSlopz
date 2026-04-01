@@ -18,7 +18,7 @@ namespace Synchronous.Patches
             else
             {
                 PM_SDraft.Ask(__instance.pawn, value);
-                return false;
+                return true;
             }
         }
     }
