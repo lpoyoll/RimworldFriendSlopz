@@ -83,13 +83,6 @@ namespace GameClient.PacketManagers.Synchronous
             }
         }
 
-        public static void DenyFeature()
-        {
-            string title = "ERROR";
-            string description = "This feature is only available in preview versions of the mod!";
-            DLG_Base.PushNewDialog(new DLG_Message(title, new string[] { description }));
-        }
-
         public static void Ask(int tile, PKT_Synchronous.Type type)
         {
             DLG_Base.PushNewDialog(new DLG_Wait());

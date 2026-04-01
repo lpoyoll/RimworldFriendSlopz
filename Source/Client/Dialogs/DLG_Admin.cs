@@ -2,6 +2,7 @@
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
+using Shared;
 using System;
 using UnityEngine;
 using Verse;
@@ -61,5 +62,8 @@ namespace GameClient.Dialogs
             DLG_YesNo d1 = new DLG_YesNo("Are you sure you want to delete your save?", r1, null, "DELETE!", "No", Color.red);
             DLG_Base.PushNewDialog(d1);
         }
+
+        [OnSessionEnd]
+        private static void CloseTab() { IsDialogOpen = false; }
     }
 }

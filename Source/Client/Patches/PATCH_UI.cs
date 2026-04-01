@@ -1,7 +1,6 @@
 ﻿using GameClient.Defs;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Tabs;
 using HarmonyLib;
 using RimWorld;
 using TCPNetwork.PacketManagers;
@@ -33,14 +32,14 @@ namespace GameClient.Patches
 
         private static void DrawChatButton(Rect rect)
         {
-            if (!TAB_Chat.IsTabOpen)
+            if (!DLG_Chat.IsDialogOpen)
             {
-                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.ChatOn)) Find.WindowStack.Add(new TAB_Chat());
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.ChatOn)) Find.WindowStack.Add(new DLG_Chat());
             }
 
             else
             {
-                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.ChatOff)) TAB_Chat.Instance.Close();
+                if (Widgets.ButtonImageWithBG(rect, RTTextureDefs.ChatOff)) DLG_Chat.Instance.Close();
             }
         }
 

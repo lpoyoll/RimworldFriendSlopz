@@ -1,16 +1,16 @@
 ﻿using GameClient.Defs;
-using GameClient.Dialogs;
 using GameClient.PacketManagers;
 using RimWorld;
+using Shared;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
 
-namespace GameClient.Tabs
+namespace GameClient.Dialogs
 {
-    public class TAB_Chat : DLG_Base
+    public class DLG_Chat : DLG_Base
     {
         public static Vector2 Position = new Vector2(0, UI.screenHeight - 35f - 250f);
 
@@ -18,9 +18,9 @@ namespace GameClient.Tabs
 
         private Vector2 scrollPositionChat = Vector2.zero;
 
-        public static TAB_Chat Instance { get; private set; } = null;
+        public static DLG_Chat Instance { get; private set; } = null;
 
-        public static bool IsTabOpen { get; set; } = false;
+        public static bool IsDialogOpen { get; set; } = false;
 
         public static bool ShouldScrollChat { get; set; } = true;
 
@@ -30,7 +30,7 @@ namespace GameClient.Tabs
 
         public static List<string> ChatMessages { get; set; } = new List<string>();
 
-        public TAB_Chat()
+        public DLG_Chat()
         {
             layer = WindowLayer.Super;
             Instance = this;
@@ -53,14 +53,14 @@ namespace GameClient.Tabs
         {
             base.PostOpen();
 
-            IsTabOpen = true;
+            IsDialogOpen = true;
         }
 
         public override void PostClose()
         {
             base.PostClose();
 
-            IsTabOpen = false;
+            IsDialogOpen = false;
 
             Position.x = windowRect.x;
             Position.y = windowRect.y;
@@ -80,7 +80,7 @@ namespace GameClient.Tabs
             DrawInput(new Rect(rect.xMin, rect.yMax - 25f, rect.width, 25f));
             CheckForEnterKey();
 
-            if (TAB_Chat.ShouldScrollChat) ScrollToLastMessage();
+            if (DLG_Chat.ShouldScrollChat) ScrollToLastMessage();
         }
 
         private void DrawToolsButton()
@@ -106,7 +106,7 @@ namespace GameClient.Tabs
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private void ClearChat() { TAB_Chat.ChatMessages.Clear(); }
+        private void ClearChat() { DLG_Chat.ChatMessages.Clear(); }
 
         private void DrawPlayerCount(Rect rect)
         {
@@ -178,11 +178,11 @@ namespace GameClient.Tabs
         {
             Action toDo = delegate
             {
-                TAB_Chat.ShouldPlaySounds = !TAB_Chat.ShouldPlaySounds;
+                DLG_Chat.ShouldPlaySounds = !DLG_Chat.ShouldPlaySounds;
                 SoundDefOf.Click.PlayOneShotOnCamera();
             };
 
-            if (TAB_Chat.ShouldPlaySounds)
+            if (DLG_Chat.ShouldPlaySounds)
             {
                 if (Widgets.ButtonImage(rect, RTTextureDefs.SoundOn, true, "Unmute sounds")) toDo();
             }
@@ -213,5 +213,8 @@ namespace GameClient.Tabs
             Rect fixedRect = new(rect.x + 10f, rect.y + 5f, rect.width, rect.height);
             Widgets.Label(fixedRect, message);
         }
+
+        [OnSessionEnd]
+        private static void CloseTab() { IsDialogOpen = false; }
     }
 }

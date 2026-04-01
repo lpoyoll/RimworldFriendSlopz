@@ -1,6 +1,6 @@
 ﻿using GameClient.Defs;
+using GameClient.Dialogs;
 using GameClient.Misc;
-using GameClient.Tabs;
 using Shared;
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace GameClient.PacketManagers
 
         public static void AddMessageToChat(PKT_Chat data)
         {
-            if (TAB_Chat.ChatMessages.Count() > 100) TAB_Chat.ChatMessages.RemoveAt(0);
+            if (DLG_Chat.ChatMessages.Count() > 100) DLG_Chat.ChatMessages.RemoveAt(0);
 
             if (PM_Chat.CheckIfHasBeenTagged(data.Message))
             {
@@ -49,9 +49,9 @@ namespace GameClient.PacketManagers
             string timeString = $"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> ";
             string usernameString = $"{PKT_Chat.MessageColorDictionary[data.UsernameColor]}{data.Username}</color>: ";
             string textString = $"{PKT_Chat.MessageColorDictionary[data.MessageColor]}{PM_Chat.ParseMessage(data.Message, false)}</color>";
-            TAB_Chat.ChatMessages.Add(string.Concat(timeString, usernameString, textString));
+            DLG_Chat.ChatMessages.Add(string.Concat(timeString, usernameString, textString));
 
-            if (!TAB_Chat.IsTabOpen & !TAB_Chat.ShouldPlaySounds) RTSoundDefs.ChatReceive.PlayOneShotOnCamera();
+            if (!DLG_Chat.IsDialogOpen & !DLG_Chat.ShouldPlaySounds) RTSoundDefs.ChatReceive.PlayOneShotOnCamera();
         }
 
         public static string[] GetMessageWords(string message) { return message.Split(' '); }

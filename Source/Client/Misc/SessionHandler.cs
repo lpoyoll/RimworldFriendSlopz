@@ -1,7 +1,6 @@
 using GameClient.Defs;
 using GameClient.Dialogs;
 using GameClient.Patches.Pages;
-using GameClient.Tabs;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
@@ -147,7 +146,7 @@ namespace GameClient.Misc
             IsSynchronousHost = false;
             SynchronousMap = null;
 
-            TAB_Chat.IsTabOpen = false;
+            DLG_Chat.IsDialogOpen = false;
             DLG_Admin.IsDialogOpen = false;
             Patch_Page_SelectScenario_DoWindowContents.executedMessage = false;
             Patch_Page_SelectStoryteller_DoWindowContents.executedMessage = false;

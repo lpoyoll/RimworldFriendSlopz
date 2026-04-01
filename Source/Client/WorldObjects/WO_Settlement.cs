@@ -231,11 +231,19 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/OnlineVisit"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
-                    SessionHandler.ChosenCaravan = caravan;
+                    if (DLG_Options.EnablePreviewFeatures)
+                    {
+                        SessionHandler.ChosenSettlement = this;
+                        SessionHandler.ChosenCaravan = caravan;
+                        PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.PKT_Synchronous.Type.Visit);
+                    }
 
-                    //PM_Synchronous.DenyFeature();
-                    PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.PKT_Synchronous.Type.Visit);
+                    else
+                    {
+                        string title = "ERROR";
+                        string description = "Please enable 'preview features' to use this action!";
+                        DLG_Base.PushNewDialog(new DLG_Message(title, new string[] { description }));
+                    }
                 }
             };
 
@@ -246,11 +254,19 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/OnlineRaid"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
-                    SessionHandler.ChosenCaravan = caravan;
+                    if (DLG_Options.EnablePreviewFeatures)
+                    {
+                        SessionHandler.ChosenSettlement = this;
+                        SessionHandler.ChosenCaravan = caravan;
+                        PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.PKT_Synchronous.Type.Raid);
+                    }
 
-                    //PM_Synchronous.DenyFeature();
-                    PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.PKT_Synchronous.Type.Raid);
+                    else
+                    {
+                        string title = "ERROR";
+                        string description = "Please enable 'preview features' to use this action!";
+                        DLG_Base.PushNewDialog(new DLG_Message(title, new string[] { description }));
+                    }
                 }
             };
 
