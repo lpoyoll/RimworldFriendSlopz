@@ -55,7 +55,7 @@ namespace GameClient.Dialogs
         {
             Action r1 = delegate
             {
-                DLG_Base.PushNewDialog(new DLG_Wait("Waiting for server response"));
+                DLG_Base.PushNewDialog(new DLG_Wait());
                 PM_Saves.RequestResetSave();
             };
 

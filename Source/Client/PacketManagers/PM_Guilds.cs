@@ -67,7 +67,7 @@ namespace GameClient.PacketManagers
         {
             Action r3 = delegate
             {
-                DLG_Base.PushNewDialog(new DLG_Wait("Waiting for member list"));
+                DLG_Base.PushNewDialog(new DLG_Wait());
 
                 PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                 playerFactionData._stepMode = GuildStepMode.MemberList;
@@ -86,7 +86,7 @@ namespace GameClient.PacketManagers
 
             Action r1 = delegate
             {
-                DLG_Base.PushNewDialog(new DLG_Wait("Waiting for guild deletion"));
+                DLG_Base.PushNewDialog(new DLG_Wait());
 
                 PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                 playerFactionData._stepMode = GuildStepMode.Delete;
@@ -117,7 +117,7 @@ namespace GameClient.PacketManagers
 
                 else
                 {
-                    DLG_Base.PushNewDialog(new DLG_Wait("Waiting for guild creation"));
+                    DLG_Base.PushNewDialog(new DLG_Wait());
 
                     PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                     playerFactionData._stepMode = GuildStepMode.Create;

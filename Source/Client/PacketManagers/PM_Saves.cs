@@ -49,7 +49,7 @@ namespace GameClient.PacketManagers
         public static void ForceSave()
         {
             Printer.Warning("Force saving", LogImportanceMode.Verbose);
-            DLG_Base.PushNewDialog(new DLG_Wait("Saving your game"));
+            DLG_Base.PushNewDialog(new DLG_Wait());
             Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
 
             Task.Run(delegate

@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using static Shared.Misc.Printer;
@@ -61,24 +62,30 @@ namespace GameClient.Hooks.TCPNetwork
 
         public ClientNetwork() 
         {
-            if (TryConnect())
+            DLG_Base.PushNewDialog(new DLG_Wait());
+
+            Task.Run(delegate
             {
-                SessionHandler.CurrentNetworkState = ClientNetworkState.Connected;
+                if (TryConnect())
+                {
+                    SessionHandler.CurrentNetworkState = ClientNetworkState.Connected;
 
-                PersistentSettings settings = PersistentSettings.Load();
-                settings.ServerSettings.Set(Network.Ip, Network.Port);
-                settings.Save();
+                    PersistentSettings settings = PersistentSettings.Load();
+                    settings.ServerSettings.Set(Network.Ip, Network.Port);
+                    settings.Save();
 
-                Printer.Message($"Connected to server");
-            }
+                    Printer.Message($"Connected to server");
+                }
 
-            else
-            {
-                DLG_Wait.Instance.Close();
-                DLG_Message d1 = new DLG_Message("ERROR", new string[] { "The server did not respond in time" });
-                DLG_Base.PushNewDialog(d1);
-                OnDisconnect.Invoke(null);
-            }
+                else
+                {
+                    MainThreadHandler.Instance.Enqueue(delegate
+                    {
+                        DLG_Wait.Instance.Close();
+                        DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "The server did not respond in time" }));
+                    });
+                }
+            });
         }
 
         private bool TryConnect()

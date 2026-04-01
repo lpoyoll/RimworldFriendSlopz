@@ -31,8 +31,6 @@ namespace GameClient.PacketManagers
         {
             Network.Ip = telemetry.Endpoint;
             Network.Port = telemetry.Port;
-
-            DLG_Base.PushNewDialog(new DLG_Wait("Trying to connect to server"));
             ClientNetwork _ = new ClientNetwork();
         }
     }

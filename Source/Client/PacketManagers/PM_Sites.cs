@@ -82,7 +82,7 @@ namespace GameClient.PacketManagers
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
 
-            DLG_Base.PushNewDialog(new DLG_Wait("Waiting for building"));
+            DLG_Base.PushNewDialog(new DLG_Wait());
         }
 
         public static void RequestDestroySite()

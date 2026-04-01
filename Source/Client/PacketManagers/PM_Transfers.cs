@@ -59,7 +59,7 @@ namespace GameClient.PacketManagers
 
         public static void SendRequest(TransferLocation transferLocation)
         {
-            DLG_Base.PushNewDialog(new DLG_Wait("Waiting for transfer response"));
+            DLG_Base.PushNewDialog(new DLG_Wait());
 
             if (transferLocation == TransferLocation.Caravan)
             {

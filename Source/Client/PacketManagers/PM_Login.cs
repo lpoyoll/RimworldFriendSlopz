@@ -146,11 +146,7 @@ namespace GameClient.PacketManagers
                 Tuple.Create($"Join latest server > {TCPNetwork.Network.Ip}:{TCPNetwork.Network.Port}", 0),
             };
 
-            FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate
-            {
-                DLG_Base.PushNewDialog(new DLG_Wait("Trying to connect to server"));
-                ClientNetwork _ = new ClientNetwork();
-            });
+            FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate { ClientNetwork _ = new ClientNetwork(); });
 
             Find.WindowStack.Add(new FloatMenu(new List<FloatMenuOption>() { tuple1 }));
         }

@@ -113,7 +113,7 @@ namespace GameClient.PacketManagers
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, eventData);
 
-                DLG_Base.PushNewDialog(new DLG_Wait("Waiting for event"));
+                DLG_Base.PushNewDialog(new DLG_Wait());
             }
         }
 

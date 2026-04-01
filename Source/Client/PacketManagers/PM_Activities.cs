@@ -48,7 +48,7 @@ namespace GameClient.PacketManagers
 
         private static void SendRequest(int targetTile)
         {
-            DLG_Base.PushNewDialog(new DLG_Wait("Waiting for map"));
+            DLG_Base.PushNewDialog(new DLG_Wait());
 
             PKT_Activity data = new PKT_Activity();
             data._stepMode = ActivityStepMode.Request;

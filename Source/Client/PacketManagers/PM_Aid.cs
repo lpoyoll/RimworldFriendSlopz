@@ -57,7 +57,7 @@ namespace GameClient.PacketManagers
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.AidManager, aidData);
 
-            DLG_Base.PushNewDialog(new DLG_Wait("Waiting for server response"));
+            DLG_Base.PushNewDialog(new DLG_Wait());
         }
 
         private static void OnAidAccept()

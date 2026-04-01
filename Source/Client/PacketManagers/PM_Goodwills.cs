@@ -82,7 +82,7 @@ namespace GameClient.PacketManagers
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
 
-            DLG_Wait d1 = new DLG_Wait("Changing settlement goodwill");
+            DLG_Wait d1 = new DLG_Wait();
             DLG_Base.PushNewDialog(d1);
         }
 

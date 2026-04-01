@@ -47,8 +47,6 @@ namespace GameClient.Dialogs
             {
                 Network.Ip = EndpointIP;
                 Network.Port = int.Parse(EndpointPort);
-
-                DLG_Base.PushNewDialog(new DLG_Wait("Trying to connect to server"));
                 ClientNetwork _ = new ClientNetwork();
 
                 Close();

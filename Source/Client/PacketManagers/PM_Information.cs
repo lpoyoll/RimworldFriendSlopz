@@ -30,7 +30,7 @@ namespace GameClient.PacketManagers
 
         public static void AskForInformation()
         {
-            DLG_Base.PushNewDialog(new DLG_Wait("Waiting for server"));
+            DLG_Base.PushNewDialog(new DLG_Wait());
 
             PKT_Information data = new PKT_Information();
             data._stepMode = PKT_Information.InfoStepMode.Connection;
@@ -41,7 +41,7 @@ namespace GameClient.PacketManagers
 
         public static void AskForWealth()
         {
-            DLG_Base.PushNewDialog(new DLG_Wait("Waiting for server"));
+            DLG_Base.PushNewDialog(new DLG_Wait());
 
             PKT_Information data = new PKT_Information();
             data._stepMode = PKT_Information.InfoStepMode.Wealth;

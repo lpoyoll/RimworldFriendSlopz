@@ -1,37 +1,48 @@
-﻿using UnityEngine;
+﻿using Shared.Misc;
+using System;
+using UnityEngine;
 using Verse;
 
 namespace GameClient.Dialogs.Default
 {
     public class DLG_Wait : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(300f, 100f);
+        public override Vector2 InitialSize => new Vector2(300f, 95f);
 
         public static DLG_Base Instance { get; private set; } = null;
 
-        public DLG_Wait(string description = null)
+        private DateTime PreviousTime { get; set; } = DateTime.Now;
+
+        public DLG_Wait()
         {
             Instance = this;
             this.Title = "WAIT";
-
-            if (description != null) this.Description = description;
-            else this.Description = "Waiting...";
+            this.Description = "...";
         }
-
 
         public override void DoWindowContents(Rect rect)
         {
-            float centeredX = rect.width / 2;
-            float horizontalLineDif = Text.CalcSize(Description).y + StandardMargin / 2;
-            float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
-
             Text.Font = GameFont.Medium;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
+            Widgets.Label(new Rect(DLG_Base.GetRectMiddle(rect) - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
 
-            Widgets.DrawLineHorizontal(rect.x, horizontalLineDif, rect.width);
+            Widgets.DrawLineHorizontal(rect.x, 37, rect.width);
 
+            Animate();
             Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
+            Widgets.Label(new Rect(DLG_Base.GetRectMiddle(rect) - Text.CalcSize(Description).x / 2, Text.CalcSize(Description).y + 18f, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
+        }
+
+        private void Animate()
+        {
+            DateTime currentTime = DateTime.Now;
+
+            if (currentTime - PreviousTime > TimeSpan.FromSeconds(0.5f))
+            {
+                if (Description.Length < 3) Description += ".";
+                else Description = ".";
+
+                PreviousTime = currentTime;
+            }
         }
     }
 }
