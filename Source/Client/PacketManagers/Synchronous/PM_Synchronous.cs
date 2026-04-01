@@ -2,12 +2,14 @@
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
 using GameClient.Misc;
+using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
 using Shared.Files.Synchronous;
 using Shared.Misc;
 using System;
+using System.Linq;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
@@ -135,23 +137,11 @@ namespace GameClient.PacketManagers.Synchronous
 
         private static void OnAccept(PKT_Synchronous data)
         {
-            Printer.Warning(1);
-
             DLG_Wait.Instance.Close();
-
-            Printer.Warning(2);
 
             SetMap(SynchronousSide.Guest, data);
 
-            Printer.Warning(3);
-
             EnterMap(SynchronousSide.Guest);
-
-            Printer.Warning(4);
-
-            SpawnOtherPawns(SynchronousSide.Guest, data);
-
-            Printer.Warning(5);
 
             StartSession(SynchronousSide.Guest);
         }
@@ -198,7 +188,16 @@ namespace GameClient.PacketManagers.Synchronous
         private static void SetMap(SynchronousSide side, PKT_Synchronous data)
         {
             if (side == SynchronousSide.Host) SessionHandler.SynchronousMap = Find.AnyPlayerHomeMap;
-            else SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(Serializer.ConvertBytesToObject<MapFile>(data.Contents, false));
+            else
+            {
+                SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(Serializer.ConvertBytesToObject<MapFile>(data.Contents, false), true);
+
+                foreach (Pawn pawn in SessionHandler.SynchronousMap.mapPawns.AllPawns.Where(fetch => fetch.Faction == Faction.OfPlayer))
+                {
+                    if (data.CurrentType == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionHandler.AllyFaction);
+                    else pawn.SetFactionDirect(SessionHandler.EnemyFaction);
+                }
+            }
         }
 
         private static void EnterMap(SynchronousSide side)
@@ -210,7 +209,7 @@ namespace GameClient.PacketManagers.Synchronous
 
             else
             {
-                CaravanEnterMapUtility.Enter(SessionHandler.ChosenCaravan, SessionHandler.SynchronousMap, CaravanEnterMode.Edge,
+                CaravanEnterMapUtility.Enter(SessionHandler.ChosenCaravan, SessionHandler.SynchronousMap, CaravanEnterMode.Center,
                     CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
 
                 CameraJumper.TryJump(SessionHandler.SynchronousMap.Center, SessionHandler.SynchronousMap, CameraJumper.MovementMode.Pan);
@@ -219,15 +218,18 @@ namespace GameClient.PacketManagers.Synchronous
 
         private static void SpawnOtherPawns(SynchronousSide side, PKT_Synchronous data)
         {
-            foreach (string str in data.Party.Pawns)
+            if (side == SynchronousSide.Host)
             {
-                Pawn pawn = ScribeManager.SerializeFromString<Pawn>(str, ScribeManager.SerializableType.Pawn, true);
+                foreach (string str in data.Party.Pawns)
+                {
+                    Pawn pawn = ScribeManager.SerializeFromString<Pawn>(str, ScribeManager.SerializableType.Pawn, true);
 
-                RimworldManager.PlaceThingIntoMap(pawn, SessionHandler.SynchronousMap, 
-                    side == SynchronousSide.Host ? SessionHandler.SynchronousMap.Center : pawn.PositionHeld);
+                    RimworldManager.PlaceThingIntoMap(pawn, SessionHandler.SynchronousMap,
+                        side == SynchronousSide.Host ? SessionHandler.SynchronousMap.Center : pawn.PositionHeld);
 
-                if (data.CurrentType == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionHandler.NeutralFaction);
-                else pawn.SetFactionDirect(SessionHandler.EnemyFaction);
+                    if (data.CurrentType == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionHandler.AllyFaction);
+                    else pawn.SetFactionDirect(SessionHandler.EnemyFaction);
+                }
             }
         }
 
