@@ -1,6 +1,7 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Misc;
+using RimWorld;
 using Shared;
 using Shared.Misc;
 using System;
@@ -46,7 +47,7 @@ namespace GameClient.Hooks.ServerBrowser
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, null, OnReadPacket, null, false));
+                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserClientPort), new NetworkRuleset(null, null, OnReadPacket, null, false));
                 Network.BrowserEndpoint = client.Listener;
                 return true;
             }
