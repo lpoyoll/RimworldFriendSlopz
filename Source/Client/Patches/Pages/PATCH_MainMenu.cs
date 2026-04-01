@@ -53,7 +53,7 @@ namespace GameClient.Patches.Pages
                         if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
                         else if (!HarmonyHandler.CheckForModCollision()) return;
                         else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
-                        else ServerBrowserManager.ConnectToServerBrowser();
+                        else ServerBrowserManager.TryConnect();
                     }));
 
                     optList.Insert(0, new ListableOption("Direct Connect", delegate

@@ -6,6 +6,7 @@ using Shared.Misc;
 using System;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets.ServerBrowser;
@@ -23,31 +24,37 @@ namespace GameClient.Hooks.ServerBrowser
             });
         };
 
-        public static bool ConnectToServerBrowser()
+        public static void TryConnect() 
+        {
+            DLG_Base.PushNewDialog(new DLG_Wait());
+
+            Task.Run(delegate
+            {
+                if (ConnectToServerBrowser()) AskForServerListings();
+                else
+                {
+                    MainThreadHandler.Instance.Enqueue(delegate
+                    {
+                        DLG_Wait.Instance.Close();
+                        DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "The server did not respond in time" }));
+                    });
+                }
+            });
+        }
+
+        private static bool ConnectToServerBrowser()
         {
             try
             {
                 ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserPort), new NetworkRuleset(null, null, OnReadPacket, null, false));
                 Network.BrowserEndpoint = client.Listener;
-                AskForServerListings();
                 return true;
             }
-
-            catch (Exception ex)
-            {
-                string title = "ERROR";
-                string[] description = { "Server browser failed to respond in time" };
-                DLG_Base.PushNewDialog(new DLG_Message(title, description));
-
-                Printer.Error(ex);
-                return false;
-            }
+            catch { return false; }
         }
 
         private static void AskForServerListings()
         {
-            DLG_Base.PushNewDialog(new DLG_Wait());
-
             PKT_ServerInformation listing = new PKT_ServerInformation();
             listing.ClientVersion = CommonValues.ExecutableVersion;
             Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserListing, listing);
