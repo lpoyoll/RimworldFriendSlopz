@@ -1,5 +1,6 @@
 ﻿using Shared;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using TCPNetwork.Files.Client;
@@ -22,11 +23,13 @@ namespace TCPNetwork
 
         public static string BrowserIp { get; set; } = "66.29.129.72";
 
-        public static int BrowserPort { get; set; } = 7777;
+        public static int BrowserServerPort { get; set; } = 7777;
 
-        public static List<ServerClient> ServerClients { get; private set; } = new List<ServerClient>();
+        public static int BrowserClientPort { get; set; } = 7778;
 
-        public static readonly TimeSpan BrowserTelemetryInterval = TimeSpan.FromSeconds(60);
+        public static ConcurrentDictionary<ServerClient, int> ServerClients { get; private set; } = new ConcurrentDictionary<ServerClient, int>();
+
+        public static readonly TimeSpan BrowserTelemetryInterval = TimeSpan.FromSeconds(300);
 
         public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(10);
 

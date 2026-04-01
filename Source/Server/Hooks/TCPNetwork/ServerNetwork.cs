@@ -25,7 +25,7 @@ namespace GameServer.Hooks.TCPNetwork
         {
             try
             {
-                Network.ServerClients.Remove(client);
+                Network.ServerClients.TryRemove(client, out _);
                 InformationDisplayer.DisplayDisconnect(client);
                 if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
 
@@ -64,7 +64,7 @@ namespace GameServer.Hooks.TCPNetwork
             else if (Master.WorldValues == null && GetConnectedClients().Length > 0) LoginManagerH.DenyConnectionWithReason(client, LoginResponse.NoWorld);
             else
             {
-                Network.ServerClients.Add(client);
+                Network.ServerClients.TryAdd(client, -1);
                 InformationDisplayer.DisplayConnect(client);
                 PM_Version.AskForClientVersion(client);
             }
@@ -72,8 +72,8 @@ namespace GameServer.Hooks.TCPNetwork
 
         public static ServerClient[] GetConnectedClients(ServerClient toExclude = null)
         {
-            if (toExclude != null) return Network.ServerClients.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
-            else return Network.ServerClients.ToArray();
+            if (toExclude != null) return Network.ServerClients.Keys.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
+            else return Network.ServerClients.Keys.ToArray();
         }
 
         public static ServerClient GetConnectedClientFromUsername(string username)
