@@ -55,6 +55,7 @@ namespace GameClient.PacketManagers
             {
                 ModConfig newConfig = new ModConfig();
                 newConfig.FileName = mod.Name.Replace("steam_", "");
+                newConfig.Type = ModType.Required;
 
                 configFile.ModConfigs.Add(newConfig);
             }

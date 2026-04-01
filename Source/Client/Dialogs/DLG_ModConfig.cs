@@ -1,4 +1,5 @@
 ﻿using GameClient.Managers;
+using GameClient.PacketManagers;
 using Shared.Files.Configs.Mods;
 using System;
 using System.Collections.Generic;
@@ -30,9 +31,32 @@ namespace GameClient.Dialogs
             this.Title = "Mod Manager";
             this.Description = "Manage mods for the server";
             this.Keys = keys;
+        }
 
-            for (int i = 0; i < keys.Count; i++) ValueString.Add(keys[i].Type.ToString());
-            for (int i = 0; i < keys.Count; i++) ValueInt.Add((int)keys[i].Type);
+        public override void PreOpen()
+        {
+            base.PreOpen();
+
+            List<ModConfig> LocalMods = ModManagerH.GetRunningModList().ModConfigs;
+
+            // Add mods that aren't actively listed in the server
+
+            foreach (ModConfig config in LocalMods)
+            {
+                ModConfig toFind = this.Keys.FirstOrDefault(fetch => fetch.FileName == config.FileName);
+                if (toFind == null) this.Keys.Add(config);
+            }
+
+            // Remove mods that aren't actively listed in the client
+
+            foreach (ModConfig config in this.Keys.ToArray())
+            {
+                ModConfig toFind = LocalMods.FirstOrDefault(fetch => fetch.FileName == config.FileName);
+                if (toFind == null) this.Keys.Remove(config);
+            }
+
+            for (int i = 0; i < this.Keys.Count; i++) ValueString.Add(this.Keys[i].Type.ToString());
+            for (int i = 0; i < this.Keys.Count; i++) ValueInt.Add((int)this.Keys[i].Type);
         }
 
         public override void DoWindowContents(Rect rect)
