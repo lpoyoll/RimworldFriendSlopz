@@ -33,7 +33,7 @@ namespace GameClient.Hooks.TCPNetwork
 
         public enum ClientNetworkState { Disconnected, Connected }
 
-        private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
+        private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
             if (!SessionHandler.IsReadyToPlay && !BypassReadyPackets.Contains(header)) return;
             else
@@ -46,12 +46,12 @@ namespace GameClient.Hooks.TCPNetwork
             }
         };
 
-        private Action<ServerClient> OnConnect { get; set; } = delegate
+        private static Action<ServerClient> OnConnect { get; set; } = delegate
         {
             MainThreadHandler.Instance.Enqueue(delegate { HarmonyHandler.EnableMainPatches(); });
         };
 
-        private Action<ServerClient> OnDisconnect { get; set; } = delegate 
+        private static Action<ServerClient> OnDisconnect { get; set; } = delegate 
         {
             MainThreadHandler.Instance.Enqueue(delegate
             {
@@ -61,7 +61,7 @@ namespace GameClient.Hooks.TCPNetwork
             });
         };
 
-        public ClientNetwork() 
+        public static void StartFeature()
         {
             DLG_Base.PushNewDialog(new DLG_Wait());
 
@@ -89,7 +89,7 @@ namespace GameClient.Hooks.TCPNetwork
             });
         }
 
-        private bool TryConnect()
+        private static bool TryConnect()
         {
             if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return false;
             else

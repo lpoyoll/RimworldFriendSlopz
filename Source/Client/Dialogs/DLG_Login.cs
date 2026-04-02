@@ -47,7 +47,7 @@ namespace GameClient.Dialogs
             {
                 Network.Ip = EndpointIP;
                 Network.Port = int.Parse(EndpointPort);
-                ClientNetwork _ = new ClientNetwork();
+                ClientNetwork.StartFeature();
 
                 Close();
             }

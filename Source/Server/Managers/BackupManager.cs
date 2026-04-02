@@ -116,14 +116,18 @@ namespace GameServer.Managers
             }
         }
 
-        public static void AutoBackup()
+        public static void StartFeature()
         {
-            while (true)
+            if (!Master.BackupConfig.AutomaticBackups) return;
+            else
             {
-                Thread.Sleep(TimeSpan.FromHours(Master.BackupConfig.IntervalHours));
+                while (true)
+                {
+                    Thread.Sleep(TimeSpan.FromHours(Master.BackupConfig.IntervalHours));
 
-                try { BackupServer(); }
-                catch (Exception e) { Printer.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
+                    try { BackupServer(); }
+                    catch (Exception e) { Printer.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
+                }
             }
         }
     }

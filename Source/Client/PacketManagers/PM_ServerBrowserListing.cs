@@ -31,7 +31,7 @@ namespace GameClient.PacketManagers
         {
             Network.Ip = telemetry.Endpoint;
             Network.Port = telemetry.Port;
-            ClientNetwork _ = new ClientNetwork();
+            ClientNetwork.StartFeature();
         }
     }
 }

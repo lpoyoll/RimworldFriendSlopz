@@ -38,10 +38,10 @@ namespace GameServer.Core
             PacketGatherer.CacheAllPackets();
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
 
-            if (Master.BackupConfig.AutomaticBackups) Task.Run(BackupManager.AutoBackup);
-
-            ServerNetwork _ = new ServerNetwork();
+            ServerNetwork.StartFeature();
+            Task.Run(BackupManager.StartFeature);
             Task.Run(ServerBrowserManager.StartFeature);
+
             while (true) CMD_Base.ListenForCommands();
         }
 

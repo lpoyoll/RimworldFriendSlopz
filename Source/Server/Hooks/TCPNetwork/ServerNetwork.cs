@@ -15,13 +15,13 @@ namespace GameServer.Hooks.TCPNetwork
 {
     public class ServerNetwork
     {
-        private Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
+        private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
             MethodInfo method = (MethodInfo)PacketGatherer.PacketDictionary[header][1];
             method.Invoke(PacketGatherer.PacketDictionary[header][0], new object[] { client, buffer, header });
         };
 
-        private Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
+        private static Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) 
         {
             try
             {
@@ -34,7 +34,7 @@ namespace GameServer.Hooks.TCPNetwork
             catch (Exception ex) { Printer.Error(ex); }
         };
 
-        public ServerNetwork() 
+        public static void StartFeature()
         {
             try
             {
@@ -56,7 +56,7 @@ namespace GameServer.Hooks.TCPNetwork
             catch (Exception e) { Printer.Error(e); }
         }
 
-        private void ListenForNewClients()
+        private static void ListenForNewClients()
         {
             ServerClient client = new ServerClient(Network.ServerListener.AcceptTcpClient(), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
 
