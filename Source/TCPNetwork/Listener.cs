@@ -46,10 +46,10 @@ namespace TCPNetwork
         {
             while (true)
             {
+                Thread.Sleep(1);
+
                 try
                 {
-                    Thread.Sleep(1);
-
                     CheckKAFlag();
                     SendKAFlag();
 
@@ -95,7 +95,11 @@ namespace TCPNetwork
                 // Read packet contents
                 readBytes = 0;
                 packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
-                while (readBytes < packetBuffer.Length) readBytes += Stream.Read(packetBuffer, readBytes, packetBuffer.Length - readBytes);
+                while (readBytes < packetBuffer.Length)
+                {
+                    Thread.Sleep(1);
+                    readBytes += Stream.Read(packetBuffer, readBytes, packetBuffer.Length - readBytes);
+                }
 
                 // Reset KeepAlive
                 LastKAReceivedPacket = DateTime.Now;
