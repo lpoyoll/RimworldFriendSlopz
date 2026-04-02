@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TCPNetwork.Packets.ServerBrowser;
@@ -17,10 +18,10 @@ namespace GameClient.Dialogs.ServerBrowser
 
         public DLG_ServerBrowser(List<PKT_ServerTelemetry> elements, Action onAccept) 
         {
-            this.Title = "Server Browser";
-            this.Description = "Available servers in the browser";
-            this.Elements = elements;
             this.OnAccept = onAccept;
+            this.Title = "Server Browser";
+            this.Description = $"Available servers in the browser [{elements.Count()}]";
+            this.Elements = elements.OrderByDescending(fetch => fetch.CurrentPopulation).ToList();
         }
 
         public override void DoWindowContents(Rect rect)
@@ -77,7 +78,9 @@ namespace GameClient.Dialogs.ServerBrowser
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
-            Widgets.Label(fixedRect, $"[{element.CurrentPopulation}/{element.MaxPopulation}] - {element.Name}");
+            string versionString = $"[{element.Version}]";
+            string populationString = $"[{element.CurrentPopulation}/{element.MaxPopulation}]";
+            Widgets.Label(fixedRect, $"{versionString} - {populationString} - {element.Name}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Select"))
             {
                 ResultInt = index;
