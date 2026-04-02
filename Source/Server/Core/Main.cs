@@ -98,7 +98,5 @@ namespace GameServer.Core
             Master.WorldValues = (PlanetConfigFile)PlanetConfigFile.Load<PlanetConfigFile>(PlanetConfigFile.SavePath, false);
             Master.LeaderboardFile = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>(LeaderboardFile.SavePath);
         }
-
-        public static void ChangeTitle() { Console.Title = $"RimWorld Together {CommonValues.ExecutableVersion}"; }
     }
 }
