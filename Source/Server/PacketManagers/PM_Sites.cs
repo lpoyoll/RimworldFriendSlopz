@@ -159,9 +159,28 @@ namespace GameServer.PacketManager
             if (client.UserFile.SiteConfigs.Length > 0) return;
             else client.UserFile.UpdateSiteConfigs(Master.ActionConfigs.SiteAction.SiteTypes);
         }
+
+        public static List<SiteFile> GetSitesFromGoodwill(ServerClient client)
+        {
+            List<SiteFile> tempList = new List<SiteFile>();
+            foreach (SiteFile site in SiteManagerHelper.GetAllSites())
+            {
+                SiteFile file = new SiteFile();
+
+                file.Tile = site.Tile;
+                file.Username = site.Username;
+                file.Goodwill = PM_Goodwills.GetSiteGoodwill(client, site);
+                file.Type = site.Type;
+                file.GuildName = site.GuildName;
+
+                tempList.Add(file);
+            }
+
+            return tempList;
+        }
     }
 
-    public class SiteManagerHelper
+    public static class SiteManagerHelper
     {
         public static SiteFile[] GetAllSitesFromUsername(string username)
         {

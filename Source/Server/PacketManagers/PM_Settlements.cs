@@ -160,5 +160,27 @@ namespace GameServer.PacketManager
 
             return settlementList.ToArray();
         }
+
+        public static List<SettlementFile> GetSettlementsFromGoodwill(ServerClient client)
+        {
+            List<SettlementFile> tempList = new List<SettlementFile>();
+            foreach (SettlementFile settlement in PM_Settlements.GetAllSettlements())
+            {
+                SettlementFile file = new SettlementFile();
+
+                if (settlement.Username == client.UserFile.Username) continue;
+                else
+                {
+                    file.Tile = settlement.Tile;
+                    file.Username = settlement.Username;
+                    file.Username = settlement.Username;
+                    file.Goodwill = PM_Goodwills.GetSettlementGoodwill(client, settlement);
+
+                    tempList.Add(file);
+                }
+            }
+
+            return tempList;
+        }
     }
 }

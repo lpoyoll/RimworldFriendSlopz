@@ -19,8 +19,8 @@ namespace GameServer.Managers
             globalData._actionValues = Master.ActionConfigs;
             globalData._roadValues = Master.ActionConfigs.RoadsAction.RoadValues;
             globalData._siteValues = Master.ActionConfigs.SiteAction.SiteTypes;
-            globalData._playerSettlements = GlobalDataManagerHelper.GetServerSettlements(client);
-            globalData._playerSites = GlobalDataManagerHelper.GetServerSites(client);
+            globalData._playerSettlements = PM_Settlements.GetSettlementsFromGoodwill(client);
+            globalData._playerSites = PM_Sites.GetSitesFromGoodwill(client);
             globalData._scenarioValues = Master.ScenarioValues;
             globalData._difficultyValues = Master.DifficultyValues;
             globalData._storytellerValues = Master.StorytellerValues;
@@ -35,50 +35,6 @@ namespace GameServer.Managers
             }
 
             client.Listener.EnqueuePacket(PacketHeader.GlobalDataManager, globalData);
-        }
-    }
-
-    public class GlobalDataManagerHelper
-    {
-        public static List<SettlementFile> GetServerSettlements(ServerClient client)
-        {
-            List<SettlementFile> tempList = new List<SettlementFile>();
-            foreach (SettlementFile settlement in PM_Settlements.GetAllSettlements())
-            {
-                SettlementFile file = new SettlementFile();
-
-                if (settlement.Username == client.UserFile.Username) continue;
-                else
-                {
-                    file.Tile = settlement.Tile;
-                    file.Username = settlement.Username;
-                    file.Username = settlement.Username;
-                    file.Goodwill = PM_Goodwills.GetSettlementGoodwill(client, settlement);
-
-                    tempList.Add(file);
-                }
-            }
-
-            return tempList;
-        }
-
-        public static List<SiteFile> GetServerSites(ServerClient client)
-        {
-            List<SiteFile> tempList = new List<SiteFile>();
-            foreach (SiteFile site in SiteManagerHelper.GetAllSites())
-            {
-                SiteFile file = new SiteFile();
-
-                file.Tile = site.Tile;
-                file.Username = site.Username;
-                file.Goodwill = PM_Goodwills.GetSiteGoodwill(client, site);
-                file.Type = site.Type;
-                file.GuildName = site.GuildName;
-
-                tempList.Add(file);
-            }
-
-            return tempList;
         }
     }
 }
