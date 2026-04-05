@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets.ServerBrowser;
 using static Shared.Misc.Printer;
 
@@ -22,8 +23,8 @@ namespace GameServer.Hooks.ServerBrowser
 
         private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            MethodInfo method = (MethodInfo)PacketGatherer.PacketDictionary[header][1];
-            method.Invoke(PacketGatherer.PacketDictionary[header][0], new object[] { client, buffer, header });
+            MethodInfo method = (MethodInfo)PM_Base.PacketDictionary[header][1];
+            method.Invoke(PM_Base.PacketDictionary[header][0], new object[] { client, buffer, header });
         };
 
         private static Action<ServerClient> OnDisconnect { get; set; } = delegate

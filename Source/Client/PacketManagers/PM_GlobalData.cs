@@ -1,8 +1,8 @@
 using GameClient.Managers;
 using GameClient.Misc;
 using Shared;
-using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 
 namespace GameClient.PacketManagers

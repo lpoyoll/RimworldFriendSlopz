@@ -4,8 +4,8 @@ using RimWorld.Planet;
 using Shared;
 using Shared.Details.Planet;
 using System.Collections.Generic;
-using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using Verse;
 namespace GameClient.PacketManagers

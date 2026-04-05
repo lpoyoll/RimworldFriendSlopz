@@ -1,6 +1,6 @@
 using Shared;
-using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 
 namespace GameServer.PacketManager
 {

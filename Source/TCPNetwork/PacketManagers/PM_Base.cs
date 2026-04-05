@@ -4,11 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using TCPNetwork.Files.Client;
 
-namespace TCPNetwork
+namespace TCPNetwork.PacketManagers
 {
-    public static class PacketGatherer
+    [ManagesPacket]
+    public abstract class PM_Base
     {
+        public abstract void Receive(ServerClient client, byte[] bytes, PacketHeader header);
+
         public static Dictionary<PacketHeader, object[]> PacketDictionary { get; set; } = new Dictionary<PacketHeader, object[]>();
 
         public static void CacheAllPackets()
@@ -17,18 +21,18 @@ namespace TCPNetwork
             {
                 MethodInfo method = type.GetMethod("Receive", BindingFlags.Instance | BindingFlags.Public);
                 HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
-                if (attribute != null) GenerateInstance(attribute.header, type, method);
+                if (attribute != null) GeneratePacketInstance(attribute.header, type, method);
             }
 
             foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.GetCustomAttribute<ManagesPacket>() != null))
             {
                 MethodInfo method = type.GetMethod("Receive", BindingFlags.Instance | BindingFlags.Public);
                 HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
-                if (attribute != null) GenerateInstance(attribute.header, type, method);
+                if (attribute != null) GeneratePacketInstance(attribute.header, type, method);
             }
         }
 
-        private static void GenerateInstance(PacketHeader header, Type type, MethodInfo method)
+        private static void GeneratePacketInstance(PacketHeader header, Type type, MethodInfo method)
         {
             try { PacketDictionary.Add(header, new object[] { Activator.CreateInstance(type), method }); }
             catch (Exception ex) { Printer.Error(ex); }

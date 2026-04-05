@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using static Shared.Misc.Printer;
 
 namespace GameClient.Hooks.TCPNetwork
@@ -40,8 +41,8 @@ namespace GameClient.Hooks.TCPNetwork
             {
                 MainThreadHandler.Instance.Enqueue(delegate
                 {
-                    MethodInfo method = (MethodInfo)PacketGatherer.PacketDictionary[header][1];
-                    method.Invoke(PacketGatherer.PacketDictionary[header][0], new object[] { client, buffer, header });
+                    MethodInfo method = (MethodInfo)PM_Base.PacketDictionary[header][1];
+                    method.Invoke(PM_Base.PacketDictionary[header][0], new object[] { client, buffer, header });
                 });
             }
         };

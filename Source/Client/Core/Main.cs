@@ -6,6 +6,7 @@ using Shared.Misc;
 using System.IO;
 using System.Linq;
 using TCPNetwork;
+using TCPNetwork.PacketManagers;
 using UnityEngine;
 using Verse;
 
@@ -23,7 +24,7 @@ namespace GameClient.Core
                 PreparePaths();
 
                 MethodGatherer.CacheAllMethods();
-                PacketGatherer.CacheAllPackets();
+                PM_Base.CacheAllPackets();
 
                 CreateUnityDispatcher();
                 HarmonyHandler.EnableStartPatches();

@@ -13,6 +13,7 @@ using GameClient.Managers;
 using TCPNetwork.Files.Client;
 using static TCPNetwork.Packets.PKT_Event;
 using GameClient.Dialogs.Default;
+using TCPNetwork.PacketManagers;
 
 namespace GameClient.PacketManagers
 {

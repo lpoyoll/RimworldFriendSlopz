@@ -4,8 +4,8 @@ using GameServer.Misc;
 using Shared;
 using Shared.Misc;
 using System.Text;
-using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static TCPNetwork.Packets.PKT_Chat;
 

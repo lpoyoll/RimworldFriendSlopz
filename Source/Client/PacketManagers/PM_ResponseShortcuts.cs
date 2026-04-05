@@ -1,8 +1,8 @@
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using Shared;
-using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static TCPNetwork.Packets.PKT_ResponseShortcut;
 

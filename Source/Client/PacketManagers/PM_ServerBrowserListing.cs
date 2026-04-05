@@ -4,8 +4,8 @@ using GameClient.Dialogs.ServerBrowser;
 using GameClient.Hooks.TCPNetwork;
 using Shared;
 using System;
-using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets.ServerBrowser;
 
 namespace GameClient.PacketManagers

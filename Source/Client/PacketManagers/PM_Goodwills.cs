@@ -12,6 +12,7 @@ using TCPNetwork;
 using GameClient.Managers;
 using TCPNetwork.Files.Client;
 using GameClient.Dialogs.Default;
+using TCPNetwork.PacketManagers;
 
 
 namespace GameClient.PacketManagers

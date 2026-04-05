@@ -3,8 +3,8 @@ using Shared;
 using Shared.Files;
 using Shared.Files.Guilds;
 using Shared.Files.Sites;
-using TCPNetwork;
 using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets.Goodwills;
 using static Shared.CommonEnumerators;
 

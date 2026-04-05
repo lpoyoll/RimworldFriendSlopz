@@ -12,6 +12,7 @@ using Shared.Files.Configs.Mods;
 using Shared.Files.Guilds;
 using Shared.Misc;
 using TCPNetwork;
+using TCPNetwork.PacketManagers;
 using static Shared.Misc.Printer;
 
 namespace GameServer.Core
@@ -35,7 +36,7 @@ namespace GameServer.Core
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
             CMD_Base.GetAllCommands();
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
-            PacketGatherer.CacheAllPackets();
+            PM_Base.CacheAllPackets();
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
 
             ServerNetwork.StartFeature();
