@@ -13,8 +13,6 @@ namespace TCPNetwork.Files.Client
 
         public Listener Listener { get; set; } = null;
 
-        public ServerClient SynchronousClient { get; set; } = null;
-
         public TcpClient Tcp { get; set; } = null;
 
         public NetworkRuleset Ruleset { get; set; } = null;

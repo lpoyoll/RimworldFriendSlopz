@@ -36,6 +36,8 @@ namespace TCPNetwork.Files.Client
 
         public PlayerSiteConfig[] SiteConfigs { get; set; } = Array.Empty<PlayerSiteConfig>();
 
+        public ServerClient SynchronousClient { get; set; } = null;
+
         private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 
         public void UpdateLoginDetails(PKT_Login data)

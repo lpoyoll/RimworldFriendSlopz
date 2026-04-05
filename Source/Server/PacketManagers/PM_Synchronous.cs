@@ -43,7 +43,7 @@ namespace GameServer.PacketManagers
         private static void RouteToManager(ServerClient client, PKT_Synchronous data, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, data);
-            client.SynchronousClient.Listener.EnqueuePacket(header, data);
+            client.UserFile.SynchronousClient.Listener.EnqueuePacket(header, data);
         }
 
         private static void TryStartSynchronousSession(ServerClient client, PKT_Synchronous data)
@@ -71,8 +71,8 @@ namespace GameServer.PacketManagers
             SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            client.SynchronousClient = toFind;
-            toFind.SynchronousClient = client;
+            client.UserFile.SynchronousClient = toFind;
+            toFind.UserFile.SynchronousClient = client;
 
             data.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
             toFind.Listener.EnqueuePacket(PacketHeader.SynchronousManager, data);
@@ -96,7 +96,7 @@ namespace GameServer.PacketManagers
             PKT_Synchronous _ = new PKT_Synchronous();
             _.CurrentStepMode = PKT_Synchronous.StepMode.Start;
 
-            client.SynchronousClient.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
+            client.UserFile.SynchronousClient.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
         }
     }
 }
