@@ -13,9 +13,6 @@ namespace TCPNetwork.Files.Client
 {
     public class UserFile
     {
-        //DO NOT USE PRIVATE SET ON THIS VARIABLES
-        //IT WILL CAUSE DESERIALIZATION TO WORK INCORRECTLY
-
         public string Username { get; set; } = string.Empty;
 
         public string Password { get; set; } = string.Empty;
@@ -30,13 +27,13 @@ namespace TCPNetwork.Files.Client
 
         public bool IsBanned { get; set; } = false;
 
+        public ServerClient SynchronousClient { get; set; } = null;
+
         public PlayerCooldown Cooldowns { get; set; } = new PlayerCooldown();
 
         public List<PlayerGoodwill> Goodwills { get; set; } = new List<PlayerGoodwill>();
 
         public PlayerSiteConfig[] SiteConfigs { get; set; } = Array.Empty<PlayerSiteConfig>();
-
-        public ServerClient SynchronousClient { get; set; } = null;
 
         private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 
