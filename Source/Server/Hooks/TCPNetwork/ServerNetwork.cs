@@ -26,7 +26,7 @@ namespace GameServer.Hooks.TCPNetwork
         {
             try
             {
-                Network.ServerClients.TryRemove(client, out _);
+                Network.ServerClients.Remove(client, out _);
                 InformationDisplayer.DisplayDisconnect(client);
                 if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
 
@@ -43,7 +43,6 @@ namespace GameServer.Hooks.TCPNetwork
                 Network.Port = Master.ServerConfig.Port;
 
                 if (Master.ServerConfig.UseUPnP) { _ = new UPnP(); }
-
 
                 Network.ServerListener = new TcpListener(IPAddress.Parse(Network.Ip), Network.Port);
                 Network.ServerListener.Start();
