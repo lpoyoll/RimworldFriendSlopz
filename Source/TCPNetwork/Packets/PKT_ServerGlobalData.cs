@@ -40,6 +40,6 @@ namespace TCPNetwork.Packets
 
         public List<PollutionDetail> _pollutedTiles { get; set; } = new List<PollutionDetail>();
 
-        public ModConfigFile _modConfigs { get; set; } = null;
+        public List<ModConfig> _modConfigs { get; set; } = new List<ModConfig>();
     }
 }

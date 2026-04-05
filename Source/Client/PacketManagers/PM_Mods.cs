@@ -26,18 +26,18 @@ namespace GameClient.PacketManagers
             switch (data._stepMode)
             {
                 case ModConfigStepMode.Send:
-                    SetValues(data._configFile);
+                    SetValues(data._configFile.ModConfigs);
                     break;
             }
         }
 
         public static void OpenModManagerMenu() 
         { 
-            if (SessionHandler.CurrentModConfig != null) DLG_Base.PushNewDialog(new DLG_ModConfig(SessionHandler.CurrentModConfig.ModConfigs));
+            if (SessionHandler.CurrentMods.Count > 0) DLG_Base.PushNewDialog(new DLG_ModConfig(SessionHandler.CurrentMods));
             else DLG_Base.PushNewDialog(new DLG_ModConfig(ModManagerH.GetRunningModList().ModConfigs));
         }
 
-        public static void SetValues(ModConfigFile file) { SessionHandler.CurrentModConfig = file; }
+        public static void SetValues(List<ModConfig> mods) { SessionHandler.CurrentMods = mods; }
     }
 
     public class ModManagerH

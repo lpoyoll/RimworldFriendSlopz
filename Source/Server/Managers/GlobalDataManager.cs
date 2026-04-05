@@ -24,14 +24,14 @@ namespace GameServer.Managers
             globalData._scenarioValues = Master.ScenarioValues;
             globalData._difficultyValues = Master.DifficultyValues;
             globalData._storytellerValues = Master.StorytellerValues;
+            globalData._modConfigs = Master.ModConfig.ModConfigs;
+            globalData._eventValues = EventManagerH.LoadedEvents;
 
             if (Master.WorldValues != null)
             {
-                globalData._modConfigs = Master.ModConfig;
                 globalData._roads = Master.WorldValues.Roads;
                 globalData._pollutedTiles = Master.WorldValues.PollutedTiles;
                 globalData._npcSettlements = Master.WorldValues.NPCSettlements;
-                globalData._eventValues = EventManagerH.LoadedEvents;
             }
 
             client.Listener.EnqueuePacket(PacketHeader.GlobalDataManager, globalData);

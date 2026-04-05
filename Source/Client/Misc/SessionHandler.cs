@@ -40,7 +40,7 @@ namespace GameClient.Misc
 
         public static ActionsConfigFile CurrentActionValues { get; set; } = null;
 
-        public static ModConfigFile CurrentModConfig { get; set; } = null;
+        public static List<ModConfig> CurrentMods { get; set; } = null;
 
         public static ScenarioConfigFile CurrentScenario { get; set; } = null;
 
