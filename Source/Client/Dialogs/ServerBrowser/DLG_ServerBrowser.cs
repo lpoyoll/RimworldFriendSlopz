@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TCPNetwork.Packets.ServerBrowser;
 using UnityEngine;
 using Verse;
@@ -14,11 +15,8 @@ namespace GameClient.Dialogs.ServerBrowser
 
         private List<PKT_ServerTelemetry> Elements { get; set; } = new List<PKT_ServerTelemetry>();
 
-        public static int ResultInt { get; private set; }
-
-        public DLG_ServerBrowser(List<PKT_ServerTelemetry> elements, Action onAccept) 
+        public DLG_ServerBrowser(List<PKT_ServerTelemetry> elements) 
         {
-            this.OnAccept = onAccept;
             this.Title = "Server Browser";
             this.Description = $"Available servers in the browser [{elements.Count()}]";
             this.Elements = elements.OrderByDescending(fetch => fetch.CurrentPopulation).ToList();
@@ -83,8 +81,8 @@ namespace GameClient.Dialogs.ServerBrowser
             Widgets.Label(fixedRect, $"{versionString} - {populationString} - {element.Name}");
             if (Widgets.ButtonText(new Rect(new Vector2(rect.xMax - TinyButtonSize.x, rect.yMax - TinyButtonSize.y), TinyButtonSize), "Select"))
             {
-                ResultInt = index;
-                if (OnAccept != null) OnAccept.Invoke();
+                PKT_ServerTelemetry selectedServer = Elements[index];
+                DLG_Base.PushNewDialog(new DLG_ServerListing(selectedServer));
             }
         }
     }

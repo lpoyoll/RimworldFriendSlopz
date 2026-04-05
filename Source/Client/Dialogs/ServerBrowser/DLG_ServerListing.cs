@@ -1,6 +1,8 @@
-﻿using Shared.Files.Configs.Mods;
+﻿using GameClient.Hooks.TCPNetwork;
+using Shared.Files.Configs.Mods;
 using System;
 using System.Linq;
+using TCPNetwork;
 using TCPNetwork.Packets.ServerBrowser;
 using UnityEngine;
 using Verse;
@@ -13,10 +15,9 @@ namespace GameClient.Dialogs.ServerBrowser
 
         public PKT_ServerTelemetry Element { get; private set; } = null;
 
-        public DLG_ServerListing(PKT_ServerTelemetry element, Action actionOK)
+        public DLG_ServerListing(PKT_ServerTelemetry element)
         {
             this.Element = element;
-            this.OnAccept = actionOK;
             this.Title = Element.Name;
             this.Description = "Server Mods";
         }
@@ -43,7 +44,10 @@ namespace GameClient.Dialogs.ServerBrowser
             Text.Font = GameFont.Small;
             if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomLeft), "Connect"))
             {
-                if (OnAccept != null) OnAccept.Invoke();
+                Network.Ip = Element.Endpoint;
+                Network.Port = Element.Port;
+                ClientNetwork.StartFeature();
+
                 Close();
             }
 
