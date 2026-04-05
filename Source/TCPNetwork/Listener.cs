@@ -23,7 +23,7 @@ namespace TCPNetwork
 
         private NetworkRuleset Ruleset { get; set; } = null;
 
-        private ConcurrentQueue<KeyValuePair<byte, byte[]>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, byte[]>>();
+        private ConcurrentQueue<KeyValuePair<byte, PKT_Base>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, PKT_Base>>();
 
         private bool IsDisconnecting { get; set; } = false;
         
@@ -61,7 +61,7 @@ namespace TCPNetwork
 
                 catch (Exception ex)
                 {
-                    Printer.Warning(ex, LogImportanceMode.Ludicrous);
+                    Printer.Warning(ex, LogImportanceMode.Extreme);
                     break; 
                 }
             }
@@ -73,12 +73,19 @@ namespace TCPNetwork
         {
             if (IsDisconnecting) return;
             else if (!obj.GetType().IsSubclassOf(typeof(PKT_Base))) Printer.Error($"Malformed package {obj.GetType()}");
-            else PacketQueue.Enqueue(new KeyValuePair<byte, byte[]>((byte)header, Serializer.ConvertObjectToBytes(obj)));
+            else
+            {
+                PKT_Base packet = new PKT_Base();
+                packet.Header = header;
+                packet.MainThread = false;
+                packet.Contents = Serializer.ConvertObjectToBytes(obj);
+
+                PacketQueue.Enqueue(new KeyValuePair<byte, PKT_Base>((byte)header, packet));
+            }
         }
 
         private void Read()
         {
-            int readBytes = 0;
             byte[] headerBuffer = new byte[sizeof(PacketHeader)];
             byte[] lengthBuffer = new byte[Network.PacketLengthSizeInBytes];
             byte[] packetBuffer = new byte[Network.PacketLengthSizeInBytes];
@@ -86,14 +93,14 @@ namespace TCPNetwork
             if (Stream.DataAvailable)
             {
                 // Read packet header
-                Stream.Read(headerBuffer, 0, sizeof(PacketHeader));
+                Stream.Read(headerBuffer, 0, headerBuffer.Length);
                 PacketHeader header = (PacketHeader)headerBuffer[0];
 
                 // Read packet size
-                Stream.Read(lengthBuffer, 0, Network.PacketLengthSizeInBytes);
+                Stream.Read(lengthBuffer, 0, lengthBuffer.Length);
 
                 // Read packet contents
-                readBytes = 0;
+                int readBytes = 0;
                 packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
                 while (readBytes < packetBuffer.Length)
                 {
@@ -101,15 +108,15 @@ namespace TCPNetwork
                     readBytes += Stream.Read(packetBuffer, readBytes, packetBuffer.Length - readBytes);
                 }
 
-                // Reset KeepAlive
-                LastKAReceivedPacket = DateTime.Now;
-
                 // Log packet contents
                 if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
                 else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
                 // Execute ruleset action
                 Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient);
+
+                // Reset KeepAlive
+                LastKAReceivedPacket = DateTime.Now;
             }
         }
 
@@ -119,25 +126,27 @@ namespace TCPNetwork
 
             while (PacketQueue.Count > 0)
             {
-                if (!PacketQueue.TryDequeue(out KeyValuePair<byte, byte[]> packetData)) return;
-                byte[] packetSize = BitConverter.GetBytes(packetData.Value.Length);
+                if (!PacketQueue.TryDequeue(out KeyValuePair<byte, PKT_Base> pair)) return;
+                else
+                {
+                    // Write packet header
+                    headerBuffer[0] = (byte)pair.Value.Header;
+                    Stream.Write(headerBuffer, 0, headerBuffer.Length);
 
-                // Write packet header
-                headerBuffer[0] = packetData.Key;
-                Stream.Write(headerBuffer, 0, sizeof(PacketHeader));
+                    // Write packet size
+                    byte[] packetSize = BitConverter.GetBytes(pair.Value.Contents.Length);
+                    Stream.Write(packetSize, 0, packetSize.Length);
 
-                // Write packet size
-                Stream.Write(packetSize, 0, packetSize.Length);
+                    // Write packet data
+                    Stream.Write(pair.Value.Contents, 0, pair.Value.Contents.Length);
 
-                // Write packet data
-                Stream.Write(packetData.Value, 0, packetData.Value.Length);
+                    // Log the packet data
+                    if (!Network.IgnoreLogPackets.Contains(pair.Value.Header)) Printer.Message($"[Packet] > Sent packet {pair.Value.Header}", LogImportanceMode.Verbose);
+                    else Printer.Message($"[Packet] > Sent packet {pair.Value.Header}", LogImportanceMode.Extreme);
 
-                //Log the packet data
-                if (!Network.IgnoreLogPackets.Contains((PacketHeader)(packetData.Key))) Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Verbose);
-                else Printer.Message($"[Packet] > Sent packet {(PacketHeader)(packetData.Key)}", LogImportanceMode.Extreme);
-
-                //Execute after writing
-                Ruleset.OnWrite?.Invoke(TargetClient);
+                    // Execute after writing
+                    Ruleset.OnWrite?.Invoke(TargetClient);
+                }
             }
         }
 
@@ -178,9 +187,8 @@ namespace TCPNetwork
 
         private void Disconnect()
         {
-            Connection.Dispose();
             Stream.Dispose();
-
+            Connection.Dispose();
             Ruleset.OnDisconnect?.Invoke(TargetClient);
         }
     }
