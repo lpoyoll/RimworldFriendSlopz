@@ -120,7 +120,7 @@ namespace GameClient.PacketManagers
 
         public static void SetValues(List<EventFile> events)
         {
-            AvailableEvents = events;
+            AvailableEvents = events.OrderBy(fetch => fetch.Name).ToList();
             EnabledEvents = AvailableEvents.Where(fetch => fetch.IsEnabled).ToList();
         }
 
