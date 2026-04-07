@@ -100,13 +100,8 @@ namespace TCPNetwork
                 Stream.Read(lengthBuffer, 0, lengthBuffer.Length);
 
                 // Read packet contents
-                int readBytes = 0;
                 packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
-                while (readBytes < packetBuffer.Length)
-                {
-                    Thread.Sleep(1);
-                    readBytes += Stream.Read(packetBuffer, readBytes, packetBuffer.Length - readBytes);
-                }
+                Network.ReadFullPacket(Stream, packetBuffer);
 
                 // Log packet contents
                 if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);

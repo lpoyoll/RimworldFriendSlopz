@@ -1,9 +1,12 @@
 ﻿using Shared;
+using Shared.Misc;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using TCPNetwork.Files.Client;
+using static Shared.Misc.Printer;
 
 namespace TCPNetwork
 {
@@ -34,5 +37,21 @@ namespace TCPNetwork
         public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(10);
 
         public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAliveManager };
+
+        public static void ReadFullPacket(Stream stream, byte[] content)
+        {
+            int readBytes = 0;
+
+            try
+            {
+                while (readBytes < content.Length)
+                {
+                    int read = stream.Read(content, readBytes, content.Length - readBytes);
+                    if (read == 0) throw new ArgumentOutOfRangeException();
+                    readBytes += read;
+                }
+            }
+            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
+        }
     }
 }
