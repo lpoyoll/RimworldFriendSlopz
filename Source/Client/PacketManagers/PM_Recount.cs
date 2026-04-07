@@ -7,7 +7,6 @@ using TCPNetwork.Packets;
 
 namespace GameClient.PacketManagers
 {
-
     public class PM_Recount : PM_Base
     {
         [HandlesPacket(PacketHeader.RecountManager)]
