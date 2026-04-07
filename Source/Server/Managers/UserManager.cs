@@ -111,7 +111,7 @@ namespace GameServer.Managers
             if (toFind != null) return true;
             else
             {
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Invalid);
+                PM_Logins.DenyConnectionWithReason(client, LoginResponse.Invalid);
                 return false;
 
             }
@@ -123,7 +123,7 @@ namespace GameServer.Managers
             else
             {
                 Printer.Message($"Banned user '{client.UserFile.Username}' tried to join the server");
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Ban);
+                PM_Logins.DenyConnectionWithReason(client, LoginResponse.Ban);
                 return true;
             }
         }
@@ -134,7 +134,7 @@ namespace GameServer.Managers
             else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.UserFile.Username) != null) return true;
             else
             {
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Whitelist);
+                PM_Logins.DenyConnectionWithReason(client, LoginResponse.Whitelist);
                 return false;
             }
         }

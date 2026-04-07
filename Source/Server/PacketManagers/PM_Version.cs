@@ -22,7 +22,7 @@ namespace GameServer.PacketManager
 
             else
             {
-                LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Version);
+                PM_Logins.DenyConnectionWithReason(client, LoginResponse.Version);
                 InformationDisplayer.DisplayVersionMismatch(client);
             }
         }

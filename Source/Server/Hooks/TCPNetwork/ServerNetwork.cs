@@ -60,8 +60,8 @@ namespace GameServer.Hooks.TCPNetwork
         {
             ServerClient client = new ServerClient(Network.ServerListener.AcceptTcpClient(), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
 
-            if (GetConnectedClients().Length >= Master.ServerConfig.MaxPlayers) LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Full);
-            else if (Master.WorldValues == null && GetConnectedClients().Length > 0) LoginManagerH.DenyConnectionWithReason(client, LoginResponse.NoWorld);
+            if (GetConnectedClients().Length >= Master.ServerConfig.MaxPlayers) PM_Logins.DenyConnectionWithReason(client, LoginResponse.Full);
+            else if (Master.WorldValues == null && GetConnectedClients().Length > 0) PM_Logins.DenyConnectionWithReason(client, LoginResponse.NoWorld);
             else
             {
                 Network.ServerClients.TryAdd(client, -1);

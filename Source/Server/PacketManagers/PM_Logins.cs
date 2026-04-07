@@ -25,61 +25,52 @@ namespace GameServer.PacketManager
         public static void HandleUser(ServerClient client, PKT_Login data)
         {
             client.UserFile = new UserFile();
-            client.UserFile.UpdateLoginDetails(data);
+            client.UserFile.Username = data._username;
+            client.UserFile.Password = data._password;
 
-            if (UserManagerH.CheckIfUserExists(client, data))
-            {
-                var result = TryLoginUser(client, data);
-                if (!string.IsNullOrEmpty(result))
-                {
-                    Printer.Error($"Error during login: {result}");
-                }
-            }
+            if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);
             else RegisterUser(client, data);
         }
 
-        public static string TryLoginUser(ServerClient client, PKT_Login data)
+        public static bool LoginUser(ServerClient client, PKT_Login data)
         {
-            if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return $"Login details to not match, either the password or username is wrong for {data._username}";
-            
+            if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return false;
+
             client.LoadUserFromFile(client);
 
-            if (UserManagerH.CheckIfUserBanned(client)) return $"{data._username} is banned";
+            if (UserManagerH.CheckIfUserBanned(client)) return false;
 
-            if (!UserManagerH.CheckWhitelist(client)) return $"{data._username} is not whitelisted";
+            if (!UserManagerH.CheckWhitelist(client)) return false;
 
-            if (PM_World.CheckIfWorldExists() && PM_Mods.CheckIfModConflict(client, data)) return $"{data._username} has a mod conflict";
+            if (PM_World.CheckIfWorldExists() && PM_Mods.CheckIfModConflict(client, data)) return false;
 
-            LoginManagerH.RemoveOldClientSessions(client);
+            RemoveOldClientSessions(client);
 
             InformationDisplayer.DisplayLogin(client);
 
             PostLogin(client);
-            return "";
+
+            return true;
         }
 
         public static void RegisterUser(ServerClient client, PKT_Login data)
         {
             client.UserFile.UpdateHash();
 
+            PM_Sites.SetSiteInfoForClient(client);
+
             InformationDisplayer.DisplayRegister(client);
 
-            var error = TryLoginUser(client, data);
-            if (!string.IsNullOrEmpty(error))
-            {
-                Printer.Error($"Error during login: {error}");
-            }
+            LoginUser(client, data);
         }
 
         private static void PostLogin(ServerClient client)
         {
-            PM_Sites.SetSiteInfoForClient(client);
-
             UserManager.SendPlayerRecount();
 
             GlobalDataManager.SendServerGlobalData(client);
 
-            PM_Chat.DoOnConnectActions(client);
+            PM_Chat.SendLoginChatMessages(client);
 
             if (PM_World.CheckIfWorldExists())
             {
@@ -98,23 +89,13 @@ namespace GameServer.PacketManager
                 Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
             }
         }
-    }
 
-    public class LoginManagerH
-    {
         public static void RemoveOldClientSessions(ServerClient client)
         {
-            foreach (ServerClient toFind in ServerNetwork.GetConnectedClients())
-            {
-                if (toFind == client) continue;
-                else
-                {
-                    if (toFind.UserFile.Username == client.UserFile.Username)
-                    {
-                        DenyConnectionWithReason(toFind, LoginResponse.Duplicate);
-                    }
-                }
-            }
+            ServerClient[] oldClients = ServerNetwork.GetConnectedClients().Where(fetch => fetch.UserFile.Username == client.UserFile.Username
+                && fetch != client).ToArray();
+
+            foreach (ServerClient sc in oldClients) sc.Listener.MarkForDisconnect();
         }
 
         public static void DenyConnectionWithReason(ServerClient client, LoginResponse response, object extraDetails = null)

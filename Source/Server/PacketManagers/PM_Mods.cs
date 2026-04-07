@@ -94,7 +94,7 @@ namespace GameServer.PacketManager
                 else
                 {
                     InformationDisplayer.DisplayModMismatch(client.UserFile.Username);
-                    LoginManagerH.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
+                    PM_Logins.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
                     return true;
                 }
             }

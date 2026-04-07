@@ -158,7 +158,7 @@ namespace GameServer.PacketManager
             }
         }
 
-        public static void DoOnConnectActions(ServerClient client)
+        public static void SendLoginChatMessages(ServerClient client)
         {
             foreach (string str in PM_Chat.DefaultJoinMessages) PM_Chat.SendConsoleMessage(client, str);
 
