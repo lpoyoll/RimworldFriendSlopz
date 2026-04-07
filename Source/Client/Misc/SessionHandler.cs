@@ -86,6 +86,8 @@ namespace GameClient.Misc
 
         public static PKT_ServerGlobalData GlobalData { get; set; } = null;
 
+        public static int CurrentServerPlayers { get; set; } = int.MinValue;
+
         public static void SetValues()
         {
             IsAdmin = GlobalData._isClientAdmin;

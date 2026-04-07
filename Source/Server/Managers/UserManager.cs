@@ -17,16 +17,7 @@ namespace GameServer.Managers
         public static void SendPlayerRecount()
         {
             PKT_PlayerRecount playerRecountData = new PKT_PlayerRecount();
-            playerRecountData._currentPlayerCount = ServerNetwork.GetConnectedClients().Count();
-
-            try
-            {
-                foreach (ServerClient client in ServerNetwork.GetConnectedClients())
-                {
-                    playerRecountData._currentPlayerNames.Add(client.UserFile.Username);
-                }
-            }
-            catch (Exception ex) { Printer.Error(ex); }
+            playerRecountData.CurrentPlayerCount = ServerNetwork.GetConnectedClients().Count();
 
             ServerNetwork.SendPacketToAllClients(PacketHeader.RecountManager, playerRecountData);
         }

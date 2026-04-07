@@ -175,7 +175,6 @@ namespace GameClient.Patches
             if (Find.WorldSelector.NumSelectedObjects == 0 && Find.WorldSelector.SelectedTile.Valid)
             {
                 __result = PlanetLayer.Selected.Def.Tabs;
-                __result = __result.AddItem(new TAB_Players());
                 __result = __result.AddItem(new TAB_Bases());
                 __result = __result.AddItem(new TAB_Sites());
             }
