@@ -18,7 +18,7 @@ namespace GameServer.Commands
             Printer.Title($"Connected players: [{ServerNetwork.GetConnectedClients().Count()}]");
 
             Printer.Title("----------------------------------------");
-            foreach (ServerClient client in ServerNetwork.GetConnectedClients()) Printer.Warning($"{client.CurrentIP} - {client.UserFile.Username}");
+            foreach (ServerClient client in ServerNetwork.GetConnectedClients()) Printer.Warning($"{client.CurrentIP}");
             Printer.Title("----------------------------------------");
         }
     }

@@ -16,10 +16,7 @@ namespace GameClient.Core.Configs
     {
         private ModConfigGetter ModConfigs { get; set; }
 
-        public ModConfigSetter(ModContentPack content) : base(content)
-        {
-            ModConfigs = GetSettings<ModConfigGetter>();
-        }
+        public ModConfigSetter(ModContentPack content) : base(content) { ModConfigs = GetSettings<ModConfigGetter>(); }
 
         public override string SettingsCategory() { return "RimWorld Together"; }
 
@@ -30,13 +27,11 @@ namespace GameClient.Core.Configs
 
             listingStandard.Label("Debugging");
             if (listingStandard.ButtonTextLabeled("Verbosity mode", $"{ModConfigGetter.CurrentVerboseMode}")) ShowVerbosityMenu();
-            if (listingStandard.ButtonTextLabeled("Open logs folder", "Open")) StartProcess(Master.AppdataPath);
-            listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
 
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
             if (listingStandard.ButtonTextLabeled("Change mod version [Windows only]", "Change")) { PM_Version.PromptChangeVersion(); }
-            if (listingStandard.ButtonTextLabeled("Export account", "Export")) { ShowExportAccountQuestion(); }
+            listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
 
             listingStandard.GapLine();
             listingStandard.Label("DANGEROUS");
@@ -73,30 +68,6 @@ namespace GameClient.Core.Configs
             Find.WindowStack.Add(new FloatMenu(list));
         }
 
-        private void ShowExportAccountQuestion()
-        {
-            Action toDo = delegate
-            {
-                try
-                {
-                    string path = Path.Combine(Master.AppdataRTPath, "LoginData.json");
-                    string destination = Path.Combine(DLG_Inputs.DialogInputResults[0], Path.GetFileName(path));
-                    File.Copy(path, destination);
-
-                    string[] messages = new string[]
-                    {
-                        "Account file was exported correctly!",
-                        "Put it inside the \"RimWorld Together\" AppData folder of the new machine"
-                    };
-
-                    DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", messages));
-                }
-                catch { DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Path couldn't be found!" })); }
-            };
-
-            DLG_Base.PushNewDialog(new DLG_Inputs("Choose where to export the file at", new string[] { "Path" }, new bool[] { false }, toDo));
-        }
-
         private void ShowResetAccountQuestion()
         {
             DLG_YesNo dialog = new DLG_YesNo("Are you sure you want to RESET your ACCOUNT?",
@@ -110,12 +81,6 @@ namespace GameClient.Core.Configs
                 });
 
             DLG_Base.PushNewDialog(dialog);
-        }
-
-        private void StartProcess(string processPath)
-        {
-            try { Process.Start(processPath); }
-            catch { Printer.Warning($"Failed to start process {processPath}"); }
         }
     }
 }

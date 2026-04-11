@@ -11,7 +11,6 @@ namespace GameServer.Commands
         {
             Prefix = "deeplist";
             Description = "Shows a list of all server players";
-            ParameterCount = 0;
         }
 
         public override void Action() 

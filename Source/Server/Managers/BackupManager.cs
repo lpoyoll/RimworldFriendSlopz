@@ -124,9 +124,7 @@ namespace GameServer.Managers
                 while (true)
                 {
                     Thread.Sleep(TimeSpan.FromHours(Master.BackupConfig.IntervalHours));
-
-                    try { BackupServer(); }
-                    catch (Exception e) { Printer.Error($"Backup tick failed, this should never happen. Exception > {e}"); }
+                    BackupServer();
                 }
             }
         }

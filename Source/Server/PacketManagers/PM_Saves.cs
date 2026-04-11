@@ -61,8 +61,8 @@ namespace GameServer.PacketManager
             if (client != null) client.Listener.MarkForDisconnect();
 
             // Delete save file
-            try { File.Delete(Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat)); }
-            catch { Printer.Warning($"Failed to find {client.UserFile.Username}'s save"); }
+            string path = Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat);
+            if (File.Exists(path)) File.Delete(path);
 
             // Delete site files
             SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);

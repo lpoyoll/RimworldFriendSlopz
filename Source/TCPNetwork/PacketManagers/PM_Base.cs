@@ -15,32 +15,31 @@ namespace TCPNetwork.PacketManagers
 
         public static Dictionary<PacketHeader, object[]> PacketDictionary { get; set; } = new Dictionary<PacketHeader, object[]>();
 
-        public static void CacheAllPackets()
+        public enum AssemblyType { Client, Server }
+
+        public static void CacheAllPackets(AssemblyType assembly)
         {
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(fetch => fetch.GetCustomAttribute<ManagesPacket>() != null))
             {
                 MethodInfo method = type.GetMethod("Receive", BindingFlags.Instance | BindingFlags.Public);
                 HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
-                if (attribute != null) GeneratePacketInstance(attribute.header, type, method);
+                if (attribute != null)
+                {
+                    PacketDictionary.Add(attribute.header, new object[] { Activator.CreateInstance(type), method });
+                    if (assembly == AssemblyType.Server) Printer.Warning($"Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme);
+                }
             }
 
             foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.GetCustomAttribute<ManagesPacket>() != null))
             {
                 MethodInfo method = type.GetMethod("Receive", BindingFlags.Instance | BindingFlags.Public);
                 HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
-                if (attribute != null) GeneratePacketInstance(attribute.header, type, method);
+                if (attribute != null)
+                {
+                    PacketDictionary.Add(attribute.header, new object[] { Activator.CreateInstance(type), method });
+                    if (assembly == AssemblyType.Server) Printer.Warning($"Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme);
+                }
             }
-        }
-
-        private static void GeneratePacketInstance(PacketHeader header, Type type, MethodInfo method)
-        {
-            try { PacketDictionary.Add(header, new object[] { Activator.CreateInstance(type), method }); }
-            catch (Exception ex) { Printer.Error(ex); }
-
-            // Putting trycatch because the client can freak out during boot and cause issues printing
-
-            try { Printer.Warning($"Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme); }
-            catch { }
         }
     }
 }

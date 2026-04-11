@@ -36,7 +36,7 @@ namespace GameServer.Core
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
             CMD_Base.GetAllCommands();
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
-            PM_Base.CacheAllPackets();
+            PM_Base.CacheAllPackets(PM_Base.AssemblyType.Server);
             Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
 
             ServerNetwork.StartFeature();

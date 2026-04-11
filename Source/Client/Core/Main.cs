@@ -24,7 +24,7 @@ namespace GameClient.Core
                 PreparePaths();
 
                 MethodGatherer.CacheAllMethods();
-                PM_Base.CacheAllPackets();
+                PM_Base.CacheAllPackets(PM_Base.AssemblyType.Client);
 
                 CreateUnityDispatcher();
                 HarmonyHandler.EnableStartPatches();
