@@ -45,9 +45,13 @@ namespace GameServer.PacketManager
 
         public static void ReceiveWorld(ServerClient client, PKT_World data)
         {
-            Master.WorldValues = data.File;
-            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
-            InformationDisplayer.DisplaySetWorld(client);
+            if (!client.UserFile.IsAdmin) client.Listener.MarkForDisconnect();
+            else
+            {
+                Master.WorldValues = data.File;
+                PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
+                InformationDisplayer.DisplaySetWorld(client);
+            }
         }
     }
 }
