@@ -66,6 +66,8 @@ namespace GameServer.PacketManager
 
         private static void PostLogin(ServerClient client)
         {
+            client.VerifyUser();
+
             UserManager.SendPlayerRecount();
 
             GlobalDataManager.SendServerGlobalData(client);

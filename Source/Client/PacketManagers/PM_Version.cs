@@ -35,9 +35,10 @@ namespace GameClient.PacketManagers
 
         public static void SendClientVersion()
         {
+            Network.ServerEndpoint.TargetClient.VerifyUser();
+
             PKT_Version data = new PKT_Version();
             data._version = CommonValues.ExecutableVersion;
-
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.VersionManager, data);
         }
 

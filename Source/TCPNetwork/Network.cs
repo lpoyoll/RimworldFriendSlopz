@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using TCPNetwork.Files.Client;
 using static Shared.Misc.Printer;
@@ -38,6 +39,13 @@ namespace TCPNetwork
 
         public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAliveManager };
 
+        public static readonly PacketHeader[] PreVerifyHeaders = 
+        { 
+            PacketHeader.KeepAliveManager,
+            PacketHeader.VersionManager,
+            PacketHeader.LoginManager
+        };
+
         public static void ReadFullPacket(Stream stream, byte[] content)
         {
             int readBytes = 0;
@@ -57,6 +65,16 @@ namespace TCPNetwork
         public static bool CheckForPacketSize(ServerClient client, byte[] buffer)
         {
             if (BitConverter.ToInt32(buffer, 0) < MaxPacketSize) return true;
+            else
+            {
+                client.Listener.MarkForDisconnect();
+                return false;
+            }
+        }
+
+        public static bool CheckIfPacketIsValidated(ServerClient client, PacketHeader header)
+        {
+            if (client.IsVerified || Network.PreVerifyHeaders.Contains(header)) return true;
             else
             {
                 client.Listener.MarkForDisconnect();

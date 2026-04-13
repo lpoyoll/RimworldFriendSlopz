@@ -9,6 +9,8 @@ namespace TCPNetwork.Files.Client
     {
         public string CurrentIP { get; set; } = string.Empty;
 
+        public bool IsVerified { get; private set; } = false;
+
         public UserFile UserFile { get; set; } = null;
 
         public Listener Listener { get; set; } = null;
@@ -32,6 +34,8 @@ namespace TCPNetwork.Files.Client
         public void CreateListener() { Listener = new Listener(this, Tcp, Ruleset); }
 
         public void DisposeTCP() { Tcp.Dispose(); }
+
+        public void VerifyUser() { IsVerified = true; }
 
         public void LoadUserFromFile(ServerClient client) 
         { 

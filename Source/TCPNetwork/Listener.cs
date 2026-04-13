@@ -15,7 +15,7 @@ namespace TCPNetwork
 {
     public class Listener
     {
-        private ServerClient TargetClient { get; set; } = null;
+        public ServerClient TargetClient { get; private set; } = null;
 
         private TcpClient Connection { get; set; } = null;
 
@@ -108,7 +108,8 @@ namespace TCPNetwork
                 else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
 
                 // Execute ruleset action
-                Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient);
+                if (Network.CheckIfPacketIsValidated(TargetClient, header)) Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient);
+                else return;
 
                 // Reset KeepAlive
                 LastKAReceivedPacket = DateTime.Now;
