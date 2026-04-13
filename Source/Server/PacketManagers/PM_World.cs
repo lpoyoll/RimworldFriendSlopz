@@ -30,7 +30,6 @@ namespace GameServer.PacketManager
         {
             PKT_World worldData = new PKT_World();
             worldData._stepMode = WorldStepMode.AskFor;
-
             client.Listener.EnqueuePacket(PacketHeader.WorldManager, worldData);
         }
 
