@@ -86,20 +86,20 @@ namespace TCPNetwork
 
         private void Read()
         {
-            byte[] headerBuffer = new byte[sizeof(PacketHeader)];
-            byte[] lengthBuffer = new byte[Network.PacketLengthSizeInBytes];
-            byte[] packetBuffer = new byte[Network.PacketLengthSizeInBytes];
-
             if (Stream.DataAvailable)
             {
                 // Read packet header
+                byte[] headerBuffer = new byte[sizeof(PacketHeader)];
                 Stream.Read(headerBuffer, 0, headerBuffer.Length);
                 PacketHeader header = (PacketHeader)headerBuffer[0];
 
                 // Read packet size
+                byte[] lengthBuffer = new byte[sizeof(int)];
                 Stream.Read(lengthBuffer, 0, lengthBuffer.Length);
+                if (!Network.CheckForPacketSize(TargetClient, lengthBuffer)) return;
 
                 // Read packet contents
+                byte[] packetBuffer = new byte[sizeof(int)];
                 packetBuffer = new byte[BitConverter.ToInt32(lengthBuffer, 0)];
                 Network.ReadFullPacket(Stream, packetBuffer);
 
@@ -117,14 +117,13 @@ namespace TCPNetwork
 
         private void Write()
         {
-            byte[] headerBuffer = new byte[sizeof(PacketHeader)];
-
             while (PacketQueue.Count > 0)
             {
                 if (!PacketQueue.TryDequeue(out KeyValuePair<byte, PKT_Base> pair)) return;
                 else
                 {
                     // Write packet header
+                    byte[] headerBuffer = new byte[sizeof(PacketHeader)];
                     headerBuffer[0] = (byte)pair.Value.Header;
                     Stream.Write(headerBuffer, 0, headerBuffer.Length);
 

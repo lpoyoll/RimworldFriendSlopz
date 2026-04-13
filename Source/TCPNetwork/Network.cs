@@ -12,8 +12,6 @@ namespace TCPNetwork
 {
     public class Network
     {
-        public const int PacketLengthSizeInBytes = sizeof(int);
-
         public static string Ip { get; set; } = string.Empty;
 
         public static int Port { get; set; } = int.MaxValue;
@@ -29,6 +27,8 @@ namespace TCPNetwork
         public static int BrowserServerPort { get; set; } = 7777;
 
         public static int BrowserClientPort { get; set; } = 7778;
+
+        public static readonly int MaxPacketSize = 8388608;
 
         public static ConcurrentDictionary<ServerClient, int> ServerClients { get; private set; } = new ConcurrentDictionary<ServerClient, int>();
 
@@ -52,6 +52,16 @@ namespace TCPNetwork
                 }
             }
             catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
+        }
+
+        public static bool CheckForPacketSize(ServerClient client, byte[] buffer)
+        {
+            if (BitConverter.ToInt32(buffer, 0) < MaxPacketSize) return true;
+            else
+            {
+                client.Listener.MarkForDisconnect();
+                return false;
+            }
         }
     }
 }
