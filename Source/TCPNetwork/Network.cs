@@ -43,7 +43,9 @@ namespace TCPNetwork
         { 
             PacketHeader.KeepAliveManager,
             PacketHeader.VersionManager,
-            PacketHeader.LoginManager
+            PacketHeader.LoginManager,
+            PacketHeader.ServerBrowserListing,
+            PacketHeader.ServerBrowserTelemetry
         };
 
         public static void ReadFullPacket(Stream stream, byte[] content)
