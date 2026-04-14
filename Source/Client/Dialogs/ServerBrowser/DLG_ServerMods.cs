@@ -9,16 +9,16 @@ using Verse;
 
 namespace GameClient.Dialogs.ServerBrowser
 {
-    public class DLG_ServerListing : DLG_Base
+    public class DLG_ServerMods : DLG_Base
     {
         public override Vector2 InitialSize => new Vector2(600f, 400f);
 
         public PKT_ServerTelemetry Element { get; private set; } = null;
 
-        public DLG_ServerListing(PKT_ServerTelemetry element)
+        public DLG_ServerMods(PKT_ServerTelemetry element)
         {
             this.Element = element;
-            this.Title = Element.Name;
+            this.Title = "Server Mods";
         }
 
         public override void DoWindowContents(Rect rect)
@@ -34,25 +34,9 @@ namespace GameClient.Dialogs.ServerBrowser
 
             Text.Font = GameFont.Small;
 
-            Rect toUse = new Rect(rect.x, descriptionLineDif1 + 10f, rect.width, rect.height - SlimButtonSize.y - 50f);
-            Widgets.DrawBox(toUse);
-            Widgets.TextArea(toUse, Element.Description, true);
+            FillMainRect(new Rect(rect.x, descriptionLineDif1 + 10f, rect.width, rect.height - SlimButtonSize.y - 50f));
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomLeft), "Connect"))
-            {
-                Network.Ip = Element.Endpoint;
-                Network.Port = Element.Port;
-                ClientNetwork.StartFeature();
-
-                Close();
-            }
-
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter), "Mods"))
-            {
-                DLG_Base.PushNewDialog(new DLG_ServerMods(Element));
-            }
-
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight), "Close")) Close();
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter), "Close")) Close();
         }
 
         private void FillMainRect(Rect mainRect)
