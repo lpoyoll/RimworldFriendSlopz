@@ -24,10 +24,18 @@ namespace GameServer.Managers
             }
         }
 
-        public static void SendUnavailablePacket(ServerClient client)
+        public static void SendUserUnavailablePacket(ServerClient client)
         {
             PKT_ResponseShortcut data = new PKT_ResponseShortcut();
             data._stepMode = ResponseStepMode.UserUnavailable;
+
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+        }
+
+        public static void SendUnavailablePacket(ServerClient client)
+        {
+            PKT_ResponseShortcut data = new PKT_ResponseShortcut();
+            data._stepMode = ResponseStepMode.Unavailable;
 
             client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
         }

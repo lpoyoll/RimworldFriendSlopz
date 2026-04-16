@@ -17,7 +17,7 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.RoadManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!PlayerCooldown.CheckIfCanRoad(client.UserFile, Master.ActionConfigs.RoadsAction)) return;
+            if (!PlayerCooldown.CheckIfCanRoad(client.UserFile, Master.ActionConfigs.RoadsAction)) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 PKT_Road data = Serializer.ConvertBytesToObject<PKT_Road>(bytes);

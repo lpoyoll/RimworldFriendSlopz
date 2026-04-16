@@ -51,7 +51,7 @@ namespace GameServer.PacketManagers
             SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            if (toFind == null) ResponseShortcutManager.SendUnavailablePacket(client);
+            if (toFind == null) ResponseShortcutManager.SendUserUnavailablePacket(client);
             else
             {
                 PKT_Synchronous _ = new PKT_Synchronous();

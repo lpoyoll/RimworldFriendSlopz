@@ -28,13 +28,13 @@ namespace TCPNetwork.Files.Client
 
         public bool IsBanned { get; set; } = false;
 
-        public ServerClient SynchronousClient { get; set; } = null;
-
         public PlayerCooldown Cooldowns { get; set; } = new PlayerCooldown();
 
         public List<PlayerGoodwill> Goodwills { get; set; } = new List<PlayerGoodwill>();
 
         public List<PlayerSiteConfig> SiteConfigs { get; set; } = new List<PlayerSiteConfig>();
+
+        public ServerClient SynchronousClient { get; set; } = null;
 
         private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 

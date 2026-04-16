@@ -4,6 +4,6 @@ namespace TCPNetwork.Packets
     {
         public ResponseStepMode _stepMode { get; set; } = ResponseStepMode.IllegalAction;
 
-        public enum ResponseStepMode { IllegalAction, UserUnavailable, Pop, NoPower }
+        public enum ResponseStepMode { IllegalAction, UserUnavailable, Pop, NoPower, Unavailable }
     }
 }

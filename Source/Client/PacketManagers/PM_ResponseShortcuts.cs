@@ -27,6 +27,11 @@ namespace GameClient.PacketManagers
                     DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Player is not currently available!" }));
                     break;
 
+                case ResponseStepMode.Unavailable:
+                    DLG_Wait.Instance.Close();
+                    DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Action is not currently available!" }));
+                    break;
+
                 case ResponseStepMode.NoPower:
                     DLG_Wait.Instance.Close();
                     DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You don't have enough power for this action!" }));
