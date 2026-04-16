@@ -6,6 +6,7 @@ using Shared.Files;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static TCPNetwork.Packets.PKT_Aid;
 
 namespace GameServer.PacketManager
@@ -15,31 +16,30 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.AidManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.AidAction.IsEnabled)
-            {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
-            }
-
             PKT_Aid data = Serializer.ConvertBytesToObject<PKT_Aid>(bytes);
 
-            switch (data._stepMode)
+            if (!PlayerCooldown.CheckIfCanAid(client.UserFile, Master.ActionConfigs.AidAction))
             {
-                case AidStepMode.Send:
-                    SendAidRequest(client, data);
-                    break;
+                data._stepMode = AidStepMode.Reject;
+                client.Listener.EnqueuePacket(PacketHeader.AidManager, data);
+            }
 
-                case AidStepMode.Receive:
-                    //Empty
-                    break;
+            else
+            {
+                switch (data._stepMode)
+                {
+                    case AidStepMode.Send:
+                        SendAidRequest(client, data);
+                        break;
 
-                case AidStepMode.Accept:
-                    SendAidAccept(client, data);
-                    break;
+                    case AidStepMode.Accept:
+                        SendAidAccept(client, data);
+                        break;
 
-                case AidStepMode.Reject:
-                    SendAidReject(client, data);
-                    break;
+                    case AidStepMode.Reject:
+                        SendAidReject(client, data);
+                        break;
+                }
             }
         }
 
@@ -51,19 +51,9 @@ namespace GameServer.PacketManager
                 SettlementFile settlementFile = PM_Settlements.GetSettlementFileFromTile(data._toTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
+                    data._stepMode = AidStepMode.Receive;
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlementFile.Username);
-                    
-                    if (!PlayerCooldown.CheckIfCanAid(target.UserFile, Master.ActionConfigs.AidAction.IsEnabled, Master.ActionConfigs.AidAction.Cooldown))
-                    {
-                        data._stepMode = AidStepMode.Reject;
-                        client.Listener.EnqueuePacket(PacketHeader.AidManager, data);
-                    }
-
-                    else
-                    {
-                        data._stepMode = AidStepMode.Receive;
-                        target.Listener.EnqueuePacket(PacketHeader.AidManager, data);
-                    }
+                    target.Listener.EnqueuePacket(PacketHeader.AidManager, data);
                 }
 
                 else
@@ -82,7 +72,7 @@ namespace GameServer.PacketManager
                 SettlementFile settlementFile = PM_Settlements.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
-                    client.UserFile.Cooldowns.SetAidTimer(TimeConverter.GetCurrentTimeToEpoch(), client.UserFile);
+                    client.UserFile.Cooldowns.SetAidTimer(client.UserFile);
 
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlementFile.Username);
                     target.Listener.EnqueuePacket(PacketHeader.AidManager, data);

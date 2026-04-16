@@ -10,6 +10,10 @@ namespace GameServer.Files
 
         public string Description { get; set; } = "My new Rimworld Together Server!";
 
+        public string DiscordURL { get; set; } = string.Empty;
+
+        public string SteamWorkshopURL { get; set; } = string.Empty;
+
         public string IP { get; set; } = "0.0.0.0";
 
         public int Port { get; set; } = 25555;

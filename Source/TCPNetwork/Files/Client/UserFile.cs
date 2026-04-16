@@ -1,6 +1,7 @@
 ﻿using Shared;
 using Shared.Files.Guilds;
 using Shared.Files.Sites;
+using Shared.Misc;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +34,7 @@ namespace TCPNetwork.Files.Client
 
         public List<PlayerGoodwill> Goodwills { get; set; } = new List<PlayerGoodwill>();
 
-        public PlayerSiteConfig[] SiteConfigs { get; set; } = Array.Empty<PlayerSiteConfig>();
+        public List<PlayerSiteConfig> SiteConfigs { get; set; } = new List<PlayerSiteConfig>();
 
         private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 
@@ -91,17 +92,16 @@ namespace TCPNetwork.Files.Client
 
         public void UpdateSiteConfigs(List<SiteType> configs)
         {
-            List<PlayerSiteConfig> newConfigs = new List<PlayerSiteConfig>();
             foreach (SiteType type in configs)
             {
-                PlayerSiteConfig newConfig = new PlayerSiteConfig();
-                newConfig.DefName = type.DefName;
-                newConfig.Reward = type.Rewards[0];
-
-                newConfigs.Add(newConfig);
+                if (SiteConfigs.FirstOrDefault(fetch => fetch.DefName == type.DefName) == null)
+                {
+                    PlayerSiteConfig newConfig = new PlayerSiteConfig();
+                    newConfig.DefName = type.DefName;
+                    newConfig.Reward = type.Rewards[0];
+                    SiteConfigs.Add(newConfig);
+                }
             }
-
-            SiteConfigs = newConfigs.ToArray();
 
             SaveUserFile();
         }

@@ -8,6 +8,7 @@ using Shared.Misc;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static TCPNetwork.Packets.PKT_Event;
 
 namespace GameServer.PacketManager
@@ -17,23 +18,26 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.EventManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EventAction.IsEnabled)
-            {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
-            }
-
             PKT_Event data = Serializer.ConvertBytesToObject<PKT_Event>(bytes);
 
-            switch (data._stepMode)
+            if (!PlayerCooldown.CheckIfCanEvent(client.UserFile, Master.ActionConfigs.EventAction))
             {
-                case EventStepMode.Send:
-                    SendEvent(client, data);
-                    break;
+                data._stepMode = EventStepMode.Recover;
+                client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+            }
 
-                case EventStepMode.Set:
-                    SetEvents(client, data);
-                    break;
+            else
+            {
+                switch (data._stepMode)
+                {
+                    case EventStepMode.Send:
+                        SendEvent(client, data);
+                        break;
+
+                    case EventStepMode.Set:
+                        SetEvents(client, data);
+                        break;
+                }
             }
         }
 
@@ -53,26 +57,17 @@ namespace GameServer.PacketManager
                 {
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-                    if (!PlayerCooldown.CheckIfCanEvent(target.UserFile, Master.ActionConfigs.EventAction.IsEnabled, Master.ActionConfigs.EventAction.Cooldown))
-                    {
-                        data._stepMode = EventStepMode.Recover;
-                        client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
-                    }
+                    //Back to player
 
-                    else
-                    {
-                        //Back to player
+                    client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
 
-                        client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+                    //To the person that should receive it
 
-                        //To the person that should receive it
+                    data._stepMode = EventStepMode.Receive;
 
-                        data._stepMode = EventStepMode.Receive;
+                    target.UserFile.Cooldowns.SetEventTimer(target.UserFile);
 
-                        target.UserFile.Cooldowns.SetEventTimer(TimeConverter.GetCurrentTimeToEpoch(), target.UserFile);
-
-                        target.Listener.EnqueuePacket(PacketHeader.EventManager, data);
-                    }
+                    target.Listener.EnqueuePacket(PacketHeader.EventManager, data);
                 }
             }
         }

@@ -2,11 +2,11 @@
 
 namespace Shared.Files.Actions
 {
-    public class RoadsAction : BaseAction
+    public class ACT_Roads : ACT_Base
     {
-        public bool IsEnabled { get; set; } = true;
+        public override bool IsEnabled { get; set; } = true;
 
-        public double Cooldown { get; set; } = -1;
+        public override double Cooldown { get; set; } = 1000;
 
         public RoadsConfigFile RoadValues { get; set; } = new RoadsConfigFile();
     }

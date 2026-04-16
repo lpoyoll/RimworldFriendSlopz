@@ -17,23 +17,20 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.RoadManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.RoadsAction.IsEnabled)
+            if (!PlayerCooldown.CheckIfCanRoad(client.UserFile, Master.ActionConfigs.RoadsAction)) return;
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
-            }
+                PKT_Road data = Serializer.ConvertBytesToObject<PKT_Road>(bytes);
+                switch (data._stepMode)
+                {
+                    case RoadStepMode.Add:
+                        AddRoad(client, data);
+                        break;
 
-            PKT_Road data = Serializer.ConvertBytesToObject<PKT_Road>(bytes);
-
-            switch (data._stepMode)
-            {
-                case RoadStepMode.Add:
-                    AddRoad(client, data);
-                    break;
-
-                case RoadStepMode.Remove:
-                    RemoveRoad(client, data);
-                    break;
+                    case RoadStepMode.Remove:
+                        RemoveRoad(client, data);
+                        break;
+                }
             }
         }
 
@@ -46,8 +43,8 @@ namespace GameServer.PacketManager
             }
 
             SaveRoad(data._details, client);
-
             ServerNetwork.SendPacketToAllClients(PacketHeader.RoadManager, data);
+            client.UserFile.Cooldowns.SetRoadTimer(client.UserFile);
         }
 
         private static void RemoveRoad(ServerClient client, PKT_Road data)
@@ -63,23 +60,24 @@ namespace GameServer.PacketManager
                 if (existingRoad.FromTile == data._details.FromTile && existingRoad.ToTile == data._details.ToTile)
                 {
                     DeleteRoad(existingRoad, client);
-                    BroadcastDeletion(existingRoad);
+                    PostDelete(existingRoad);
                     return;
                 }
 
                 else if (existingRoad.FromTile == data._details.ToTile && existingRoad.ToTile == data._details.FromTile)
                 {
                     DeleteRoad(existingRoad, client);
-                    BroadcastDeletion(existingRoad);
+                    PostDelete(existingRoad);
                     return;
                 }
 
                 else continue;
             }
 
-            void BroadcastDeletion(RoadDetail toRemove)
+            void PostDelete(RoadDetail toRemove)
             {
                 ServerNetwork.SendPacketToAllClients(PacketHeader.RoadManager, data);
+                client.UserFile.Cooldowns.SetRoadTimer(client.UserFile);
             }
         }
 

@@ -101,6 +101,8 @@ namespace GameServer.Hooks.ServerBrowser
             PKT_ServerTelemetry telemetry = new PKT_ServerTelemetry();
             telemetry.Name = Master.ServerConfig.Name;
             telemetry.Description = Master.ServerConfig.Description;
+            telemetry.DiscordURL = Master.ServerConfig.DiscordURL;
+            telemetry.SteamWorkshopURL = Master.ServerConfig.SteamWorkshopURL;
             telemetry.Version = CommonValues.ExecutableVersion;
             telemetry.Endpoint = ServerIPV4;
             telemetry.Port = Master.ServerConfig.Port;

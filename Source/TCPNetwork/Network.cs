@@ -29,7 +29,7 @@ namespace TCPNetwork
 
         public static int BrowserClientPort { get; set; } = 7778;
 
-        public static readonly int MaxPacketSize = 8388608;
+        public static readonly int MaxPacketSize = 16777216;
 
         public static ConcurrentDictionary<ServerClient, int> ServerClients { get; private set; } = new ConcurrentDictionary<ServerClient, int>();
 

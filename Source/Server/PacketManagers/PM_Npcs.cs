@@ -17,23 +17,20 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.NPCManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EnableNPCDestruction)
+            if (!PlayerCooldown.CheckIfCanNPC(client.UserFile, Master.ActionConfigs.NPCAction)) return;
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
-            }
+                PKT_NPCSettlement data = Serializer.ConvertBytesToObject<PKT_NPCSettlement>(bytes);
+                switch (data._stepMode)
+                {
+                    case SettlementStepMode.Add:
+                        ResponseShortcutManager.SendIllegalPacket(client, "Tried to execute unimplemented action");
+                        break;
 
-            PKT_NPCSettlement data = Serializer.ConvertBytesToObject<PKT_NPCSettlement>(bytes);
-
-            switch (data._stepMode)
-            {
-                case SettlementStepMode.Add:
-                    ResponseShortcutManager.SendIllegalPacket(client, "Tried to execute unimplemented action");
-                    break;
-
-                case SettlementStepMode.Remove:
-                    RemoveNPCSettlement(client, data._settlementData);
-                    break;
+                    case SettlementStepMode.Remove:
+                        RemoveNPCSettlement(client, data._settlementData);
+                        break;
+                }
             }
         }
 
@@ -50,6 +47,8 @@ namespace GameServer.PacketManager
 
                 BroadcastSettlementDeletion(settlement);
 
+                client.UserFile.Cooldowns.SetNPCTimer(client.UserFile);
+
                 Printer.Warning($"[Delete NPC settlement] > {settlement.Tile} > {client.UserFile.Username}");
             }
         }
@@ -58,6 +57,7 @@ namespace GameServer.PacketManager
         {
             List<NPCSettlementDetail> finalSettlements = Master.WorldValues.NPCSettlements.ToList();
             finalSettlements.Remove(NPCSettlementManagerHelper.GetSettlementFromTile(settlement.Tile));
+
             Master.WorldValues.NPCSettlements = finalSettlements;
             PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
         }

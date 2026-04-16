@@ -12,18 +12,18 @@
 
         public bool EnableCustomScenarios { get; set; } = true;
 
-        public bool EnableNPCDestruction { get; set; } = false;
+        public ACT_NPC NPCAction { get; set; } = new ACT_NPC();
 
-        public bool EnablePollutionSpread { get; set; } = true;
+        public ACT_Pollution PollutionAction { get; set; } = new ACT_Pollution();
 
-        public ActivityAction ActivityAction { get; set; } = new ActivityAction();
+        public ACT_Activity ActivityAction { get; set; } = new ACT_Activity();
 
-        public EventAction EventAction { get; set; } = new EventAction();
+        public ACT_Event EventAction { get; set; } = new ACT_Event();
 
-        public AidAction AidAction { get; set; } = new AidAction();
+        public ACT_Aid AidAction { get; set; } = new ACT_Aid();
 
-        public RoadsAction RoadsAction { get; set; } = new RoadsAction();
+        public ACT_Roads RoadsAction { get; set; } = new ACT_Roads();
 
-        public SiteAction SiteAction { get; set; } = new SiteAction();
+        public ACT_Site SiteAction { get; set; } = new ACT_Site();
     }
 }

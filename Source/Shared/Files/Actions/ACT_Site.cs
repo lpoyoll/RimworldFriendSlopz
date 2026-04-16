@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Shared.Files.Actions
 {
-    public class SiteAction : BaseAction
+    public class ACT_Site : ACT_Base
     {
-        public bool IsEnabled { get; set; } = true;
+        public override bool IsEnabled { get; set; } = true;
 
-        public double Cooldown { get; set; } = -1;
+        public override double Cooldown { get; set; } = -1;
 
         public double TimeInterval { get; set; } = 1800000;
 

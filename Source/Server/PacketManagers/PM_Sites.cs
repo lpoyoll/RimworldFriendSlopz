@@ -154,11 +154,7 @@ namespace GameServer.PacketManager
             client.UserFile.SaveUserFile();
         }
 
-        public static void SetSiteInfoForClient(ServerClient client)
-        {
-            if (client.UserFile.SiteConfigs.Length > 0) return;
-            else client.UserFile.UpdateSiteConfigs(Master.ActionConfigs.SiteAction.SiteTypes);
-        }
+        public static void SetSiteInfoForClient(ServerClient client) { client.UserFile.UpdateSiteConfigs(Master.ActionConfigs.SiteAction.SiteTypes); }
 
         public static List<SiteFile> GetSitesFromGoodwill(ServerClient client)
         {

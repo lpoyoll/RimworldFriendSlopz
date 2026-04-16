@@ -16,44 +16,37 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.PollutionManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EnablePollutionSpread)
+            if (!PlayerCooldown.CheckIfCanPollute(client.UserFile, Master.ActionConfigs.PollutionAction)) return;
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
+                PKT_Pollution data = Serializer.ConvertBytesToObject<PKT_Pollution>(bytes);
+                AddPollutionToTile(data, client);
             }
-
-            PKT_Pollution data = Serializer.ConvertBytesToObject<PKT_Pollution>(bytes);
-            AddPollutionToTile(data, client, true);
         }
 
-        public static void AddPollutionToTile(PKT_Pollution data, ServerClient client, bool shouldBroadcast)
+        public static void AddPollutionToTile(PKT_Pollution data, ServerClient client)
         {
-            try
+            bool isNewPollutedTile = false;
+            PollutionDetail toSearch = Master.WorldValues.PollutedTiles.FirstOrDefault(T => T.Tile == data._pollutionData.Tile);
+            if (toSearch == null)
             {
-                bool isNewPollutedTile = false;
-
-                PollutionDetail toSearch = Master.WorldValues.PollutedTiles.FirstOrDefault(T => T.Tile == data._pollutionData.Tile);
-                if (toSearch == null)
-                {
-                    toSearch = new PollutionDetail();
-                    isNewPollutedTile = true;
-                }
-
-                toSearch.Tile = data._pollutionData.Tile;
-                toSearch.Quantity += data._pollutionData.Quantity;
-
-                if (isNewPollutedTile)
-                {
-                    List<PollutionDetail> existingPollutedTiles = Master.WorldValues.PollutedTiles.ToList();
-                    existingPollutedTiles.Add(toSearch);
-                    Master.WorldValues.PollutedTiles = existingPollutedTiles;
-                }
-
-                if (shouldBroadcast) ServerNetwork.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
-
-                PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
+                toSearch = new PollutionDetail();
+                isNewPollutedTile = true;
             }
-            catch { Printer.Warning($"Could not add pollution to tile {data}. Coming from {client.UserFile.Username}"); }
+
+            toSearch.Tile = data._pollutionData.Tile;
+            toSearch.Quantity += data._pollutionData.Quantity;
+
+            if (isNewPollutedTile)
+            {
+                List<PollutionDetail> existingPollutedTiles = Master.WorldValues.PollutedTiles.ToList();
+                existingPollutedTiles.Add(toSearch);
+                Master.WorldValues.PollutedTiles = existingPollutedTiles;
+            }
+
+            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
+            client.UserFile.Cooldowns.SetPollutionTimer(client.UserFile);
         }
     }
 }

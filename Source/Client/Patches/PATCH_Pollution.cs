@@ -48,7 +48,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(float pollutionAmount)
         {
-            if (!SessionHandler.CurrentActionValues.EnablePollutionSpread) return;
+            if (!SessionHandler.CurrentActionValues.PollutionAction.IsEnabled) return;
             else if (addedByServer) addedByServer = false;
             else
             {

@@ -43,7 +43,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(Settlement __instance)
         {
-            if (!SessionHandler.CurrentActionValues.EnableNPCDestruction) return;
+            if (!SessionHandler.CurrentActionValues.NPCAction.IsEnabled) return;
             else
             {
                 if (__instance.Faction == Faction.OfPlayer) return;
