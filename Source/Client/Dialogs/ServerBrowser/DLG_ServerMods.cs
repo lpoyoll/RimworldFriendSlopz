@@ -1,6 +1,8 @@
-﻿using GameClient.Hooks.TCPNetwork;
+﻿using GameClient.Dialogs.Default;
+using GameClient.Hooks.TCPNetwork;
 using Shared.Files.Configs.Mods;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using TCPNetwork;
 using TCPNetwork.Packets.ServerBrowser;
@@ -36,7 +38,9 @@ namespace GameClient.Dialogs.ServerBrowser
 
             FillMainRect(new Rect(rect.x, descriptionLineDif1 + 10f, rect.width, rect.height - SlimButtonSize.y - 50f));
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter), "Close")) Close();
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomLeft), "Download")) OpenWorkshop();
+
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight), "Close")) Close();
         }
 
         private void FillMainRect(Rect mainRect)
@@ -71,6 +75,23 @@ namespace GameClient.Dialogs.ServerBrowser
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, $"{element.FileName}");
+        }
+
+        private void OpenWorkshop()
+        {
+            if (!CheckIfLinkIsValid()) DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Workshop link wasn't specified" }));
+            else
+            {
+                DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Workshop link was opened in your browser" }));
+                Process.Start(Element.SteamWorkshopURL);
+            }
+        }
+
+        private bool CheckIfLinkIsValid()
+        {
+            if (string.IsNullOrEmpty(Element.SteamWorkshopURL)) return false;
+            else if (!Element.SteamWorkshopURL.StartsWith("https://steamcommunity.com/sharedfiles/filedetails/?id=")) return false;
+            else return true;
         }
     }
 }

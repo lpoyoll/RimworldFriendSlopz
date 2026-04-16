@@ -21,6 +21,10 @@ namespace TCPNetwork.Packets.ServerBrowser
 
         public int MaxPopulation { get; set; } = int.MaxValue;
 
+        public string SteamWorkshopURL { get; set; } = string.Empty;
+
+        public string DiscordURL { get; set; } = string.Empty;
+
         public bool IsPrivate { get; set; } = false;
 
         public List<ModConfig> Mods { get; set; } = new List<ModConfig>();
