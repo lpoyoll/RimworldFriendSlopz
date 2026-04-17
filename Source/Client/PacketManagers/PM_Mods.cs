@@ -1,7 +1,8 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
 using Shared;
-using Shared.Files.Configs.Mods;
+using Shared.Files.Configs;
+using Shared.Files.Mods;
 using Shared.Misc;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,7 @@ using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using Verse;
-using static Shared.Files.Configs.Mods.ModConfigFile;
+using static Shared.Files.Configs.FL_ModConfig;
 using static Shared.Misc.Printer;
 using static TCPNetwork.Packets.PKT_ModConfig;
 
@@ -42,9 +43,9 @@ namespace GameClient.PacketManagers
 
     public class ModManagerH
     {
-        public static ModConfigFile GetRunningModList()
+        public static FL_ModConfig GetRunningModList()
         {
-            ModConfigFile configFile = new ModConfigFile();
+            FL_ModConfig configFile = new FL_ModConfig();
 
             ModContentPack[] runningMods = LoadedModManager.RunningMods.ToArray();
             foreach (ModContentPack mod in runningMods)
@@ -61,9 +62,9 @@ namespace GameClient.PacketManagers
 
         public static void GetConflictingMods(PKT_Login data) { DLG_Base.PushNewDialog(new DLG_ModRejection(data._extraDetails)); }
 
-        public static ModConfigFile SortModsIntoCategories(List<ModConfig> mods, List<int> categoryIndexes)
+        public static FL_ModConfig SortModsIntoCategories(List<ModConfig> mods, List<int> categoryIndexes)
         {
-            ModConfigFile configFile = new ModConfigFile();
+            FL_ModConfig configFile = new FL_ModConfig();
 
             for (int i = 0; i < mods.Count; i++)
             {

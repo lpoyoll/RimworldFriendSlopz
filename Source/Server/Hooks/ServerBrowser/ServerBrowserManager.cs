@@ -1,7 +1,7 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using Shared;
-using Shared.Files.Configs.Mods;
+using Shared.Files.Configs;
 using Shared.Misc;
 using System.Net.Sockets;
 using System.Reflection;
@@ -109,7 +109,7 @@ namespace GameServer.Hooks.ServerBrowser
             telemetry.IsPrivate = mode == BrowserMode.Lite;
             telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
             telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
-            telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != ModConfigFile.ModType.Forbidden)
+            telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != FL_ModConfig.ModType.Forbidden)
                 .OrderBy(fetch => fetch.FileName).ToList();
             
             Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);

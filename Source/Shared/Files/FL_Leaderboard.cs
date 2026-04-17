@@ -2,7 +2,7 @@
 
 namespace Shared.Files
 {
-    public class LeaderboardFile : BaseFile
+    public class FL_Leaderboard : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
         

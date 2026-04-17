@@ -1,6 +1,6 @@
 namespace Shared.Files.Configs
 {
-    public class ScenarioConfigFile : BaseFile
+    public class FL_ScenarioConfig : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

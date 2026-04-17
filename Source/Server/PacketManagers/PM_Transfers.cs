@@ -52,7 +52,7 @@ namespace GameServer.PacketManager
             if (!PM_Settlements.CheckIfTileIsInUse(transferData.ToTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send items to a settlement at tile {transferData.ToTile}, but no settlement could be found");
             else
             {
-                SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(transferData.ToTile);
+                FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(transferData.ToTile);
 
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.Username)) 
                 {
@@ -78,7 +78,7 @@ namespace GameServer.PacketManager
         {
             PKT_Transfer transferData = Serializer.ConvertBytesToObject<PKT_Transfer>(bytes);
 
-            SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(transferData.FromTile);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(transferData.FromTile);
             if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
             {
                 transferData.CurrentStepMode = TransferStepMode.Recover;
@@ -96,7 +96,7 @@ namespace GameServer.PacketManager
         {
             PKT_Transfer transferData = Serializer.ConvertBytesToObject<PKT_Transfer>(bytes);
 
-            SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(transferData.ToTile);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(transferData.ToTile);
             if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
             {
                 transferData.CurrentStepMode = TransferStepMode.TradeReReject;
@@ -115,7 +115,7 @@ namespace GameServer.PacketManager
         {
             PKT_Transfer transferData = Serializer.ConvertBytesToObject<PKT_Transfer>(bytes);
 
-            SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(transferData.FromTile);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(transferData.FromTile);
             if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
             {
                 transferData.CurrentStepMode = TransferStepMode.Recover;
@@ -133,7 +133,7 @@ namespace GameServer.PacketManager
         {
             PKT_Transfer transferData = Serializer.ConvertBytesToObject<PKT_Transfer>(bytes);
 
-            SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(transferData.FromTile);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(transferData.FromTile);
             if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
             {
                 transferData.CurrentStepMode = TransferStepMode.Recover;

@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Shared.Files
 {
-    public abstract class BaseFile
+    public abstract class FL_Base
     {
         private static Semaphore Semaphore { get; set; } = new Semaphore(1, 1);
 

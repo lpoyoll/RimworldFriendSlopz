@@ -20,7 +20,7 @@ namespace GameServer.Commands
 
         public override void Action()
         {
-            EventFile toFind = EventManagerH.LoadedEvents.FirstOrDefault(fetch => fetch.DefName == CMD_Base.CommandParameters[0]);
+            FL_Event toFind = EventManagerH.LoadedEvents.FirstOrDefault(fetch => fetch.DefName == CMD_Base.CommandParameters[0]);
             if (toFind == null) Printer.Warning($"Event '{CMD_Base.CommandParameters[0]}' was not found");
             else
             {

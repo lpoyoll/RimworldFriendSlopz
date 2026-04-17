@@ -1,6 +1,6 @@
 namespace Shared.Files
 {
-    public class EventFile
+    public class FL_Event
     {
         public string Name { get; set; } = string.Empty;
 

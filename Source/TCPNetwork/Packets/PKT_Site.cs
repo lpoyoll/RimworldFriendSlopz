@@ -8,7 +8,7 @@ namespace TCPNetwork.Packets
 
         public SiteStepMode _stepMode { get; set; } = SiteStepMode.Accept;
 
-        public SiteFile _file { get; set; } = new SiteFile();
+        public Site _file { get; set; } = new Site();
 
         public PKT_SiteRewardConfig _rewardConfig { get; set; } = null;
 

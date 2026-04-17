@@ -7,6 +7,6 @@ namespace TCPNetwork.Packets
     {
         public SettlementStepMode _stepMode { get; set; } = SettlementStepMode.Add;
 
-        public SettlementFile _settlementFile { get; set; } = new SettlementFile();
+        public FL_Settlement _settlementFile { get; set; } = new FL_Settlement();
     }
 }

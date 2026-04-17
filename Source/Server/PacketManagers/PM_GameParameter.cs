@@ -38,10 +38,10 @@ namespace GameServer.PacketManager
             if (!client.UserFile.IsAdmin && Master.WorldValues != null) ResponseShortcutManager.SendIllegalPacket(client, "Illegal setting of scenario!");
             else
             {
-                ScenarioConfigFile file = Serializer.ConvertBytesToObject<ScenarioConfigFile>(bytes);
+                FL_ScenarioConfig file = Serializer.ConvertBytesToObject<FL_ScenarioConfig>(bytes);
 
                 Master.ScenarioValues = file;
-                ScenarioConfigFile.Save(ScenarioConfigFile.SavePath, file);
+                FL_ScenarioConfig.Save(FL_ScenarioConfig.SavePath, file);
                 InformationDisplayer.DisplaySetScenario(client.UserFile.Username);
             }
         }
@@ -51,10 +51,10 @@ namespace GameServer.PacketManager
             if (!client.UserFile.IsAdmin && Master.WorldValues != null) ResponseShortcutManager.SendIllegalPacket(client, "Illegal setting of storyteller!");
             else
             {
-                StorytellerConfigFile file = Serializer.ConvertBytesToObject<StorytellerConfigFile>(bytes);
+                FL_StorytellerConfig file = Serializer.ConvertBytesToObject<FL_StorytellerConfig>(bytes);
 
                 Master.StorytellerValues = file;
-                StorytellerConfigFile.Save(StorytellerConfigFile.SavePath, file);
+                FL_StorytellerConfig.Save(FL_StorytellerConfig.SavePath, file);
                 InformationDisplayer.DisplaySetStoryteller(client.UserFile.Username);
             }
         }
@@ -64,10 +64,10 @@ namespace GameServer.PacketManager
             if (!client.UserFile.IsAdmin && Master.WorldValues != null) ResponseShortcutManager.SendIllegalPacket(client, "Illegal setting of difficulty!");
             else
             {
-                DifficultyConfigFile file = Serializer.ConvertBytesToObject<DifficultyConfigFile>(bytes);
+                FL_DifficultyConfig file = Serializer.ConvertBytesToObject<FL_DifficultyConfig>(bytes);
 
                 Master.DifficultyValues = file;
-                DifficultyConfigFile.Save(DifficultyConfigFile.SavePath, file);
+                FL_DifficultyConfig.Save(FL_DifficultyConfig.SavePath, file);
                 InformationDisplayer.DisplaySetDifficulty(client.UserFile.Username);
             }
         }

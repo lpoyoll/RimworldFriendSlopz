@@ -53,7 +53,7 @@ namespace GameServer.PacketManager
             }
         }
 
-        public static void ConfirmNewSite(ServerClient client, SiteFile siteFile)
+        public static void ConfirmNewSite(ServerClient client, Site siteFile)
         {
             siteFile.SaveSite();
 
@@ -79,7 +79,7 @@ namespace GameServer.PacketManager
             else if (SiteManagerHelper.CheckIfTileIsInUse(siteData._file.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"A site tried to be added to tile {siteData._file.Tile}, but that tile already has a site");
             else
             {
-                SiteFile siteFile = new SiteFile();
+                Site siteFile = new Site();
 
                 siteFile.Tile = siteData._file.Tile;
                 siteFile.Username = client.UserFile.Username;
@@ -91,12 +91,12 @@ namespace GameServer.PacketManager
 
         private static void DestroySite(ServerClient client, PKT_Site siteData)
         {
-            SiteFile siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._file.Tile);
+            Site siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._file.Tile);
             if (siteFile.Username == client.UserFile.Username) DestroySiteFromFile(siteFile);
             else ResponseShortcutManager.SendNoPowerPacket(client);
         }
 
-        public static void DestroySiteFromFile(SiteFile siteFile)
+        public static void DestroySiteFromFile(Site siteFile)
         {
             PKT_Site siteData = new PKT_Site();
             siteData._stepMode = SiteStepMode.Destroy;
@@ -111,7 +111,7 @@ namespace GameServer.PacketManager
 
         private static void ManageWorker(ServerClient client, PKT_Site data)
         {
-            SiteFile site = SiteManagerHelper.GetSiteFileFromTile(data._file.Tile);
+            Site site = SiteManagerHelper.GetSiteFileFromTile(data._file.Tile);
             site.WorkerString = data._file.WorkerString;
             site.SaveSite();
         }
@@ -126,13 +126,13 @@ namespace GameServer.PacketManager
 
         public static void SendRewardsToPlayer(ServerClient client)
         {
-            SiteFile[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => (fetch.Username == client.UserFile.Username ||
+            Site[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => (fetch.Username == client.UserFile.Username ||
                 (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)) && !string.IsNullOrEmpty(fetch.WorkerString)).ToArray();
 
             if (availableSites.Length > 0)
             {
                 List<SiteReward> toReward = new List<SiteReward>();
-                foreach (SiteFile site in availableSites) toReward.Add(client.UserFile.SiteConfigs.First(fetch => fetch.DefName == site.Type.DefName).Reward);
+                foreach (Site site in availableSites) toReward.Add(client.UserFile.SiteConfigs.First(fetch => fetch.DefName == site.Type.DefName).Reward);
 
                 PKT_Site siteData = new PKT_Site();
                 siteData._stepMode = SiteStepMode.Rewards;
@@ -156,12 +156,12 @@ namespace GameServer.PacketManager
 
         public static void SetSiteInfoForClient(ServerClient client) { client.UserFile.UpdateSiteConfigs(Master.ActionConfigs.SiteAction.SiteTypes); }
 
-        public static List<SiteFile> GetSitesFromGoodwill(ServerClient client)
+        public static List<Site> GetSitesFromGoodwill(ServerClient client)
         {
-            List<SiteFile> tempList = new List<SiteFile>();
-            foreach (SiteFile site in SiteManagerHelper.GetAllSites())
+            List<Site> tempList = new List<Site>();
+            foreach (Site site in SiteManagerHelper.GetAllSites())
             {
-                SiteFile file = new SiteFile();
+                Site file = new Site();
 
                 file.Tile = site.Tile;
                 file.Username = site.Username;
@@ -178,26 +178,26 @@ namespace GameServer.PacketManager
 
     public static class SiteManagerHelper
     {
-        public static SiteFile[] GetAllSitesFromUsername(string username)
+        public static Site[] GetAllSitesFromUsername(string username)
         {
-            List<SiteFile> sitesList = new List<SiteFile>();
+            List<Site> sitesList = new List<Site>();
 
             string[] sites = Directory.GetFiles(Master.SitesPath);
             foreach (string site in sites)
             {
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
+                Site siteFile = Serializer.SerializeFromFile<Site>(site);
                 if (siteFile.Username == username) sitesList.Add(siteFile);
             }
 
             return sitesList.ToArray();
         }
 
-        public static SiteFile GetSiteFileFromTile(int tileToGet)
+        public static Site GetSiteFileFromTile(int tileToGet)
         {
             string[] sites = Directory.GetFiles(Master.SitesPath);
             foreach (string site in sites)
             {
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
+                Site siteFile = Serializer.SerializeFromFile<Site>(site);
                 if (siteFile.Tile == tileToGet) return siteFile;
             }
 
@@ -206,20 +206,20 @@ namespace GameServer.PacketManager
 
         public static void GetSiteInfo(ServerClient client, PKT_Site data)
         {
-            SiteFile siteFile = GetSiteFileFromTile(data._file.Tile);
+            Site siteFile = GetSiteFileFromTile(data._file.Tile);
             data._stepMode = SiteStepMode.Info;
             data._file = siteFile;
 
             client.Listener.EnqueuePacket(PacketHeader.SiteManager, data);
         }
 
-        public static SiteFile[] GetAllSites()
+        public static Site[] GetAllSites()
         {
-            List<SiteFile> sitesList = new List<SiteFile>();
+            List<Site> sitesList = new List<Site>();
             try
             {
                 string[] sites = Directory.GetFiles(Master.SitesPath);
-                foreach (string site in sites) sitesList.Add(Serializer.SerializeFromFile<SiteFile>(site));
+                foreach (string site in sites) sitesList.Add(Serializer.SerializeFromFile<Site>(site));
             }
             catch (Exception ex) { Printer.Error($"Sites could not be loaded, either your formatting is wrong in the file 'SiteConfig.json' or you have not updated your sites to the newest version ('Update' command).\n\n{ex.ToString()}"); }
 
@@ -231,7 +231,7 @@ namespace GameServer.PacketManager
             string[] sites = Directory.GetFiles(Master.SitesPath);
             foreach (string site in sites)
             {
-                SiteFile siteFile = Serializer.SerializeFromFile<SiteFile>(site);
+                Site siteFile = Serializer.SerializeFromFile<Site>(site);
                 if (siteFile.Tile == tileToCheck) return true;
             }
 

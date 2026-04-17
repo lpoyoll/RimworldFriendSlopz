@@ -15,9 +15,9 @@ namespace GameClient.Misc
     {
         public enum OperationType { Get, Set }
 
-        public static MapFile MapToString(Map map)
+        public static FL_Map MapToString(Map map)
         {
-            MapFile mapFile = new MapFile();
+            FL_Map mapFile = new FL_Map();
 
             mapFile.Tile = map.Tile;
 
@@ -40,7 +40,7 @@ namespace GameClient.Misc
             return mapFile;
         }
 
-        public static Map StringToMap(MapFile mapFile, bool enforceIDs = false)
+        public static Map StringToMap(FL_Map mapFile, bool enforceIDs = false)
         {
             Map map = GetOrGenerateMapUtility.GetOrGenerateMap(mapFile.Tile, TypeConverter.ArrayToIntVec3(mapFile.Size), null);
 
@@ -63,13 +63,13 @@ namespace GameClient.Misc
             return map;
         }
 
-        private static void ToggleWeather(OperationType type, MapFile file, Map map)
+        private static void ToggleWeather(OperationType type, FL_Map file, Map map)
         {
             if (type == OperationType.Set) map.weatherManager.TransitionTo(DefDatabase<WeatherDef>.AllDefs.ToList()[file.WeatherByte]);
             else file.WeatherByte = (byte)DefDatabase<WeatherDef>.AllDefs.FirstIndexOf(fetch => fetch == map.weatherManager.curWeather);
         }
 
-        private static void ToggleTerrain(OperationType type, MapFile file, Map map)
+        private static void ToggleTerrain(OperationType type, FL_Map file, Map map)
         {
             int index = 0;
 
@@ -86,7 +86,7 @@ namespace GameClient.Misc
             }
         }
 
-        private static void TogglePollution(OperationType type, MapFile file, Map map)
+        private static void TogglePollution(OperationType type, FL_Map file, Map map)
         {
             int index = 0;
 
@@ -103,7 +103,7 @@ namespace GameClient.Misc
             }
         }
 
-        private static void ToggleRoofs(OperationType type, MapFile file, Map map)
+        private static void ToggleRoofs(OperationType type, FL_Map file, Map map)
         {
             int index = 0;
 
@@ -130,7 +130,7 @@ namespace GameClient.Misc
             }
         }
 
-        private static void ToggleMapThings(OperationType type, MapFile file, Map map, bool enforceIDs = false)
+        private static void ToggleMapThings(OperationType type, FL_Map file, Map map, bool enforceIDs = false)
         {
             if (type == OperationType.Get)
             {
@@ -155,7 +155,7 @@ namespace GameClient.Misc
             }
         }
 
-        private static void ToggleMapPawns(OperationType type, MapFile file, Map map, bool enforceIDs = false)
+        private static void ToggleMapPawns(OperationType type, FL_Map file, Map map, bool enforceIDs = false)
         {
             if (type == OperationType.Get)
             {
@@ -180,7 +180,7 @@ namespace GameClient.Misc
             }
         }
 
-        private static void RegenerateRoofGrid(MapFile file, Map map)
+        private static void RegenerateRoofGrid(FL_Map file, Map map)
         {
             map.roofCollapseBuffer.Clear();
             map.roofGrid.Drawer.SetDirty();

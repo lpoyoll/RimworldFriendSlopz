@@ -28,7 +28,7 @@ namespace GameServer.PacketManager
 
         private static void SendInformation(ServerClient client, PKT_Information data)
         {
-            SettlementFile settlementToFind = PM_Settlements.GetSettlementFileFromTile(data._settlementTile);
+            FL_Settlement settlementToFind = PM_Settlements.GetSettlementFileFromTile(data._settlementTile);
             ServerClient clientToFind = ServerNetwork.GetConnectedClientFromUsername(settlementToFind.Username);
 
             data._isPlayerOnline = clientToFind != null ? true : false;

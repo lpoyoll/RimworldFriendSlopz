@@ -1,12 +1,11 @@
-﻿using Shared.Files.Guilds;
-using System;
+﻿using System;
 using System.IO;
 using System.Threading;
 using static Shared.CommonEnumerators;
 
 namespace Shared.Files.Sites
 {
-    public class SiteFile
+    public class Site
     {
         public int Tile { get; set; } = -1;
 
@@ -32,7 +31,7 @@ namespace Shared.Files.Sites
             SavingSemaphore.Release();
         }
 
-        public void UpdateFaction(GuildFile toUpdateWith)
+        public void UpdateFaction(FL_Guild toUpdateWith)
         {
             if (toUpdateWith == null) GuildName = null;
             else GuildName = toUpdateWith.Name;

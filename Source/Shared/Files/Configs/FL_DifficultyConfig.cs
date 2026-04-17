@@ -1,6 +1,6 @@
 ﻿namespace Shared.Files.Configs
 {
-    public class DifficultyConfigFile : BaseFile
+    public class FL_DifficultyConfig : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

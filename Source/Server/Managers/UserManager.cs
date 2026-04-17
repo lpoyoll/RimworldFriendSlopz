@@ -141,12 +141,12 @@ namespace GameServer.Managers
 
         public static int[] GetUserStructuresTilesFromUsername(string username)
         {
-            SettlementFile[] settlements = PM_Settlements.GetAllSettlements().ToList().FindAll(x => x.Username == username).ToArray();
-            SiteFile[] sites = SiteManagerHelper.GetAllSites().ToList().FindAll(x => x.Username == username).ToArray();
+            FL_Settlement[] settlements = PM_Settlements.GetAllSettlements().ToList().FindAll(x => x.Username == username).ToArray();
+            Site[] sites = SiteManagerHelper.GetAllSites().ToList().FindAll(x => x.Username == username).ToArray();
 
             List<int> tilesToExclude = new List<int>();
-            foreach (SettlementFile settlement in settlements) tilesToExclude.Add(settlement.Tile);
-            foreach (SiteFile site in sites) tilesToExclude.Add(site.Tile);
+            foreach (FL_Settlement settlement in settlements) tilesToExclude.Add(settlement.Tile);
+            foreach (Site site in sites) tilesToExclude.Add(site.Tile);
 
             return tilesToExclude.ToArray();
         }

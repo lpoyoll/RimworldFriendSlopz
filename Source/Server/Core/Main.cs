@@ -8,8 +8,6 @@ using Shared;
 using Shared.Files;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
-using Shared.Files.Configs.Mods;
-using Shared.Files.Guilds;
 using Shared.Misc;
 using TCPNetwork;
 using TCPNetwork.PacketManagers;
@@ -49,19 +47,19 @@ namespace GameServer.Core
         private static void SetPaths()
         {
             ServerConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ServerConfig.json");
-            ActionsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
-            PlanetConfigFile.SavePath = Path.Combine(Master.AssetsPath, "WorldValuesFile.json");
-            StorytellerConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
-            ScenarioConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
-            ModConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ModConfig.json");
-            DifficultyConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
-            WhitelistConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
-            BackupsConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
-            ChatConfigFile.SavePath = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
-            LeaderboardFile.SavePath = Path.Combine(Master.AssetsPath, "Leaderboard.json");
+            FL_ActionsConfig.SavePath = Path.Combine(Master.ConfigsPath, "ActionConfig.json");
+            FL_PlanetConfig.SavePath = Path.Combine(Master.AssetsPath, "WorldValuesFile.json");
+            FL_StorytellerConfig.SavePath = Path.Combine(Master.ConfigsPath, "StorytellerConfig.json");
+            FL_ScenarioConfig.SavePath = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
+            FL_ModConfig.SavePath = Path.Combine(Master.ConfigsPath, "ModConfig.json");
+            FL_DifficultyConfig.SavePath = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
+            FL_WhitelistConfig.SavePath = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
+            FL_BackupsConfig.SavePath = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
+            FL_ChatConfig.SavePath = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
+            FL_Leaderboard.SavePath = Path.Combine(Master.AssetsPath, "Leaderboard.json");
             CommonValues.ServerUsersPath = Master.UsersPath;
             CommonValues.ServerSitesPath = Master.SitesPath;
-            GuildFile.SavePath = Path.Combine(Master.GuildsPath);
+            FL_Guild.SavePath = Path.Combine(Master.GuildsPath);
         }
 
         private static void CreateFolders()
@@ -88,16 +86,16 @@ namespace GameServer.Core
         private static void LoadFiles()
         {
             Master.ServerConfig = (ServerConfigFile)ServerConfigFile.Load<ServerConfigFile>(ServerConfigFile.SavePath);
-            Master.ActionConfigs = (ActionsConfigFile)ActionsConfigFile.Load<ActionsConfigFile>(ActionsConfigFile.SavePath);
-            Master.Whitelist = (WhitelistConfigFile)WhitelistConfigFile.Load<WhitelistConfigFile>(WhitelistConfigFile.SavePath);
-            Master.DifficultyValues = (DifficultyConfigFile)DifficultyConfigFile.Load<DifficultyConfigFile>(DifficultyConfigFile.SavePath);
-            Master.ScenarioValues = (ScenarioConfigFile)ScenarioConfigFile.Load<ScenarioConfigFile>(ScenarioConfigFile.SavePath);
-            Master.StorytellerValues = (StorytellerConfigFile)StorytellerConfigFile.Load<StorytellerConfigFile>(StorytellerConfigFile.SavePath);
-            Master.BackupConfig = (BackupsConfigFile)BackupsConfigFile.Load<BackupsConfigFile>(BackupsConfigFile.SavePath);
-            Master.ModConfig = (ModConfigFile)ModConfigFile.Load<ModConfigFile>(ModConfigFile.SavePath);
-            Master.ChatConfig = (ChatConfigFile)ChatConfigFile.Load<ChatConfigFile>(ChatConfigFile.SavePath);
-            Master.WorldValues = (PlanetConfigFile)PlanetConfigFile.Load<PlanetConfigFile>(PlanetConfigFile.SavePath, false);
-            Master.LeaderboardFile = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>(LeaderboardFile.SavePath);
+            Master.ActionConfigs = (FL_ActionsConfig)FL_ActionsConfig.Load<FL_ActionsConfig>(FL_ActionsConfig.SavePath);
+            Master.Whitelist = (FL_WhitelistConfig)FL_WhitelistConfig.Load<FL_WhitelistConfig>(FL_WhitelistConfig.SavePath);
+            Master.DifficultyValues = (FL_DifficultyConfig)FL_DifficultyConfig.Load<FL_DifficultyConfig>(FL_DifficultyConfig.SavePath);
+            Master.ScenarioValues = (FL_ScenarioConfig)FL_ScenarioConfig.Load<FL_ScenarioConfig>(FL_ScenarioConfig.SavePath);
+            Master.StorytellerValues = (FL_StorytellerConfig)FL_StorytellerConfig.Load<FL_StorytellerConfig>(FL_StorytellerConfig.SavePath);
+            Master.BackupConfig = (FL_BackupsConfig)FL_BackupsConfig.Load<FL_BackupsConfig>(FL_BackupsConfig.SavePath);
+            Master.ModConfig = (FL_ModConfig)FL_ModConfig.Load<FL_ModConfig>(FL_ModConfig.SavePath);
+            Master.ChatConfig = (FL_ChatConfig)FL_ChatConfig.Load<FL_ChatConfig>(FL_ChatConfig.SavePath);
+            Master.WorldValues = (FL_PlanetConfig)FL_PlanetConfig.Load<FL_PlanetConfig>(FL_PlanetConfig.SavePath, false);
+            Master.LeaderboardFile = (FL_Leaderboard)FL_Leaderboard.Load<FL_Leaderboard>(FL_Leaderboard.SavePath);
         }
     }
 }

@@ -13,8 +13,8 @@ namespace TCPNetwork.Packets
 
         public int _toTile { get; set; } = -1;
 
-        public EventFile _eventFile { get; set; } = null;
+        public FL_Event _eventFile { get; set; } = null;
 
-        public List<EventFile> _eventFiles { get; set; } = null;
+        public List<FL_Event> _eventFiles { get; set; } = null;
     }
 }

@@ -35,7 +35,7 @@ namespace GameServer.PacketManager
             if (CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to add a settlement at tile {settlementData._settlementFile.Tile}, but that tile already has a settlement");
             else
             {
-                SettlementFile settlementFile = new SettlementFile();
+                FL_Settlement settlementFile = new FL_Settlement();
                 settlementFile.Tile = settlementData._settlementFile.Tile;
                 settlementFile.Username = client.UserFile.Username;
                 settlementFile.Username = client.UserFile.Username;
@@ -63,7 +63,7 @@ namespace GameServer.PacketManager
         {
             if (!CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementFile.Tile} was attempted to be removed, but the tile doesn't contain a settlement");
 
-            SettlementFile settlementFile = GetSettlementFileFromTile(settlementData._settlementFile.Tile);
+            FL_Settlement settlementFile = GetSettlementFileFromTile(settlementData._settlementFile.Tile);
 
             if (client != null)
             {
@@ -106,67 +106,67 @@ namespace GameServer.PacketManager
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
-                SettlementFile settlementJSON = Serializer.SerializeFromFile<SettlementFile>(settlement);
+                FL_Settlement settlementJSON = Serializer.SerializeFromFile<FL_Settlement>(settlement);
                 if (settlementJSON.Tile == tileToCheck) return true;
             }
 
             return false;
         }
 
-        public static SettlementFile GetSettlementFileFromTile(int tileToGet)
+        public static FL_Settlement GetSettlementFileFromTile(int tileToGet)
         {
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
-                SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
+                FL_Settlement settlementFile = Serializer.SerializeFromFile<FL_Settlement>(settlement);
                 if (settlementFile.Tile == tileToGet) return settlementFile;
             }
 
             return null;
         }
 
-        public static SettlementFile GetSettlementFileFromUsername(string usernameToGet)
+        public static FL_Settlement GetSettlementFileFromUsername(string usernameToGet)
         {
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
-                SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
+                FL_Settlement settlementFile = Serializer.SerializeFromFile<FL_Settlement>(settlement);
                 if (settlementFile.Username == usernameToGet) return settlementFile;
             }
 
             return null;
         }
 
-        public static SettlementFile[] GetAllSettlements()
+        public static FL_Settlement[] GetAllSettlements()
         {
-            List<SettlementFile> settlementList = new List<SettlementFile>();
+            List<FL_Settlement> settlementList = new List<FL_Settlement>();
 
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
-            foreach (string settlement in settlements) settlementList.Add(Serializer.SerializeFromFile<SettlementFile>(settlement));
+            foreach (string settlement in settlements) settlementList.Add(Serializer.SerializeFromFile<FL_Settlement>(settlement));
 
             return settlementList.ToArray();
         }
 
-        public static SettlementFile[] GetAllSettlementsFromUsername(string usernameToCheck)
+        public static FL_Settlement[] GetAllSettlementsFromUsername(string usernameToCheck)
         {
-            List<SettlementFile> settlementList = new List<SettlementFile>();
+            List<FL_Settlement> settlementList = new List<FL_Settlement>();
 
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
             foreach (string settlement in settlements)
             {
-                SettlementFile settlementFile = Serializer.SerializeFromFile<SettlementFile>(settlement);
+                FL_Settlement settlementFile = Serializer.SerializeFromFile<FL_Settlement>(settlement);
                 if (settlementFile.Username == usernameToCheck) settlementList.Add(settlementFile);
             }
 
             return settlementList.ToArray();
         }
 
-        public static List<SettlementFile> GetSettlementsFromGoodwill(ServerClient client)
+        public static List<FL_Settlement> GetSettlementsFromGoodwill(ServerClient client)
         {
-            List<SettlementFile> tempList = new List<SettlementFile>();
-            foreach (SettlementFile settlement in PM_Settlements.GetAllSettlements())
+            List<FL_Settlement> tempList = new List<FL_Settlement>();
+            foreach (FL_Settlement settlement in PM_Settlements.GetAllSettlements())
             {
-                SettlementFile file = new SettlementFile();
+                FL_Settlement file = new FL_Settlement();
 
                 if (settlement.Username == client.UserFile.Username) continue;
                 else

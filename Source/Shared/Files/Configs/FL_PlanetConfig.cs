@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Shared.Files.Configs
 {
-    public class PlanetConfigFile : BaseFile
+    public class FL_PlanetConfig : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

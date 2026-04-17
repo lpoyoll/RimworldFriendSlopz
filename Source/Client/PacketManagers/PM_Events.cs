@@ -19,9 +19,9 @@ namespace GameClient.PacketManagers
 {
     public class PM_Events : PM_Base
     {
-        public static List<EventFile> AvailableEvents { get; private set; } = new List<EventFile>();
+        public static List<FL_Event> AvailableEvents { get; private set; } = new List<FL_Event>();
 
-        public static List<EventFile> EnabledEvents { get; private set; } = new List<EventFile>();
+        public static List<FL_Event> EnabledEvents { get; private set; } = new List<FL_Event>();
 
         [HandlesPacket(PacketHeader.EventManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
@@ -50,10 +50,10 @@ namespace GameClient.PacketManagers
 
         public static void SendExistingEventsToServer()
         {          
-            List<EventFile> existingEvents = new List<EventFile>();
+            List<FL_Event> existingEvents = new List<FL_Event>();
             foreach (IncidentDef incident in DefDatabase<IncidentDef>.AllDefs)
             {
-                EventFile file = new EventFile();
+                FL_Event file = new FL_Event();
                 file.Name = incident.LabelCap;
                 file.DefName = incident.defName;
                 file.Cost = 500;
@@ -71,7 +71,7 @@ namespace GameClient.PacketManagers
         public static void ShowEventMenu()
         {
             List<string> eventNames = new List<string>();
-            foreach (EventFile eventFile in EnabledEvents) eventNames.Add(eventFile.Name);
+            foreach (FL_Event eventFile in EnabledEvents) eventNames.Add(eventFile.Name);
 
             Action a1 = delegate
             {
@@ -118,7 +118,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void SetValues(List<EventFile> events)
+        public static void SetValues(List<FL_Event> events)
         {
             AvailableEvents = events.OrderBy(fetch => fetch.Name).ToList();
             EnabledEvents = AvailableEvents.Where(fetch => fetch.IsEnabled).ToList();

@@ -1,6 +1,7 @@
 ﻿using GameServer.Core;
 using Shared;
-using Shared.Files.Configs.Mods;
+using Shared.Files.Configs;
+using Shared.Files.Mods;
 using Shared.Misc;
 
 namespace GameServer.Commands
@@ -16,26 +17,26 @@ namespace GameServer.Commands
 
         public override void Action() 
         {
-            ModConfig[] required = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Required).ToArray();
+            ModConfig[] required = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required).ToArray();
             Printer.Title($"Required Mods: {required.Length}");
             Printer.Title("----------------------------------------");
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Required))
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
             {
                 Printer.Warning(config.FileName);
             }
 
-            ModConfig[] optional = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Optional).ToArray();
+            ModConfig[] optional = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Optional).ToArray();
             Printer.Title($"Optional Mods: {optional.Length}");
             Printer.Title("----------------------------------------");
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Optional))
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Optional))
             {
                 Printer.Warning(config.FileName);
             }
 
-            ModConfig[] forbidden = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Forbidden).ToArray();
+            ModConfig[] forbidden = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Forbidden).ToArray();
             Printer.Title($"Forbidden Mods: {forbidden.Length}");
             Printer.Title("----------------------------------------");
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Forbidden))
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Forbidden))
             {
                 Printer.Warning(config.FileName);
             }

@@ -1,6 +1,6 @@
 ﻿using GameClient.Dialogs.Default;
 using GameClient.Hooks.TCPNetwork;
-using Shared.Files.Configs.Mods;
+using Shared.Files.Mods;
 using System;
 using System.Diagnostics;
 using System.Linq;

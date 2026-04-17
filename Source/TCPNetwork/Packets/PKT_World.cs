@@ -8,6 +8,6 @@ namespace TCPNetwork.Packets
 
         public enum WorldStepMode { AskFor, Required, Sent }
 
-        public PlanetConfigFile File { get; set; } = null;
+        public FL_PlanetConfig File { get; set; } = null;
     }
 }

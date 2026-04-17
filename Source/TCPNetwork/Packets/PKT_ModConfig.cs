@@ -1,4 +1,4 @@
-using Shared.Files.Configs.Mods;
+using Shared.Files.Configs;
 
 namespace TCPNetwork.Packets
 {
@@ -6,7 +6,7 @@ namespace TCPNetwork.Packets
     {
         public ModConfigStepMode _stepMode { get; set; } = ModConfigStepMode.Send;
 
-        public ModConfigFile _configFile { get; set; } = new ModConfigFile();
+        public FL_ModConfig _configFile { get; set; } = new FL_ModConfig();
 
         public enum ModConfigStepMode { Send, Ask }
     }

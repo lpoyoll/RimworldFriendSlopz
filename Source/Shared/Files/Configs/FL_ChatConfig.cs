@@ -1,6 +1,6 @@
 ﻿namespace Shared.Files.Configs
 {
-    public class ChatConfigFile : BaseFile
+    public class FL_ChatConfig : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

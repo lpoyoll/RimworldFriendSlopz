@@ -34,10 +34,10 @@ namespace GameServer.PacketManager
             else return false;
         }
 
-        public static MapFile GetMapFromTile(int mapTileToGet)
+        public static FL_Map GetMapFromTile(int mapTileToGet)
         {
             string path = Path.Combine(Master.MapsPath, mapTileToGet + CommonValues.DefaultSaveFormat);
-            if (File.Exists(path)) return Serializer.SerializeFromFile<MapFile>(path);
+            if (File.Exists(path)) return Serializer.SerializeFromFile<FL_Map>(path);
             else return null;
         }
     }

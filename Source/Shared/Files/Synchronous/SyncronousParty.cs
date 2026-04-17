@@ -2,7 +2,7 @@
 
 namespace Shared.Files.Synchronous
 {
-    public class PartyFile
+    public class SyncronousParty
     {
         public List<string> Pawns { get; set; } = new List<string>();
     }

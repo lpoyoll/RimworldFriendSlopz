@@ -2,7 +2,6 @@
 using Shared.Files;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
-using Shared.Files.Configs.Mods;
 
 namespace GameServer.Core
 {
@@ -46,26 +45,26 @@ namespace GameServer.Core
 
         //References
 
-        public static WhitelistConfigFile Whitelist { get; set; } = null;
+        public static FL_WhitelistConfig Whitelist { get; set; } = null;
 
-        public static PlanetConfigFile WorldValues { get; set; } = null;
+        public static FL_PlanetConfig WorldValues { get; set; } = null;
 
         public static ServerConfigFile ServerConfig { get; set; } = null;
 
-        public static ActionsConfigFile ActionConfigs { get; set; } = null;
+        public static FL_ActionsConfig ActionConfigs { get; set; } = null;
 
-        public static DifficultyConfigFile DifficultyValues { get; set; } = null;
+        public static FL_DifficultyConfig DifficultyValues { get; set; } = null;
 
-        public static StorytellerConfigFile StorytellerValues { get; set; } = null;
+        public static FL_StorytellerConfig StorytellerValues { get; set; } = null;
 
-        public static ScenarioConfigFile ScenarioValues { get; set; } = null;
+        public static FL_ScenarioConfig ScenarioValues { get; set; } = null;
 
-        public static BackupsConfigFile BackupConfig { get; set; } = null;
+        public static FL_BackupsConfig BackupConfig { get; set; } = null;
 
-        public static ModConfigFile ModConfig { get; set; } = null;
+        public static FL_ModConfig ModConfig { get; set; } = null;
 
-        public static ChatConfigFile ChatConfig { get; set; } = null;
+        public static FL_ChatConfig ChatConfig { get; set; } = null;
 
-        public static LeaderboardFile LeaderboardFile { get; set; } = null;
+        public static FL_Leaderboard LeaderboardFile { get; set; } = null;
     }
 }

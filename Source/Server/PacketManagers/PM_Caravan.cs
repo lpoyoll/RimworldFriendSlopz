@@ -31,7 +31,7 @@ namespace GameServer.PacketManager
             }
         }
 
-        private static void AddCaravan(ServerClient client, CaravanFile file)
+        private static void AddCaravan(ServerClient client, FL_Caravan file)
         {
             PKT_Caravan data = new PKT_Caravan();
             data._stepMode = CaravanStepMode.Add;
@@ -40,7 +40,7 @@ namespace GameServer.PacketManager
             ServerNetwork.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
         }
 
-        public static void RemoveCaravan(ServerClient client, CaravanFile file)
+        public static void RemoveCaravan(ServerClient client, FL_Caravan file)
         {
             PKT_Caravan data = new PKT_Caravan();
             data._stepMode = CaravanStepMode.Remove;
@@ -49,7 +49,7 @@ namespace GameServer.PacketManager
             ServerNetwork.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
         }
 
-        private static void MoveCaravan(ServerClient client, CaravanFile file)
+        private static void MoveCaravan(ServerClient client, FL_Caravan file)
         {
             PKT_Caravan data = new PKT_Caravan();
             data._stepMode = CaravanStepMode.Move;

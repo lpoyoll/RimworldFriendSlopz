@@ -1,4 +1,4 @@
-﻿using Shared.Files.Guilds;
+﻿using Shared.Files;
 
 namespace TCPNetwork.Packets
 {
@@ -8,7 +8,7 @@ namespace TCPNetwork.Packets
 
         public GuildStepMode _stepMode { get; set; } = GuildStepMode.Create;
 
-        public GuildFile _guild { get; set; } = new GuildFile();
+        public FL_Guild _guild { get; set; } = new FL_Guild();
 
         public int _dataInt { get; set; } = -1;
     }

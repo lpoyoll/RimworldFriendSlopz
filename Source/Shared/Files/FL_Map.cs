@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Shared.Files
 {
-    public class MapFile
+    public class FL_Map
     {
         public int Tile { get; set; } = -1;
 

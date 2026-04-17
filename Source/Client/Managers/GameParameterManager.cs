@@ -35,7 +35,7 @@ namespace GameClient.Managers
             SessionHandler.CurrentDifficulty = SessionHandler.GlobalData._difficultyValues;
         }
 
-        public static void SetScenario(ScenarioConfigFile file)
+        public static void SetScenario(FL_ScenarioConfig file)
         {
             if (!file.IsEnforced) return;
             else
@@ -46,7 +46,7 @@ namespace GameClient.Managers
             }
         }
 
-        public static void SetDifficulty(DifficultyConfigFile file, bool bypass = false)
+        public static void SetDifficulty(FL_DifficultyConfig file, bool bypass = false)
         {
             if (!file.IsEnforced && !bypass) return;
             else
@@ -56,7 +56,7 @@ namespace GameClient.Managers
             }
         }
 
-        public static void SetStoryteller(StorytellerConfigFile file, bool bypassCheck = false)
+        public static void SetStoryteller(FL_StorytellerConfig file, bool bypassCheck = false)
         {
             if (!file.IsEnforced && !bypassCheck) return;
             else
@@ -71,7 +71,7 @@ namespace GameClient.Managers
 
         public static void SendCurrentScenario(bool isEnforced)
         {
-            ScenarioConfigFile file = new ScenarioConfigFile();
+            FL_ScenarioConfig file = new FL_ScenarioConfig();
             file.Name = Current.Game.Scenario.name;
             file.IsEnforced = isEnforced;
 
@@ -84,7 +84,7 @@ namespace GameClient.Managers
 
         public static void SendCurrentStoryteller(bool isEnforced)
         {
-            StorytellerConfigFile file = new StorytellerConfigFile();
+            FL_StorytellerConfig file = new FL_StorytellerConfig();
             file.DefName = Current.Game.storyteller.def.defName;
             file.IsEnforced = isEnforced;
 
@@ -97,7 +97,7 @@ namespace GameClient.Managers
 
         public static void SendCurrentDifficulty(bool isEnforced)
         {
-            DifficultyConfigFile file = new DifficultyConfigFile();
+            FL_DifficultyConfig file = new FL_DifficultyConfig();
             file.IsEnforced = isEnforced;
             file.ScribeData = ScribeManager.SerializeToString(Current.Game.storyteller.difficulty, 
                 ScribeManager.SerializableType.Other);

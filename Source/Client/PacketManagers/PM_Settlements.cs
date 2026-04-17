@@ -39,9 +39,9 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void AddSettlements(List<SettlementFile> settlements)
+        public static void AddSettlements(List<FL_Settlement> settlements)
         {
-            foreach (SettlementFile toAdd in settlements)
+            foreach (FL_Settlement toAdd in settlements)
             {
                 SpawnSingleSettlement(toAdd);
             }
@@ -53,13 +53,13 @@ namespace GameClient.PacketManagers
         
             foreach (WorldObject settlement in Finder.GetAllRTSettlements())
             {
-                SettlementFile toRemove = new SettlementFile();
+                FL_Settlement toRemove = new FL_Settlement();
                 toRemove.Tile = settlement.Tile;
                 RemoveSingleSettlement(toRemove);
             }
         }
 
-        public static void SpawnSingleSettlement(SettlementFile toAdd)
+        public static void SpawnSingleSettlement(FL_Settlement toAdd)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace GameClient.PacketManagers
             catch (Exception e) { Printer.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
         }
 
-        public static void RemoveSingleSettlement(SettlementFile toRemove)
+        public static void RemoveSingleSettlement(FL_Settlement toRemove)
         {
             try
             {
@@ -89,7 +89,7 @@ namespace GameClient.PacketManagers
 
         public static void RegenSettlement(WO_Settlement _)
         {
-            SettlementFile file = new SettlementFile();
+            FL_Settlement file = new FL_Settlement();
             file.Tile = _.Tile;
             file.Username = _.Label.Replace("'s settlement", "");
 

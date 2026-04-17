@@ -44,7 +44,7 @@ namespace GameServer.PacketManager
                 Master.WorldValues.PollutedTiles = existingPollutedTiles;
             }
 
-            PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
+            FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
             ServerNetwork.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
             client.UserFile.Cooldowns.SetPollutionTimer(client.UserFile);
         }

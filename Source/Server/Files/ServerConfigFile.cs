@@ -2,7 +2,7 @@
 
 namespace GameServer.Files
 {
-    public class ServerConfigFile : BaseFile
+    public class ServerConfigFile : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

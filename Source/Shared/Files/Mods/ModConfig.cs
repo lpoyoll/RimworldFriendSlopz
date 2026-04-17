@@ -1,6 +1,6 @@
-﻿using static Shared.Files.Configs.Mods.ModConfigFile;
+﻿using static Shared.Files.Configs.FL_ModConfig;
 
-namespace Shared.Files.Configs.Mods
+namespace Shared.Files.Mods
 {
     public class ModConfig
     {

@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Shared.Files.Guilds;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Shared.Files.Guilds
+namespace Shared.Files
 {
-    public class GuildFile : BaseFile
+    public class FL_Guild : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

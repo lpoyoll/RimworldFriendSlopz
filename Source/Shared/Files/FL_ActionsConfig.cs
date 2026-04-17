@@ -1,6 +1,6 @@
 ﻿namespace Shared.Files.Actions
 {
-    public class ActionsConfigFile : BaseFile
+    public class FL_ActionsConfig : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

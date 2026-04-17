@@ -1,6 +1,6 @@
 ﻿namespace Shared.Files.Configs
 {
-    public class RoadsConfigFile
+    public class FL_RoadsConfig
     {
         public bool AllowDirtPath { get; set; } = true;
 

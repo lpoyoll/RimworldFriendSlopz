@@ -76,11 +76,11 @@ namespace GameServer.Managers
                 string userSavePath = Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat);
                 if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
 
-                SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-                foreach (SiteFile site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
+                Site[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+                foreach (Site site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
 
-                SettlementFile[] playerSettlements = PM_Settlements.GetAllSettlementsFromUsername(username);
-                foreach (SettlementFile settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));
+                FL_Settlement[] playerSettlements = PM_Settlements.GetAllSettlementsFromUsername(username);
+                foreach (FL_Settlement settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));
 
                 CreateArchive(toArchive, playerArchivedSavePath);
 

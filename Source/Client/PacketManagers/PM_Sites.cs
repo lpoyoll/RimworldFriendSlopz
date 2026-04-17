@@ -143,9 +143,9 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void AddSites(List<SiteFile> sites)
+        public static void AddSites(List<Shared.Files.Sites.Site> sites)
         {
-            foreach (SiteFile toAdd in sites)
+            foreach (Shared.Files.Sites.Site toAdd in sites)
             {
                 OnSiteBuild(toAdd);
             }
@@ -157,13 +157,13 @@ namespace GameClient.PacketManagers
 
             foreach (WorldObject site in Finder.GetAllRTSites())
             {
-                SiteFile siteFile = new SiteFile();
+                Shared.Files.Sites.Site siteFile = new Shared.Files.Sites.Site();
                 siteFile.Tile = site.Tile;
                 OnSiteDestroy(siteFile);
             }
         }
 
-        public static void OnSiteBuild(SiteFile toAdd)
+        public static void OnSiteBuild(Shared.Files.Sites.Site toAdd)
         {
             if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
             else
@@ -183,7 +183,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void OnSiteDestroy(SiteFile toRemove)
+        public static void OnSiteDestroy(Shared.Files.Sites.Site toRemove)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace GameClient.PacketManagers
 
         public static void RecalculateSiteGoodwill(WO_Site site, Goodwill goodwill)
         {
-            SiteFile file = new SiteFile();
+            Shared.Files.Sites.Site file = new Shared.Files.Sites.Site();
             file.Tile = site.Tile;
             file.Goodwill = goodwill;
             file.Type = SiteValues.First(fetch => fetch.DefName == site.MainSitePartDef.defName);
@@ -216,7 +216,7 @@ namespace GameClient.PacketManagers
             PM_Saves.ForceSave();
         }
 
-        private static void OnSiteInfo(SiteFile file)
+        private static void OnSiteInfo(Shared.Files.Sites.Site file)
         {
             DLG_Wait.Instance.Close();
 

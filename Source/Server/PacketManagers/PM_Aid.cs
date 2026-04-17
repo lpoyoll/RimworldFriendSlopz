@@ -48,7 +48,7 @@ namespace GameServer.PacketManager
             if (!PM_Settlements.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send an aid packet to settlement at tile {data._toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlementFile = PM_Settlements.GetSettlementFileFromTile(data._toTile);
+                FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._toTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
                     data._stepMode = AidStepMode.Receive;
@@ -69,7 +69,7 @@ namespace GameServer.PacketManager
             if (!PM_Settlements.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
             else
             {
-                SettlementFile settlementFile = PM_Settlements.GetSettlementFileFromTile(data._fromTile);
+                FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
                     client.UserFile.Cooldowns.SetAidTimer(client.UserFile);
@@ -93,7 +93,7 @@ namespace GameServer.PacketManager
             if (!PM_Settlements.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
             else
             {
-                SettlementFile settlementFile = PM_Settlements.GetSettlementFileFromTile(data._fromTile);
+                FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlementFile.Username);

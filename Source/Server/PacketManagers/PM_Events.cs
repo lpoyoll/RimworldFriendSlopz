@@ -46,7 +46,7 @@ namespace GameServer.PacketManager
             if (!PM_Settlements.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send an event to settlement at tile {data._toTile}, but it has no settlement");
             else
             {
-                SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(data._toTile);
+                FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data._toTile);
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
                 {
                     data._stepMode = EventStepMode.Recover;
@@ -77,7 +77,7 @@ namespace GameServer.PacketManager
             if (!client.UserFile.IsAdmin) ResponseShortcutManager.SendIllegalPacket(client, "Tried to modify events without being admin!");
             else
             {
-                foreach (EventFile file in data._eventFiles)
+                foreach (FL_Event file in data._eventFiles)
                 {
                     Serializer.SerializeToFile(Path.Combine(Master.EventsPath, file.DefName + CommonValues.DefaultSaveFormat), file);
                 }
@@ -93,14 +93,14 @@ namespace GameServer.PacketManager
     {
         public static string FileExtension { get; private set; } = ".mpevent";
 
-        public static List<EventFile> LoadedEvents { get; private set; } = null;
+        public static List<FL_Event> LoadedEvents { get; private set; } = null;
 
         public static void LoadAllEvents()
         {
-            List<EventFile> toLoad = new List<EventFile>();
+            List<FL_Event> toLoad = new List<FL_Event>();
             foreach (string str in Directory.GetFiles(Master.EventsPath))
             {
-                EventFile file = Serializer.SerializeFromFile<EventFile>(str);
+                FL_Event file = Serializer.SerializeFromFile<FL_Event>(str);
                 toLoad.Add(file);
 
                 Printer.Warning($"Loaded event '{file.Name}'", Printer.LogImportanceMode.Extreme);

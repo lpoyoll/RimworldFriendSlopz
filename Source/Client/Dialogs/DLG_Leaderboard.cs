@@ -10,7 +10,7 @@ namespace GameClient.Dialogs
     {
         private Dictionary<string, double> Elements { get; set; } = new Dictionary<string, double>();
 
-        public DLG_Leaderboard(LeaderboardFile file)
+        public DLG_Leaderboard(FL_Leaderboard file)
         {
             Title = "Leaderboard";
             Description = "Server's current leaderboard";

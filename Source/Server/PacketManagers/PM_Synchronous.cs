@@ -48,7 +48,7 @@ namespace GameServer.PacketManagers
 
         private static void TryStartSynchronousSession(ServerClient client, PKT_Synchronous data)
         {
-            SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
             if (toFind == null) ResponseShortcutManager.SendUserUnavailablePacket(client);
@@ -68,7 +68,7 @@ namespace GameServer.PacketManagers
 
         private static void AcceptSynchronousSession(ServerClient client, PKT_Synchronous data)
         {
-            SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
             client.UserFile.SynchronousClient = toFind;
@@ -80,7 +80,7 @@ namespace GameServer.PacketManagers
 
         private static void RejectSynchronousSession(ServerClient client, PKT_Synchronous data)
         {
-            SettlementFile settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
             PKT_Synchronous _ = new PKT_Synchronous();

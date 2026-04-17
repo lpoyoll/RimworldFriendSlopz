@@ -24,7 +24,7 @@ namespace GameClient.PacketManagers
     {
         public static List<Caravan> PlayerCaravans { get; private set; } = new List<Caravan>();
 
-        public static List<CaravanFile> GuestCaravans { get; private set; } = new List<CaravanFile>();
+        public static List<FL_Caravan> GuestCaravans { get; private set; } = new List<FL_Caravan>();
 
         [HandlesPacket(PacketHeader.CaravanManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
@@ -47,7 +47,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void AddCaravan(CaravanFile file)
+        public static void AddCaravan(FL_Caravan file)
         {
             try
             {
@@ -69,11 +69,11 @@ namespace GameClient.PacketManagers
             catch (Exception e) { Printer.Error(e); }
         }
 
-        private static void RemoveCaravan(CaravanFile file)
+        private static void RemoveCaravan(FL_Caravan file)
         {
             try
             {
-                CaravanFile toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
+                FL_Caravan toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
                 if (toFind == null) Printer.Warning("Caravan to remove wasn't found", LogImportanceMode.Verbose);
                 else
                 {
@@ -90,11 +90,11 @@ namespace GameClient.PacketManagers
             catch (Exception e) { Printer.Error(e); }
         }
 
-        private static void MoveCaravan(CaravanFile file)
+        private static void MoveCaravan(FL_Caravan file)
         {
             try
             {
-                CaravanFile toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
+                FL_Caravan toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
                 if (toFind == null) AddCaravan(file);
                 else
                 {
@@ -117,7 +117,7 @@ namespace GameClient.PacketManagers
 
             PKT_Caravan data = new PKT_Caravan();
             data._stepMode = CaravanStepMode.Add;
-            data._caravanFile = new CaravanFile();
+            data._caravanFile = new FL_Caravan();
             data._caravanFile.Tile = caravan.Tile;
             data._caravanFile.Username = SessionHandler.Username;
             data._caravanFile.ID = caravan.ID;
@@ -129,7 +129,7 @@ namespace GameClient.PacketManagers
         {
             PKT_Caravan data = new PKT_Caravan();
             data._stepMode = CaravanStepMode.Remove;
-            data._caravanFile = new CaravanFile();
+            data._caravanFile = new FL_Caravan();
             data._caravanFile.Tile = caravan.Tile;
             data._caravanFile.Username = SessionHandler.Username;
             data._caravanFile.ID = caravan.ID;
@@ -143,7 +143,7 @@ namespace GameClient.PacketManagers
         {
             PKT_Caravan data = new PKT_Caravan();
             data._stepMode = CaravanStepMode.Move;
-            data._caravanFile = new CaravanFile();
+            data._caravanFile = new FL_Caravan();
             data._caravanFile.Tile = caravan.Tile;
             data._caravanFile.Username = SessionHandler.Username;
             data._caravanFile.ID = caravan.ID;
@@ -177,7 +177,7 @@ public class CaravanManagerH
         return onlineCaravans.ToArray();
     }
 
-    public static CaravanFile GetExistingCaravanFromFile(CaravanFile file)
+    public static FL_Caravan GetExistingCaravanFromFile(FL_Caravan file)
     {
         return PM_Caravans.GuestCaravans.FirstOrDefault(fetch => fetch.Username == file.Username
             && fetch.ID == file.ID);

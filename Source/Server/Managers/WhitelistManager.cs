@@ -11,7 +11,7 @@ namespace GameServer.Managers
         {
             Master.Whitelist.WhitelistedUsers.Add(username);
 
-            WhitelistConfigFile.Save(WhitelistConfigFile.SavePath, Master.Whitelist);
+            FL_WhitelistConfig.Save(FL_WhitelistConfig.SavePath, Master.Whitelist);
 
             Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' has been whitelisted");
         }
@@ -20,7 +20,7 @@ namespace GameServer.Managers
         {
             Master.Whitelist.WhitelistedUsers.Remove(username);
 
-            WhitelistConfigFile.Save(WhitelistConfigFile.SavePath, Master.Whitelist);
+            FL_WhitelistConfig.Save(FL_WhitelistConfig.SavePath, Master.Whitelist);
 
             Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' is no longer whitelisted");
         }

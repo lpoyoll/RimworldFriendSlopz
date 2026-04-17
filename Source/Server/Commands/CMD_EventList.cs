@@ -18,7 +18,7 @@ namespace GameServer.Commands
         {
             Printer.Title($"Available events: [{EventManagerH.LoadedEvents.Count}]");
             Printer.Title("----------------------------------------");
-            foreach (EventFile eventFile in EventManagerH.LoadedEvents) Printer.Warning($"{eventFile.DefName}");
+            foreach (FL_Event eventFile in EventManagerH.LoadedEvents) Printer.Warning($"{eventFile.DefName}");
             Printer.Title("----------------------------------------");
         }
     }

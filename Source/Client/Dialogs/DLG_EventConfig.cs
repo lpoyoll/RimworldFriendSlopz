@@ -15,7 +15,7 @@ namespace GameClient.Dialogs
     {
         public override Vector2 InitialSize => new Vector2(500f, 400f);
 
-        public List<EventFile> Keys { get; private set; } = new List<EventFile>();
+        public List<FL_Event> Keys { get; private set; } = new List<FL_Event>();
 
         public enum PossibleValues { Enabled, Disabled }
 
@@ -27,7 +27,7 @@ namespace GameClient.Dialogs
 
         public static List<bool> ResultBool { get; private set; } = new List<bool>();
 
-        public DLG_EventConfig(List<EventFile> keys)
+        public DLG_EventConfig(List<FL_Event> keys)
         {
             this.Title = "Event Manager";
             this.Description = "Manage events for the server";
@@ -64,7 +64,7 @@ namespace GameClient.Dialogs
 
                 for (int i = 0; i < PM_Events.AvailableEvents.Count; i++)
                 {
-                    EventFile file = PM_Events.AvailableEvents[i];
+                    FL_Event file = PM_Events.AvailableEvents[i];
                     file.IsEnabled = ResultBool[i];
                 }
 
@@ -102,7 +102,7 @@ namespace GameClient.Dialogs
             Widgets.EndScrollView();
         }
 
-        private void DrawCustomRow(Rect rect, EventFile element, int index)
+        private void DrawCustomRow(Rect rect, FL_Event element, int index)
         {
             Text.Font = GameFont.Small;
             Rect fixedRect = new Rect(new Vector2(rect.x, rect.y + 5f), new Vector2(rect.width - 16f, rect.height - 5f));

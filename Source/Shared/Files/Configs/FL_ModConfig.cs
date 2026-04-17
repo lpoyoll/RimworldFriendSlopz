@@ -1,8 +1,9 @@
+using Shared.Files.Mods;
 using System.Collections.Generic;
 
-namespace Shared.Files.Configs.Mods
+namespace Shared.Files.Configs
 {
-    public class ModConfigFile : BaseFile
+    public class FL_ModConfig : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

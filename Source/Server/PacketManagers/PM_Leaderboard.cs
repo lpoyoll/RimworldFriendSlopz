@@ -16,13 +16,13 @@ namespace GameServer.PacketManager
         private static void SendLeaderboard(ServerClient client)
         {
             PKT_Leaderboard data = new PKT_Leaderboard();
-            data._file = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>(LeaderboardFile.SavePath);
+            data._file = (FL_Leaderboard)FL_Leaderboard.Load<FL_Leaderboard>(FL_Leaderboard.SavePath);
             client.Listener.EnqueuePacket(PacketHeader.LeaderboardManager, data);
         }
 
-        public static void UpdateLeaderboard(ServerClient client, MapFile map)
+        public static void UpdateLeaderboard(ServerClient client, FL_Map map)
         {
-            LeaderboardFile file = (LeaderboardFile)LeaderboardFile.Load<LeaderboardFile>(LeaderboardFile.SavePath);
+            FL_Leaderboard file = (FL_Leaderboard)FL_Leaderboard.Load<FL_Leaderboard>(FL_Leaderboard.SavePath);
             double scoreValue = Math.Round(map.Wealth * ScoreMultiplier) + 1;
             
             if (!file.Scores.Keys.Contains(client.UserFile.Username)) file.Scores.Add(client.UserFile.Username, scoreValue);
@@ -39,7 +39,7 @@ namespace GameServer.PacketManager
                 }
             }
 
-            LeaderboardFile.Save(LeaderboardFile.SavePath, file);
+            FL_Leaderboard.Save(FL_Leaderboard.SavePath, file);
         }
     }
 }

@@ -102,7 +102,7 @@ namespace GameClient.PacketManagers
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, 
             OverallPopulation population, LandmarkDensity density, List<FactionDef> factions, float pollution)
         {
-            SessionHandler.CurrentWorld = new PlanetConfigFile();
+            SessionHandler.CurrentWorld = new FL_PlanetConfig();
             SessionHandler.CurrentWorld.SeedString = seedString;
             SessionHandler.CurrentWorld.PersistentRandomValue = GenText.StableStringHash(seedString);
             SessionHandler.CurrentWorld.PlanetCoverage = planetCoverage;

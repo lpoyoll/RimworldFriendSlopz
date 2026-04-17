@@ -72,7 +72,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This map is currently unavailable!" }));
         }
 
-        private static void PrepareMap(MapFile mapFile)
+        private static void PrepareMap(FL_Map mapFile)
         {
             Map map = null;
             if (SessionHandler.latestActivity == ActivityType.Raid) map = MapSaveLoader.StringToMap(mapFile);

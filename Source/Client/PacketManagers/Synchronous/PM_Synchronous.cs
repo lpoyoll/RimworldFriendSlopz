@@ -195,7 +195,7 @@ namespace GameClient.PacketManagers.Synchronous
             if (side == SynchronousSide.Host) SessionHandler.SynchronousMap = Find.AnyPlayerHomeMap;
             else
             {
-                SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(Serializer.ConvertBytesToObject<MapFile>(data.Contents, false), true);
+                SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(Serializer.ConvertBytesToObject<FL_Map>(data.Contents, false), true);
 
                 foreach (Pawn pawn in SessionHandler.SynchronousMap.mapPawns.AllPawns.Where(fetch => fetch.Faction == Faction.OfPlayer))
                 {
@@ -238,9 +238,9 @@ namespace GameClient.PacketManagers.Synchronous
             }
         }
 
-        private static PartyFile GetPawnParty(SynchronousSide side)
+        private static SyncronousParty GetPawnParty(SynchronousSide side)
         {
-            PartyFile file = new PartyFile();
+            SyncronousParty file = new SyncronousParty();
 
             if (side == SynchronousSide.Host) file.Pawns = RimworldManager.GetMapPawnsIntoString(SessionHandler.SynchronousMap, true, true);
             else file.Pawns = RimworldManager.GetCaravanPawnsIntoString(SessionHandler.ChosenCaravan, true);

@@ -23,6 +23,6 @@ namespace GameClient.PacketManagers
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.LeaderboardManager, data);
         }
 
-        private static void DisplayLeaderboard(LeaderboardFile file) { DLG_Base.PushNewDialog(new DLG_Leaderboard(file)); }
+        private static void DisplayLeaderboard(FL_Leaderboard file) { DLG_Base.PushNewDialog(new DLG_Leaderboard(file)); }
     }
 }

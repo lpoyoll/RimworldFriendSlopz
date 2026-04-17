@@ -3,7 +3,8 @@ using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
-using Shared.Files.Configs.Mods;
+using Shared.Files.Configs;
+using Shared.Files.Mods;
 using Shared.Misc;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
@@ -28,7 +29,7 @@ namespace GameServer.PacketManager
             }
         }
 
-        private static void SaveModConfig(ServerClient client, ModConfigFile file)
+        private static void SaveModConfig(ServerClient client, FL_ModConfig file)
         {
             if (Master.WorldValues != null && !client.UserFile.IsAdmin)
             {
@@ -39,7 +40,7 @@ namespace GameServer.PacketManager
             else
             {
                 Master.ModConfig = file;
-                ModConfigFile.Save(ModConfigFile.SavePath, file);
+                FL_ModConfig.Save(FL_ModConfig.SavePath, file);
                 InformationDisplayer.DisplaySetMods(client);
 
                 PKT_ModConfig packet = new PKT_ModConfig();
@@ -56,7 +57,7 @@ namespace GameServer.PacketManager
 
             //Check if missing required mods
 
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == ModConfigFile.ModType.Required))
+            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
             {
                 ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
                 if (toFind == null)
@@ -71,7 +72,7 @@ namespace GameServer.PacketManager
             foreach (ModConfig config in loginData._runningMods.ModConfigs)
             {
                 ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName 
-                    && (fetch.Type == ModConfigFile.ModType.Required || fetch.Type == ModConfigFile.ModType.Optional));
+                    && (fetch.Type == FL_ModConfig.ModType.Required || fetch.Type == FL_ModConfig.ModType.Optional));
 
                 if (toFind == null)
                 {

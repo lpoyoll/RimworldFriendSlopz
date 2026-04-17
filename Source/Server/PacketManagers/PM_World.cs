@@ -24,7 +24,7 @@ namespace GameServer.PacketManager
             }
         }
 
-        public static bool CheckIfWorldExists() { return File.Exists(PlanetConfigFile.SavePath); }
+        public static bool CheckIfWorldExists() { return File.Exists(FL_PlanetConfig.SavePath); }
 
         public static void RequireWorldFile(ServerClient client)
         {
@@ -37,7 +37,7 @@ namespace GameServer.PacketManager
         {
             PKT_World data = new PKT_World();
             data._stepMode = WorldStepMode.Sent;
-            data.File = Serializer.SerializeFromFile<PlanetConfigFile>(PlanetConfigFile.SavePath);
+            data.File = Serializer.SerializeFromFile<FL_PlanetConfig>(FL_PlanetConfig.SavePath);
 
             client.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
         }
@@ -48,7 +48,7 @@ namespace GameServer.PacketManager
             else
             {
                 Master.WorldValues = data.File;
-                PlanetConfigFile.Save(PlanetConfigFile.SavePath, Master.WorldValues);
+                FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
                 InformationDisplayer.DisplaySetWorld(client);
             }
         }

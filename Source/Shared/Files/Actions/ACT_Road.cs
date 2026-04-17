@@ -8,6 +8,6 @@ namespace Shared.Files.Actions
 
         public override double Cooldown { get; set; } = 1000;
 
-        public RoadsConfigFile RoadValues { get; set; } = new RoadsConfigFile();
+        public FL_RoadsConfig RoadValues { get; set; } = new FL_RoadsConfig();
     }
 }

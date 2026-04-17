@@ -7,7 +7,7 @@ using RimWorld.Planet;
 using Shared;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
-using Shared.Files.Configs.Mods;
+using Shared.Files.Mods;
 using System.Collections.Generic;
 using System.Linq;
 using TCPNetwork.Packets;
@@ -38,17 +38,17 @@ namespace GameClient.Misc
 
         public static PKT_Transfer IncomingManifest { get; set; } = new PKT_Transfer();
 
-        public static ActionsConfigFile CurrentActionValues { get; set; } = null;
+        public static FL_ActionsConfig CurrentActionValues { get; set; } = null;
 
         public static List<ModConfig> CurrentMods { get; set; } = null;
 
-        public static ScenarioConfigFile CurrentScenario { get; set; } = null;
+        public static FL_ScenarioConfig CurrentScenario { get; set; } = null;
 
-        public static StorytellerConfigFile CurrentStoryteller { get; set; } = null;
+        public static FL_StorytellerConfig CurrentStoryteller { get; set; } = null;
 
-        public static DifficultyConfigFile CurrentDifficulty { get; set; } = null;
+        public static FL_DifficultyConfig CurrentDifficulty { get; set; } = null;
 
-        public static PlanetConfigFile CurrentWorld { get; set; } = null;
+        public static FL_PlanetConfig CurrentWorld { get; set; } = null;
 
         public static bool IsAdmin { get; set; } = false;
 

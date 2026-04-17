@@ -8,6 +8,6 @@ namespace TCPNetwork.Packets
 
         public enum CaravanStepMode { Add, Remove, Move }
 
-        public CaravanFile _caravanFile { get; set; } = null;
+        public FL_Caravan _caravanFile { get; set; } = null;
     }
 }

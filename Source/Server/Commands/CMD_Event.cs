@@ -24,7 +24,7 @@ namespace GameServer.Commands
             if (client == null) Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' was not found");
             else
             {
-                EventFile toFind = EventManagerH.LoadedEvents.FirstOrDefault(fetch => fetch.DefName == CMD_Base.CommandParameters[1]);
+                FL_Event toFind = EventManagerH.LoadedEvents.FirstOrDefault(fetch => fetch.DefName == CMD_Base.CommandParameters[1]);
                 if (toFind == null) Printer.Warning($"Event '{CMD_Base.CommandParameters[1]}' was not found");
                 else
                 {

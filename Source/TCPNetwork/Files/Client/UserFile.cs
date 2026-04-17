@@ -1,5 +1,5 @@
 ﻿using Shared;
-using Shared.Files.Guilds;
+using Shared.Files;
 using Shared.Files.Sites;
 using Shared.Misc;
 using System;
@@ -48,7 +48,7 @@ namespace TCPNetwork.Files.Client
             SavingSemaphore.Release();
         }
 
-        public void UpdateFaction(GuildFile toUpdateWith)
+        public void UpdateFaction(FL_Guild toUpdateWith)
         {
             if (toUpdateWith == null) GuildName = null;
             else GuildName = toUpdateWith.Name;

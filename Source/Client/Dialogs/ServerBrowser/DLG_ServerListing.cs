@@ -1,5 +1,5 @@
 ﻿using GameClient.Hooks.TCPNetwork;
-using Shared.Files.Configs.Mods;
+using Shared.Files.Mods;
 using System;
 using System.Linq;
 using TCPNetwork;

@@ -24,7 +24,7 @@ namespace TCPNetwork.Packets
 
         public byte[] Contents { get; set; } = null;
 
-        public PartyFile Party { get; set; } = null;
+        public SyncronousParty Party { get; set; } = null;
 
         public enum ActionType
         {

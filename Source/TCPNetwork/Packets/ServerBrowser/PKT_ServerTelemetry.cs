@@ -1,4 +1,4 @@
-﻿using Shared.Files.Configs.Mods;
+﻿using Shared.Files.Mods;
 using System.Collections.Generic;
 
 namespace TCPNetwork.Packets.ServerBrowser

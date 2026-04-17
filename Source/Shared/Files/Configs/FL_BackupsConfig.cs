@@ -1,6 +1,6 @@
 ﻿namespace Shared.Files.Configs
 {
-    public class BackupsConfigFile : BaseFile
+    public class FL_BackupsConfig : FL_Base
     {
         public static string SavePath { get; set; } = string.Empty;
 

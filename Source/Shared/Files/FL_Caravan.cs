@@ -1,6 +1,6 @@
 namespace Shared.Files
 {
-    public class CaravanFile
+    public class FL_Caravan
     {
         public int Tile { get; set; } = -1;
 

@@ -1,4 +1,4 @@
-﻿using Shared.Files.Configs.Mods;
+﻿using Shared.Files.Configs;
 using System.Collections.Generic;
 
 namespace TCPNetwork.Packets
@@ -11,7 +11,7 @@ namespace TCPNetwork.Packets
 
         public string _password { get; set; } = string.Empty;
 
-        public ModConfigFile _runningMods { get; set; } = null;
+        public FL_ModConfig _runningMods { get; set; } = null;
 
         public LoginResponse _tryResponse { get; set; } = LoginResponse.Invalid;
 

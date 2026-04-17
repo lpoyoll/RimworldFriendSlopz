@@ -65,12 +65,12 @@ namespace GameServer.PacketManager
             if (File.Exists(path)) File.Delete(path);
 
             // Delete site files
-            SiteFile[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-            foreach (SiteFile site in playerSites) PM_Sites.DestroySiteFromFile(site);
+            Site[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+            foreach (Site site in playerSites) PM_Sites.DestroySiteFromFile(site);
 
             // Delete settlement files
-            SettlementFile[] playerSettlements = PM_Settlements.GetAllSettlementsFromUsername(username);
-            foreach (SettlementFile settlement in playerSettlements)
+            FL_Settlement[] playerSettlements = PM_Settlements.GetAllSettlementsFromUsername(username);
+            foreach (FL_Settlement settlement in playerSettlements)
             {
                 PKT_PlayerSettlement settlementData = new PKT_PlayerSettlement();
                 settlementData._settlementFile.Tile = settlement.Tile;

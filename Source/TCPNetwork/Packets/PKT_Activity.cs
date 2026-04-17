@@ -12,6 +12,6 @@ namespace TCPNetwork.Packets
 
         public int _targetTile { get; set; } = -1;
 
-        public MapFile _file { get; set; } = null;
+        public FL_Map _file { get; set; } = null;
     }
 }
