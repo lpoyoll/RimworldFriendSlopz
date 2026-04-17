@@ -20,7 +20,7 @@ namespace GameClient.Dialogs.ServerBrowser
         public DLG_ServerMods(PKT_ServerTelemetry element)
         {
             this.Element = element;
-            this.Title = "Server Mods";
+            this.Title = $"Server Mods [{element.Mods.Count}]";
         }
 
         public override void DoWindowContents(Rect rect)
