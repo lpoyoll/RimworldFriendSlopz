@@ -2,7 +2,7 @@
 
 namespace Shared.Files.Actions
 {
-    public class ACT_Roads : ACT_Base
+    public class ACT_Road : ACT_Base
     {
         public override bool IsEnabled { get; set; } = true;
 

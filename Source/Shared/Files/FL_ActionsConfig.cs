@@ -22,7 +22,7 @@
 
         public ACT_Aid AidAction { get; set; } = new ACT_Aid();
 
-        public ACT_Roads RoadsAction { get; set; } = new ACT_Roads();
+        public ACT_Road RoadsAction { get; set; } = new ACT_Road();
 
         public ACT_Site SiteAction { get; set; } = new ACT_Site();
     }
