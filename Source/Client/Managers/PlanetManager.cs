@@ -23,10 +23,10 @@ namespace GameClient.Managers
             else
             {
                 PM_Settlements.ClearAllSettlements();
-                PM_Settlements.AddSettlements(SessionHandler.GlobalData._playerSettlements);
+                PM_Settlements.AddSettlements(SessionHandler.GlobalData.PlayerSettlements);
                 
                 PM_Sites.ClearAllSites();
-                PM_Sites.AddSites(SessionHandler.GlobalData._playerSites);
+                PM_Sites.AddSites(SessionHandler.GlobalData.PlayerSites);
                 
                 PM_Npcs.ClearAllSettlements();
                 NPCManagerH.SaveAllQuests();
@@ -35,7 +35,7 @@ namespace GameClient.Managers
                 NPCManagerH.CleanupQuests();
                 
                 PM_Roads.ClearAllRoads();
-                PM_Roads.AddRoads(SessionHandler.GlobalData._roads, false);
+                PM_Roads.AddRoads(SessionHandler.GlobalData.Roads, false);
                 
                 PM_Caravans.ClearAllCaravans();
                 CaravanManagerH.SetAllPlayerCaravans();
@@ -43,7 +43,7 @@ namespace GameClient.Managers
                 if (ModLister.BiotechInstalled)
                 {
                     PM_Pollution.ClearAllPollution();
-                    PM_Pollution.AddPollutedTiles(SessionHandler.GlobalData._pollutedTiles, false);
+                    PM_Pollution.AddPollutedTiles(SessionHandler.GlobalData.PollutedTiles, false);
                 }
             }
         }

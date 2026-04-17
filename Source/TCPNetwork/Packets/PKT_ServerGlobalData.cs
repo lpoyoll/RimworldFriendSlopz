@@ -10,36 +10,34 @@ namespace TCPNetwork.Packets
 {
     public class PKT_ServerGlobalData : PKT_Base
     {
-        public string _serverName { get; set; } = null;
+        public bool IsClientAdmin { get; set; } = false;
 
-        public bool _isClientAdmin { get; set; } = false;
+        public bool IsClientFactionMember { get; set; } = false;
 
-        public bool _isClientFactionMember { get; set; } = false;
+        public List<SiteType> SiteValues { get; set; } = new List<SiteType>();
 
-        public List<SiteType> _siteValues { get; set; } = new List<SiteType>();
+        public List<FL_Event> EventValues { get; set; } = new List<FL_Event>();
 
-        public List<FL_Event> _eventValues { get; set; } = new List<FL_Event>();
+        public FL_ActionsConfig ActionValues { get; set; } = null;
 
-        public FL_ActionsConfig _actionValues { get; set; } = null;
+        public FL_RoadsConfig RoadValues { get; set; } = null;
 
-        public FL_RoadsConfig _roadValues { get; set; } = null;
+        public FL_ScenarioConfig ScenarioValues { get; set; } = null;
 
-        public FL_ScenarioConfig _scenarioValues { get; set; } = null;
+        public FL_StorytellerConfig StorytellerValues { get; set; } = null;
 
-        public FL_StorytellerConfig _storytellerValues { get; set; } = null;
-
-        public FL_DifficultyConfig _difficultyValues { get; set; } = null;
+        public FL_DifficultyConfig DifficultyValues { get; set; } = null;
 
         public List<NPCSettlementDetail> _npcSettlements { get; set; } = new List<NPCSettlementDetail>();
 
-        public List<FL_Settlement> _playerSettlements { get; set; } = new List<FL_Settlement>();
+        public List<FL_Settlement> PlayerSettlements { get; set; } = new List<FL_Settlement>();
 
-        public List<Site> _playerSites { get; set; } = new List<Site>();
+        public List<Site> PlayerSites { get; set; } = new List<Site>();
 
-        public List<RoadDetail> _roads { get; set; } = new List<RoadDetail>();
+        public List<RoadDetail> Roads { get; set; } = new List<RoadDetail>();
 
-        public List<PollutionDetail> _pollutedTiles { get; set; } = new List<PollutionDetail>();
+        public List<PollutionDetail> PollutedTiles { get; set; } = new List<PollutionDetail>();
 
-        public List<ModConfig> _modConfigs { get; set; } = new List<ModConfig>();
+        public List<ModConfig> ModConfigs { get; set; } = new List<ModConfig>();
     }
 }

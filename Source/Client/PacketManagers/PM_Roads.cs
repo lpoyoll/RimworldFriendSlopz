@@ -177,19 +177,19 @@ namespace GameClient.PacketManagers
         public static void SetValues()
         {
             List<RoadDef> allowedRoads = new List<RoadDef>();
-            if (SessionHandler.GlobalData._roadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
-            if (SessionHandler.GlobalData._roadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
-            if (SessionHandler.GlobalData._roadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
-            if (SessionHandler.GlobalData._roadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
-            if (SessionHandler.GlobalData._roadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
+            if (SessionHandler.GlobalData.RoadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
+            if (SessionHandler.GlobalData.RoadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
+            if (SessionHandler.GlobalData.RoadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
+            if (SessionHandler.GlobalData.RoadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
+            if (SessionHandler.GlobalData.RoadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
             allowedRoadDefs = allowedRoads.ToArray();
 
             List<int> allowedCosts = new List<int>();
-            if (SessionHandler.GlobalData._roadValues.AllowDirtPath) allowedCosts.Add(SessionHandler.GlobalData._roadValues.DirtPathCost);
-            if (SessionHandler.GlobalData._roadValues.AllowDirtRoad) allowedCosts.Add(SessionHandler.GlobalData._roadValues.DirtRoadCost);
-            if (SessionHandler.GlobalData._roadValues.AllowStoneRoad) allowedCosts.Add(SessionHandler.GlobalData._roadValues.StoneRoadCost);
-            if (SessionHandler.GlobalData._roadValues.AllowAsphaltPath) allowedCosts.Add(SessionHandler.GlobalData._roadValues.AsphaltPathCost);
-            if (SessionHandler.GlobalData._roadValues.AllowAsphaltHighway) allowedCosts.Add(SessionHandler.GlobalData._roadValues.AsphaltHighwayCost);
+            if (SessionHandler.GlobalData.RoadValues.AllowDirtPath) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.DirtPathCost);
+            if (SessionHandler.GlobalData.RoadValues.AllowDirtRoad) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.DirtRoadCost);
+            if (SessionHandler.GlobalData.RoadValues.AllowStoneRoad) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.StoneRoadCost);
+            if (SessionHandler.GlobalData.RoadValues.AllowAsphaltPath) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.AsphaltPathCost);
+            if (SessionHandler.GlobalData.RoadValues.AllowAsphaltHighway) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.AsphaltHighwayCost);
             allowedRoadCosts = allowedCosts.ToArray();
         }
 

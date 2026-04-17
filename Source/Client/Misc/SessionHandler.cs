@@ -90,9 +90,9 @@ namespace GameClient.Misc
 
         public static void SetValues()
         {
-            IsAdmin = GlobalData._isClientAdmin;
-            HasFaction = GlobalData._isClientFactionMember;
-            CurrentActionValues = GlobalData._actionValues;
+            IsAdmin = GlobalData.IsClientAdmin;
+            HasFaction = GlobalData.IsClientFactionMember;
+            CurrentActionValues = GlobalData.ActionValues;
         }
 
         [OnUpdate]

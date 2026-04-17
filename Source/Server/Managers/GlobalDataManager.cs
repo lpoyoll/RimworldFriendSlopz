@@ -13,24 +13,23 @@ namespace GameServer.Managers
         public static void SendServerGlobalData(ServerClient client)
         {
             PKT_ServerGlobalData globalData = new PKT_ServerGlobalData();
-            globalData._serverName = Master.ServerConfig.Name;
-            globalData._isClientAdmin = client.UserFile.IsAdmin;
-            globalData._isClientFactionMember = GuildManagerH.GetFactionFromName(client.UserFile.GuildName) != null;
-            globalData._actionValues = Master.ActionConfigs;
-            globalData._roadValues = Master.ActionConfigs.RoadsAction.RoadValues;
-            globalData._siteValues = Master.ActionConfigs.SiteAction.SiteTypes;
-            globalData._playerSettlements = PM_Settlements.GetSettlementsFromGoodwill(client);
-            globalData._playerSites = PM_Sites.GetSitesFromGoodwill(client);
-            globalData._scenarioValues = Master.ScenarioValues;
-            globalData._difficultyValues = Master.DifficultyValues;
-            globalData._storytellerValues = Master.StorytellerValues;
-            globalData._modConfigs = Master.ModConfig.ModConfigs;
-            globalData._eventValues = EventManagerH.LoadedEvents;
+            globalData.IsClientAdmin = client.UserFile.IsAdmin;
+            globalData.IsClientFactionMember = GuildManagerH.GetFactionFromName(client.UserFile.GuildName) != null;
+            globalData.ActionValues = Master.ActionConfigs;
+            globalData.RoadValues = Master.ActionConfigs.RoadsAction.RoadValues;
+            globalData.SiteValues = Master.ActionConfigs.SiteAction.SiteTypes;
+            globalData.PlayerSettlements = PM_Settlements.GetSettlementsFromGoodwill(client);
+            globalData.PlayerSites = PM_Sites.GetSitesFromGoodwill(client);
+            globalData.ScenarioValues = Master.ScenarioValues;
+            globalData.DifficultyValues = Master.DifficultyValues;
+            globalData.StorytellerValues = Master.StorytellerValues;
+            globalData.ModConfigs = Master.ModConfig.ModConfigs;
+            globalData.EventValues = EventManagerH.LoadedEvents;
 
             if (Master.WorldValues != null)
             {
-                globalData._roads = Master.WorldValues.Roads;
-                globalData._pollutedTiles = Master.WorldValues.PollutedTiles;
+                globalData.Roads = Master.WorldValues.Roads;
+                globalData.PollutedTiles = Master.WorldValues.PollutedTiles;
                 globalData._npcSettlements = Master.WorldValues.NPCSettlements;
             }
 

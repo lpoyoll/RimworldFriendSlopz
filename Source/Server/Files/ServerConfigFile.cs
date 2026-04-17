@@ -6,9 +6,9 @@ namespace GameServer.Files
     {
         public static string SavePath { get; set; } = string.Empty;
 
-        public string Name { get; set; } = "RimWorld-Together-Server";
+        public string Name { get; set; } = "RimWorld Together Server";
 
-        public string Description { get; set; } = "My new Rimworld Together Server!";
+        public string Description { get; set; } = string.Empty;
 
         public string DiscordURL { get; set; } = string.Empty;
 

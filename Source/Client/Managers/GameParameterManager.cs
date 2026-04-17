@@ -30,9 +30,9 @@ namespace GameClient.Managers
 
         public static void SetValues()
         {
-            SessionHandler.CurrentScenario = SessionHandler.GlobalData._scenarioValues;
-            SessionHandler.CurrentStoryteller = SessionHandler.GlobalData._storytellerValues;
-            SessionHandler.CurrentDifficulty = SessionHandler.GlobalData._difficultyValues;
+            SessionHandler.CurrentScenario = SessionHandler.GlobalData.ScenarioValues;
+            SessionHandler.CurrentStoryteller = SessionHandler.GlobalData.StorytellerValues;
+            SessionHandler.CurrentDifficulty = SessionHandler.GlobalData.DifficultyValues;
         }
 
         public static void SetScenario(FL_ScenarioConfig file)

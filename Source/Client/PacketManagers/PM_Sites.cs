@@ -312,8 +312,8 @@ namespace GameClient.PacketManagers
 
         public static void SetValues()
         {
-            PM_Sites.SiteValues = SessionHandler.GlobalData._siteValues;
-            PM_Sites.RewardDelay = SessionHandler.GlobalData._actionValues.SiteAction.TimeInterval;
+            PM_Sites.SiteValues = SessionHandler.GlobalData.SiteValues;
+            PM_Sites.RewardDelay = SessionHandler.GlobalData.ActionValues.SiteAction.TimeInterval;
         }
     }
 }

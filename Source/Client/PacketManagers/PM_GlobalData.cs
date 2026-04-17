@@ -19,8 +19,8 @@ namespace GameClient.PacketManagers
             GameParameterManager.SetValues();
             PM_Sites.SetValues();
             PM_RoadsHelper.SetValues();
-            PM_Mods.SetValues(SessionHandler.GlobalData._modConfigs);
-            PM_Events.SetValues(SessionHandler.GlobalData._eventValues);
+            PM_Mods.SetValues(SessionHandler.GlobalData.ModConfigs);
+            PM_Events.SetValues(SessionHandler.GlobalData.EventValues);
         }
     }
 }
