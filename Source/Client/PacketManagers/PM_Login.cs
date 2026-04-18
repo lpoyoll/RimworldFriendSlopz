@@ -140,7 +140,7 @@ namespace GameClient.PacketManagers
         private static void ShowMismatchingPassword(PKT_Login data)
         {
             Action toDo = delegate { ModVersionManager.ChangeVersion(data._extraDetails[0]); };
-            DLG_Base.PushNewDialog(new DLG_YesNo($"This server requires version '{data._extraDetails[0]}'! Install?", toDo));
+            DLG_Base.PushNewDialog(new DLG_YesNo($"This server requires version {data._extraDetails[0]}! Install?", toDo));
         }
     }
 
