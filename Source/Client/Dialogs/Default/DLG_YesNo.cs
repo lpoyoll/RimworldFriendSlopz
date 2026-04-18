@@ -50,17 +50,19 @@ namespace GameClient.Dialogs.Default
             Widgets.Label(new Rect(centeredX - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
 
             GUI.color = YesColor;
-            if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomLeft), YesText))
+            if (Widgets.ButtonText(GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomLeft, 2), YesText))
             {
                 OnAccept?.Invoke();
                 Close();
             }
+
             GUI.color = NoColor;
-            if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomRight), NoText))
+            if (Widgets.ButtonText(GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight, 2), NoText))
             {
                 OnCancel?.Invoke();
                 Close();
             }
+
             GUI.color = Color.white;
         }
     }

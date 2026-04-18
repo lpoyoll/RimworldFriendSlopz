@@ -62,9 +62,9 @@ namespace GameClient.Dialogs
 
         public enum RectLocation { TopLeft, TopCenter, TopRight, MiddleLeft, MiddleCenter, MiddleRight, BottomLeft, BottomCenter, BottomRight }
 
-        public static Rect GetRectForLocation(Rect origin, Vector2 reference, RectLocation desiredLocation, bool fillWidth = false)
+        public static Rect GetRectForLocation(Rect origin, Vector2 reference, RectLocation desiredLocation, int buttonCount, bool bypassFill = false)
         {
-            if (fillWidth) reference = new Vector2(origin.width, reference.y);
+            if (!bypassFill) reference = new Vector2((origin.width / buttonCount) - 3f, reference.y);
 
             return desiredLocation switch
             {

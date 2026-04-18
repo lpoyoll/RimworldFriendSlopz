@@ -38,7 +38,7 @@ namespace GameClient.Dialogs.Default
             Widgets.Label(new Rect(centeredX - Text.CalcSize(CurrentMessage).x / 2, windowDescriptionDif, 
                 Text.CalcSize(CurrentMessage).x, Text.CalcSize(CurrentMessage).y), CurrentMessage);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter, true), "OK"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter, 1), "OK"))
             {
                 if (Index < Messages.Length - 1)
                 {

@@ -38,9 +38,9 @@ namespace GameClient.Dialogs.ServerBrowser
 
             FillMainRect(new Rect(rect.x, descriptionLineDif1 + 10f, rect.width, rect.height - SlimButtonSize.y - 50f));
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomLeft), "Download")) OpenWorkshop();
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomLeft, 2), "Download")) OpenWorkshop();
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight), "Close")) Close();
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight, 2), "Close")) Close();
         }
 
         private void FillMainRect(Rect mainRect)

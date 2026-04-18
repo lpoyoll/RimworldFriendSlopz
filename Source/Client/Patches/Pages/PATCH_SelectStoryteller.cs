@@ -38,7 +38,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStoryteller __instance)
         {
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, DLG_Base.SmallButtonSize, DLG_Base.RectLocation.BottomLeft), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, DLG_Base.SmallButtonSize, DLG_Base.RectLocation.BottomLeft, 1, true), "") || KeyBindingDefOf.Cancel.KeyDownEvent)
             {
                 __instance.Close();
                 Network.ServerEndpoint.MarkForDisconnect();
@@ -72,8 +72,7 @@ namespace GameClient.Patches.Pages
         {
             Text.Font = GameFont.Small;
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, DLG_Base.SmallButtonSize,
-                DLG_Base.RectLocation.BottomLeft), "Disconnect")) { };
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, DLG_Base.SmallButtonSize, DLG_Base.RectLocation.BottomLeft, 1, true), "Disconnect")) { };
         }
     }
 

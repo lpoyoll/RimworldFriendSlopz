@@ -42,7 +42,7 @@ namespace GameClient.Dialogs.ServerBrowser
 
             Text.Font = GameFont.Small;
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter, true), "Close")) { Close(); }
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter, 1), "Close")) { Close(); }
         }
 
         private void FillMainRect(Rect mainRect)
