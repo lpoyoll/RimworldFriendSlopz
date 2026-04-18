@@ -25,25 +25,8 @@ cd "Temp"
 ::Set mod folder path
 set /p ModFolder=<ModPath.txt
 
-::Go to version folder
-cd "Version"
-
-::Unzip the file
-echo.
-echo %DashLine%
-echo - Extracting archive...
-echo %DashLine%
-powershell -command "Expand-Archive -Path '3005289691.zip' -DestinationPath '3005289691' -Force"
-
-::Save file location
-set "ExtractedFolder=%cd%/3005289691"
-
 ::Go to mod folder
 cd %ModFolder%\..
-
-::Move folder to temp place
-move "%ExtractedFolder%" "3005289691-Temp"
-timeout /t 3
 
 ::Clean old folder
 rmdir /s /q "3005289691"
