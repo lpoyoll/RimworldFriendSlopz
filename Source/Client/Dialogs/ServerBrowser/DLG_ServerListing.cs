@@ -6,6 +6,7 @@ using TCPNetwork;
 using TCPNetwork.Packets.ServerBrowser;
 using UnityEngine;
 using Verse;
+using Verse.Noise;
 
 namespace GameClient.Dialogs.ServerBrowser
 {
@@ -25,6 +26,7 @@ namespace GameClient.Dialogs.ServerBrowser
         {
             float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
             float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
+            string moddedBool = Element.Mods.Count > 0 ? "Yes" : "No";
 
             Text.Font = GameFont.Medium;
 
@@ -34,7 +36,16 @@ namespace GameClient.Dialogs.ServerBrowser
 
             Text.Font = GameFont.Small;
 
-            Rect toUse = new Rect(rect.x, descriptionLineDif1 + 10f, rect.width, rect.height - SlimButtonSize.y - 50f);
+            Rect toUse = new Rect(rect.x, descriptionLineDif1 + 10f, rect.width, 147f);
+            Listing_Standard listingStandard = new Listing_Standard();
+            listingStandard.Begin(toUse);
+            listingStandard.Label($"Endpoint: {Element.Endpoint}:{Element.Port}");
+            listingStandard.Label($"Population: {Element.CurrentPopulation}/{Element.MaxPopulation}");
+            listingStandard.Label($"Version: {Element.Version}");
+            listingStandard.Label($"Modded: {moddedBool}");
+            listingStandard.End();
+
+            toUse = new Rect(rect.x, toUse.height, rect.width, 165f);
             Widgets.DrawBox(toUse);
             Widgets.TextArea(toUse, Element.Description, true);
 
