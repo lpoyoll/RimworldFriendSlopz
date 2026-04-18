@@ -57,9 +57,9 @@ namespace GameServer.Core
             FL_BackupsConfig.SavePath = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
             FL_ChatConfig.SavePath = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
             FL_Leaderboard.SavePath = Path.Combine(Master.AssetsPath, "Leaderboard.json");
+            FL_Guild.SavePath = Path.Combine(Master.GuildsPath);
             CommonValues.ServerUsersPath = Master.UsersPath;
             CommonValues.ServerSitesPath = Master.SitesPath;
-            FL_Guild.SavePath = Path.Combine(Master.GuildsPath);
         }
 
         private static void CreateFolders()
