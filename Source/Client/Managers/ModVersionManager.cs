@@ -1,0 +1,79 @@
+﻿using GameClient.Core;
+using GameClient.Dialogs;
+using GameClient.Dialogs.Default;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace GameClient.Managers
+{
+    public static class ModVersionManager
+    {
+        private static readonly string downloadURL = "https://github.com/RimWorld-Together/Rimworld-Together/releases/download";
+
+        private static readonly string fileName = "3005289691.zip";
+
+        public static void ChangeVersion(string version)
+        {
+            string downloadPath = Path.Combine(Master.AppdataVersionPath, fileName);
+            string url = $"{downloadURL}/{version}/{fileName}";
+
+            if (!DownloadVersion(url, downloadPath))
+            {
+                DLG_Base.PushNewDialog(new DLG_Message("ERROR",
+                    new string[] { "Failed to download specified version! Please retry" }));
+            }
+
+            else
+            {
+                PrepareInstallFiles();
+
+                string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
+
+                Action toDo = delegate
+                {
+                    ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
+                    processInfo.UseShellExecute = false;
+                    Process.Start(processInfo);
+
+                    Application.Quit();
+                };
+
+                DLG_Message dialog = new DLG_Message("MESSAGE", new string[] { "The game will close to apply the new version" },
+                    toDo);
+
+                DLG_Base.PushNewDialog(dialog);
+            }
+        }
+
+        private static bool DownloadVersion(string uri, string downloadPath)
+        {
+            try
+            {
+                if (File.Exists(downloadPath)) File.Delete(downloadPath);
+
+                using WebClient webClient = new WebClient();
+                webClient.DownloadFile(new Uri(uri), downloadPath);
+
+                return true;
+            }
+            catch { return false; }
+        }
+
+        private static void PrepareInstallFiles()
+        {
+            string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
+            string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
+            string modPath = Path.Combine(Master.AppdataTempPath, "ModPath.txt");
+
+            File.Copy(scriptPath, copyPath);
+            File.WriteAllText(modPath, Master.ModMainPath);
+        }
+    }
+}
