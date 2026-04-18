@@ -36,7 +36,7 @@ namespace GameServer.PacketManager
         {
             if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return false;
 
-            client.LoadUserFromFile(client);
+            client.UserFile = ServerClient.LoadOrCreateUserFile(client, data);
 
             if (UserManagerH.CheckIfUserBanned(client)) return false;
 
@@ -55,7 +55,7 @@ namespace GameServer.PacketManager
 
         public static void RegisterUser(ServerClient client, PKT_Login data)
         {
-            client.UserFile.UpdateHash();
+            client.UserFile = ServerClient.LoadOrCreateUserFile(client, data);
 
             PM_Sites.SetSiteInfoForClient(client);
 

@@ -1,7 +1,10 @@
 ﻿using Shared;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using TCPNetwork.Packets;
 
 namespace TCPNetwork.Files.Client
 {
@@ -37,19 +40,23 @@ namespace TCPNetwork.Files.Client
 
         public void VerifyUser() { IsVerified = true; }
 
-        public void LoadUserFromFile(ServerClient client) 
-        { 
+        public static UserFile LoadOrCreateUserFile(ServerClient client, PKT_Login data)
+        {
+            List<UserFile> files = new List<UserFile>();
             string[] userFiles = Directory.GetFiles(CommonValues.ServerUsersPath);
+            foreach (string userFile in userFiles) files.Add(Serializer.SerializeFromFile<UserFile>(userFile));
 
-            foreach (string userFile in userFiles)
+            UserFile toFind = files.FirstOrDefault(fetch => fetch.Username == data._username && fetch.Password == data._password);
+            if (toFind != null) return toFind;
+            else
             {
-                UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.Username == client.UserFile.Username)
-                {
-                    UserFile = file;
-                    UserFile.UpdateIP(CurrentIP);
-                    break;
-                }
+                toFind = new UserFile();
+                toFind.Username = data._username;
+                toFind.Password = data._password;
+                toFind.Hash = Hasher.GetHashFromString($"{toFind.Username}:{toFind.Password}");
+                toFind.SaveUserFile();
+
+                return toFind;
             }
         }
     }

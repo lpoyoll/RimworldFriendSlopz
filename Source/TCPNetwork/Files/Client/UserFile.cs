@@ -105,11 +105,5 @@ namespace TCPNetwork.Files.Client
 
             SaveUserFile();
         }
-
-        public void UpdateHash() 
-        { 
-            Hash = Hasher.GetHashFromString($"{Username}:{Password}");
-            SaveUserFile();
-        }
     }
 }
