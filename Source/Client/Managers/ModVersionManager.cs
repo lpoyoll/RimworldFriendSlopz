@@ -18,27 +18,28 @@ namespace GameClient.Managers
     {
         private static readonly string downloadURL = "https://github.com/RimWorld-Together/Rimworld-Together/releases/download";
 
+        private static string DownloadPath { get; set; } = Path.Combine(Master.AppdataVersionPath, fileName);
+
         private static readonly string fileName = "3005289691.zip";
 
         public static void ChangeVersion(string version)
         {
-            string downloadPath = Path.Combine(Master.AppdataVersionPath, fileName);
             string url = $"{downloadURL}/{version}/{fileName}";
 
-            if (!DownloadVersion(url, downloadPath))
+            if (!DownloadVersion(url, DownloadPath))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR",
                     new string[] { "Failed to download specified version! Please retry" }));
             }
 
             string parentFolder = Directory.GetParent(Master.ModMainPath).FullName;
-            if (!ExtractVersion(downloadPath, parentFolder))
+            if (!ExtractVersion(DownloadPath, parentFolder))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR",
                     new string[] { "Failed to extract specified version! Please retry" }));
             }
 
-            PrepareInstallFiles();
+            PrepareShellInstall();
         }
 
         private static bool DownloadVersion(string uri, string downloadPath)
@@ -69,7 +70,7 @@ namespace GameClient.Managers
             catch { return false; }
         }
 
-        private static void PrepareInstallFiles()
+        private static void PrepareShellInstall()
         {
             string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
             string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
@@ -87,10 +88,7 @@ namespace GameClient.Managers
                 Application.Quit();
             };
 
-            DLG_Message dialog = new DLG_Message("MESSAGE", new string[] { "The game will close to apply the new version" },
-                toDo);
-
-            DLG_Base.PushNewDialog(dialog);
+            DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "The game will close to apply the new version" }, toDo));
         }
     }
 }
