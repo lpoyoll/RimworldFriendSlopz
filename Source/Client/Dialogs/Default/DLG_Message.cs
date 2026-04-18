@@ -6,7 +6,7 @@ namespace GameClient.Dialogs.Default
 {
     public class DLG_Message : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(500f, 150f);
+        public override Vector2 InitialSize => new Vector2(500f, 145f);
 
         private string CurrentMessage { get; set; }
 
@@ -38,7 +38,7 @@ namespace GameClient.Dialogs.Default
             Widgets.Label(new Rect(centeredX - Text.CalcSize(CurrentMessage).x / 2, windowDescriptionDif, 
                 Text.CalcSize(CurrentMessage).x, Text.CalcSize(CurrentMessage).y), CurrentMessage);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomCenter), "OK"))
+            if (Widgets.ButtonText(GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter, true), "OK"))
             {
                 if (Index < Messages.Length - 1)
                 {
