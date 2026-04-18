@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -30,26 +31,14 @@ namespace GameClient.Managers
                     new string[] { "Failed to download specified version! Please retry" }));
             }
 
-            else
+            string parentFolder = Directory.GetParent(Master.ModMainPath).FullName;
+            if (!ExtractVersion(downloadPath, parentFolder))
             {
-                PrepareInstallFiles();
-
-                string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
-
-                Action toDo = delegate
-                {
-                    ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
-                    processInfo.UseShellExecute = false;
-                    Process.Start(processInfo);
-
-                    Application.Quit();
-                };
-
-                DLG_Message dialog = new DLG_Message("MESSAGE", new string[] { "The game will close to apply the new version" },
-                    toDo);
-
-                DLG_Base.PushNewDialog(dialog);
+                DLG_Base.PushNewDialog(new DLG_Message("ERROR",
+                    new string[] { "Failed to extract specified version! Please retry" }));
             }
+
+            PrepareInstallFiles();
         }
 
         private static bool DownloadVersion(string uri, string downloadPath)
@@ -66,6 +55,20 @@ namespace GameClient.Managers
             catch { return false; }
         }
 
+        private static bool ExtractVersion(string filePath, string destination)
+        {
+            try
+            {
+                if (Directory.Exists(destination)) Directory.Delete(destination);
+
+                Directory.CreateDirectory(destination);
+                ZipFile.ExtractToDirectory(filePath, destination);
+
+                return true;
+            }
+            catch { return false; }
+        }
+
         private static void PrepareInstallFiles()
         {
             string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
@@ -74,6 +77,20 @@ namespace GameClient.Managers
 
             File.Copy(scriptPath, copyPath);
             File.WriteAllText(modPath, Master.ModMainPath);
+
+            Action toDo = delegate
+            {
+                ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
+                processInfo.UseShellExecute = false;
+                Process.Start(processInfo);
+
+                Application.Quit();
+            };
+
+            DLG_Message dialog = new DLG_Message("MESSAGE", new string[] { "The game will close to apply the new version" },
+                toDo);
+
+            DLG_Base.PushNewDialog(dialog);
         }
     }
 }
