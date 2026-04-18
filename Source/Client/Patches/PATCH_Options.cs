@@ -24,10 +24,10 @@ namespace GameClient.Patches
     [HarmonyPatch(typeof(Dialog_Options), "DoGeneralOptions")]
     public static class DoGeneralOptions_Patch
     {
-        public static bool skipNextLabel = false;
+        private static bool SkipNextLabel { get; set; } = false;
 
         [HarmonyPrefix]
-        public static void Prefix() { skipNextLabel = false; }
+        public static void Prefix() { SkipNextLabel = false; }
 
         [HarmonyPatch(typeof(Listing_Standard), "Label", new Type[] { typeof(TaggedString), typeof(float), typeof(string) })]
         public static class Label_Patch
@@ -35,12 +35,12 @@ namespace GameClient.Patches
             [HarmonyPrefix]
             public static bool Prefix(ref TaggedString label)
             {
-                if (skipNextLabel) return true;
+                if (SkipNextLabel) return true;
 
                 if (label == "MaxPermadeathAutosaveIntervalInfo".Translate(1f))
                 {
                     label = "Permadeath Autosave interval currently overriden by player".Colorize(Color.green);
-                    skipNextLabel = true;
+                    SkipNextLabel = true;
                 }
 
                 return true;
