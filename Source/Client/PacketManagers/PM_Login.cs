@@ -51,12 +51,12 @@ namespace GameClient.PacketManagers
                     DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Server is whitelisted!" }));
                     break;
 
-                case LoginResponse.Version:
-                    DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { $"This server requires version '{data._extraDetails[0]}'!"}));
-                    break;
-
                 case LoginResponse.NoWorld:
                     DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { $"Server is currently being set up! Join again later!" }));
+                    break;
+
+                case LoginResponse.Version:
+                    ShowMismatchingPassword(data);
                     break;
             }
         }
@@ -135,6 +135,12 @@ namespace GameClient.PacketManagers
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You must join a server first to use this feature!" }));
             }
+        }
+
+        private static void ShowMismatchingPassword(PKT_Login data)
+        {
+            Action toDo = delegate { ModVersionManager.ChangeVersion(data._extraDetails[0]); };
+            DLG_Base.PushNewDialog(new DLG_YesNo($"This server requires version '{data._extraDetails[0]}'! Install?", toDo));
         }
     }
 

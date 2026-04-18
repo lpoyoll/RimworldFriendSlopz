@@ -45,8 +45,8 @@ namespace GameClient.PacketManagers
 
         public static void PromptChangeVersion()
         {
-            DLG_Base.PushNewDialog(new DLG_Inputs("Version selection", new string[] { "Release number", "Password (optional)" }, 
-                new bool[] { false, true }, delegate { ModVersionManager.ChangeVersion(DLG_Inputs.DialogInputResults[0]); }));
+            DLG_Base.PushNewDialog(new DLG_Inputs("Version selection", new string[] { "Release number" }, new bool[] { false }, 
+                delegate { ModVersionManager.ChangeVersion(DLG_Inputs.DialogInputResults[0]); }));
         }
     }
 }
