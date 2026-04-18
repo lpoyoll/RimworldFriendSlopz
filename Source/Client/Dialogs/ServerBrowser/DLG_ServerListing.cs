@@ -52,7 +52,7 @@ namespace GameClient.Dialogs.ServerBrowser
                 DLG_Base.PushNewDialog(new DLG_ServerMods(Element));
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight, 3), "Close")) Close();
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight, 3), "Back")) Close();
         }
 
         private void FillMainRect(Rect mainRect)

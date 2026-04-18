@@ -40,7 +40,7 @@ namespace GameClient.Dialogs.ServerBrowser
 
             if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomLeft, 2), "Download")) OpenWorkshop();
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight, 2), "Close")) Close();
+            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight, 2), "Back")) Close();
         }
 
         private void FillMainRect(Rect mainRect)
