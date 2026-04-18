@@ -18,22 +18,21 @@ namespace GameClient.Managers
     {
         private static readonly string downloadURL = "https://github.com/RimWorld-Together/Rimworld-Together/releases/download";
 
-        private static string DownloadPath { get; set; } = Path.Combine(Master.AppdataVersionPath, fileName);
-
         private static readonly string fileName = "3005289691.zip";
 
         public static void ChangeVersion(string version)
         {
             string url = $"{downloadURL}/{version}/{fileName}";
+            string downloadPath = Path.Combine(Master.AppdataVersionPath, fileName);
 
-            if (!DownloadVersion(url, DownloadPath))
+            if (!DownloadVersion(url, downloadPath))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR",
                     new string[] { "Failed to download specified version! Please retry" }));
             }
 
             string parentFolder = Directory.GetParent(Master.ModMainPath).FullName;
-            if (!ExtractVersion(DownloadPath, parentFolder))
+            if (!ExtractVersion(downloadPath, parentFolder))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR",
                     new string[] { "Failed to extract specified version! Please retry" }));
