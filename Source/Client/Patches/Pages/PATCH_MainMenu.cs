@@ -48,25 +48,46 @@ namespace GameClient.Patches.Pages
             {
                 if (optList.First().GetType() == typeof(ListableOption))
                 {
-                    optList.Insert(0, new ListableOption("Server Browser", delegate
-                    {
-                        if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
-                        else if (!HarmonyHandler.CheckForModCollision()) return;
-                        else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
-                        else ServerBrowserManager.TryConnect();
-                    }));
-
-                    optList.Insert(0, new ListableOption("Direct Connect", delegate
-                    {
-                        if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
-                        else if (!HarmonyHandler.CheckForModCollision()) return;
-                        else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
-                        else DLG_Base.PushNewDialog(new DLG_Login());
-                    }));
+                    RemoveExtraButtons(optList);
+                    AddButtonsToMainMenu(optList);
                 }
 
                 return true;
             }
+        }
+
+        private static void RemoveExtraButtons(List<ListableOption> optList)
+        {
+            foreach (ListableOption option in optList.ToArray())
+            {
+                if (option.label == "Tutorial".Translate()) optList.Remove(option);
+                else if (option.label == "DevQuickTest".Translate()) optList.Remove(option);
+            }
+        }
+
+        private static void AddButtonsToMainMenu(List<ListableOption> optList)
+        {
+            optList.Insert(0, new ListableOption("Local Host", delegate
+            {
+                if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
+                else LocalServerHandler.ManageLocalServer();
+            }));
+
+            optList.Insert(0, new ListableOption("Server Browser", delegate
+            {
+                if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
+                else if (!HarmonyHandler.CheckForModCollision()) return;
+                else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
+                else ServerBrowserManager.TryConnect();
+            }));
+
+            optList.Insert(0, new ListableOption("Direct Connect", delegate
+            {
+                if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
+                else if (!HarmonyHandler.CheckForModCollision()) return;
+                else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
+                else DLG_Base.PushNewDialog(new DLG_Login());
+            }));
         }
 
         public static bool CheckIfLoginIsValid()

@@ -40,6 +40,7 @@ namespace GameClient.Core
             Master.AppdataRTPath = Path.Combine(Master.AppdataPath, "RimWorld Together");
             Master.AppdataTempPath = Path.Combine(Master.AppdataRTPath, "Temp");
             Master.AppdataVersionPath = Path.Combine(Master.AppdataTempPath, "Version");
+            Master.AppdataLocalServerPath = Path.Combine(Master.AppdataRTPath, "Local Server");
 
             string mod = LoadedModManager.RunningMods.First(m => (m.PackageId == Master.ModPackageID || m.PackageId == Master.ModPackageID + "_steam") 
                 && ModLister.GetActiveModWithIdentifier(m.PackageId) != null).RootDir;
