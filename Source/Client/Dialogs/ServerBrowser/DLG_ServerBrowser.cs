@@ -17,8 +17,7 @@ namespace GameClient.Dialogs.ServerBrowser
 
         public DLG_ServerBrowser(List<PKT_ServerTelemetry> elements) 
         {
-            this.Title = "Server Browser";
-            this.Description = $"Available servers in the browser [{elements.Count()}]";
+            this.Title = $"Server Browser [{elements.Count()}]";
             this.Elements = elements.OrderByDescending(fetch => fetch.CurrentPopulation).ToList();
         }
 
@@ -26,19 +25,14 @@ namespace GameClient.Dialogs.ServerBrowser
         {
             float windowDescriptionDif = Text.CalcSize(Description).y + StandardMargin;
             float descriptionLineDif1 = windowDescriptionDif - Text.CalcSize(Description).y * 0.25f;
-            float descriptionLineDif2 = windowDescriptionDif + Text.CalcSize(Description).y * 1.1f;
 
             Text.Font = GameFont.Medium;
+
             Widgets.Label(new Rect(DLG_Base.GetRectMiddle(rect) - Text.CalcSize(Title).x / 2, rect.y, Text.CalcSize(Title).x, Text.CalcSize(Title).y), Title);
-            Text.Font = GameFont.Small;
 
             Widgets.DrawLineHorizontal(rect.x, descriptionLineDif1, rect.width);
-            Text.Font = GameFont.Small;
-            Widgets.Label(new Rect(DLG_Base.GetRectMiddle(rect) - Text.CalcSize(Description).x / 2, windowDescriptionDif, Text.CalcSize(Description).x, Text.CalcSize(Description).y), Description);
-            Text.Font = GameFont.Medium;
-            Widgets.DrawLineHorizontal(rect.x, descriptionLineDif2, rect.width);
 
-            FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - SlimButtonSize.y - 85f));
+            FillMainRect(new Rect(0f, descriptionLineDif1 + 10f, rect.width, rect.height - SlimButtonSize.y - 60f));
 
             Text.Font = GameFont.Small;
 
