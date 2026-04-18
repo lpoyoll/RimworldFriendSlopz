@@ -41,8 +41,6 @@ namespace GameServer.Core
 
         public static string EventsPath { get; set; } = Path.Combine(Master.AssetsPath, "Events");
 
-        public static string CompatibilityPatchesPath { get; set; } = Path.Combine(Master.AssetsPath, "Patches");
-
         //References
 
         public static FL_WhitelistConfig Whitelist { get; set; } = null;
