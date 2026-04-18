@@ -32,7 +32,7 @@ namespace GameClient.Managers
             }
 
             string parentFolder = Directory.GetParent(Master.ModMainPath).FullName;
-            if (!ExtractVersion(downloadPath, parentFolder))
+            if (!ExtractVersion(downloadPath, Path.Combine(parentFolder, "3005289691-Temp")))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR",
                     new string[] { "Failed to extract specified version! Please retry" }));
