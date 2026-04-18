@@ -85,7 +85,7 @@ namespace GameServer.PacketManager
 
         public static void RemoveOldClientSessions(ServerClient client)
         {
-            ServerClient[] oldClients = ServerNetwork.GetConnectedClients().Where(fetch => client.GetOrSetClientData<UserFile>().Username 
+            ServerClient[] oldClients = ServerNetwork.GetConnectedClients().Where(fetch => fetch.GetOrSetClientData<UserFile>().Username 
                 == client.GetOrSetClientData<UserFile>().Username && fetch != client).ToArray();
 
             foreach (ServerClient sc in oldClients) sc.Listener.MarkForDisconnect();
