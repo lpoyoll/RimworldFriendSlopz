@@ -10,17 +10,17 @@ namespace TCPNetwork.Files.Client
 {
     public class ServerClient
     {
-        public string CurrentIP { get; set; } = string.Empty;
+        public string CurrentIP { get; private set; } = string.Empty;
 
         public bool IsVerified { get; private set; } = false;
 
-        public UserFile UserFile { get; set; } = null;
+        public object ClientData { get; private set; } = null;
 
-        public Listener Listener { get; set; } = null;
+        public Listener Listener { get; private set; } = null;
 
-        public TcpClient Tcp { get; set; } = null;
+        public TcpClient Tcp { get; private set; } = null;
 
-        public NetworkRuleset Ruleset { get; set; } = null;
+        public NetworkRuleset Ruleset { get; private set; } = null;
 
         public ServerClient(TcpClient tcp, NetworkRuleset ruleset, bool createListener = true)
         {
@@ -36,28 +36,14 @@ namespace TCPNetwork.Files.Client
 
         public void CreateListener() { Listener = new Listener(this, Tcp, Ruleset); }
 
+        public void VerifyClient() { IsVerified = true; }
+
         public void DisposeTCP() { Tcp.Dispose(); }
 
-        public void VerifyUser() { IsVerified = true; }
-
-        public static UserFile LoadOrCreateUserFile(ServerClient client, PKT_Login data)
+        public T GetOrSetClientData<T>(object obj = null)
         {
-            List<UserFile> files = new List<UserFile>();
-            string[] userFiles = Directory.GetFiles(CommonValues.ServerUsersPath);
-            foreach (string userFile in userFiles) files.Add(Serializer.SerializeFromFile<UserFile>(userFile));
-
-            UserFile toFind = files.FirstOrDefault(fetch => fetch.Username == data._username && fetch.Password == data._password);
-            if (toFind != null) return toFind;
-            else
-            {
-                toFind = new UserFile();
-                toFind.Username = data._username;
-                toFind.Password = data._password;
-                toFind.Hash = Hasher.GetHashFromString($"{toFind.Username}:{toFind.Password}");
-                toFind.SaveUserFile();
-
-                return toFind;
-            }
+            if (ClientData == null) ClientData = obj;
+            return (T)ClientData;
         }
     }
 }

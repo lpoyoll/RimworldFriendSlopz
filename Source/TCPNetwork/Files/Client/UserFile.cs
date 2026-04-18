@@ -105,5 +105,25 @@ namespace TCPNetwork.Files.Client
 
             SaveUserFile();
         }
+
+        public static UserFile LoadOrCreateUserFile(ServerClient client, PKT_Login data)
+        {
+            List<UserFile> files = new List<UserFile>();
+            string[] userFiles = Directory.GetFiles(CommonValues.ServerUsersPath);
+            foreach (string userFile in userFiles) files.Add(Serializer.SerializeFromFile<UserFile>(userFile));
+
+            UserFile toFind = files.FirstOrDefault(fetch => fetch.Username == data._username && fetch.Password == data._password);
+            if (toFind != null) return toFind;
+            else
+            {
+                toFind = new UserFile();
+                toFind.Username = data._username;
+                toFind.Password = data._password;
+                toFind.Hash = Hasher.GetHashFromString($"{toFind.Username}:{toFind.Password}");
+                toFind.SaveUserFile();
+
+                return toFind;
+            }
+        }
     }
 }

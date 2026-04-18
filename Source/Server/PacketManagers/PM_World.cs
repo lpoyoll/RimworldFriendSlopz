@@ -44,7 +44,7 @@ namespace GameServer.PacketManager
 
         public static void ReceiveWorld(ServerClient client, PKT_World data)
         {
-            if (!client.UserFile.IsAdmin) client.Listener.MarkForDisconnect();
+            if (!client.GetOrSetClientData<UserFile>().IsAdmin) client.Listener.MarkForDisconnect();
             else
             {
                 Master.WorldValues = data.File;

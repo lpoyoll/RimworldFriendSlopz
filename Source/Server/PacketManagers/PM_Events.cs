@@ -20,7 +20,7 @@ namespace GameServer.PacketManager
         {
             PKT_Event data = Serializer.ConvertBytesToObject<PKT_Event>(bytes);
 
-            if (!PlayerCooldown.CheckIfCanEvent(client.UserFile, Master.ActionConfigs.EventAction))
+            if (!PlayerCooldown.CheckIfCanEvent(client.GetOrSetClientData<UserFile>(), Master.ActionConfigs.EventAction))
             {
                 data._stepMode = EventStepMode.Recover;
                 client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
@@ -43,7 +43,7 @@ namespace GameServer.PacketManager
 
         public static void SendEvent(ServerClient client, PKT_Event data)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.UserFile.Username} attempted to send an event to settlement at tile {data._toTile}, but it has no settlement");
+            if (!PM_Settlements.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetOrSetClientData<UserFile>().Username} attempted to send an event to settlement at tile {data._toTile}, but it has no settlement");
             else
             {
                 FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data._toTile);
@@ -65,7 +65,7 @@ namespace GameServer.PacketManager
 
                     data._stepMode = EventStepMode.Receive;
 
-                    target.UserFile.Cooldowns.SetEventTimer(target.UserFile);
+                    target.GetOrSetClientData<UserFile>().Cooldowns.SetEventTimer(target.GetOrSetClientData<UserFile>());
 
                     target.Listener.EnqueuePacket(PacketHeader.EventManager, data);
                 }
@@ -74,7 +74,7 @@ namespace GameServer.PacketManager
 
         private static void SetEvents(ServerClient client, PKT_Event data)
         {
-            if (!client.UserFile.IsAdmin) ResponseShortcutManager.SendIllegalPacket(client, "Tried to modify events without being admin!");
+            if (!client.GetOrSetClientData<UserFile>().IsAdmin) ResponseShortcutManager.SendIllegalPacket(client, "Tried to modify events without being admin!");
             else
             {
                 foreach (FL_Event file in data._eventFiles)

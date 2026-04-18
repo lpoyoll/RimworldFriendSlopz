@@ -17,7 +17,7 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.NPCManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!PlayerCooldown.CheckIfCanNPC(client.UserFile, Master.ActionConfigs.NPCAction)) return;
+            if (!PlayerCooldown.CheckIfCanNPC(client.GetOrSetClientData<UserFile>(), Master.ActionConfigs.NPCAction)) return;
             else
             {
                 PKT_NPCSettlement data = Serializer.ConvertBytesToObject<PKT_NPCSettlement>(bytes);
@@ -47,9 +47,9 @@ namespace GameServer.PacketManager
 
                 BroadcastSettlementDeletion(settlement);
 
-                client.UserFile.Cooldowns.SetNPCTimer(client.UserFile);
+                client.GetOrSetClientData<UserFile>().Cooldowns.SetNPCTimer(client.GetOrSetClientData<UserFile>());
 
-                Printer.Warning($"[Delete NPC settlement] > {settlement.Tile} > {client.UserFile.Username}");
+                Printer.Warning($"[Delete NPC settlement] > {settlement.Tile} > {client.GetOrSetClientData<UserFile>().Username}");
             }
         }
 

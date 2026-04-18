@@ -82,9 +82,9 @@ namespace GameServer.PacketManager
                 Site siteFile = new Site();
 
                 siteFile.Tile = siteData._file.Tile;
-                siteFile.Username = client.UserFile.Username;
+                siteFile.Username = client.GetOrSetClientData<UserFile>().Username;
                 siteFile.Type = SiteManagerHelper.GetTypeFromDef(siteData._file.Type.DefName);
-                if (!string.IsNullOrEmpty(client.UserFile.GuildName)) siteFile.GuildName = client.UserFile.GuildName;
+                if (!string.IsNullOrEmpty(client.GetOrSetClientData<UserFile>().GuildName)) siteFile.GuildName = client.GetOrSetClientData<UserFile>().GuildName;
                 ConfirmNewSite(client, siteFile);
             }
         }
@@ -92,7 +92,7 @@ namespace GameServer.PacketManager
         private static void DestroySite(ServerClient client, PKT_Site siteData)
         {
             Site siteFile = SiteManagerHelper.GetSiteFileFromTile(siteData._file.Tile);
-            if (siteFile.Username == client.UserFile.Username) DestroySiteFromFile(siteFile);
+            if (siteFile.Username == client.GetOrSetClientData<UserFile>().Username) DestroySiteFromFile(siteFile);
             else ResponseShortcutManager.SendNoPowerPacket(client);
         }
 
@@ -126,13 +126,13 @@ namespace GameServer.PacketManager
 
         public static void SendRewardsToPlayer(ServerClient client)
         {
-            Site[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => (fetch.Username == client.UserFile.Username ||
-                (client.UserFile.GuildName != null && client.UserFile.GuildName == fetch.GuildName)) && !string.IsNullOrEmpty(fetch.WorkerString)).ToArray();
+            Site[] availableSites = SiteManagerHelper.GetAllSites().Where(fetch => (fetch.Username == client.GetOrSetClientData<UserFile>().Username ||
+                (client.GetOrSetClientData<UserFile>().GuildName != null && client.GetOrSetClientData<UserFile>().GuildName == fetch.GuildName)) && !string.IsNullOrEmpty(fetch.WorkerString)).ToArray();
 
             if (availableSites.Length > 0)
             {
                 List<SiteReward> toReward = new List<SiteReward>();
-                foreach (Site site in availableSites) toReward.Add(client.UserFile.SiteConfigs.First(fetch => fetch.DefName == site.Type.DefName).Reward);
+                foreach (Site site in availableSites) toReward.Add(client.GetOrSetClientData<UserFile>().SiteConfigs.First(fetch => fetch.DefName == site.Type.DefName).Reward);
 
                 PKT_Site siteData = new PKT_Site();
                 siteData._stepMode = SiteStepMode.Rewards;
@@ -145,16 +145,16 @@ namespace GameServer.PacketManager
         {
             PKT_SiteRewardConfig config = data._rewardConfig;
 
-            PlayerSiteConfig toFind = client.UserFile.SiteConfigs.First(fetch => fetch.DefName == config._siteDef);
+            PlayerSiteConfig toFind = client.GetOrSetClientData<UserFile>().SiteConfigs.First(fetch => fetch.DefName == config._siteDef);
             toFind.Reward.DefName = config._rewardDef;
 
             SiteType type = Master.ActionConfigs.SiteAction.SiteTypes.First(fetch => fetch.DefName == config._siteDef);
             toFind.Reward.Amount = type.Rewards.First(fetch => fetch.DefName == config._rewardDef).Amount;
 
-            client.UserFile.SaveUserFile();
+            client.GetOrSetClientData<UserFile>().SaveUserFile();
         }
 
-        public static void SetSiteInfoForClient(ServerClient client) { client.UserFile.UpdateSiteConfigs(Master.ActionConfigs.SiteAction.SiteTypes); }
+        public static void SetSiteInfoForClient(ServerClient client) { client.GetOrSetClientData<UserFile>().UpdateSiteConfigs(Master.ActionConfigs.SiteAction.SiteTypes); }
 
         public static List<Site> GetSitesFromGoodwill(ServerClient client)
         {

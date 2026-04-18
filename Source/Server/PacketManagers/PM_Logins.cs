@@ -19,15 +19,6 @@ namespace GameServer.PacketManager
         {
             PKT_Login data = Serializer.ConvertBytesToObject<PKT_Login>(bytes);
 
-            HandleUser(client, data);
-        }
-
-        public static void HandleUser(ServerClient client, PKT_Login data)
-        {
-            client.UserFile = new UserFile();
-            client.UserFile.Username = data._username;
-            client.UserFile.Password = data._password;
-
             if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);
             else RegisterUser(client, data);
         }
@@ -36,7 +27,7 @@ namespace GameServer.PacketManager
         {
             if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return false;
 
-            client.UserFile = ServerClient.LoadOrCreateUserFile(client, data);
+            client.GetOrSetClientData<UserFile>(UserFile.LoadOrCreateUserFile(client, data));
 
             if (UserManagerH.CheckIfUserBanned(client)) return false;
 
@@ -55,7 +46,7 @@ namespace GameServer.PacketManager
 
         public static void RegisterUser(ServerClient client, PKT_Login data)
         {
-            client.UserFile = ServerClient.LoadOrCreateUserFile(client, data);
+            client.GetOrSetClientData<UserFile>(UserFile.LoadOrCreateUserFile(client, data));
 
             PM_Sites.SetSiteInfoForClient(client);
 
@@ -66,7 +57,7 @@ namespace GameServer.PacketManager
 
         private static void PostLogin(ServerClient client)
         {
-            client.VerifyUser();
+            client.VerifyClient();
 
             UserManager.SendPlayerRecount();
 
@@ -84,18 +75,18 @@ namespace GameServer.PacketManager
             {
                 PM_World.RequireWorldFile(client);
 
-                client.UserFile.UpdateAdmin(true);
+                client.GetOrSetClientData<UserFile>().UpdateAdmin(true);
                 PKT_Command commandData = new PKT_Command();
                 commandData._commandMode = CommandMode.Op;
                 client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
-                Printer.Warning($"Giving first join admin permission to {client.UserFile.Username}");
+                Printer.Warning($"Giving first join admin permission to {client.GetOrSetClientData<UserFile>().Username}");
             }
         }
 
         public static void RemoveOldClientSessions(ServerClient client)
         {
-            ServerClient[] oldClients = ServerNetwork.GetConnectedClients().Where(fetch => fetch.UserFile.Username == client.UserFile.Username
-                && fetch != client).ToArray();
+            ServerClient[] oldClients = ServerNetwork.GetConnectedClients().Where(fetch => client.GetOrSetClientData<UserFile>().Username 
+                == client.GetOrSetClientData<UserFile>().Username && fetch != client).ToArray();
 
             foreach (ServerClient sc in oldClients) sc.Listener.MarkForDisconnect();
         }

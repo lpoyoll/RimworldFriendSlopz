@@ -43,7 +43,7 @@ namespace GameServer.PacketManagers
         private static void RouteToManager(ServerClient client, PKT_Synchronous data, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, data);
-            client.UserFile.SynchronousClient.Listener.EnqueuePacket(header, data);
+            client.GetOrSetClientData<UserFile>().SynchronousClient.Listener.EnqueuePacket(header, data);
         }
 
         private static void TryStartSynchronousSession(ServerClient client, PKT_Synchronous data)
@@ -56,8 +56,8 @@ namespace GameServer.PacketManagers
             {
                 PKT_Synchronous _ = new PKT_Synchronous();
                 _.CurrentStepMode = PKT_Synchronous.StepMode.Ask;
-                _.FromTile = PM_Settlements.GetSettlementFileFromUsername(client.UserFile.Username).Tile;
-                _.Username = client.UserFile.Username;
+                _.FromTile = PM_Settlements.GetSettlementFileFromUsername(client.GetOrSetClientData<UserFile>().Username).Tile;
+                _.Username = client.GetOrSetClientData<UserFile>().Username;
                 _.ToTile = data.ToTile;
                 _.Party = data.Party;
                 _.CurrentType = data.CurrentType;
@@ -71,8 +71,8 @@ namespace GameServer.PacketManagers
             FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            client.UserFile.SynchronousClient = toFind;
-            toFind.UserFile.SynchronousClient = client;
+            client.GetOrSetClientData<UserFile>().SynchronousClient = toFind;
+            toFind.GetOrSetClientData<UserFile>().SynchronousClient = client;
 
             data.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
             toFind.Listener.EnqueuePacket(PacketHeader.SynchronousManager, data);
@@ -96,7 +96,7 @@ namespace GameServer.PacketManagers
             PKT_Synchronous _ = new PKT_Synchronous();
             _.CurrentStepMode = PKT_Synchronous.StepMode.Start;
 
-            client.UserFile.SynchronousClient.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
+            client.GetOrSetClientData<UserFile>().SynchronousClient.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
         }
     }
 }

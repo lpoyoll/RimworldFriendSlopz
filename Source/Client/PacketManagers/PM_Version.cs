@@ -35,7 +35,7 @@ namespace GameClient.PacketManagers
 
         public static void SendClientVersion()
         {
-            Network.ServerEndpoint.TargetClient.VerifyUser();
+            Network.ServerEndpoint.TargetClient.VerifyClient();
 
             PKT_Version data = new PKT_Version();
             data._version = CommonValues.ExecutableVersion;

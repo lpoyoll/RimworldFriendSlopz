@@ -28,7 +28,7 @@ namespace GameServer.Hooks.TCPNetwork
             {
                 Network.ServerClients.Remove(client, out _);
                 InformationDisplayer.DisplayDisconnect(client);
-                if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.UserFile.Username} has left the server!");
+                if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.GetOrSetClientData<UserFile>().Username} has left the server!");
 
                 UserManager.SendPlayerRecount();
             }
@@ -72,13 +72,17 @@ namespace GameServer.Hooks.TCPNetwork
 
         public static ServerClient[] GetConnectedClients(ServerClient toExclude = null)
         {
-            if (toExclude != null) return Network.ServerClients.Keys.Where(fetch => fetch.UserFile.Username != toExclude.UserFile.Username).ToArray();
+            if (toExclude != null)
+            {
+                return Network.ServerClients.Keys.Where(fetch => fetch.GetOrSetClientData<UserFile>().Username !=
+                    toExclude.GetOrSetClientData<UserFile>().Username).ToArray();
+            }
             else return Network.ServerClients.Keys.ToArray();
         }
 
         public static ServerClient GetConnectedClientFromUsername(string username)
         {
-            return GetConnectedClients().FirstOrDefault(fetch => fetch.UserFile.Username == username);
+            return GetConnectedClients().FirstOrDefault(fetch => fetch.GetOrSetClientData<UserFile>().Username == username);
         }
 
         public static void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)

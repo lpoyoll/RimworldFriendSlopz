@@ -9,19 +9,19 @@ namespace GameServer.Misc
 
         public static void DisplayDisconnect(ServerClient client) { Printer.Message($"[Disconnect] > {client.CurrentIP}"); }
 
-        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.UserFile.Username}"); }
+        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.GetOrSetClientData<UserFile>().Username}"); }
 
-        public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.UserFile.Username}"); }
+        public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.GetOrSetClientData<UserFile>().Username}"); }
 
-        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.UserFile.Username}"); }
+        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.GetOrSetClientData<UserFile>().Username}"); }
 
-        public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save Map] > {client.UserFile.Username}"); }
+        public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save Map] > {client.GetOrSetClientData<UserFile>().Username}"); }
 
-        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.UserFile.Username}"); }
+        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.GetOrSetClientData<UserFile>().Username}"); }
 
-        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set world] > {client.UserFile.Username}"); }
+        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set world] > {client.GetOrSetClientData<UserFile>().Username}"); }
 
-        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set events] > {client.UserFile.Username}"); }
+        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set events] > {client.GetOrSetClientData<UserFile>().Username}"); }
 
         public static void DisplayChatMap(string label, string message) { Printer.Message($"[Chat - {label}] > {message}"); }
 

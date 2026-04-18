@@ -17,7 +17,7 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.RoadManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!PlayerCooldown.CheckIfCanRoad(client.UserFile, Master.ActionConfigs.RoadsAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            if (!PlayerCooldown.CheckIfCanRoad(client.GetOrSetClientData<UserFile>(), Master.ActionConfigs.RoadsAction)) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 PKT_Road data = Serializer.ConvertBytesToObject<PKT_Road>(bytes);
@@ -44,7 +44,7 @@ namespace GameServer.PacketManager
 
             SaveRoad(data._details, client);
             ServerNetwork.SendPacketToAllClients(PacketHeader.RoadManager, data);
-            client.UserFile.Cooldowns.SetRoadTimer(client.UserFile);
+            client.GetOrSetClientData<UserFile>().Cooldowns.SetRoadTimer(client.GetOrSetClientData<UserFile>());
         }
 
         private static void RemoveRoad(ServerClient client, PKT_Road data)
@@ -77,7 +77,7 @@ namespace GameServer.PacketManager
             void PostDelete(RoadDetail toRemove)
             {
                 ServerNetwork.SendPacketToAllClients(PacketHeader.RoadManager, data);
-                client.UserFile.Cooldowns.SetRoadTimer(client.UserFile);
+                client.GetOrSetClientData<UserFile>().Cooldowns.SetRoadTimer(client.GetOrSetClientData<UserFile>());
             }
         }
 
