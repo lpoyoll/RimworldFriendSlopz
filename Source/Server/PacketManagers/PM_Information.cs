@@ -1,4 +1,5 @@
 ﻿using GameServer.Hooks.TCPNetwork;
+using GameServer.Managers;
 using Shared;
 using Shared.Files;
 using TCPNetwork.Files.Client;
@@ -38,8 +39,12 @@ namespace GameServer.PacketManager
 
         private static void SendWealth(ServerClient client, PKT_Information data)
         {
-            data._settlementWealth = PM_Maps.GetMapFromTile(data._settlementTile).Wealth;
-            client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
+            if (!PM_Maps.CheckIfMapExists(data._settlementTile)) ResponseShortcutManager.SendUnavailablePacket(client);
+            else 
+            {
+                data._settlementWealth = PM_Maps.GetMapFromTile(data._settlementTile).Wealth;
+                client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
+            }
         }
     }
 }
