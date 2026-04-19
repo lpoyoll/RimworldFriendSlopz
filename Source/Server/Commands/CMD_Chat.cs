@@ -1,5 +1,5 @@
 ﻿using GameServer.PacketManager;
-using Shared;
+using Shared.Commands;
 using Shared.Misc;
 
 namespace GameServer.Commands

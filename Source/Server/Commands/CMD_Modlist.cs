@@ -1,5 +1,5 @@
 ﻿using GameServer.Core;
-using Shared;
+using Shared.Commands;
 using Shared.Files.Configs;
 using Shared.Files.Mods;
 using Shared.Misc;

@@ -1,6 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Files;
-using Shared;
+using Shared.Commands;
 using Shared.Misc;
 
 namespace RTServerBrowser.Commands

@@ -1,6 +1,7 @@
 ﻿using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
 using Shared;
+using Shared.Commands;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
 using static TCPNetwork.Packets.PKT_Chat;

@@ -1,6 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Managers;
-using Shared;
+using Shared.Commands;
 
 namespace GameServer.Commands
 {

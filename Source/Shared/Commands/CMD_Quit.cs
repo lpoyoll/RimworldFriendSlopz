@@ -1,6 +1,7 @@
-﻿using Shared;
+﻿using Shared.Commands;
+using System;
 
-namespace GameServer.Commands
+namespace Shared.Commands
 {
     public class CMD_Quit : CMD_Base
     {

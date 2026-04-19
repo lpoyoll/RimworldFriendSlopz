@@ -5,6 +5,7 @@ using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.PacketManager;
 using Shared;
+using Shared.Commands;
 using Shared.Files;
 using Shared.Files.Actions;
 using Shared.Files.Configs;

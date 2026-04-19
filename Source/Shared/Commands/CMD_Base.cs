@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading;
 using static Shared.Misc.Printer;
 
-namespace Shared
+namespace Shared.Commands
 {
     public abstract class CMD_Base
     {
@@ -30,6 +30,17 @@ namespace Shared
 
         public static void GetAllCommands()
         {
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes().Where(fetch => fetch.IsSubclassOf(typeof(CMD_Base))))
+            {
+                CMD_Base command = (CMD_Base)Activator.CreateInstance(type);
+                if (command.IsChatCommand) ChatCommands.Add(command);
+                else
+                {
+                    Commands.Add(command);
+                    Printer.Warning($"[Base] Added command '{type.Name}'", LogImportanceMode.Extreme);
+                }
+            }
+
             foreach (Type type in Assembly.GetCallingAssembly().GetTypes().Where(fetch => fetch.IsSubclassOf(typeof(CMD_Base))))
             {
                 CMD_Base command = (CMD_Base)Activator.CreateInstance(type);
@@ -37,7 +48,7 @@ namespace Shared
                 else
                 {
                     Commands.Add(command);
-                    Printer.Warning($"Added command '{type.Name}'", LogImportanceMode.Extreme);
+                    Printer.Warning($"[Main] Added command '{type.Name}'", LogImportanceMode.Extreme);
                 }
             }
         }

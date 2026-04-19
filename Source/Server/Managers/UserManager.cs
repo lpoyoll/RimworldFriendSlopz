@@ -8,6 +8,7 @@ using Shared.Misc;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
 using static TCPNetwork.Packets.PKT_Login;
+using Shared.Commands;
 
 namespace GameServer.Managers
 {

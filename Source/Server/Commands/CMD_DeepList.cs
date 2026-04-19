@@ -1,5 +1,5 @@
 ﻿using GameServer.Managers;
-using Shared;
+using Shared.Commands;
 using Shared.Misc;
 using TCPNetwork.Files.Client;
 

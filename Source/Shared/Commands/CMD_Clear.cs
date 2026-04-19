@@ -1,7 +1,8 @@
-﻿using Shared;
+﻿using Shared.Commands;
 using Shared.Misc;
+using System;
 
-namespace GameServer.Commands
+namespace Shared.Commands
 {
     public class CMD_Clear : CMD_Base
     {

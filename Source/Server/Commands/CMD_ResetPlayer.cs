@@ -1,7 +1,7 @@
 ﻿using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.PacketManager;
-using Shared;
+using Shared.Commands;
 using Shared.Misc;
 using TCPNetwork.Files.Client;
 
