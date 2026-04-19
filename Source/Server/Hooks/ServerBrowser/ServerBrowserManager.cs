@@ -96,7 +96,7 @@ namespace GameServer.Hooks.ServerBrowser
 
         private static async void SetupConnection(BrowserMode mode)
         {
-            ServerIPV4 = await GetPublicIP();
+            if (!WasStartedOnce) ServerIPV4 = await GetPublicIP();
 
             PKT_ServerTelemetry telemetry = new PKT_ServerTelemetry();
             telemetry.Name = Master.ServerConfig.Name;
@@ -117,10 +117,19 @@ namespace GameServer.Hooks.ServerBrowser
 
         public static async Task<string> GetPublicIP()
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                string address = await client.GetStringAsync("https://api.ipify.org");
-                return address;
+                using (HttpClient client = new HttpClient())
+                {
+                    string address = await client.GetStringAsync("https://api.ipify.org");
+                    return address;
+                }
+            }
+
+            catch (Exception ex) 
+            {
+                Printer.Error(ex, LogImportanceMode.Ludicrous);
+                return string.Empty;
             }
         }
     }
