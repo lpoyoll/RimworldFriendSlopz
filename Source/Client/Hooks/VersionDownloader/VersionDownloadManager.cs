@@ -77,7 +77,9 @@ namespace GameClient.Hooks.VersionDownloader
         private static void AskForVersionDownload()
         {
             PKT_VersionDownload data = new PKT_VersionDownload();
+            data.CurrentStepMode = PKT_VersionDownload.StepMode.Ask;
             data.RequestedVersion = VersionToDownload;
+
             Network.MultipurposeEndpoint.EnqueuePacket(PacketHeader.VersionDownload, data);
         }
     }
