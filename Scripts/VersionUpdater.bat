@@ -8,7 +8,9 @@ title RimWorld Together - Version Updater
 
 ::Set mod folder path
 set /p ModFolder=<ModPath.txt
-echo Mods folder located at "%ModFolder%"
+echo %DashLine%
+echo - Mods folder located at "%ModFolder%"
+echo %DashLine%
 echo.
 del ModPath.txt
 
