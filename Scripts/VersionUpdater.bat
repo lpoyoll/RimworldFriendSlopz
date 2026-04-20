@@ -21,6 +21,7 @@ timeout /t 5
 echo.
 echo %DashLine%
 echo - Installing new version
+cd %ModFolder%
 rmdir "3005289691"
 move "3005289691-Temp" "3005289691-2"
 echo %DashLine%
