@@ -23,7 +23,7 @@ timeout /t 5
 ::Replace with new installation
 echo.
 echo %DashLine%
-echo - Installing new version
+echo - Installing new version...
 cd %ModFolder%
 rmdir /s /q "3005289691"
 move "3005289691-Temp" "3005289691"
@@ -33,7 +33,6 @@ echo %DashLine%
 echo.
 echo %DashLine%
 echo - Operation finished...
-echo - Please press any key or wait for the window to close...
 echo %DashLine%
 timeout /t 10
 
