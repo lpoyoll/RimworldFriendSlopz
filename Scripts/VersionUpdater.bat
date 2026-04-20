@@ -9,6 +9,7 @@ title RimWorld Together - Version Updater
 ::Set mod folder path
 set /p ModFolder=<ModPath.txt
 echo Mods folder located at "%ModFolder%"
+echo.
 del ModPath.txt
 
 ::Wait for RimWorld safe close
