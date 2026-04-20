@@ -2,7 +2,7 @@
 using GameClient.Dialogs.Default;
 using GameClient.Files;
 using GameClient.Hooks.TCPNetwork;
-using GameClient.Managers;
+using GameClient.Hooks.VersionDownloader;
 using GameClient.Misc;
 using Shared;
 using System;
@@ -139,7 +139,7 @@ namespace GameClient.PacketManagers
 
         private static void ShowMismatchingPassword(PKT_Login data)
         {
-            Action toDo = delegate { ModVersionManager.ChangeVersion(data._extraDetails[0]); };
+            Action toDo = delegate { VersionDownloadManager.ChangeVersion(data._extraDetails[0]); };
             DLG_Base.PushNewDialog(new DLG_YesNo($"This server requires version {data._extraDetails[0]}! Install?", toDo));
         }
     }

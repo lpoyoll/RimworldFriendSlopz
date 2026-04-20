@@ -21,9 +21,9 @@ using TCPNetwork.Packets.ServerBrowser;
 using TCPNetwork.Packets.VersionDownloader;
 using UnityEngine;
 
-namespace GameClient.Managers
+namespace GameClient.Hooks.VersionDownloader
 {
-    public static class ModVersionManager
+    public static class VersionDownloadManager
     {
         private static string VersionToDownload { get; set; } = string.Empty;
 
