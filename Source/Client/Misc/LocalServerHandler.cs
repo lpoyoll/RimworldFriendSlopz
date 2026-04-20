@@ -26,19 +26,15 @@ namespace GameClient.Misc
 
         public static void ManageLocalServer()
         {
-            ModVersionManager.ChangeVersion("26.4.18.1");
-
-            //CreateFolderIfMissing();
-
-            //if (Directory.GetFiles(Master.AppdataLocalServerPath).Length > 0) OpenExplorer();
-            //else AskForDownloadPermission();
+            CreateFolderIfMissing();
+            if (Directory.GetFiles(Master.AppdataLocalServerPath).Length > 0) OpenExplorer();
+            else AskForDownloadPermission();
         }
 
         private static void AskForDownloadPermission()
         {
             DLG_Base.PushNewDialog(new DLG_YesNo("The server will be downloaded. Continue?", 
-                delegate { SetupServer(); OpenExplorer(); }, 
-                null));
+                delegate { SetupServer(); OpenExplorer(); }, null));
         }
 
         private static void SetupServer()

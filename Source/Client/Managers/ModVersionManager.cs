@@ -27,8 +27,6 @@ namespace GameClient.Managers
     {
         private static string VersionToDownload { get; set; } = string.Empty;
 
-        private static readonly string fileName = "3005289691.zip";
-
         public static void ChangeVersion(string version)
         {
             VersionToDownload = version;
@@ -69,7 +67,7 @@ namespace GameClient.Managers
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient("127.0.0.1", Network.VersionDownloaderPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
+                ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.VersionDownloaderPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
                 Network.MultipurposeEndpoint = client.Listener;
                 return true;
             }
