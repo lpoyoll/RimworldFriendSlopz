@@ -43,7 +43,7 @@ namespace GameClient.PacketManagers
 
             ExtractVersion(Directory.GetParent(Master.ModMainPath).FullName);
 
-            PrepareShellInstall();
+            PrepareShellInstall(Directory.GetParent(Master.ModMainPath).FullName);
         }
 
         private static void GetVersionDenied()
@@ -75,21 +75,22 @@ namespace GameClient.PacketManagers
             catch { return false; }
         }
 
-        private static void PrepareShellInstall()
+        private static void PrepareShellInstall(string startingPath)
         {
-            string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
-            string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
-            string modPath = Path.Combine(Master.AppdataTempPath, "ModPath.txt");
+            string scriptStartingLocation = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
+            string scriptCopyPath = Path.Combine(startingPath, "VersionUpdater.bat");
+            if (File.Exists(scriptCopyPath)) File.Delete(scriptCopyPath);
+            File.Copy(scriptStartingLocation, scriptCopyPath);
 
-            File.Copy(scriptPath, copyPath);
-            File.WriteAllText(modPath, Master.ModMainPath);
+            string txtPath = Path.Combine(Directory.GetParent(startingPath).FullName, "ModPath.txt");
+            if (File.Exists(txtPath)) File.Delete(txtPath);
+            File.WriteAllText(txtPath, Directory.GetParent(Master.ModMainPath).FullName);
 
             Action toDo = delegate
             {
-                ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
+                ProcessStartInfo processInfo = new ProcessStartInfo(scriptCopyPath);
                 processInfo.UseShellExecute = false;
                 Process.Start(processInfo);
-
                 Application.Quit();
             };
 
