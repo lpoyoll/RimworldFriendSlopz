@@ -20,10 +20,13 @@ namespace GameServer.PacketManager
         {
             PKT_Event data = Serializer.ConvertBytesToObject<PKT_Event>(bytes);
 
-            if (!PlayerCooldown.CheckIfCanEvent(client.GetOrSetClientData<UserFile>(), Master.ActionConfigs.EventAction))
+            if (!client.GetOrSetClientData<UserFile>().IsAdmin)
             {
-                data._stepMode = EventStepMode.Recover;
-                client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+                if (!PlayerCooldown.CheckIfCanEvent(client.GetOrSetClientData<UserFile>(), Master.ActionConfigs.EventAction))
+                {
+                    data._stepMode = EventStepMode.Recover;
+                    client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+                }
             }
 
             else
