@@ -22,8 +22,8 @@ echo.
 echo %DashLine%
 echo - Installing new version
 cd %ModFolder%
-rmdir "3005289691"
-move "3005289691-Temp" "3005289691-2"
+rmdir /s /q "3005289691"
+move "3005289691-Temp" "3005289691"
 echo %DashLine%
 
 ::Wait at end
