@@ -32,7 +32,7 @@ namespace GameClient.Hooks.ServerBrowser
 
             Task.Run(delegate
             {
-                if (ConnectToServerBrowser()) AskForServerListings();
+                if (ConnectToServer()) AskForServerListings();
                 else
                 {
                     MainThreadHandler.Instance.Enqueue(delegate
@@ -44,12 +44,12 @@ namespace GameClient.Hooks.ServerBrowser
             });
         }
 
-        private static bool ConnectToServerBrowser()
+        private static bool ConnectToServer()
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserClientPort), new NetworkRuleset(null, null, OnReadPacket, null, false));
-                Network.BrowserEndpoint = client.Listener;
+                ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.BrowserClientPort), new NetworkRuleset(null, null, OnReadPacket, null, false));
+                Network.MultipurposeEndpoint = client.Listener;
                 return true;
             }
             catch { return false; }
@@ -59,7 +59,7 @@ namespace GameClient.Hooks.ServerBrowser
         {
             PKT_ServerInformation listing = new PKT_ServerInformation();
             listing.ClientVersion = CommonValues.ExecutableVersion;
-            Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserListing, listing);
+            Network.MultipurposeEndpoint.EnqueuePacket(PacketHeader.ServerBrowserListing, listing);
         }
     }
 }

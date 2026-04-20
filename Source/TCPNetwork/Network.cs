@@ -19,15 +19,17 @@ namespace TCPNetwork
 
         public static Listener ServerEndpoint { get; set; } = null;
 
-        public static Listener BrowserEndpoint { get; set; } = null;
+        public static Listener MultipurposeEndpoint { get; set; } = null;
 
         public static TcpListener ServerListener { get; set; } = null;
 
-        public static string BrowserIp { get; set; } = "66.29.129.72";
+        public static string MultipurposeIP { get; set; } = "66.29.129.72";
 
         public static int BrowserServerPort { get; set; } = 7777;
 
         public static int BrowserClientPort { get; set; } = 7778;
+
+        public static int VersionDownloaderPort { get; set; } = 7779;
 
         public static readonly int MaxPacketSize = 16777216;
 
@@ -45,7 +47,8 @@ namespace TCPNetwork
             PacketHeader.VersionManager,
             PacketHeader.LoginManager,
             PacketHeader.ServerBrowserListing,
-            PacketHeader.ServerBrowserTelemetry
+            PacketHeader.ServerBrowserTelemetry,
+            PacketHeader.VersionDownload
         };
 
         public static void ReadFullPacket(Stream stream, byte[] content)

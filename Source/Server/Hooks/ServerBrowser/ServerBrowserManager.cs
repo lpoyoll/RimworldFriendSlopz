@@ -31,7 +31,7 @@ namespace GameServer.Hooks.ServerBrowser
         {
             Task.Run(delegate
             {
-                Network.BrowserEndpoint = null;
+                Network.MultipurposeEndpoint = null;
                 Thread.Sleep(Network.BrowserTelemetryInterval);
                 StartFeature();
             });
@@ -39,11 +39,11 @@ namespace GameServer.Hooks.ServerBrowser
 
         public static void StartFeature()
         {
-            if (Network.BrowserEndpoint != null) Printer.Error("Server was already connected to browser");
+            if (Network.MultipurposeEndpoint != null) Printer.Error("Server was already connected to browser");
             else if (!Master.ServerConfig.EnableServerTelemetry) return;
             else
             {
-                while (Network.BrowserEndpoint == null)
+                while (Network.MultipurposeEndpoint == null)
                 {
                     if (!Master.ServerConfig.EnableServerBrowser) ConnectToServerBrowser(BrowserMode.Lite);
                     else ConnectToServerBrowser(BrowserMode.Normal);
@@ -81,8 +81,8 @@ namespace GameServer.Hooks.ServerBrowser
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.BrowserIp, Network.BrowserServerPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null, false));
-                Network.BrowserEndpoint = client.Listener;
+                ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.BrowserServerPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null, false));
+                Network.MultipurposeEndpoint = client.Listener;
                 SetupConnection(mode);
                 return true;
             }
@@ -112,7 +112,7 @@ namespace GameServer.Hooks.ServerBrowser
             telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != FL_ModConfig.ModType.Forbidden)
                 .OrderBy(fetch => fetch.FileName).ToList();
             
-            Network.BrowserEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
+            Network.MultipurposeEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
         }
 
         public static async Task<string> GetPublicIP()

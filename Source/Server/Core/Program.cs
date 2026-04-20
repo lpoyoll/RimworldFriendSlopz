@@ -16,7 +16,7 @@ using static Shared.Misc.Printer;
 
 namespace GameServer.Core
 {
-    public static class Main_
+    public static class Program
     {
         static void Main()
         {

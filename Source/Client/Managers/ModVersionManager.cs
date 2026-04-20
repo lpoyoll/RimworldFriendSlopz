@@ -1,6 +1,8 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
+using GameClient.Misc;
+using Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,86 +10,77 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using TCPNetwork;
+using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
+using TCPNetwork.Packets.ServerBrowser;
+using TCPNetwork.Packets.VersionDownloader;
 using UnityEngine;
 
 namespace GameClient.Managers
 {
     public static class ModVersionManager
     {
-        private static readonly string downloadURL = "https://github.com/RimWorld-Together/Rimworld-Together/releases/download";
+        private static string VersionToDownload { get; set; } = string.Empty;
 
         private static readonly string fileName = "3005289691.zip";
 
         public static void ChangeVersion(string version)
         {
-            string url = $"{downloadURL}/{version}/{fileName}";
-            string downloadPath = Path.Combine(Master.AppdataVersionPath, fileName);
+            VersionToDownload = version;
 
-            if (!DownloadVersion(url, downloadPath))
-            {
-                DLG_Base.PushNewDialog(new DLG_Message("ERROR",
-                    new string[] { "Failed to download specified version! Please retry" }));
-            }
-
-            string parentFolder = Directory.GetParent(Master.ModMainPath).FullName;
-            if (!ExtractVersion(downloadPath, Path.Combine(parentFolder, "3005289691-Temp")))
-            {
-                DLG_Base.PushNewDialog(new DLG_Message("ERROR",
-                    new string[] { "Failed to extract specified version! Please retry" }));
-            }
-
-            PrepareShellInstall();
+            TryConnect();
         }
 
-        private static bool DownloadVersion(string uri, string downloadPath)
+        private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
+        {
+            MainThreadHandler.Instance.Enqueue(delegate
+            {
+                MethodInfo method = (MethodInfo)PM_Base.PacketDictionary[header][1];
+                method.Invoke(PM_Base.PacketDictionary[header][0], new object[] { client, buffer, header });
+            });
+        };
+
+        private static Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) { DLG_Wait.Instance.Close(); };
+
+        public static void TryConnect()
+        {
+            DLG_Base.PushNewDialog(new DLG_Wait());
+
+            Task.Run(delegate
+            {
+                if (ConnectToServer()) AskForVersionDownload();
+                else
+                {
+                    MainThreadHandler.Instance.Enqueue(delegate
+                    {
+                        DLG_Wait.Instance.Close();
+                        DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "The server did not respond in time" }));
+                    });
+                }
+            });
+        }
+
+        private static bool ConnectToServer()
         {
             try
             {
-                if (File.Exists(downloadPath)) File.Delete(downloadPath);
-
-                using WebClient webClient = new WebClient();
-                webClient.DownloadFile(new Uri(uri), downloadPath);
-
+                ServerClient client = new ServerClient(new TcpClient("127.0.0.1", Network.VersionDownloaderPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
+                Network.MultipurposeEndpoint = client.Listener;
                 return true;
             }
             catch { return false; }
         }
 
-        private static bool ExtractVersion(string filePath, string destination)
+        private static void AskForVersionDownload()
         {
-            try
-            {
-                if (Directory.Exists(destination)) Directory.Delete(destination);
-
-                Directory.CreateDirectory(destination);
-                ZipFile.ExtractToDirectory(filePath, destination);
-
-                return true;
-            }
-            catch { return false; }
-        }
-
-        private static void PrepareShellInstall()
-        {
-            string scriptPath = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
-            string copyPath = Path.Combine(Master.AppdataTempPath, "VersionUpdater.bat");
-            string modPath = Path.Combine(Master.AppdataTempPath, "ModPath.txt");
-
-            File.Copy(scriptPath, copyPath);
-            File.WriteAllText(modPath, Master.ModMainPath);
-
-            Action toDo = delegate
-            {
-                ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", $"/c {$"\"\"{copyPath}\""}");
-                processInfo.UseShellExecute = false;
-                Process.Start(processInfo);
-
-                Application.Quit();
-            };
-
-            DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "The game will close to apply the new version" }, toDo));
+            PKT_VersionDownload data = new PKT_VersionDownload();
+            data.RequestedVersion = VersionToDownload;
+            Network.MultipurposeEndpoint.EnqueuePacket(PacketHeader.VersionDownload, data);
         }
     }
 }

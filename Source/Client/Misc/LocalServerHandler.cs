@@ -1,6 +1,7 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
+using GameClient.Managers;
 using HarmonyLib;
 using Shared;
 using Shared.Misc;
@@ -25,10 +26,12 @@ namespace GameClient.Misc
 
         public static void ManageLocalServer()
         {
-            CreateFolderIfMissing();
+            ModVersionManager.ChangeVersion("26.4.18.1");
 
-            if (Directory.GetFiles(Master.AppdataLocalServerPath).Length > 0) OpenExplorer();
-            else AskForDownloadPermission();
+            //CreateFolderIfMissing();
+
+            //if (Directory.GetFiles(Master.AppdataLocalServerPath).Length > 0) OpenExplorer();
+            //else AskForDownloadPermission();
         }
 
         private static void AskForDownloadPermission()

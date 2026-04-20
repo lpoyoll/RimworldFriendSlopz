@@ -68,6 +68,7 @@ namespace Shared
         ServerBrowserListing,
         SynchronousManager,
         ServerBrowserReachability,
-        DisconnectManager
+        DisconnectManager,
+        VersionDownload
     }
 }

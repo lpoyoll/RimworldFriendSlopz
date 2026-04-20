@@ -12,7 +12,7 @@ using Verse;
 
 namespace GameClient.Core
 {
-    public static class Main_
+    public static class Program
     {
         [StaticConstructorOnStartup]
         public static class RimworldTogether
@@ -39,7 +39,6 @@ namespace GameClient.Core
             Master.AppdataPath = GenFilePaths.SaveDataFolderPath;
             Master.AppdataRTPath = Path.Combine(Master.AppdataPath, "RimWorld Together");
             Master.AppdataTempPath = Path.Combine(Master.AppdataRTPath, "Temp");
-            Master.AppdataVersionPath = Path.Combine(Master.AppdataTempPath, "Version");
             Master.AppdataLocalServerPath = Path.Combine(Master.AppdataRTPath, "Local Server");
 
             string mod = LoadedModManager.RunningMods.First(m => (m.PackageId == Master.ModPackageID || m.PackageId == Master.ModPackageID + "_steam") 
@@ -53,7 +52,6 @@ namespace GameClient.Core
 
             if (Directory.Exists(Master.AppdataTempPath)) Directory.Delete(Master.AppdataTempPath, true);
             Directory.CreateDirectory(Master.AppdataTempPath);
-            Directory.CreateDirectory(Master.AppdataVersionPath);
         }
 
         private static void CreateUnityDispatcher()

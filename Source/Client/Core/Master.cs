@@ -8,8 +8,6 @@ namespace GameClient.Core
 
         public static string AppdataTempPath { get; set; }
 
-        public static string AppdataVersionPath { get; set; }
-
         public static string AppdataLocalServerPath { get; set; }
 
         public static string ModMainPath { get; set; }
