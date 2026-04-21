@@ -11,8 +11,8 @@ namespace GameClient.Dialogs
 
         public DLG_Compatibility(List<string> elements)
         {
-            Title = "Problematic mods found";
-            Description = "Enable mod bypass or disable these mods!";
+            Title = "Potentially incompatible mods found";
+            Description = "Enable 'mod bypass' if you wish to play with them!";
             Elements = elements;
         }
 
