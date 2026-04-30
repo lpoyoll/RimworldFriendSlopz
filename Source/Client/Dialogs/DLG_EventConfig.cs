@@ -56,9 +56,9 @@ namespace GameClient.Dialogs
 
             Text.Font = GameFont.Small;
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, TinyButtonSize, RectLocation.TopRight, 1, true), "▶")) ShowFloatMenu(-1, true);
+            if (Widgets.ButtonText(GetRectForLocation(rect, TinyButtonSize, RectLocation.TopRight), "▶")) ShowFloatMenu(-1, true);
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, DefaultButtonSize, RectLocation.BottomCenter, 1), "Accept"))
+            if (Widgets.ButtonText(GetFillForLocation(rect, DefaultButtonSize, FillLocation.Bottom, 1, 1), "Accept"))
             {
                 ResultBool = ValueBool;
 

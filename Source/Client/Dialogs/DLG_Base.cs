@@ -60,23 +60,27 @@ namespace GameClient.Dialogs
             CurrentDialog = window;
         }
 
-        public enum RectLocation { TopLeft, TopCenter, TopRight, MiddleLeft, MiddleCenter, MiddleRight, BottomLeft, BottomCenter, BottomRight }
+        public enum RectLocation { TopRight, BottomLeft }
 
-        public static Rect GetRectForLocation(Rect origin, Vector2 reference, RectLocation desiredLocation, int buttonCount, bool bypassFill = false)
+        public enum FillLocation { Bottom }
+
+        public static Rect GetRectForLocation(Rect origin, Vector2 reference, RectLocation desiredLocation)
         {
-            if (!bypassFill) reference = new Vector2((origin.width / buttonCount) - 3f, reference.y);
+            return desiredLocation switch
+            {
+                RectLocation.TopRight => new Rect(new Vector2(origin.xMax - reference.x, origin.yMin), reference),
+                RectLocation.BottomLeft => new Rect(new Vector2(origin.xMin, origin.yMax - reference.y), reference),
+                _ => throw new IndexOutOfRangeException()
+            };
+        }
+
+        public static Rect GetFillForLocation(Rect origin, Vector2 reference, FillLocation desiredLocation, int buttonCount, int index)
+        {
+            reference = new Vector2((origin.width / buttonCount), reference.y);
 
             return desiredLocation switch
             {
-                RectLocation.TopLeft => new Rect(new Vector2(origin.xMin, origin.yMin), reference),
-                RectLocation.TopCenter => new Rect(new Vector2(origin.width / 2 - reference.x / 2, origin.yMin), reference),
-                RectLocation.TopRight => new Rect(new Vector2(origin.xMax - reference.x, origin.yMin), reference),
-                RectLocation.MiddleLeft => new Rect(new Vector2(origin.xMin, origin.height / 2 - reference.y / 2), reference),
-                RectLocation.MiddleCenter => new Rect(new Vector2(origin.width / 2 - reference.x / 2, origin.height / 2 - reference.y / 2), reference),
-                RectLocation.MiddleRight => new Rect(new Vector2(origin.xMax - reference.x, origin.height / 2 - reference.y / 2), reference),
-                RectLocation.BottomLeft => new Rect(new Vector2(origin.xMin, origin.yMax - reference.y), reference),
-                RectLocation.BottomCenter => new Rect(new Vector2(origin.width / 2 - reference.x / 2, origin.yMax - reference.y), reference),
-                RectLocation.BottomRight => new Rect(new Vector2(origin.xMax - reference.x, origin.yMax - reference.y), reference),
+                FillLocation.Bottom => new Rect(new Vector2(origin.xMin + (reference.x * (index - 1)), origin.yMax - reference.y), reference),
                 _ => throw new IndexOutOfRangeException()
             };
         }

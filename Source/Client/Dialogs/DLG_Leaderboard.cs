@@ -36,7 +36,7 @@ namespace GameClient.Dialogs
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - SlimButtonSize.y - 85f));
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter, 1), "Close"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 1, 1), "Close"))
             {
                 if (OnAccept != null) OnAccept.Invoke();
                 Close();

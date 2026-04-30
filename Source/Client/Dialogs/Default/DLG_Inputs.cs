@@ -68,14 +68,14 @@ namespace GameClient.Dialogs.Default
                 }
             }
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomLeft, 2), "Confirm"))
+            if (Widgets.ButtonText(GetFillForLocation(rect, SmallButtonSize, FillLocation.Bottom, 2, 1), "Confirm"))
             {
                 DLG_Inputs.DialogInputResults = new string[] { Results[0], Results[1], Results[2] };
                 OnAccept?.Invoke();
                 Close();
             }
 
-            if (Widgets.ButtonText(GetRectForLocation(rect, SmallButtonSize, RectLocation.BottomRight, 2), "Cancel"))
+            if (Widgets.ButtonText(GetFillForLocation(rect, SmallButtonSize, FillLocation.Bottom, 2, 2), "Cancel"))
             {
                 OnCancel?.Invoke();
                 Close();

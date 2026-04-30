@@ -49,7 +49,7 @@ namespace GameClient.Dialogs.ServerBrowser
             Widgets.DrawBox(toUse);
             Widgets.TextArea(toUse, Element.Description, true);
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomLeft, 3), "Connect"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 3, 1), "Connect"))
             {
                 Network.Ip = Element.Endpoint;
                 Network.Port = Element.Port;
@@ -58,12 +58,12 @@ namespace GameClient.Dialogs.ServerBrowser
                 Close();
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomCenter, 3), "Mods"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 3, 2), "Mods"))
             {
                 DLG_Base.PushNewDialog(new DLG_ServerMods(Element));
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetRectForLocation(rect, SlimButtonSize, RectLocation.BottomRight, 3), "Back")) Close();
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 3, 3), "Back")) Close();
         }
 
         private void FillMainRect(Rect mainRect)
