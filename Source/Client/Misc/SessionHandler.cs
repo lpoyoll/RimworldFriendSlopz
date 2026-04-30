@@ -116,13 +116,6 @@ namespace GameClient.Misc
             catch { }
         }
 
-        [OnUpdate]
-        private static void ForceHideHelper()
-        {
-            try { Find.PlaySettings.showLearningHelper = false; }
-            catch { }
-        }
-
         [OnSessionStart]
         private static void SetOverrideGenerators()
         {
