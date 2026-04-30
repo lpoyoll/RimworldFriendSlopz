@@ -5,14 +5,13 @@ namespace GameClient.Core.Configs
 {
     public class ModConfigGetter : Verse.ModSettings
     {
-        public static bool BypassModCompatibilityCheck;
+        public static bool BypassModCompatibilityCheck { get; set; } = false;
 
         public static LogImportanceMode CurrentVerboseMode;
 
         public override void ExposeData()
         {
             Scribe_Values.Look(ref CurrentVerboseMode, nameof(CurrentVerboseMode));
-            Scribe_Values.Look(ref BypassModCompatibilityCheck, nameof(BypassModCompatibilityCheck));
 
             base.ExposeData();
         }

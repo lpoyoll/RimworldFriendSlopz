@@ -31,7 +31,6 @@ namespace GameClient.Core.Configs
             listingStandard.GapLine();
             listingStandard.Label("Tweaks");
             if (listingStandard.ButtonTextLabeled("Change mod version [Windows only]", "Change")) { PM_Version.PromptChangeVersion(); }
-            listingStandard.CheckboxLabeled("Bypass mod compatibility check", ref ModConfigGetter.BypassModCompatibilityCheck, "Bypass");
 
             listingStandard.GapLine();
             listingStandard.Label("DANGEROUS");

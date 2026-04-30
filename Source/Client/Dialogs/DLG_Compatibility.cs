@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using GameClient.Core.Configs;
+using GameClient.Dialogs.Default;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
@@ -12,7 +14,7 @@ namespace GameClient.Dialogs
         public DLG_Compatibility(List<string> elements)
         {
             Title = "Potentially incompatible mods found";
-            Description = "Enable 'mod bypass' if you wish to play with them!";
+            Description = "Do you wish to continue with them anyways?";
             Elements = elements;
         }
 
@@ -35,9 +37,15 @@ namespace GameClient.Dialogs
 
             FillMainRect(new Rect(0f, descriptionLineDif2 + 10f, rect.width, rect.height - SlimButtonSize.y - 85f));
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 1, 1), "Close"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 2, 1), "Continue"))
             {
-                if (OnAccept != null) OnAccept.Invoke();
+                DLG_Base.PushNewDialog(new DLG_Message("Message", new string[] { "Mods will be bypassed next time" }));
+                ModConfigGetter.BypassModCompatibilityCheck = true;
+                Close();
+            }
+
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 2, 2), "Close"))
+            {
                 Close();
             }
         }

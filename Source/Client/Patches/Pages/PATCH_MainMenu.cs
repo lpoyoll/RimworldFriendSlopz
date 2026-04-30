@@ -76,7 +76,6 @@ namespace GameClient.Patches.Pages
             optList.Insert(0, new ListableOption("Server Browser", delegate
             {
                 if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
-                else if (!HarmonyHandler.CheckForModCollision()) return;
                 else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
                 else ServerBrowserManager.TryConnect();
             }));
