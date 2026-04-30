@@ -73,7 +73,7 @@ namespace GameClient.Misc
         {
             Process.Start(Master.AppdataLocalServerPath);
 
-            DLG_Base.PushNewDialog(new DLG_Message("Message", new string[] { "The server folder is open in your explorer",
+            DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "The server folder is open in your explorer",
                 "Please double click the server executable to boot" }));
         }
     }

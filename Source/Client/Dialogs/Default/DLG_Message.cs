@@ -17,7 +17,7 @@ namespace GameClient.Dialogs.Default
         public DLG_Message(string title, string[] messages, Action onConfirm = null)
         {
             if (title != null) this.Title = title;
-            else this.Title = "Message";
+            else this.Title = "MESSAGE";
 
             this.Messages = messages;
             this.OnAccept = onConfirm;

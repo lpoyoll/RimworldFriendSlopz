@@ -1,4 +1,5 @@
-﻿using GameClient.Hooks.TCPNetwork;
+﻿using GameClient.Dialogs.Default;
+using GameClient.Hooks.TCPNetwork;
 using Shared.Files.Mods;
 using System;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace GameClient.Dialogs.ServerBrowser
             Widgets.DrawBox(toUse);
             Widgets.TextArea(toUse, Element.Description, true);
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 3, 1), "Connect"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 4, 1), "Connect"))
             {
                 Network.Ip = Element.Endpoint;
                 Network.Port = Element.Port;
@@ -58,12 +59,17 @@ namespace GameClient.Dialogs.ServerBrowser
                 Close();
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 3, 2), "Mods"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 4, 2), "Mods"))
             {
                 DLG_Base.PushNewDialog(new DLG_ServerMods(Element));
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 3, 3), "Back")) Close();
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 4, 3), "Report"))
+            {
+                DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Your report has been sent!" }));
+            }
+
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 4, 4), "Back")) Close();
         }
 
         private void FillMainRect(Rect mainRect)

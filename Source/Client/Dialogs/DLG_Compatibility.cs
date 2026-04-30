@@ -39,12 +39,12 @@ namespace GameClient.Dialogs
 
             if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 2, 1), "Continue"))
             {
-                DLG_Base.PushNewDialog(new DLG_Message("Message", new string[] { "Mods will be bypassed next time" }));
+                DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Mods won't be checked for the remainder of the session" }));
                 ModConfigGetter.BypassModCompatibilityCheck = true;
                 Close();
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 2, 2), "Close"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 2, 2), "Cancel"))
             {
                 Close();
             }
