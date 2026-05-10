@@ -28,7 +28,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Sites : PM_Base
     {
-        public static List<SiteType> SiteValues { get; set; }
+        public static List<FL_SiteType> SiteValues { get; set; }
 
         public static List<WO_Site> PlayerSites { get; set; } = new List<WO_Site>();
 
@@ -65,7 +65,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void RequestSiteBuild(SiteType configFile)
+        public static void RequestSiteBuild(FL_SiteType configFile)
         {
             if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionHandler.ChosenCaravan, ThingDefOf.Silver.defName, configFile.Cost))
             {
@@ -101,7 +101,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        public static void RequestSiteChangeConfig(SiteType config, string reward)
+        public static void RequestSiteChangeConfig(FL_SiteType config, string reward)
         {
             PKT_SiteRewardConfig rewardConfig = new PKT_SiteRewardConfig();
             rewardConfig._siteDef = config.DefName;
@@ -114,10 +114,10 @@ namespace GameClient.PacketManagers
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
         }
 
-        private static void OnReceiveRewards(SiteReward[] files)
+        private static void OnReceiveRewards(FL_SiteReward[] files)
         {
             List<Thing> rewards = new List<Thing>();
-            foreach (SiteReward reward in files)
+            foreach (FL_SiteReward reward in files)
             {
                 try
                 {
@@ -143,9 +143,9 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void AddSites(List<Shared.Files.Sites.Site> sites)
+        public static void AddSites(List<FL_Site> sites)
         {
-            foreach (Shared.Files.Sites.Site toAdd in sites)
+            foreach (FL_Site toAdd in sites)
             {
                 OnSiteBuild(toAdd);
             }
@@ -157,15 +157,16 @@ namespace GameClient.PacketManagers
 
             foreach (WorldObject site in Finder.GetAllRTSites())
             {
-                Shared.Files.Sites.Site siteFile = new Shared.Files.Sites.Site();
+                FL_Site siteFile = new FL_Site();
                 siteFile.Tile = site.Tile;
                 OnSiteDestroy(siteFile);
             }
         }
 
-        public static void OnSiteBuild(Shared.Files.Sites.Site toAdd)
+        public static void OnSiteBuild(FL_Site toAdd)
         {
-            if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
+            if (!RimworldManager.CheckIfTileIsValid(toAdd.Tile)) return;
+            else if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
             else
             {
                 try
@@ -183,7 +184,7 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void OnSiteDestroy(Shared.Files.Sites.Site toRemove)
+        public static void OnSiteDestroy(FL_Site toRemove)
         {
             try
             {
@@ -200,7 +201,7 @@ namespace GameClient.PacketManagers
 
         public static void RecalculateSiteGoodwill(WO_Site site, Goodwill goodwill)
         {
-            Shared.Files.Sites.Site file = new Shared.Files.Sites.Site();
+            FL_Site file = new FL_Site();
             file.Tile = site.Tile;
             file.Goodwill = goodwill;
             file.Type = SiteValues.First(fetch => fetch.DefName == site.MainSitePartDef.defName);
@@ -216,7 +217,7 @@ namespace GameClient.PacketManagers
             PM_Saves.ForceSave();
         }
 
-        private static void OnSiteInfo(Shared.Files.Sites.Site file)
+        private static void OnSiteInfo(FL_Site file)
         {
             DLG_Wait.Instance.Close();
 

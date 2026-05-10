@@ -1,6 +1,6 @@
 namespace Shared.Files.Sites
 {
-    public class SiteReward
+    public class FL_SiteReward
     {
         public string DefName { get; set; } = string.Empty;
 

@@ -308,5 +308,19 @@ namespace GameClient.Managers
                 return new IntVec3(map.Center.x, map.Center.y, map.Center.z);
             }
         }
+
+        public static bool CheckIfTileIsValid(int tileID)
+        {
+            try
+            {
+                Tile tile = Find.WorldGrid[tileID];
+
+                if (tile == null) return false;
+                else if (tile.WaterCovered) return false;
+                else if (!Find.WorldPathGrid.Passable(tileID)) return false;
+                else return true;
+            }
+            catch { return false; }
+        }
     }
 }

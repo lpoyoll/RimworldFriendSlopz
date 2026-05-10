@@ -76,8 +76,8 @@ namespace GameServer.Managers
                 string userSavePath = Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat);
                 if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
 
-                Site[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
-                foreach (Site site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
+                FL_Site[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+                foreach (FL_Site site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
 
                 FL_Settlement[] playerSettlements = PM_Settlements.GetAllSettlementsFromUsername(username);
                 foreach (FL_Settlement settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));

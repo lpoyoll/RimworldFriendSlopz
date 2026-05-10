@@ -61,18 +61,22 @@ namespace GameClient.PacketManagers
 
         public static void SpawnSingleSettlement(FL_Settlement toAdd)
         {
-            try
+            if (!RimworldManager.CheckIfTileIsValid(toAdd.Tile)) return;
+            else
             {
-                WorldObjectDef def = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSettlement");
-                WO_Settlement settlement = (WO_Settlement)WorldObjectMaker.MakeWorldObject(def);
-                settlement.Tile = toAdd.Tile;
-                settlement.Name = $"{toAdd.Username}'s settlement";
-                settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
+                try
+                {
+                    WorldObjectDef def = DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSettlement");
+                    WO_Settlement settlement = (WO_Settlement)WorldObjectMaker.MakeWorldObject(def);
+                    settlement.Tile = toAdd.Tile;
+                    settlement.Name = $"{toAdd.Username}'s settlement";
+                    settlement.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
 
-                PlayerSettlements.Add(settlement);
-                Find.WorldObjects.Add(settlement);
+                    PlayerSettlements.Add(settlement);
+                    Find.WorldObjects.Add(settlement);
+                }
+                catch (Exception e) { Printer.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
             }
-            catch (Exception e) { Printer.Error($"Failed to spawn settlement at {toAdd.Tile}. Reason: {e}"); }
         }
 
         public static void RemoveSingleSettlement(FL_Settlement toRemove)

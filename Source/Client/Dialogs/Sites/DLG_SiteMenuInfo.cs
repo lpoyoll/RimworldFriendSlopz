@@ -16,7 +16,7 @@ namespace GameClient.Dialogs.Sites
 
         public SitePartDef SitePartDef { get; private set; }
 
-        public SiteType ConfigFile { get; private set; }
+        public FL_SiteType ConfigFile { get; private set; }
 
         public Dictionary<ThingDef, int> CostThing { get; private set; } = new Dictionary<ThingDef, int>();
 

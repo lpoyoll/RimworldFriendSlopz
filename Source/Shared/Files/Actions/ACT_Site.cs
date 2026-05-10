@@ -11,30 +11,30 @@ namespace Shared.Files.Actions
 
         public double TimeInterval { get; set; } = 1800000;
 
-        public List<SiteType> SiteTypes { get; set; } = new List<SiteType>()
+        public List<FL_SiteType> SiteTypes { get; set; } = new List<FL_SiteType>()
         {
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTFarmland",
                 Cost = 500,
-                Rewards = new SiteReward[] {
+                Rewards = new FL_SiteReward[] {
 
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "RawRice",
                         Amount = 50
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "RawCorn",
                         Amount = 50
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "SmokeleafLeaves",
                         Amount = 25
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "PsychoidLeaves",
                         Amount = 25
@@ -42,27 +42,27 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTHunterCamp",
                 Cost = 500,
-                Rewards = new SiteReward[] {
-                    new SiteReward()
+                Rewards = new FL_SiteReward[] {
+                    new FL_SiteReward()
                     {
                         DefName = "Meat_Muffalo",
                         Amount = 125
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Meat_Human",
                         Amount = 125
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Leather_Chinchilla",
                         Amount = 60
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Leather_Bear",
                         Amount = 60
@@ -70,27 +70,27 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTQuarry",
                 Cost = 500,
-                Rewards = new SiteReward[] {
-                    new SiteReward()
+                Rewards = new FL_SiteReward[] {
+                    new FL_SiteReward()
                     {
                         DefName = "BlocksGranite",
                         Amount = 50
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "BlocksMarble",
                         Amount = 50
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Steel",
                         Amount = 30
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Plasteel",
                         Amount = 10
@@ -98,13 +98,13 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTSawmill",
                 Cost = 300,
-                Rewards = new SiteReward[] {
+                Rewards = new FL_SiteReward[] {
 
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "WoodLog",
                         Amount = 100
@@ -112,18 +112,18 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTBank",
                 Cost = 750,
-                Rewards = new SiteReward[] {
+                Rewards = new FL_SiteReward[] {
 
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Silver",
                         Amount = 50
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Gold",
                         Amount = 15
@@ -131,18 +131,18 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTLaboratory",
                 Cost = 750,
-                Rewards = new SiteReward[] {
+                Rewards = new FL_SiteReward[] {
 
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "ComponentIndustrial",
                         Amount = 10
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "ComponentSpacer",
                         Amount = 2
@@ -150,13 +150,13 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTRefinery",
                 Cost = 750,
-                Rewards = new SiteReward[] {
+                Rewards = new FL_SiteReward[] {
 
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Chemfuel",
                         Amount = 50
@@ -164,18 +164,18 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTHerbalWorkshop",
                 Cost = 750,
-                Rewards = new SiteReward[] {
+                Rewards = new FL_SiteReward[] {
 
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "MedicineHerbal",
                         Amount = 10
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "MedicineIndustrial",
                         Amount = 2
@@ -183,18 +183,18 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTTextileFactory",
                 Cost = 750,
-                Rewards = new SiteReward[] {
+                Rewards = new FL_SiteReward[] {
 
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "Cloth",
                         Amount = 50
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "DevilstrandCloth",
                         Amount = 30
@@ -202,18 +202,18 @@ namespace Shared.Files.Actions
                 }
             },
 
-            new SiteType()
+            new FL_SiteType()
             {
                 DefName = "RTFoodProcessor",
                 Cost = 750,
-                Rewards = new SiteReward[] {
+                Rewards = new FL_SiteReward[] {
 
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "MealSurvivalPack",
                         Amount = 10
                     },
-                    new SiteReward()
+                    new FL_SiteReward()
                     {
                         DefName = "MealNutrientPaste",
                         Amount = 30

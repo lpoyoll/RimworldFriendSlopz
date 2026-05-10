@@ -5,7 +5,7 @@ using static Shared.CommonEnumerators;
 
 namespace Shared.Files.Sites
 {
-    public class Site
+    public class FL_Site
     {
         public int Tile { get; set; } = -1;
 
@@ -17,7 +17,7 @@ namespace Shared.Files.Sites
 
         public string WorkerString { get; set; } = null;
 
-        public SiteType Type { get; set; } = new SiteType();
+        public FL_SiteType Type { get; set; } = new FL_SiteType();
 
         [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
 

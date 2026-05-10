@@ -86,7 +86,7 @@ namespace GameServer.PacketManager
 
                 client.GetOrSetClientData<UserFile>().UpdateFaction(factionFile);
 
-                foreach (Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetOrSetClientData<UserFile>().Username)) site.UpdateFaction(factionFile);
+                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetOrSetClientData<UserFile>().Username)) site.UpdateFaction(factionFile);
 
                 client.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
 
@@ -103,7 +103,7 @@ namespace GameServer.PacketManager
             {
                 foreach (UserFile userFile in GuildManagerH.GetUsersFromFactionMembers(guild)) userFile.UpdateFaction(null);
 
-                foreach (Site site in GuildManagerH.GetFactionSites(guild)) site.UpdateFaction(null);
+                foreach (FL_Site site in GuildManagerH.GetFactionSites(guild)) site.UpdateFaction(null);
 
                 factionManifest._stepMode = GuildStepMode.Delete;
                 foreach (ServerClient toUpdateConnected in GuildManagerH.GetConnectedFactionMembers(guild))
@@ -150,7 +150,7 @@ namespace GameServer.PacketManager
 
                 client.GetOrSetClientData<UserFile>().UpdateFaction(guild);
 
-                foreach (Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetOrSetClientData<UserFile>().Username)) site.UpdateFaction(guild);
+                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetOrSetClientData<UserFile>().Username)) site.UpdateFaction(guild);
 
                 foreach (ServerClient sc in GuildManagerH.GetConnectedFactionMembers(guild)) PM_Goodwills.UpdateClientGoodwills(sc);
             }
@@ -196,7 +196,7 @@ namespace GameServer.PacketManager
 
                 guild.RemoveMember(guild.GuildMembers.First(fetch => fetch.Username == toRemoveOffline.Username));
 
-                foreach (Site site in SiteManagerHelper.GetAllSitesFromUsername(toRemoveOffline.Username)) site.UpdateFaction(null);
+                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(toRemoveOffline.Username)) site.UpdateFaction(null);
 
                 foreach (ServerClient member in GuildManagerH.GetConnectedFactionMembers(guild)) PM_Goodwills.UpdateClientGoodwills(member);
             }
@@ -278,7 +278,7 @@ namespace GameServer.PacketManager
             return GetAllFactionMembers(factionFile).First(fetch => fetch.Username == usernameToCheck).Rank;
         }
 
-        public static Site[] GetFactionSites(FL_Guild factionFile)
+        public static FL_Site[] GetFactionSites(FL_Guild factionFile)
         {
             return SiteManagerHelper.GetAllSites().Where(fetch => fetch.GuildName == factionFile.Name).ToArray();
         }

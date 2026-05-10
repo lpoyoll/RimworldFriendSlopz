@@ -4,6 +4,6 @@ namespace TCPNetwork.Packets
 {
     public class PKT_Reward : PKT_Base
     {
-        public SiteReward[] _rewardData { get; set; } = null;
+        public FL_SiteReward[] _rewardData { get; set; } = null;
     }
 }

@@ -1,8 +1,11 @@
-﻿using GameClient.Patches;
+﻿using GameClient.Managers;
+using GameClient.Patches;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Details.Planet;
+using Shared.Misc;
+using System;
 using System.Collections.Generic;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
@@ -33,7 +36,7 @@ namespace GameClient.PacketManagers
             }
 
             //If we don't want to force refresh we wait for all and then refresh the layer
-            if (!forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
+            if (!forceRefresh) ForcePollutionLayerRefresh();
         }
 
         public static void AddPollutedTileOrganic(PollutionDetail details)
@@ -44,10 +47,14 @@ namespace GameClient.PacketManagers
 
         public static void AddPollutedTileSimple(PollutionDetail details, bool forceRefresh)
         {
-            SurfaceTile toPollute = Find.WorldGrid[details.Tile];
-            toPollute.pollution = details.Quantity;
+            if (!RimworldManager.CheckIfTileIsValid(details.Tile)) return;
+            else
+            {
+                SurfaceTile toPollute = Find.WorldGrid[details.Tile];
+                toPollute.pollution = details.Quantity;
 
-            if (forceRefresh) PollutionManagerHelper.ForcePollutionLayerRefresh();
+                if (forceRefresh) ForcePollutionLayerRefresh();
+            }
         }
 
         public static void ClearAllPollution()
@@ -59,12 +66,9 @@ namespace GameClient.PacketManagers
                 if (tile.pollution != 0) tile.pollution = 0;
             }
 
-            PollutionManagerHelper.ForcePollutionLayerRefresh();
+            ForcePollutionLayerRefresh();
         }
-    }
 
-    public class PollutionManagerHelper
-    {
         public static List<PollutionDetail> GetPlanetPollutedTiles()
         {
             List<PollutionDetail> toGet = new List<PollutionDetail>();

@@ -6,6 +6,6 @@ namespace TCPNetwork.Files.Client
     {
         public string DefName { get; set; } = string.Empty;
 
-        public SiteReward Reward { get; set; } = null;
+        public FL_SiteReward Reward { get; set; } = null;
     }
 }

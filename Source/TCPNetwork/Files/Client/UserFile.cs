@@ -90,9 +90,9 @@ namespace TCPNetwork.Files.Client
             SaveUserFile();
         }
 
-        public void UpdateSiteConfigs(List<SiteType> configs)
+        public void UpdateSiteConfigs(List<FL_SiteType> configs)
         {
-            foreach (SiteType type in configs)
+            foreach (FL_SiteType type in configs)
             {
                 if (SiteConfigs.FirstOrDefault(fetch => fetch.DefName == type.DefName) == null)
                 {

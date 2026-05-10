@@ -77,19 +77,17 @@ namespace GameClient.PacketManagers
 
         public static void AddRoadSimple(int tileAID, int tileBID, RoadDef roadDef, bool forceRefresh)
         {
-            if (!PM_RoadsHelper.CheckIfCanBuildRoadOnTile(tileBID))
+            if (!RimworldManager.CheckIfTileIsValid(tileBID)) return;
+            else
             {
-                Printer.Warning($"Tried building a road at '{tileBID}' when it's not possible");
-                return;
+                SurfaceTile tileA = Find.WorldGrid[tileAID];
+                SurfaceTile tileB = Find.WorldGrid[tileBID];
+
+                AddRoadLink(tileA, tileBID, roadDef);
+                AddRoadLink(tileB, tileAID, roadDef);
+
+                if (forceRefresh) PM_RoadsHelper.ForceRoadLayerRefresh();
             }
-
-            SurfaceTile tileA = Find.WorldGrid[tileAID];
-            SurfaceTile tileB = Find.WorldGrid[tileBID];
-
-            AddRoadLink(tileA, tileBID, roadDef);
-            AddRoadLink(tileB, tileAID, roadDef);
-
-            if (forceRefresh) PM_RoadsHelper.ForceRoadLayerRefresh();
         }
 
         private static void AddRoadLink(SurfaceTile toAddTo, int neighborTileID, RoadDef roadDef)
@@ -208,19 +206,6 @@ namespace GameClient.PacketManagers
             return false;
         }
 
-        public static bool CheckIfCanBuildRoadOnTile(int tileID)
-        {
-            try
-            {
-                Tile tile = Find.WorldGrid[tileID];
-
-                if (tile.WaterCovered) return false;
-                else if (!Find.WorldPathGrid.Passable(tileID)) return false;
-                else return true;
-            }
-            catch { return false; }
-        }
-
         public static string[] GetAvailableRoadLabels(bool includePrices)
         {
             List<string> roadLabels = new List<string>();
@@ -261,7 +246,7 @@ namespace GameClient.PacketManagers
 
             foreach (int tileID in neighborTiles)
             {
-                if (!CheckIfCanBuildRoadOnTile(tileID)) continue;
+                if (!RimworldManager.CheckIfTileIsValid(tileID)) continue;
                 else if (CheckIfTwoTilesAreConnected(SessionHandler.ChosenCaravan.Tile, tileID)) continue;
                 else
                 {

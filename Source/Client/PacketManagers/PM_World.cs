@@ -232,7 +232,7 @@ namespace GameClient.PacketManagers
             Printer.Warning("Populating world values", LogImportanceMode.Verbose);
             SessionHandler.CurrentWorld.Features = GetPlanetFeatures();
             SessionHandler.CurrentWorld.Roads = PM_RoadsHelper.GetPlanetRoads();
-            SessionHandler.CurrentWorld.PollutedTiles = PollutionManagerHelper.GetPlanetPollutedTiles();
+            SessionHandler.CurrentWorld.PollutedTiles = PM_Pollution.GetPlanetPollutedTiles();
             SessionHandler.CurrentWorld.NPCSettlements = GetPlanetNPCSettlements();
             SessionHandler.CurrentWorld.NPCFactions = GetPlanetNPCFactions();
         }

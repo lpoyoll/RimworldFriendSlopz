@@ -14,7 +14,7 @@ namespace TCPNetwork.Packets
 
         public bool IsClientFactionMember { get; set; } = false;
 
-        public List<SiteType> SiteValues { get; set; } = new List<SiteType>();
+        public List<FL_SiteType> SiteValues { get; set; } = new List<FL_SiteType>();
 
         public List<FL_Event> EventValues { get; set; } = new List<FL_Event>();
 
@@ -32,7 +32,7 @@ namespace TCPNetwork.Packets
 
         public List<FL_Settlement> PlayerSettlements { get; set; } = new List<FL_Settlement>();
 
-        public List<Site> PlayerSites { get; set; } = new List<Site>();
+        public List<FL_Site> PlayerSites { get; set; } = new List<FL_Site>();
 
         public List<RoadDetail> Roads { get; set; } = new List<RoadDetail>();
 
