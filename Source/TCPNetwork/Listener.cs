@@ -75,11 +75,7 @@ namespace TCPNetwork
             else if (!obj.GetType().IsSubclassOf(typeof(PKT_Base))) Printer.Error($"Malformed package {obj.GetType()}");
             else
             {
-                PKT_Base packet = new PKT_Base();
-                packet.Header = header;
-                packet.MainThread = false;
-                packet.Contents = Serializer.ConvertObjectToBytes(obj);
-
+                PKT_Base packet = new PKT_Base() { Header = header, Contents = Serializer.ConvertObjectToBytes(obj) };
                 PacketQueue.Enqueue(new KeyValuePair<byte, PKT_Base>((byte)header, packet));
             }
         }
