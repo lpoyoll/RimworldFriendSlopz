@@ -2,6 +2,7 @@
 using GameClient.Hooks.TCPNetwork;
 using Shared.Files.Mods;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using TCPNetwork;
 using TCPNetwork.Packets.ServerBrowser;
@@ -50,7 +51,7 @@ namespace GameClient.Dialogs.ServerBrowser
             Widgets.DrawBox(toUse);
             Widgets.TextArea(toUse, Element.Description, true);
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 4, 1), "Connect"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 5, 1), "Connect"))
             {
                 Network.Ip = Element.Endpoint;
                 Network.Port = Element.Port;
@@ -59,17 +60,23 @@ namespace GameClient.Dialogs.ServerBrowser
                 Close();
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 4, 2), "Mods"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 5, 2), "Mods"))
             {
                 DLG_Base.PushNewDialog(new DLG_ServerMods(Element));
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 4, 3), "Report"))
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 5, 3), "Discord"))
             {
-                DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Your report has been sent!" }));
+                OpenDiscordLink();
             }
 
-            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 4, 4), "Back")) Close();
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 5, 4), "Report"))
+            {
+                DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Your report has been sent!" }));
+                Close();
+            }
+
+            if (Widgets.ButtonText(DLG_Base.GetFillForLocation(rect, SlimButtonSize, FillLocation.Bottom, 5, 5), "Back")) Close();
         }
 
         private void FillMainRect(Rect mainRect)
@@ -104,6 +111,23 @@ namespace GameClient.Dialogs.ServerBrowser
             if (index % 2 == 0) Widgets.DrawHighlight(fixedRect);
 
             Widgets.Label(fixedRect, $"{element.FileName}");
+        }
+
+        private void OpenDiscordLink()
+        {
+            if (!CheckIfLinkIsValid()) DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Discord link wasn't specified" }));
+            else
+            {
+                DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Discord link was opened in your browser" }));
+                Process.Start(Element.DiscordURL);
+            }
+        }
+
+        private bool CheckIfLinkIsValid()
+        {
+            if (string.IsNullOrEmpty(Element.DiscordURL)) return false;
+            else if (!Element.DiscordURL.StartsWith("https://discord.gg/")) return false;
+            else return true;
         }
     }
 }
