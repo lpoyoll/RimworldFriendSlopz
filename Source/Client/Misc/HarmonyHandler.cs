@@ -68,7 +68,7 @@ namespace GameClient.Misc
 
         public static bool CheckForModCollision()
         {
-            if (ModConfigGetter.BypassModCompatibilityCheck) return true;
+            if (ModConfigGetter.BypassModCheck) return true;
 
             EnableMainPatches();
 
@@ -97,7 +97,12 @@ namespace GameClient.Misc
 
             DisableMainPatches();
 
-            if (collidingMods.Count == 0) return true;
+            if (collidingMods.Count == 0)
+            {
+                ModConfigGetter.BypassModCheck = true;
+                return true;
+            }
+
             else 
             {
                 DLG_Base.PushNewDialog(new DLG_Compatibility(collidingMods));

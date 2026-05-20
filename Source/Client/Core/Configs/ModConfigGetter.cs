@@ -5,7 +5,7 @@ namespace GameClient.Core.Configs
 {
     public class ModConfigGetter : Verse.ModSettings
     {
-        public static bool BypassModCompatibilityCheck { get; set; } = false;
+        public static bool BypassModCheck { get; set; } = false;
 
         public static LogImportanceMode CurrentVerboseMode;
 

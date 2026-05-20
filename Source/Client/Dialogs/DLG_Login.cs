@@ -43,7 +43,7 @@ namespace GameClient.Dialogs
             input = Widgets.TextField(new Rect(DLG_Base.GetRectMiddle(rect) - rect.width / 2, 125f, rect.width, 25f), EndpointPort);
             if (AcceptsInput && input.Length <= MaxChars) EndpointPort = input;
 
-            if (Widgets.ButtonText(GetFillForLocation(rect, SmallButtonSize, FillLocation.Bottom, 2, 1), "Confirm"))
+            if (Widgets.ButtonText(GetFillForLocation(rect, SmallButtonSize, FillLocation.Bottom, 2, 1), "Connect"))
             {
                 Network.Ip = EndpointIP;
                 Network.Port = int.Parse(EndpointPort);
