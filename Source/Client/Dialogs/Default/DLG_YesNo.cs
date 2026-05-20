@@ -6,7 +6,7 @@ namespace GameClient.Dialogs.Default
 {
     public class DLG_YesNo : DLG_Base
     {
-        public override Vector2 InitialSize => new Vector2(400f, 150f);
+        public override Vector2 InitialSize => new Vector2(400f, 140f);
 
         private string YesText { get; set; }
 
