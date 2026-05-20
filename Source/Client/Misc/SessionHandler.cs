@@ -116,6 +116,13 @@ namespace GameClient.Misc
             catch { }
         }
 
+        [OnUpdate]
+        private static void ForceDisableHelper()
+        {
+            try { Prefs.AdaptiveTrainingEnabled = false; }
+            catch { }
+        }
+
         [OnSessionStart]
         private static void SetOverrideGenerators()
         {
