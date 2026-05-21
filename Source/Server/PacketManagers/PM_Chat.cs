@@ -66,14 +66,14 @@ namespace GameServer.PacketManager
         private static void BroadcastChatMessage(ServerClient client, string message)
         {
             PKT_Chat chatData = new PKT_Chat();
-            chatData.Username = client.GetOrSetClientData<UserFile>().Username;
+            chatData.Username = client.GetData<UserFile>().Username;
             chatData.Message = message;
-            chatData.UsernameColor = client.GetOrSetClientData<UserFile>().IsAdmin ? ChatColor.Admin : ChatColor.Normal;
+            chatData.UsernameColor = client.GetData<UserFile>().IsAdmin ? ChatColor.Admin : ChatColor.Normal;
             chatData.MessageColor = ChatColor.Normal;
 
             ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
-            PM_Chat.WriteChatInConsole(client.GetOrSetClientData<UserFile>().Username, message);
-            WriteToLogs(client.GetOrSetClientData<UserFile>().Username, message);
+            PM_Chat.WriteChatInConsole(client.GetData<UserFile>().Username, message);
+            WriteToLogs(client.GetData<UserFile>().Username, message);
         }
 
         public static void BroadcastConsoleMessage(string message)
@@ -120,7 +120,7 @@ namespace GameServer.PacketManager
                 string chatCommand = "";
                 for (int i = 0; i < command.Length; i++) chatCommand += command[i] + "";
 
-                PM_Chat.WriteChatInConsole(client.GetOrSetClientData<UserFile>().Username, chatCommand);
+                PM_Chat.WriteChatInConsole(client.GetData<UserFile>().Username, chatCommand);
             }
             catch (Exception ex) { Printer.Error(ex); }
 
@@ -165,7 +165,7 @@ namespace GameServer.PacketManager
 
             if (Master.ChatConfig.EnableMoTD) PM_Chat.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
 
-            if (Master.ChatConfig.LoginNotifications) PM_Chat.BroadcastServerNotification($"{client.GetOrSetClientData<UserFile>().Username} has joined the server!");
+            if (Master.ChatConfig.LoginNotifications) PM_Chat.BroadcastServerNotification($"{client.GetData<UserFile>().Username} has joined the server!");
         }
     }
 }

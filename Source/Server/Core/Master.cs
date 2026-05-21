@@ -47,7 +47,7 @@ namespace GameServer.Core
 
         public static FL_PlanetConfig WorldValues { get; set; } = null;
 
-        public static ServerConfigFile ServerConfig { get; set; } = null;
+        public static FL_ServerConfig ServerConfig { get; set; } = null;
 
         public static FL_ActionsConfig ActionConfigs { get; set; } = null;
 

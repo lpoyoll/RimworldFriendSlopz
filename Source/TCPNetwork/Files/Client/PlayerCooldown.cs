@@ -7,15 +7,19 @@ namespace TCPNetwork.Files.Client
 {
     public class PlayerCooldown
     {
-        public DateTime EventProtectionTime { get; set; } = DateTime.Now;
+        public DateTime RaidProtectionTime { get; set; } = DateTime.MinValue;
 
-        public DateTime AidProtectionTime { get; set; } = DateTime.Now;
+        public DateTime ZoomProtectionTime { get; set; } = DateTime.MinValue;
 
-        public DateTime PollutionProtectionTime { get; set; } = DateTime.Now;
+        public DateTime EventProtectionTime { get; set; } = DateTime.MinValue;
 
-        public DateTime RoadProtectionTime { get; set; } = DateTime.Now;
+        public DateTime AidProtectionTime { get; set; } = DateTime.MinValue;
 
-        public DateTime NPCProtectionTime { get; set; } = DateTime.Now;
+        public DateTime PollutionProtectionTime { get; set; } = DateTime.MinValue;
+
+        public DateTime RoadProtectionTime { get; set; } = DateTime.MinValue;
+
+        public DateTime NPCProtectionTime { get; set; } = DateTime.MinValue;
 
         public void SetEventTimer(UserFile file) 
         { 
@@ -45,6 +49,32 @@ namespace TCPNetwork.Files.Client
         {
             NPCProtectionTime = DateTime.Now;
             file.SaveUserFile();
+        }
+
+        public void SetRaidTimer(UserFile file)
+        {
+            RaidProtectionTime = DateTime.Now;
+            file.SaveUserFile();
+        }
+
+        public void SetZoomTimer(UserFile file)
+        {
+            ZoomProtectionTime = DateTime.Now;
+            file.SaveUserFile();
+        }
+
+        public static bool CheckIfCanRaid(UserFile file, ACT_Base action)
+        {
+            if (!action.IsEnabled) return false;
+            else if (!TimeConverter.CompareTimes(file.Cooldowns.RaidProtectionTime, action.Cooldown)) return false;
+            else return true;
+        }
+
+        public static bool CheckIfCanZoom(UserFile file, ACT_Base action)
+        {
+            if (!action.IsEnabled) return false;
+            else if (!TimeConverter.CompareTimes(file.Cooldowns.ZoomProtectionTime, action.Cooldown)) return false;
+            else return true;
         }
 
         public static bool CheckIfCanEvent(UserFile file, ACT_Base action)

@@ -25,16 +25,16 @@ namespace GameServer.PacketManager
             FL_Leaderboard file = (FL_Leaderboard)FL_Leaderboard.Load<FL_Leaderboard>(FL_Leaderboard.SavePath);
             double scoreValue = Math.Round(map.Wealth * ScoreMultiplier) + 1;
             
-            if (!file.Scores.Keys.Contains(client.GetOrSetClientData<UserFile>().Username)) file.Scores.Add(client.GetOrSetClientData<UserFile>().Username, scoreValue);
+            if (!file.Scores.Keys.Contains(client.GetData<UserFile>().Username)) file.Scores.Add(client.GetData<UserFile>().Username, scoreValue);
             else
             {
                 foreach (KeyValuePair<string, double> pair in file.Scores.ToArray())
                 {
-                    if (pair.Key == client.GetOrSetClientData<UserFile>().Username)
+                    if (pair.Key == client.GetData<UserFile>().Username)
                     {
                         double currentScore = pair.Value;
                         file.Scores.Remove(pair.Key);
-                        file.Scores.Add(client.GetOrSetClientData<UserFile>().Username, currentScore + scoreValue);
+                        file.Scores.Add(client.GetData<UserFile>().Username, currentScore + scoreValue);
                     }
                 }
             }

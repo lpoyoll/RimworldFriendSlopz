@@ -40,7 +40,7 @@ namespace TCPNetwork.Files.Client
 
         public void DisposeTCP() { Tcp.Dispose(); }
 
-        public T GetOrSetClientData<T>(object obj = null)
+        public T GetData<T>(object obj = null)
         {
             if (ClientData == null) ClientData = obj;
             return (T)ClientData;

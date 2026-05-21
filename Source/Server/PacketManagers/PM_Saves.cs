@@ -36,7 +36,7 @@ namespace GameServer.PacketManager
             string[] saves = Directory.GetFiles(Master.SavesPath);
             foreach (string save in saves)
             {
-                if (Path.GetFileNameWithoutExtension(save) == client.GetOrSetClientData<UserFile>().Username) return true;
+                if (Path.GetFileNameWithoutExtension(save) == client.GetData<UserFile>().Username) return true;
             }
 
             return false;
@@ -46,12 +46,12 @@ namespace GameServer.PacketManager
         {
             if (!CheckIfUserHasSave(client))
             {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetOrSetClientData<UserFile>().Username}'s save was attempted to be reset while the player doesn't have a save");
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<UserFile>().Username}'s save was attempted to be reset while the player doesn't have a save");
                 return;
             }
 
             client.Listener.MarkForDisconnect();
-            ResetPlayerData(client, client.GetOrSetClientData<UserFile>().Username);
+            ResetPlayerData(client, client.GetData<UserFile>().Username);
         }
 
         public static void ResetPlayerData(ServerClient client, string username)
@@ -84,7 +84,7 @@ namespace GameServer.PacketManager
 
         public static void SendSaveToClient(ServerClient client)
         {
-            string savePath = Path.Combine(Master.SavesPath, client.GetOrSetClientData<UserFile>().Username + CommonValues.DefaultSaveFormat);
+            string savePath = Path.Combine(Master.SavesPath, client.GetData<UserFile>().Username + CommonValues.DefaultSaveFormat);
 
             PKT_Save data = new PKT_Save();
             data._stepMode = SaveStepMode.Receive;
@@ -96,7 +96,7 @@ namespace GameServer.PacketManager
         
         public static void ReceiveSaveFromClient(ServerClient client, PKT_Save data)
         {
-            string savePath = Path.Combine(Master.SavesPath, client.GetOrSetClientData<UserFile>().Username + CommonValues.DefaultSaveFormat);
+            string savePath = Path.Combine(Master.SavesPath, client.GetData<UserFile>().Username + CommonValues.DefaultSaveFormat);
             File.WriteAllBytes(savePath, data._fileBytes);
 
             InformationDisplayer.DisplaySaveGame(client);

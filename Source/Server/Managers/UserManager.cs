@@ -64,7 +64,7 @@ namespace GameServer.Managers
             foreach (string userFile in userFiles)
             {
                 UserFile file = Serializer.SerializeFromFile<UserFile>(userFile);
-                if (file.Username == client.GetOrSetClientData<UserFile>().Username) return file;
+                if (file.Username == client.GetData<UserFile>().Username) return file;
             }
 
             return null;
@@ -120,10 +120,10 @@ namespace GameServer.Managers
 
         public static bool CheckIfUserBanned(ServerClient client)
         {
-            if (!client.GetOrSetClientData<UserFile>().IsBanned) return false;
+            if (!client.GetData<UserFile>().IsBanned) return false;
             else
             {
-                Printer.Message($"Banned user '{client.GetOrSetClientData<UserFile>().Username}' tried to join the server");
+                Printer.Message($"Banned user '{client.GetData<UserFile>().Username}' tried to join the server");
                 PM_Logins.DenyConnectionWithReason(client, LoginResponse.Ban);
                 return true;
             }
@@ -132,7 +132,7 @@ namespace GameServer.Managers
         public static bool CheckWhitelist(ServerClient client)
         {
             if (!Master.Whitelist.UseWhitelist) return true;
-            else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.GetOrSetClientData<UserFile>().Username) != null) return true;
+            else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.GetData<UserFile>().Username) != null) return true;
             else
             {
                 PM_Logins.DenyConnectionWithReason(client, LoginResponse.Whitelist);

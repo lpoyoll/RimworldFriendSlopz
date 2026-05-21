@@ -14,7 +14,7 @@ using TCPNetwork.Packets;
 using Verse;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
 using static Shared.CommonEnumerators;
-using static TCPNetwork.Packets.PKT_Activity;
+using static TCPNetwork.Packets.PKT_Raid;
 
 namespace GameClient.Misc
 {
@@ -23,8 +23,6 @@ namespace GameClient.Misc
         public static string Username { get; set; } = string.Empty;
 
         public static ClientNetworkState CurrentNetworkState { get; set; } = ClientNetworkState.Disconnected;
-
-        public static ActivityType latestActivity { get; set; } = ActivityType.Raid;
 
         public static WO_Settlement ChosenSettlement { get; set; } = null;
 

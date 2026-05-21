@@ -16,7 +16,7 @@ namespace GameServer.Commands
         public override void Action()
         {
             Master.ServerConfig.EnableServerTelemetry = !Master.ServerConfig.EnableServerTelemetry;
-            ServerConfigFile.Save(ServerConfigFile.SavePath, Master.ServerConfig);
+            FL_ServerConfig.Save(FL_ServerConfig.SavePath, Master.ServerConfig);
 
             string display = Master.ServerConfig.EnableServerTelemetry ? "ON" : "OFF";
             Printer.Warning($"Server browser telemetry is now {display}");

@@ -13,10 +13,10 @@ namespace GameServer.Managers
         public static void SendServerGlobalData(ServerClient client)
         {
             PKT_ServerGlobalData globalData = new PKT_ServerGlobalData();
-            globalData.IsClientAdmin = client.GetOrSetClientData<UserFile>().IsAdmin;
-            globalData.IsClientFactionMember = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName) != null;
+            globalData.IsClientAdmin = client.GetData<UserFile>().IsAdmin;
+            globalData.IsClientFactionMember = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName) != null;
             globalData.ActionValues = Master.ActionConfigs;
-            globalData.RoadValues = Master.ActionConfigs.RoadsAction.RoadValues;
+            globalData.RoadValues = Master.ActionConfigs.RoadAction.RoadValues;
             globalData.SiteValues = Master.ActionConfigs.SiteAction.SiteTypes;
             globalData.PlayerSettlements = PM_Settlements.GetSettlementsFromGoodwill(client);
             globalData.PlayerSites = PM_Sites.GetSitesFromGoodwill(client);

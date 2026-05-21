@@ -16,7 +16,7 @@ namespace RTServerBrowser.Commands
         public override void Action()
         {
             Master.ServerConfig.Verbosity = int.Parse(CommandParameters[0]);
-            ServerConfigFile.Save(ServerConfigFile.SavePath, Master.ServerConfig);
+            FL_ServerConfig.Save(FL_ServerConfig.SavePath, Master.ServerConfig);
 
             Printer.Title($"Verbosity changed to {Master.ServerConfig.Verbosity}");
         }

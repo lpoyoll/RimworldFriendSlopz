@@ -38,11 +38,11 @@ namespace GameServer.Commands.Chat
                         chatData.MessageColor = ChatColor.Private;
 
                         //Send to sender
-                        chatData.Username = $"Whisper to '{toFind.GetOrSetClientData<UserFile>().Username}'";
+                        chatData.Username = $"Whisper to '{toFind.GetData<UserFile>().Username}'";
                         PM_Chat.TargetClient.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
 
                         //Send to recipient
-                        chatData.Username = $"Whisper from '{PM_Chat.TargetClient.GetOrSetClientData<UserFile>().Username}'";
+                        chatData.Username = $"Whisper from '{PM_Chat.TargetClient.GetData<UserFile>().Username}'";
                         toFind.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
                         PM_Chat.WriteChatInConsole(chatData.Username, message);
                     }

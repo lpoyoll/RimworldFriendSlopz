@@ -21,7 +21,7 @@ namespace GameServer.Commands
             else
             {
                 toFind.Listener.MarkForDisconnect();
-                Printer.Warning($"User '{toFind.GetOrSetClientData<UserFile>().Username}' has been kicked from the server");
+                Printer.Warning($"User '{toFind.GetData<UserFile>().Username}' has been kicked from the server");
             }
         }
     }

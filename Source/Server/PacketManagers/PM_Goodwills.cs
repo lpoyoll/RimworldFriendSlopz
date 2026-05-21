@@ -27,21 +27,21 @@ namespace GameServer.PacketManager
             if (settlementFile != null) data._username = settlementFile.Username;
             else data._username = siteFile.Username;
 
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
             if (guild != null && GuildManagerH.CheckIfUserIsInFaction(guild, data._username))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
             }
 
-            client.GetOrSetClientData<UserFile>().UpdateGoodwill(data._username, data._goodwill);
+            client.GetData<UserFile>().UpdateGoodwill(data._username, data._goodwill);
             UpdateClientGoodwills(client);
         }
 
         public static void UpdateClientGoodwills(ServerClient client)
         {
-            FL_Settlement[] settlements = PM_Settlements.GetAllSettlements().Where(fetch => fetch.Username != client.GetOrSetClientData<UserFile>().Username).ToArray();
-            FL_Site[] sites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username != client.GetOrSetClientData<UserFile>().Username).ToArray();
+            FL_Settlement[] settlements = PM_Settlements.GetAllSettlements().Where(fetch => fetch.Username != client.GetData<UserFile>().Username).ToArray();
+            FL_Site[] sites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username != client.GetData<UserFile>().Username).ToArray();
 
             PKT_FactionGoodwill factionGoodwillData = new PKT_FactionGoodwill();
             foreach (FL_Settlement settlement in settlements)
@@ -67,27 +67,27 @@ namespace GameServer.PacketManager
 
         public static Goodwill GetSettlementGoodwill(ServerClient client, FL_Settlement settlement)
         {
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
 
-            if (client.GetOrSetClientData<UserFile>().Username == settlement.Username) return Goodwill.Personal;
-            else if (guild == null) return FindGoodwillFromUsername(client.GetOrSetClientData<UserFile>(), settlement.Username);
+            if (client.GetData<UserFile>().Username == settlement.Username) return Goodwill.Personal;
+            else if (guild == null) return FindGoodwillFromUsername(client.GetData<UserFile>(), settlement.Username);
             else
             {
                 if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == settlement.Username) != null) return Goodwill.Guild;
-                else return FindGoodwillFromUsername(client.GetOrSetClientData<UserFile>(), settlement.Username);
+                else return FindGoodwillFromUsername(client.GetData<UserFile>(), settlement.Username);
             }
         }
 
         public static Goodwill GetSiteGoodwill(ServerClient client, FL_Site site)
         {
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
 
-            if (client.GetOrSetClientData<UserFile>().Username == site.Username) return Goodwill.Personal;
-            else if (guild == null) return FindGoodwillFromUsername(client.GetOrSetClientData<UserFile>(), site.Username);
+            if (client.GetData<UserFile>().Username == site.Username) return Goodwill.Personal;
+            else if (guild == null) return FindGoodwillFromUsername(client.GetData<UserFile>(), site.Username);
             else
             {
                 if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == site.Username) != null) return Goodwill.Guild;
-                else return FindGoodwillFromUsername(client.GetOrSetClientData<UserFile>(), site.Username);
+                else return FindGoodwillFromUsername(client.GetData<UserFile>(), site.Username);
             }
         }
 

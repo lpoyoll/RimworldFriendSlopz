@@ -106,7 +106,7 @@ namespace GameClient.Patches
                     {
                         SessionHandler.ChosenCaravan = __instance;
 
-                        if (SessionHandler.CurrentActionValues.RoadsAction.IsEnabled)
+                        if (SessionHandler.CurrentActionValues.RoadAction.IsEnabled)
                         {
                             List<PlanetTile> neighborTiles = new List<PlanetTile>();
                             Find.WorldGrid.GetTileNeighbors(SessionHandler.ChosenCaravan.Tile, neighborTiles);

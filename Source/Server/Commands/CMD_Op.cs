@@ -35,7 +35,7 @@ namespace GameServer.Commands
                         PKT_Command commandData = new PKT_Command();
                         commandData._commandMode = CommandMode.Op;
 
-                        client.GetOrSetClientData<UserFile>().UpdateAdmin(true);
+                        client.GetData<UserFile>().UpdateAdmin(true);
                         client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
                     }
 

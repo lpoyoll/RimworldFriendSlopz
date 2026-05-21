@@ -18,7 +18,7 @@ namespace GameServer.PacketManager
         {
             PKT_Aid data = Serializer.ConvertBytesToObject<PKT_Aid>(bytes);
 
-            if (!PlayerCooldown.CheckIfCanAid(client.GetOrSetClientData<UserFile>(), Master.ActionConfigs.AidAction))
+            if (!PlayerCooldown.CheckIfCanAid(client.GetData<UserFile>(), Master.ActionConfigs.AidAction))
             {
                 data._stepMode = AidStepMode.Reject;
                 client.Listener.EnqueuePacket(PacketHeader.AidManager, data);
@@ -45,7 +45,7 @@ namespace GameServer.PacketManager
 
         private static void SendAidRequest(ServerClient client, PKT_Aid data)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetOrSetClientData<UserFile>().Username} attempted to send an aid packet to settlement at tile {data._toTile}, but it has no settlement");
+            if (!PM_Settlements.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<UserFile>().Username} attempted to send an aid packet to settlement at tile {data._toTile}, but it has no settlement");
             else
             {
                 FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._toTile);
@@ -66,13 +66,13 @@ namespace GameServer.PacketManager
 
         private static void SendAidAccept(ServerClient client, PKT_Aid data)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetOrSetClientData<UserFile>().Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
+            if (!PM_Settlements.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<UserFile>().Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
             else
             {
                 FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
-                    client.GetOrSetClientData<UserFile>().Cooldowns.SetAidTimer(client.GetOrSetClientData<UserFile>());
+                    client.GetData<UserFile>().Cooldowns.SetAidTimer(client.GetData<UserFile>());
 
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlementFile.Username);
                     target.Listener.EnqueuePacket(PacketHeader.AidManager, data);
@@ -90,7 +90,7 @@ namespace GameServer.PacketManager
 
         private static void SendAidReject(ServerClient client, PKT_Aid data)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetOrSetClientData<UserFile>().Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
+            if (!PM_Settlements.CheckIfTileIsInUse(data._fromTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<UserFile>().Username} attempted to send an aid packet to settlement at tile {data._fromTile}, but it has no settlement");
             else
             {
                 FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._fromTile);

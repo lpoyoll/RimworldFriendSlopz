@@ -13,7 +13,7 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
-using static TCPNetwork.Packets.PKT_Activity;
+using static TCPNetwork.Packets.PKT_Raid;
 
 namespace GameClient.WorldObjects
 {
@@ -163,9 +163,7 @@ namespace GameClient.WorldObjects
                 action = delegate
                 {
                     SessionHandler.ChosenSettlement = this;
-
-                    PM_Activities.RequestActivity(ActivityType.Zoom,
-                        SessionHandler.ChosenSettlement.Tile);
+                    PM_Zoom.RequestZoom(SessionHandler.ChosenSettlement.Tile);
                 }
             };
 
@@ -279,9 +277,7 @@ namespace GameClient.WorldObjects
                 {
                     SessionHandler.ChosenSettlement = this;
                     SessionHandler.ChosenCaravan = caravan;
-
-                    PM_Activities.RequestActivity(ActivityType.Raid,
-                        SessionHandler.ChosenSettlement.Tile);
+                    PM_Raid.RequestRaid(SessionHandler.ChosenSettlement.Tile);
                 }
             };
 

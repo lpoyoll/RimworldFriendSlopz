@@ -16,13 +16,15 @@
 
         public ACT_Pollution PollutionAction { get; set; } = new ACT_Pollution();
 
-        public ACT_Activity ActivityAction { get; set; } = new ACT_Activity();
+        public ACT_Raid RaidAction { get; set; } = new ACT_Raid();
+
+        public ACT_Zoom ZoomAction { get; set; } = new ACT_Zoom();
 
         public ACT_Event EventAction { get; set; } = new ACT_Event();
 
         public ACT_Aid AidAction { get; set; } = new ACT_Aid();
 
-        public ACT_Road RoadsAction { get; set; } = new ACT_Road();
+        public ACT_Road RoadAction { get; set; } = new ACT_Road();
 
         public ACT_Site SiteAction { get; set; } = new ACT_Site();
     }

@@ -77,16 +77,16 @@ namespace GameServer.PacketManager
                 factionManifest._stepMode = GuildStepMode.Create;
 
                 GuildMember member = new GuildMember();
-                member.Username = client.GetOrSetClientData<UserFile>().Username;
+                member.Username = client.GetData<UserFile>().Username;
                 member.Rank = GuildMember.GuildRanks.Admin;
 
                 FL_Guild factionFile = new FL_Guild();
                 factionFile.Name = factionManifest._guild.Name;
                 factionFile.AddMember(member);
 
-                client.GetOrSetClientData<UserFile>().UpdateFaction(factionFile);
+                client.GetData<UserFile>().UpdateFaction(factionFile);
 
-                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetOrSetClientData<UserFile>().Username)) site.UpdateFaction(factionFile);
+                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetData<UserFile>().Username)) site.UpdateFaction(factionFile);
 
                 client.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
 
@@ -96,9 +96,9 @@ namespace GameServer.PacketManager
 
         private static void DeleteFaction(ServerClient client, PKT_PlayerGuild factionManifest)
         {
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
 
-            if (GuildManagerH.GetMemberRank(guild, client.GetOrSetClientData<UserFile>().Username) != GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client);
+            if (GuildManagerH.GetMemberRank(guild, client.GetData<UserFile>().Username) != GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
                 foreach (UserFile userFile in GuildManagerH.GetUsersFromFactionMembers(guild)) userFile.UpdateFaction(null);
@@ -108,7 +108,7 @@ namespace GameServer.PacketManager
                 factionManifest._stepMode = GuildStepMode.Delete;
                 foreach (ServerClient toUpdateConnected in GuildManagerH.GetConnectedFactionMembers(guild))
                 {
-                    toUpdateConnected.GetOrSetClientData<UserFile>().UpdateFaction(null);
+                    toUpdateConnected.GetData<UserFile>().UpdateFaction(null);
                     toUpdateConnected.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
                     PM_Goodwills.UpdateClientGoodwills(toUpdateConnected);
                 }
@@ -121,14 +121,14 @@ namespace GameServer.PacketManager
 
         private static void InviteMemberToFaction(ServerClient client, PKT_PlayerGuild guildManifest)
         {
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
             FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(guildManifest._dataInt);
             ServerClient toAdd = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            if (GuildManagerH.GetMemberRank(guild, client.GetOrSetClientData<UserFile>().Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
+            if (GuildManagerH.GetMemberRank(guild, client.GetData<UserFile>().Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
-                if (toAdd.GetOrSetClientData<UserFile>().GuildName != null) return;
+                if (toAdd.GetData<UserFile>().GuildName != null) return;
                 else
                 {
                     guildManifest._guild.Name = guild.Name;
@@ -141,16 +141,16 @@ namespace GameServer.PacketManager
         {
             FL_Guild guild = GuildManagerH.GetFactionFromName(factionManifest._guild.Name);
 
-            if (!GuildManagerH.CheckIfUserIsInFaction(guild, client.GetOrSetClientData<UserFile>().Username))
+            if (!GuildManagerH.CheckIfUserIsInFaction(guild, client.GetData<UserFile>().Username))
             {
                 GuildMember member = new GuildMember();
-                member.Username = client.GetOrSetClientData<UserFile>().Username;
+                member.Username = client.GetData<UserFile>().Username;
                 member.Rank = GuildRanks.Member;
                 guild.AddMember(member);
 
-                client.GetOrSetClientData<UserFile>().UpdateFaction(guild);
+                client.GetData<UserFile>().UpdateFaction(guild);
 
-                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetOrSetClientData<UserFile>().Username)) site.UpdateFaction(guild);
+                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetData<UserFile>().Username)) site.UpdateFaction(guild);
 
                 foreach (ServerClient sc in GuildManagerH.GetConnectedFactionMembers(guild)) PM_Goodwills.UpdateClientGoodwills(sc);
             }
@@ -158,14 +158,14 @@ namespace GameServer.PacketManager
 
         private static void RemoveMemberFromFaction(ServerClient client, PKT_PlayerGuild guildManifest)
         {
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
             FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(guildManifest._dataInt);
             UserFile toRemoveOffline = UserManagerH.GetUserFileFromName(settlement.Username);
             ServerClient toRemoveOnline = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            GuildRanks userRank = GuildManagerH.GetMemberRank(guild, client.GetOrSetClientData<UserFile>().Username);
+            GuildRanks userRank = GuildManagerH.GetMemberRank(guild, client.GetData<UserFile>().Username);
 
-            if (settlement.Username == client.GetOrSetClientData<UserFile>().Username)
+            if (settlement.Username == client.GetData<UserFile>().Username)
             {
                 if (userRank != GuildRanks.Admin) Remove();
                 else
@@ -185,7 +185,7 @@ namespace GameServer.PacketManager
             {
                 if (toRemoveOnline != null)
                 {
-                    toRemoveOnline.GetOrSetClientData<UserFile>().UpdateFaction(null);
+                    toRemoveOnline.GetData<UserFile>().UpdateFaction(null);
 
                     PM_Goodwills.UpdateClientGoodwills(toRemoveOnline);
 
@@ -205,9 +205,9 @@ namespace GameServer.PacketManager
         private static void PromoteMember(ServerClient client, PKT_PlayerGuild factionManifest)
         {
             FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(factionManifest._dataInt);
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
 
-            GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.GetOrSetClientData<UserFile>().Username);
+            GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.GetData<UserFile>().Username);
             if (rank == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
@@ -227,9 +227,9 @@ namespace GameServer.PacketManager
         private static void DemoteMember(ServerClient client, PKT_PlayerGuild factionManifest)
         {
             FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(factionManifest._dataInt);
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
 
-            GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.GetOrSetClientData<UserFile>().Username);
+            GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.GetData<UserFile>().Username);
             if (rank != GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
@@ -248,7 +248,7 @@ namespace GameServer.PacketManager
 
         private static void SendMemberList(ServerClient client, PKT_PlayerGuild factionManifest)
         {
-            factionManifest._guild = GuildManagerH.GetFactionFromName(client.GetOrSetClientData<UserFile>().GuildName);
+            factionManifest._guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
             client.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
         }
     }
@@ -285,7 +285,7 @@ namespace GameServer.PacketManager
 
         public static ServerClient[] GetConnectedFactionMembers(FL_Guild factionFile)
         {
-            return ServerNetwork.GetConnectedClients().Where(fetch => fetch.GetOrSetClientData<UserFile>().GuildName == factionFile.Name).ToArray();
+            return ServerNetwork.GetConnectedClients().Where(fetch => fetch.GetData<UserFile>().GuildName == factionFile.Name).ToArray();
         }
 
         public static UserFile[] GetUsersFromFactionMembers(FL_Guild factionFile)

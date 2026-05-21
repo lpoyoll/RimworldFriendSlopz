@@ -16,7 +16,7 @@ namespace GameServer.Commands
         public override void Action()
         {
             Master.ServerConfig.EnableServerBrowser = !Master.ServerConfig.EnableServerBrowser;
-            ServerConfigFile.Save(ServerConfigFile.SavePath, Master.ServerConfig);
+            FL_ServerConfig.Save(FL_ServerConfig.SavePath, Master.ServerConfig);
 
             string display = Master.ServerConfig.EnableServerBrowser ? "ON" : "OFF";
             Printer.Warning($"Server browser discovery is now {display}");

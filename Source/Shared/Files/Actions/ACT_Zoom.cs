@@ -1,6 +1,6 @@
 ﻿namespace Shared.Files.Actions
 {
-    public class ACT_Activity : ACT_Base
+    public class ACT_Zoom : ACT_Base
     {
         public override bool IsEnabled { get; set; } = true;
 
