@@ -19,7 +19,7 @@ namespace GameServer.Hooks.ServerBrowser
 
         private static bool WasStartedOnce { get; set; } = false;
 
-        public enum BrowserMode { Normal, Lite }
+        public enum BrowserMode { Public, Private }
 
         private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
@@ -45,8 +45,8 @@ namespace GameServer.Hooks.ServerBrowser
             {
                 while (Network.MultipurposeEndpoint == null)
                 {
-                    if (!Master.ServerConfig.EnableServerBrowser) ConnectToServerBrowser(BrowserMode.Lite);
-                    else ConnectToServerBrowser(BrowserMode.Normal);
+                    if (!Master.ServerConfig.EnableServerBrowser) ConnectToServerBrowser(BrowserMode.Private);
+                    else ConnectToServerBrowser(BrowserMode.Public);
                 }
 
                 if (Master.ServerConfig.EnableServerBrowser)
@@ -106,7 +106,7 @@ namespace GameServer.Hooks.ServerBrowser
             telemetry.Version = CommonValues.ExecutableVersion;
             telemetry.Endpoint = ServerIPV4;
             telemetry.Port = Master.ServerConfig.Port;
-            telemetry.IsPrivate = mode == BrowserMode.Lite;
+            telemetry.IsPrivate = mode == BrowserMode.Private;
             telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
             telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
             telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != FL_ModConfig.ModType.Forbidden)
