@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using Newtonsoft.Json;
+using Shared;
 using Shared.Files;
 using Shared.Files.Sites;
 using Shared.Misc;
@@ -34,7 +35,7 @@ namespace TCPNetwork.Files.Client
 
         public List<PlayerSiteConfig> SiteConfigs { get; set; } = new List<PlayerSiteConfig>();
 
-        public ServerClient SynchronousClient { get; set; } = null;
+        [JsonIgnore] public ServerClient SynchronousClient { get; set; } = null;
 
         private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 
