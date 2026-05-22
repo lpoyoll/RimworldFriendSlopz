@@ -68,6 +68,7 @@ namespace GameClient.Hooks.VersionDownloader
             {
                 ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.VersionDownloaderPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
                 Network.MultipurposeEndpoint = client.Listener;
+                PM_Handshake.Send(client);
                 return true;
             }
             catch { return false; }
