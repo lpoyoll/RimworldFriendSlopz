@@ -10,7 +10,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Caravan __instance)
         {
-            PM_Caravans.RequestCaravanAdd(__instance);
+            PM_Caravan.RequestCaravanAdd(__instance);
         }
     }
 
@@ -20,7 +20,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Caravan __instance)
         {
-            PM_Caravans.RequestCaravanRemove(__instance);
+            PM_Caravan.RequestCaravanRemove(__instance);
         }
     }
 
@@ -30,7 +30,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Caravan ___caravan)
         {
-            PM_Caravans.RequestCaravanUpdate(___caravan);
+            PM_Caravan.RequestCaravanUpdate(___caravan);
             return true;
         }
     }

@@ -6,7 +6,6 @@ using Shared.Misc;
 using System.Net.Sockets;
 using System.Reflection;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets.ServerBrowser;
 using static Shared.Misc.Printer;

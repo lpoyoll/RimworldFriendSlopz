@@ -37,7 +37,7 @@ namespace GameClient.Managers
                 PM_Roads.ClearAllRoads();
                 PM_Roads.AddRoads(SessionHandler.GlobalData.Roads, false);
                 
-                PM_Caravans.ClearAllCaravans();
+                PM_Caravan.ClearAllCaravans();
                 CaravanManagerH.SetAllPlayerCaravans();
 
                 if (ModLister.BiotechInstalled)

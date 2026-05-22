@@ -12,11 +12,18 @@ using GameClient.PacketManagers;
 using static TCPNetwork.Packets.GameParameterData;
 using static TCPNetwork.Packets.PKT_ModConfig;
 using GameClient.Dialogs.Default;
+using TCPNetwork.PacketManagers;
 
 namespace GameClient.Managers
 {
-    public static class GameParameterManager
+    public class PM_GameParameter : PM_Base
     {
+        [HandlesPacket(PacketHeader.GameParameterManager)]
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public static void SetFirstTimeSetup()
         {
             string title = "Server Enforcements";
@@ -25,7 +32,7 @@ namespace GameClient.Managers
             string[] values = new string[] { "Free", "Enforced" };
 
             DLG_Base.PushNewDialog(new DLG_ListingWithTuple(title, description, keys, values, null,
-                GameParameterManager.SendFirstTimeSetup));
+                PM_GameParameter.SendFirstTimeSetup));
         }
 
         public static void SetValues()
@@ -120,9 +127,9 @@ namespace GameClient.Managers
 
         private static void SendFirstTimeSetup()
         {
-            if (DLG_ListingWithTuple.DialogTupleListingResultInt[0] == 1) { GameParameterManager.SendCurrentScenario(true); }
-            if (DLG_ListingWithTuple.DialogTupleListingResultInt[1] == 1) { GameParameterManager.SendCurrentStoryteller(true); }
-            if (DLG_ListingWithTuple.DialogTupleListingResultInt[2] == 1) { GameParameterManager.SendCurrentDifficulty(true); }
+            if (DLG_ListingWithTuple.DialogTupleListingResultInt[0] == 1) { PM_GameParameter.SendCurrentScenario(true); }
+            if (DLG_ListingWithTuple.DialogTupleListingResultInt[1] == 1) { PM_GameParameter.SendCurrentStoryteller(true); }
+            if (DLG_ListingWithTuple.DialogTupleListingResultInt[2] == 1) { PM_GameParameter.SendCurrentDifficulty(true); }
 
             PM_World.SendWorld();
             PM_Events.SendExistingEventsToServer();

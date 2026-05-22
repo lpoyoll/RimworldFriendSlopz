@@ -8,7 +8,6 @@ using Shared.Files.Guilds;
 using System;
 using System.Collections.Generic;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using Verse;

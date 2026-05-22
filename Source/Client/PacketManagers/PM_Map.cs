@@ -2,13 +2,20 @@
 using Shared;
 using Shared.Files;
 using TCPNetwork;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using Verse;
 
-namespace GameClient.Managers
+namespace GameClient.PacketManagers
 {
-    public static class MapManager
+    public class PM_Map : PM_Base
     {
+        [HandlesPacket(PacketHeader.MapManager)]
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public static void SendPlayerMapsToServer()
         {
             foreach (Map map in Find.Maps.ToArray())

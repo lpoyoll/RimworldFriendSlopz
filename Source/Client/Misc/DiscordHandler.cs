@@ -43,7 +43,7 @@ namespace GameClient.Misc
         [OnSessionEnd]
         private static void StopPresence()
         {
-            RPClient.Dispose();
+            RPClient?.Dispose();
             Printer.Message("Discord Rich Presence has been stopped", Printer.LogImportanceMode.Verbose);
         }
     }

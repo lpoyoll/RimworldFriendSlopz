@@ -2,7 +2,7 @@
 using Shared;
 using Shared.Commands;
 using Shared.Misc;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
 

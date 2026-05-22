@@ -1,7 +1,7 @@
 ﻿using GameServer.Hooks.TCPNetwork;
 using Shared.Commands;
 using Shared.Misc;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 
 namespace GameServer.Commands
 {
@@ -18,7 +18,7 @@ namespace GameServer.Commands
             Printer.Title($"Connected players: [{ServerNetwork.GetConnectedClients().Count()}]");
 
             Printer.Title("----------------------------------------");
-            foreach (ServerClient client in ServerNetwork.GetConnectedClients()) Printer.Warning($"{client.CurrentIP}");
+            foreach (ServerClient client in ServerNetwork.GetConnectedClients()) Printer.Warning($"{client.IP}");
             Printer.Title("----------------------------------------");
         }
     }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using TCPNetwork.Files.Client;
+using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static Shared.Misc.Printer;
 
@@ -21,7 +21,7 @@ namespace TCPNetwork
 
         private NetworkStream Stream { get; set; } = null;
 
-        private NetworkRuleset Ruleset { get; set; } = null;
+        public NetworkRuleset Ruleset { get; private set; } = null;
 
         private ConcurrentQueue<KeyValuePair<byte, PKT_Base>> PacketQueue { get; set; } = new ConcurrentQueue<KeyValuePair<byte, PKT_Base>>();
 
@@ -38,7 +38,6 @@ namespace TCPNetwork
             this.Stream = connection.GetStream();
             this.Ruleset = ruleset;
 
-            Ruleset.OnConnect?.Invoke(clientToUse);
             Task.Run(RunAllListenerTasks);
         }
 
@@ -100,15 +99,15 @@ namespace TCPNetwork
                 Network.ReadFullPacket(Stream, packetBuffer);
 
                 // Log packet contents
-                if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Verbose);
-                else Printer.Message($"[Packet] > Received packet {header}", LogImportanceMode.Extreme);
-
-                // Execute ruleset action
-                if (Network.CheckIfPacketIsValidated(TargetClient, header)) Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient);
-                else return;
+                if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet '{header}'", LogImportanceMode.Verbose);
+                else Printer.Message($"[Packet] > Received packet '{header}'", LogImportanceMode.Extreme);
 
                 // Reset KeepAlive
                 LastKAReceivedPacket = DateTime.Now;
+
+                // Execute ruleset action
+                if (!TargetClient.IsVerified && header != PacketHeader.Handshake) MarkForDisconnect();
+                else Ruleset.OnRead?.Invoke(header, packetBuffer, TargetClient);
             }
         }
 
@@ -132,8 +131,8 @@ namespace TCPNetwork
                     Stream.Write(pair.Value.Contents, 0, pair.Value.Contents.Length);
 
                     // Log the packet data
-                    if (!Network.IgnoreLogPackets.Contains(pair.Value.Header)) Printer.Message($"[Packet] > Sent packet {pair.Value.Header}", LogImportanceMode.Verbose);
-                    else Printer.Message($"[Packet] > Sent packet {pair.Value.Header}", LogImportanceMode.Extreme);
+                    if (!Network.IgnoreLogPackets.Contains(pair.Value.Header)) Printer.Message($"[Packet] > Sent packet '{pair.Value.Header}'", LogImportanceMode.Verbose);
+                    else Printer.Message($"[Packet] > Sent packet '{pair.Value.Header}'", LogImportanceMode.Extreme);
 
                     // Execute after writing
                     Ruleset.OnWrite?.Invoke(TargetClient);

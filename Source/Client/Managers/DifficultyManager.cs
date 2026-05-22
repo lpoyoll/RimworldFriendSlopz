@@ -11,8 +11,8 @@ namespace GameClient.Managers
             string description = "Do you want to enforce the current difficulty?";
             Action actionYes = delegate
             {
-                GameParameterManager.SendCurrentStoryteller(true);
-                GameParameterManager.SendCurrentDifficulty(true);
+                PM_GameParameter.SendCurrentStoryteller(true);
+                PM_GameParameter.SendCurrentDifficulty(true);
             };
 
             DLG_Base.PushNewDialog(new DLG_YesNo(description, actionYes));

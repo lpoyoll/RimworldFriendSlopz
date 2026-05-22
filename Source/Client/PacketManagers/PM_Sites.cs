@@ -15,7 +15,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using Verse;

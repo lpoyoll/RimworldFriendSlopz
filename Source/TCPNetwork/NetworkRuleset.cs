@@ -1,6 +1,5 @@
 ﻿using Shared;
 using System;
-using TCPNetwork.Files.Client;
 
 namespace TCPNetwork
 {

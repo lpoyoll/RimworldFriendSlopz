@@ -1,5 +1,5 @@
 using Shared;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.PacketManagers;
 
 namespace GameServer.PacketManager

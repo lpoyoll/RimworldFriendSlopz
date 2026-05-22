@@ -15,7 +15,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets.ServerBrowser;
 using TCPNetwork.Packets.VersionDownloader;

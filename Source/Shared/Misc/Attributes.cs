@@ -70,6 +70,7 @@ namespace Shared
         SynchronousManager,
         ServerBrowserReachability,
         DisconnectManager,
-        VersionDownload
+        VersionDownload,
+        Handshake
     }
 }

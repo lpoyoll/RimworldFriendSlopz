@@ -9,7 +9,6 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets.ServerBrowser;
 

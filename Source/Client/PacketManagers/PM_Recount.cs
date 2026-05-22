@@ -1,7 +1,7 @@
 using GameClient.Misc;
 using Shared;
 using System.Collections.Generic;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 

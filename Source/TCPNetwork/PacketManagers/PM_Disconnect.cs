@@ -1,5 +1,4 @@
 ﻿using Shared;
-using TCPNetwork.Files.Client;
 
 namespace TCPNetwork.PacketManagers
 {

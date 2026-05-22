@@ -3,6 +3,7 @@ using TCPNetwork.Packets;
 using TCPNetwork.Files.Client;
 using Shared.Misc;
 using static TCPNetwork.Packets.PKT_ResponseShortcut;
+using TCPNetwork;
 
 namespace GameServer.Managers
 {
@@ -19,7 +20,7 @@ namespace GameServer.Managers
 
             if (shouldBroadcast)
             {
-                Printer.Warning($"[Illegal action] > {client.GetData<UserFile>().Username} > {client.CurrentIP}");
+                Printer.Warning($"[Illegal action] > {client.GetData<UserFile>().Username} > {client.IP}");
                 Printer.Warning($"[Illegal reason] > {message}");
             }
         }

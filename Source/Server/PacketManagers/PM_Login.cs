@@ -4,6 +4,7 @@ using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
 using Shared.Misc;
+using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
@@ -12,7 +13,7 @@ using static TCPNetwork.Packets.PKT_Login;
 
 namespace GameServer.PacketManager
 {
-    public class PM_Logins : PM_Base
+    public class PM_Login : PM_Base
     {
         [HandlesPacket(PacketHeader.LoginManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
@@ -57,8 +58,6 @@ namespace GameServer.PacketManager
 
         private static void PostLogin(ServerClient client)
         {
-            client.VerifyClient();
-
             UserManager.SendPlayerRecount();
 
             GlobalDataManager.SendServerGlobalData(client);

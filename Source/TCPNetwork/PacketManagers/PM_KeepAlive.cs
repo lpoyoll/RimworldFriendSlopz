@@ -1,6 +1,5 @@
 ﻿using Shared;
 using System.Diagnostics;
-using TCPNetwork.Files.Client;
 
 namespace TCPNetwork.PacketManagers
 {

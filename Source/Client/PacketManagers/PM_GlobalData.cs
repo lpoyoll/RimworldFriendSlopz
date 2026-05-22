@@ -1,7 +1,7 @@
 using GameClient.Managers;
 using GameClient.Misc;
 using Shared;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 
@@ -16,7 +16,7 @@ namespace GameClient.PacketManagers
             SessionHandler.GlobalData = serverGlobalData;
 
             SessionHandler.SetValues();
-            GameParameterManager.SetValues();
+            PM_GameParameter.SetValues();
             PM_Sites.SetValues();
             PM_RoadsHelper.SetValues();
             PM_Mods.SetValues(SessionHandler.GlobalData.ModConfigs);

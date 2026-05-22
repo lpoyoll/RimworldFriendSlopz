@@ -3,6 +3,7 @@ using GameClient.Dialogs.Default;
 using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
+using GameClient.PacketManagers;
 using Shared;
 using Shared.Misc;
 using System;
@@ -11,7 +12,6 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using static Shared.Misc.Printer;
 
@@ -29,7 +29,8 @@ namespace GameClient.Hooks.TCPNetwork
             PacketHeader.GlobalDataManager,
             PacketHeader.RecountManager,
             PacketHeader.ChatManager,
-            PacketHeader.ConsoleManager
+            PacketHeader.ConsoleManager,
+            PacketHeader.Handshake
         };
 
         public enum ClientNetworkState { Disconnected, Connected }
@@ -47,9 +48,12 @@ namespace GameClient.Hooks.TCPNetwork
             }
         };
 
-        private static Action<ServerClient> OnConnect { get; set; } = delegate
+        private static Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client)
         {
             MainThreadHandler.Instance.Enqueue(delegate { HarmonyHandler.EnableMainPatches(); });
+            Network.ServerEndpoint = client.Listener;
+            PM_Handshake.Send(client);
+            PM_Version.Send(client);
         };
 
         private static Action<ServerClient> OnDisconnect { get; set; } = delegate 
@@ -98,7 +102,7 @@ namespace GameClient.Hooks.TCPNetwork
                 try
                 {
                     ServerClient client = new ServerClient(new TcpClient(Network.Ip, Network.Port), new NetworkRuleset(OnConnect, OnDisconnect, OnReadPacket, null));
-                    Network.ServerEndpoint = client.Listener;
+                    client.Listener.Ruleset.OnConnect?.Invoke(client);
                     return true;
                 }
                 catch { return false; }

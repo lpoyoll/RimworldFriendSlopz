@@ -5,6 +5,7 @@ using Shared;
 using Shared.Commands;
 using Shared.Misc;
 using System.Text;
+using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;

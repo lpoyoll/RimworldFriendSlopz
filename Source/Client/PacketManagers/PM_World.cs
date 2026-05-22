@@ -16,7 +16,6 @@ using Shared.Details.Planet;
 using Shared.Files.Configs;
 using Shared.Misc;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using static Shared.Misc.Printer;
 using static TCPNetwork.Packets.PKT_World;
 using GameClient.Dialogs.Default;

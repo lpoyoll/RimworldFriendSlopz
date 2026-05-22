@@ -1,4 +1,5 @@
 ﻿using Shared;
+using Shared.Misc;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,11 +7,11 @@ using System.Net;
 using System.Net.Sockets;
 using TCPNetwork.Packets;
 
-namespace TCPNetwork.Files.Client
+namespace TCPNetwork
 {
     public class ServerClient
     {
-        public string CurrentIP { get; private set; } = string.Empty;
+        public string IP { get; private set; } = string.Empty;
 
         public bool IsVerified { get; private set; } = false;
 
@@ -29,14 +30,19 @@ namespace TCPNetwork.Files.Client
             {
                 Tcp = tcp;
                 Ruleset = ruleset;
-                CurrentIP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
+                IP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
                 if (createListener) CreateListener();
             }
         }
 
         public void CreateListener() { Listener = new Listener(this, Tcp, Ruleset); }
 
-        public void VerifyClient() { IsVerified = true; }
+        public void VerifyClient() 
+        { 
+            IsVerified = true;
+
+            Printer.Message($"Handshake with '{IP}' was valid", Printer.LogImportanceMode.Verbose);
+        }
 
         public void DisposeTCP() { Tcp.Dispose(); }
 

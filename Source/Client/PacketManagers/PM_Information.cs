@@ -3,7 +3,6 @@ using TCPNetwork.Packets;
 using Shared;
 using GameClient.Misc;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using Shared.Files;
 using GameClient.Dialogs.Default;
 using TCPNetwork.PacketManagers;

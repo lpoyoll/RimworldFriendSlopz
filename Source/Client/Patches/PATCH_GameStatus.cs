@@ -22,7 +22,7 @@ namespace GameClient.Patches
 
             if (SessionHandler.IsGeneratingFreshWorld)
             {
-                GameParameterManager.SetFirstTimeSetup();
+                PM_GameParameter.SetFirstTimeSetup();
                 PM_Mods.OpenModManagerMenu();
             }
         }

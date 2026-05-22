@@ -1,7 +1,6 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Managers;
 using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
@@ -15,7 +14,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.XPath;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using Verse;
@@ -145,7 +143,7 @@ namespace GameClient.PacketManagers
             if (DLG_Options.CurrentSyncingMode == DLG_Options.SyncingMode.Complete || SessionHandler.IsExiting)
             {
                 Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
-                MapManager.SendPlayerMapsToServer();
+                PM_Map.SendPlayerMapsToServer();
             }
 
             Printer.Message("Sending save to server", LogImportanceMode.Verbose);

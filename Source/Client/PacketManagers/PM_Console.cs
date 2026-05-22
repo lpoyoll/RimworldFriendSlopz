@@ -4,7 +4,7 @@ using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
 using Shared;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;

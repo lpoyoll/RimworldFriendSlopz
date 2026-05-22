@@ -3,6 +3,7 @@ using GameServer.Managers;
 using GameServer.PacketManager;
 using Shared.Commands;
 using Shared.Misc;
+using TCPNetwork;
 using TCPNetwork.Files.Client;
 
 namespace GameServer.Commands

@@ -1,6 +1,6 @@
 ﻿using GameServer.Misc;
 using Shared;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static TCPNetwork.Packets.PKT_Login;
@@ -12,27 +12,14 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.VersionManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PKT_Version data = Serializer.ConvertBytesToObject<PKT_Version>(bytes);
+            PKT_Version packet = Serializer.ConvertBytesToObject<PKT_Version>(bytes);
 
-            if (data._version == CommonValues.ExecutableVersion)
-            {
-                data._step = PKT_Version.VersionStep.Pass;
-                client.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
-            }
-
+            if (packet.Version == CommonValues.ExecutableVersion) client.Listener.EnqueuePacket(PacketHeader.VersionManager, packet);
             else
             {
-                PM_Logins.DenyConnectionWithReason(client, LoginResponse.Version);
+                PM_Login.DenyConnectionWithReason(client, LoginResponse.Version);
                 InformationDisplayer.DisplayVersionMismatch(client);
             }
-        }
-
-        public static void AskForClientVersion(ServerClient client)
-        {
-            PKT_Version data = new PKT_Version();
-            data._step = PKT_Version.VersionStep.Ask;
-
-            client.Listener.EnqueuePacket(PacketHeader.VersionManager, data);
         }
     }
 }

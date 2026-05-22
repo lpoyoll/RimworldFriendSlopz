@@ -45,8 +45,8 @@ namespace GameClient.Patches.Pages
                 {
                     Action toDo = delegate
                     {
-                        GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
-                        GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty, true);
+                        PM_GameParameter.SetStoryteller(SessionHandler.CurrentStoryteller);
+                        PM_GameParameter.SetDifficulty(SessionHandler.CurrentDifficulty, true);
                         DLG_Base.PushNewDialog(__instance.next);
                         __instance.Close();
 
@@ -78,8 +78,8 @@ namespace GameClient.Patches.Pages
             {
                 Action toDo = delegate
                 {
-                    GameParameterManager.SetStoryteller(SessionHandler.CurrentStoryteller);
-                    GameParameterManager.SetDifficulty(SessionHandler.CurrentDifficulty);
+                    PM_GameParameter.SetStoryteller(SessionHandler.CurrentStoryteller);
+                    PM_GameParameter.SetDifficulty(SessionHandler.CurrentDifficulty);
                 };
 
                 DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));

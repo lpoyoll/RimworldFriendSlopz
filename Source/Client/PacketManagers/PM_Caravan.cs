@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using Verse;
@@ -20,7 +19,7 @@ using static TCPNetwork.Packets.PKT_Caravan;
 
 namespace GameClient.PacketManagers
 {
-    public class PM_Caravans : PM_Base
+    public class PM_Caravan : PM_Base
     {
         public static List<Caravan> PlayerCaravans { get; private set; } = new List<Caravan>();
 
@@ -179,13 +178,13 @@ public class CaravanManagerH
 
     public static FL_Caravan GetExistingCaravanFromFile(FL_Caravan file)
     {
-        return PM_Caravans.GuestCaravans.FirstOrDefault(fetch => fetch.Username == file.Username
+        return PM_Caravan.GuestCaravans.FirstOrDefault(fetch => fetch.Username == file.Username
             && fetch.ID == file.ID);
     }
 
     public static void SetAllPlayerCaravans()
     {
         Caravan[] playerCaravans = Find.World.worldObjects.Caravans.Where(fetch => fetch.Faction == Faction.OfPlayer).ToArray();
-        foreach (Caravan caravan in playerCaravans) PM_Caravans.PlayerCaravans.Add(caravan);
+        foreach (Caravan caravan in playerCaravans) PM_Caravan.PlayerCaravans.Add(caravan);
     }
 }

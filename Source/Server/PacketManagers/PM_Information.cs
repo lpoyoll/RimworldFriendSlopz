@@ -2,7 +2,7 @@
 using GameServer.Managers;
 using Shared;
 using Shared.Files;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 
@@ -39,10 +39,10 @@ namespace GameServer.PacketManager
 
         private static void SendWealth(ServerClient client, PKT_Information data)
         {
-            if (!PM_Maps.CheckIfMapExists(data._settlementTile)) ResponseShortcutManager.SendUnavailablePacket(client);
+            if (!PM_Map.CheckIfMapExists(data._settlementTile)) ResponseShortcutManager.SendUnavailablePacket(client);
             else 
             {
-                data._settlementWealth = PM_Maps.GetMapFromTile(data._settlementTile).Wealth;
+                data._settlementWealth = PM_Map.GetMapFromTile(data._settlementTile).Wealth;
                 client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
             }
         }

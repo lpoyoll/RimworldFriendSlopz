@@ -7,7 +7,7 @@ using Shared.Misc;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using Verse;

@@ -6,6 +6,7 @@ using Shared;
 using Shared.Files.Configs;
 using Shared.Files.Mods;
 using Shared.Misc;
+using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
@@ -95,7 +96,7 @@ namespace GameServer.PacketManager
                 else
                 {
                     InformationDisplayer.DisplayModMismatch(client.GetData<UserFile>().Username);
-                    PM_Logins.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
+                    PM_Login.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
                     return true;
                 }
             }

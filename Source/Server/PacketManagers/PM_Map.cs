@@ -2,13 +2,13 @@
 using GameServer.Misc;
 using Shared;
 using Shared.Files;
-using TCPNetwork.Files.Client;
+using TCPNetwork;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 
 namespace GameServer.PacketManager
 {
-    public class PM_Maps : PM_Base
+    public class PM_Map : PM_Base
     {
         [HandlesPacket(PacketHeader.MapManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)

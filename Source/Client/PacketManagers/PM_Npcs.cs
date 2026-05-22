@@ -12,7 +12,6 @@ using Shared.Details.Planet;
 using Shared.Misc;
 using TCPNetwork;
 using GameClient.Managers;
-using TCPNetwork.Files.Client;
 using static Shared.Misc.Printer;
 using TCPNetwork.PacketManagers;
 

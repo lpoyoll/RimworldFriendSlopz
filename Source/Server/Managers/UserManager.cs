@@ -9,6 +9,7 @@ using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
 using static TCPNetwork.Packets.PKT_Login;
 using Shared.Commands;
+using TCPNetwork;
 
 namespace GameServer.Managers
 {
@@ -112,7 +113,7 @@ namespace GameServer.Managers
             if (toFind != null) return true;
             else
             {
-                PM_Logins.DenyConnectionWithReason(client, LoginResponse.Invalid);
+                PM_Login.DenyConnectionWithReason(client, LoginResponse.Invalid);
                 return false;
 
             }
@@ -124,7 +125,7 @@ namespace GameServer.Managers
             else
             {
                 Printer.Message($"Banned user '{client.GetData<UserFile>().Username}' tried to join the server");
-                PM_Logins.DenyConnectionWithReason(client, LoginResponse.Ban);
+                PM_Login.DenyConnectionWithReason(client, LoginResponse.Ban);
                 return true;
             }
         }
@@ -135,7 +136,7 @@ namespace GameServer.Managers
             else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.GetData<UserFile>().Username) != null) return true;
             else
             {
-                PM_Logins.DenyConnectionWithReason(client, LoginResponse.Whitelist);
+                PM_Login.DenyConnectionWithReason(client, LoginResponse.Whitelist);
                 return false;
             }
         }

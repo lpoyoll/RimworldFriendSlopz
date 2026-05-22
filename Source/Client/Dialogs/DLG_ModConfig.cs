@@ -84,7 +84,7 @@ namespace GameClient.Dialogs
             {
                 ResultMods = Keys;
                 ResultInt = ValueInt;
-                GameParameterManager.SendCurrentModConfigs(false);
+                PM_GameParameter.SendCurrentModConfigs(false);
 
                 Close();
             }

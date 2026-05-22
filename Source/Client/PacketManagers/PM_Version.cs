@@ -3,12 +3,12 @@ using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Hooks.VersionDownloader;
 using Shared;
+using Shared.Misc;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using UnityEngine;
@@ -18,28 +18,14 @@ namespace GameClient.PacketManagers
     public class PM_Version : PM_Base
     {
         [HandlesPacket(PacketHeader.VersionManager)]
-        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) 
         {
-            PKT_Version data = Serializer.ConvertBytesToObject<PKT_Version>(bytes);
-
-            switch (data._step)
-            {
-                case PKT_Version.VersionStep.Ask:
-                    SendClientVersion();
-                    break;
-
-                case PKT_Version.VersionStep.Pass:
-                    PM_Login.UseLoginData();
-                    break;
-            }
+            PM_Login.UseLoginData();
         }
 
-        public static void SendClientVersion()
+        public static void Send(ServerClient client)
         {
-            Network.ServerEndpoint.TargetClient.VerifyClient();
-
-            PKT_Version data = new PKT_Version();
-            data._version = CommonValues.ExecutableVersion;
+            PKT_Version data = new PKT_Version() { Version = CommonValues.ExecutableVersion };
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.VersionManager, data);
         }
 

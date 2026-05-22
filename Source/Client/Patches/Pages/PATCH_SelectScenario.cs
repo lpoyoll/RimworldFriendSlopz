@@ -37,7 +37,7 @@ namespace GameClient.Patches.Pages
                     {
                         Scenario scenario = (Scenario)typeof(Page_SelectScenario).GetField("curScen", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
                         Page_SelectScenario.BeginScenarioConfiguration(scenario, __instance);
-                        GameParameterManager.SetScenario(SessionHandler.CurrentScenario);
+                        PM_GameParameter.SetScenario(SessionHandler.CurrentScenario);
 
                         DLG_Base.PushNewDialog(__instance.next);
                         __instance.Close();

@@ -5,6 +5,7 @@ using TCPNetwork.Files.Client;
 using GameServer.Managers;
 using static TCPNetwork.Packets.PKT_Raid;
 using TCPNetwork.PacketManagers;
+using TCPNetwork;
 
 namespace GameServer.PacketManager
 {
@@ -30,7 +31,7 @@ namespace GameServer.PacketManager
 
         private static void SendRequestedMap(ServerClient client, PKT_Raid data)
         {
-            if (!PM_Maps.CheckIfMapExists(data.TargetTile))
+            if (!PM_Map.CheckIfMapExists(data.TargetTile))
             {
                 data.CurrentStepMode = StepMode.Deny;
                 client.Listener.EnqueuePacket(PacketHeader.RaidManager, data);
@@ -39,7 +40,7 @@ namespace GameServer.PacketManager
             else
             {
                 data.CurrentStepMode = StepMode.Request;
-                data.Map = PM_Maps.GetMapFromTile(data.TargetTile);
+                data.Map = PM_Map.GetMapFromTile(data.TargetTile);
                 client.Listener.EnqueuePacket(PacketHeader.RaidManager, data);
                 client.GetData<UserFile>().Cooldowns.SetRaidTimer(client.GetData<UserFile>());
             }
