@@ -15,14 +15,18 @@ namespace TCPNetwork
 
         public bool HandleKeepAlive { get; set; } = false;
 
+        public bool SkipHandshake { get; set; } = false;
+
         public NetworkRuleset(Action<ServerClient> onConnect, Action<ServerClient> onDisconnect, 
-            Action<PacketHeader, byte[], ServerClient> onRead, Action<ServerClient> onWrite, bool handleKeepAlive = true)
+            Action<PacketHeader, byte[], ServerClient> onRead, Action<ServerClient> onWrite, bool handleKeepAlive = true, 
+                bool skipHandshake = false)
         {
             this.OnConnect = onConnect;
             this.OnDisconnect = onDisconnect;
             this.OnRead = onRead;
             this.OnWrite = onWrite;
             this.HandleKeepAlive = handleKeepAlive;
+            this.SkipHandshake = skipHandshake;
         }
     }
 }

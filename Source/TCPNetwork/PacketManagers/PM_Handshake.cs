@@ -45,12 +45,16 @@ namespace TCPNetwork.PacketManagers
         private static void CheckHandshake(ServerClient client, PKT_Handshake packet)
         {
             bool isValid = true;
-            foreach (string str in GetLocalManagers())
+
+            if (!client.Ruleset.SkipHandshake)
             {
-                if (!packet.IncomingManagers.Contains(str))
+                foreach (string str in GetLocalManagers())
                 {
-                    Printer.Warning($"Missing existing manager '{str}'", Printer.LogImportanceMode.Verbose);
-                    isValid = false;
+                    if (!packet.IncomingManagers.Contains(str))
+                    {
+                        Printer.Warning($"Missing existing manager '{str}'", Printer.LogImportanceMode.Verbose);
+                        isValid = false;
+                    }
                 }
             }
 
