@@ -19,33 +19,15 @@ namespace GameClient.Hooks.TCPNetwork
 {
     public class ClientNetwork
     {
-        private static readonly PacketHeader[] BypassReadyPackets =
-        {
-            PacketHeader.LoginManager,
-            PacketHeader.KeepAliveManager,
-            PacketHeader.VersionManager,
-            PacketHeader.SaveManager,
-            PacketHeader.WorldManager,
-            PacketHeader.GlobalDataManager,
-            PacketHeader.RecountManager,
-            PacketHeader.ChatManager,
-            PacketHeader.ConsoleManager,
-            PacketHeader.Handshake
-        };
-
         public enum ClientNetworkState { Disconnected, Connected }
 
         private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            if (!SessionHandler.IsReadyToPlay && !BypassReadyPackets.Contains(header)) return;
-            else
+            MainThreadHandler.Instance.Enqueue(delegate
             {
-                MainThreadHandler.Instance.Enqueue(delegate
-                {
-                    MethodInfo method = (MethodInfo)PM_Base.PacketDictionary[header][1];
-                    method.Invoke(PM_Base.PacketDictionary[header][0], new object[] { client, buffer, header });
-                });
-            }
+                MethodInfo method = (MethodInfo)PM_Base.PacketDictionary[header][1];
+                method.Invoke(PM_Base.PacketDictionary[header][0], new object[] { client, buffer, header });
+            });
         };
 
         private static Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client)
