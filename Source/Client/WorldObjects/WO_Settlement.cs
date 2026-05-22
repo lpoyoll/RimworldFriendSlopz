@@ -14,6 +14,7 @@ using UnityEngine;
 using Verse;
 using static Shared.CommonEnumerators;
 using static TCPNetwork.Packets.PKT_Raid;
+using static TCPNetwork.Packets.PKT_Transfer;
 
 namespace GameClient.WorldObjects
 {
@@ -39,8 +40,8 @@ namespace GameClient.WorldObjects
             {
                 if (cachedMat == null)
                 {
-                    cachedMat = MaterialPool.MatFrom(base.Faction.def.settlementTexturePath, 
-                        ShaderDatabase.WorldOverlayTransparentLit, base.Faction.Color, 3550);
+                    cachedMat = MaterialPool.MatFrom(base.Faction.def.settlementTexturePath, ShaderDatabase.WorldOverlayTransparentLit, 
+                        base.Faction.Color, 3550);
                 }
 
                 return cachedMat;
@@ -322,6 +323,55 @@ namespace GameClient.WorldObjects
             gizmos.Add(command_OnlineRaid);
 
             return gizmos;
+        }
+
+        public override IEnumerable<FloatMenuOption> GetTransportersFloatMenuOptions(IEnumerable<IThingHolder> pods, Action<PlanetTile, TransportersArrivalAction> action)
+        {
+            yield return new FloatMenuOption($"Gift contents to '{this.Label}'",
+            delegate
+            {
+                SessionHandler.ChosenSettlement = this;
+                action(this.Tile, new RTTransportersArrivalAction_TransportPod(this));
+            },
+                MenuOptionPriority.Default,
+                null, null, 0f, null, null, true, 0
+            );
+        }
+
+        public class RTTransportersArrivalAction_TransportPod : TransportersArrivalAction
+        {
+            private WO_Settlement settlement;
+
+            public override bool GeneratesMap => false;
+
+            public RTTransportersArrivalAction_TransportPod(WO_Settlement settlement) { this.settlement = settlement; }
+
+            public override FloatMenuAcceptanceReport StillValid(IEnumerable<IThingHolder> transporters, PlanetTile destinationTile)
+            {
+                return FloatMenuAcceptanceReport.WasAccepted;
+            }
+
+            public override void Arrived(List<ActiveTransporterInfo> transporters, PlanetTile tile)
+            {
+                if (SessionHandler.IsInTransfer) return;
+
+                SessionHandler.IsInTransfer = true;
+                SessionHandler.ChosenSettlement = settlement;
+
+                TakeTransferItemsFromPods(transporters.Cast<IThingHolder>());
+                PM_Transfers.SendRequest(TransferLocation.Pod);
+            }
+
+            private void TakeTransferItemsFromPods(IEnumerable<IThingHolder> pods)
+            {
+                SessionHandler.OutgoingManifest.CurrentTransferMode = TransferMode.Pod;
+
+                foreach (IThingHolder pod in pods)
+                {
+                    ThingOwner directlyHeldThings = pod.GetDirectlyHeldThings();
+                    for (int i = 0; i < directlyHeldThings.Count(); i++) PM_Transfers.AddToTransferManifest(directlyHeldThings[i], directlyHeldThings[i].stackCount);
+                }
+            }
         }
     }
 }

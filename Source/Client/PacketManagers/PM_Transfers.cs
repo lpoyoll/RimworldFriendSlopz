@@ -5,11 +5,14 @@ using GameClient.Misc;
 using RimWorld;
 using Shared;
 using System.Collections.Generic;
+using System.Linq;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
+using UnityEngine.UIElements;
 using Verse;
+using Verse.Noise;
 using static TCPNetwork.Packets.PKT_Transfer;
 
 namespace GameClient.PacketManagers
@@ -66,6 +69,8 @@ namespace GameClient.PacketManagers
             {
                 SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeRequest;
                 SessionHandler.OutgoingManifest.ToTile = TradeSession.playerNegotiator.Tile;
+                SessionHandler.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
+
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.OutgoingManifest);
             }
 
@@ -73,6 +78,8 @@ namespace GameClient.PacketManagers
             {
                 SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeReRequest;
                 SessionHandler.OutgoingManifest.ToTile = SessionHandler.IncomingManifest.FromTile;
+                SessionHandler.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
+
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.OutgoingManifest);
             }
 
@@ -80,6 +87,8 @@ namespace GameClient.PacketManagers
             {
                 SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeRequest;
                 SessionHandler.OutgoingManifest.ToTile = SessionHandler.ChosenSettlement.Tile;
+                SessionHandler.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
+
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.OutgoingManifest);
             }
         }

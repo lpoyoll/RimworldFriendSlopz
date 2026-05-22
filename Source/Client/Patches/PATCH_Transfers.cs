@@ -25,8 +25,6 @@ namespace GameClient.Patches
             if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return;
             else
             {
-                SessionHandler.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
-
                 if (TradeSession.giftMode) SessionHandler.OutgoingManifest.CurrentTransferMode = TransferMode.Gift;
                 else SessionHandler.OutgoingManifest.CurrentTransferMode = TransferMode.Trade;
 

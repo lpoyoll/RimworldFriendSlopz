@@ -4,17 +4,15 @@ namespace TCPNetwork.Packets
 {
     public class PKT_Transfer : PKT_Base
     {
-        public enum TransferMode { Gift, Trade, Rebound }
+        public enum TransferMode { Gift, Trade, Rebound, Pod }
 
         public enum TransferLocation { Caravan, Settlement, Pod }
 
-        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover, Pod }
+        public enum TransferStepMode { TradeRequest, TradeAccept, TradeReject, TradeReRequest, TradeReAccept, TradeReReject, Recover }
 
         public TransferStepMode CurrentStepMode { get; set; } = TransferStepMode.TradeRequest;
 
         public TransferMode CurrentTransferMode { get; set; } = TransferMode.Gift;
-
-        public bool IsDropPod { get; set; } = false;
 
         public int FromTile { get; set; } = int.MaxValue;
 

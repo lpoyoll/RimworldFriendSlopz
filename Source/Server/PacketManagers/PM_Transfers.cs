@@ -47,29 +47,35 @@ namespace GameServer.PacketManager
             }
         }
 
-        public static void TransferThings(ServerClient client, PKT_Transfer transferData)
+        public static void TransferThings(ServerClient client, PKT_Transfer packet)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(transferData.ToTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<UserFile>().Username} attempted to send items to a settlement at tile {transferData.ToTile}, but no settlement could be found");
+            if (!PM_Settlements.CheckIfTileIsInUse(packet.ToTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<UserFile>().Username} attempted to send items to a settlement at tile {packet.ToTile}, but no settlement could be found");
             else
             {
-                FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(transferData.ToTile);
+                FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet.ToTile);
 
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.Username)) 
                 {
-                    transferData.CurrentStepMode = TransferStepMode.Recover;
-                    client.Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                    packet.CurrentStepMode = TransferStepMode.Recover;
+                    client.Listener.EnqueuePacket(PacketHeader.TransferManager, packet);
                 }
 
                 else
                 {
-                    if (transferData.CurrentTransferMode == TransferMode.Gift)
+                    if (packet.CurrentTransferMode == TransferMode.Gift)
                     {
-                        transferData.CurrentStepMode = TransferStepMode.TradeAccept;
-                        client.Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                        packet.CurrentStepMode = TransferStepMode.TradeAccept;
+                        client.Listener.EnqueuePacket(PacketHeader.TransferManager, packet);
                     }
 
-                    transferData.CurrentStepMode = TransferStepMode.TradeRequest;
-                    ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                    else if (packet.CurrentTransferMode == TransferMode.Pod)
+                    {
+                        packet.CurrentStepMode = TransferStepMode.TradeAccept;
+                        client.Listener.EnqueuePacket(PacketHeader.TransferManager, packet);
+                    }
+
+                    packet.CurrentStepMode = TransferStepMode.TradeRequest;
+                    ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.TransferManager, packet);
                 }
             }
         }

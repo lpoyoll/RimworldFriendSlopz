@@ -88,7 +88,7 @@ namespace GameClient.Dialogs
         {
             SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.Receiving;
 
-            if (TransferMode == TransferMode.Gift)
+            if (TransferMode == TransferMode.Gift || TransferMode == TransferMode.Pod)
             {
                 Map map = Find.AnyPlayerHomeMap;
                 IntVec3 position = RimworldManager.GetTransferLocationInMap(map);

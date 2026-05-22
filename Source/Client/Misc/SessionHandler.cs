@@ -30,8 +30,6 @@ namespace GameClient.Misc
 
         public static Caravan ChosenCaravan { get; set; } = null;
 
-        public static IEnumerable<IThingHolder> ChosenPods { get; set; } = null;
-
         public static PKT_Transfer OutgoingManifest { get; set; } = new PKT_Transfer();
 
         public static PKT_Transfer IncomingManifest { get; set; } = new PKT_Transfer();
