@@ -12,17 +12,6 @@ using Verse;
 
 namespace GameClient.Patches
 {
-    public static class Patch_WorldObjectsHolder
-    {
-        public static List<Type> IgnoredTypes = new List<Type>()
-        {
-            typeof(WO_Settlement),
-            typeof(WO_Site),
-            typeof(WO_Caravan),
-            typeof(Caravan),
-        };
-    }
-
     [HarmonyPatch(typeof(WorldObjectsHolder), nameof(WorldObjectsHolder.Add))]
     public static class Patch_WorldObjectsHolder_Add
     {
@@ -30,15 +19,8 @@ namespace GameClient.Patches
         public static void DoPost(WorldObject o)
         {
             if (!SessionHandler.IsReadyToPlay) return;
-            else
-            {
-                foreach (Type type in Patch_WorldObjectsHolder.IgnoredTypes)
-                {
-                    if (o.GetType() == type) return;
-                }
-            }
-
-            Printer.Warning($"Added '{o.GetType().Name}' - {o.Label}");
+            else if (o.GetType() != typeof(Site)) return;
+            else Printer.Warning($"Added '{o.GetType().Name}' - {o.Label}");
         }
     }
 
@@ -49,15 +31,8 @@ namespace GameClient.Patches
         public static void DoPost(WorldObject o)
         {
             if (!SessionHandler.IsReadyToPlay) return;
-            else
-            {
-                foreach (Type type in Patch_WorldObjectsHolder.IgnoredTypes)
-                {
-                    if (o.GetType() == type) return;
-                }
-            }
-
-            Printer.Warning($"Removed '{o.GetType().Name}' - {o.Label}");
+            else if (o.GetType() != typeof(Site)) return;
+            else Printer.Warning($"Removed '{o.GetType().Name}' - {o.Label}");
         }
     }
 }
