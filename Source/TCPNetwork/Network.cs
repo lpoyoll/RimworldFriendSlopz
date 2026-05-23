@@ -24,7 +24,7 @@ namespace TCPNetwork
 
         public static string MultipurposeIP { get; set; } = "66.29.129.72";
 
-        public static int BrowserPort { get; set; } = 7777;
+        public static int BrowserServerPort { get; set; } = 7777;
 
         public static int BrowserClientPort { get; set; } = 7778;
 

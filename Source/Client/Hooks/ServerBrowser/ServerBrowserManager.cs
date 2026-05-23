@@ -47,7 +47,7 @@ namespace GameClient.Hooks.ServerBrowser
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.BrowserPort), new NetworkRuleset(null, null, OnReadPacket, null, false));
+                ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.BrowserClientPort), new NetworkRuleset(null, null, OnReadPacket, null, false));
                 Network.MultipurposeEndpoint = client.Listener;
                 PM_Handshake.Send(client);
                 return true;
