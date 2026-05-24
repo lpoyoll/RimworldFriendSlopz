@@ -46,15 +46,14 @@ namespace GameClient.Core.Configs
         {
             List<FloatMenuOption> list = new List<FloatMenuOption>();
 
-            List<Tuple<string, Printer.LogImportanceMode>> modes = new List<Tuple<string, Printer.LogImportanceMode>>()
+            List<Tuple<string, Printer.Verbosity>> modes = new List<Tuple<string, Printer.Verbosity>>()
             {
-                Tuple.Create("None", Printer.LogImportanceMode.Normal),
-                Tuple.Create("Verbose", Printer.LogImportanceMode.Verbose),
-                Tuple.Create("Extreme", Printer.LogImportanceMode.Extreme),
-                Tuple.Create("Ludicrous", Printer.LogImportanceMode.Ludicrous)
+                Tuple.Create("None", Printer.Verbosity.Normal),
+                Tuple.Create("Verbose", Printer.Verbosity.Verbose),
+                Tuple.Create("Extreme", Printer.Verbosity.Extreme),
             };
 
-            foreach (Tuple<string, Printer.LogImportanceMode> tuple in modes)
+            foreach (Tuple<string, Printer.Verbosity> tuple in modes)
             {
                 FloatMenuOption item = new FloatMenuOption(tuple.Item1, delegate
                 {

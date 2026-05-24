@@ -7,7 +7,7 @@ namespace GameClient.Core.Configs
     {
         public static bool BypassModCheck { get; set; } = false;
 
-        public static LogImportanceMode CurrentVerboseMode;
+        public static Verbosity CurrentVerboseMode;
 
         public override void ExposeData()
         {

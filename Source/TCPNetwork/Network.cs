@@ -53,7 +53,7 @@ namespace TCPNetwork
                     readBytes += read;
                 }
             }
-            catch (Exception e) { Printer.Warning(e, LogImportanceMode.Verbose); }
+            catch (Exception e) { Printer.Warning(e, Verbosity.Verbose); }
         }
 
         public static bool CheckForPacketSize(ServerClient client, byte[] buffer)

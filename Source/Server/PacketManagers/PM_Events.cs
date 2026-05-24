@@ -107,7 +107,7 @@ namespace GameServer.PacketManager
                 FL_Event file = Serializer.SerializeFromFile<FL_Event>(str);
                 toLoad.Add(file);
 
-                Printer.Warning($"Loaded event '{file.Name}'", Printer.LogImportanceMode.Extreme);
+                Printer.Warning($"Loaded event '{file.Name}'", Printer.Verbosity.Extreme);
             }
 
             LoadedEvents = toLoad.OrderBy(fetch => fetch.Name).ToList();

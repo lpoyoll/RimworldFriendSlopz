@@ -60,7 +60,7 @@ namespace TCPNetwork
 
                 catch (Exception ex)
                 {
-                    Printer.Warning(ex, LogImportanceMode.Extreme);
+                    Printer.Warning(ex, Verbosity.Extreme);
                     break; 
                 }
             }
@@ -99,8 +99,8 @@ namespace TCPNetwork
                 Network.ReadFullPacket(Stream, packetBuffer);
 
                 // Log packet contents
-                if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet '{header}'", LogImportanceMode.Verbose);
-                else Printer.Message($"[Packet] > Received packet '{header}'", LogImportanceMode.Extreme);
+                if (!Network.IgnoreLogPackets.Contains(header)) Printer.Message($"[Packet] > Received packet '{header}'", Verbosity.Verbose);
+                else Printer.Message($"[Packet] > Received packet '{header}'", Verbosity.Extreme);
 
                 // Reset KeepAlive
                 LastKAReceivedPacket = DateTime.Now;
@@ -131,8 +131,8 @@ namespace TCPNetwork
                     Stream.Write(pair.Value.Contents, 0, pair.Value.Contents.Length);
 
                     // Log the packet data
-                    if (!Network.IgnoreLogPackets.Contains(pair.Value.Header)) Printer.Message($"[Packet] > Sent packet '{pair.Value.Header}'", LogImportanceMode.Verbose);
-                    else Printer.Message($"[Packet] > Sent packet '{pair.Value.Header}'", LogImportanceMode.Extreme);
+                    if (!Network.IgnoreLogPackets.Contains(pair.Value.Header)) Printer.Message($"[Packet] > Sent packet '{pair.Value.Header}'", Verbosity.Verbose);
+                    else Printer.Message($"[Packet] > Sent packet '{pair.Value.Header}'", Verbosity.Extreme);
 
                     // Execute after writing
                     Ruleset.OnWrite?.Invoke(TargetClient);

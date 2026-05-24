@@ -126,9 +126,9 @@ namespace GameClient.PacketManagers
                     toMake.HitPoints = def.BaseMaxHitPoints;
                     rewards.Add(toMake);
 
-                    Printer.Message($"Received {reward.Amount} of {reward.DefName}", LogImportanceMode.Verbose);
+                    Printer.Message($"Received {reward.Amount} of {reward.DefName}", Verbosity.Verbose);
                 }
-                catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
+                catch (Exception e) { Printer.Warning(e.ToString(), Verbosity.Verbose); }
             }
 
             if (rewards.Count > 0)
@@ -138,7 +138,7 @@ namespace GameClient.PacketManagers
                 foreach (Thing thing in rewards) RimworldManager.PlaceThingIntoMap(thing, map, position, true);
 
                 RimworldManager.GenerateLetter("Site rewards", $"You've received your site rewards", LetterDefOf.PositiveEvent);
-                Printer.Message("Rewards delivered", LogImportanceMode.Verbose);
+                Printer.Message("Rewards delivered", Verbosity.Verbose);
             }
         }
 

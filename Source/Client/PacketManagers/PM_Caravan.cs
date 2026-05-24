@@ -52,7 +52,7 @@ namespace GameClient.PacketManagers
             {
                 if (CaravanManagerH.GetExistingCaravanFromFile(file) != null)
                 {
-                    Printer.Warning("Caravan to add already existed", LogImportanceMode.Verbose);
+                    Printer.Warning("Caravan to add already existed", Verbosity.Verbose);
                 }
 
                 else
@@ -73,7 +73,7 @@ namespace GameClient.PacketManagers
             try
             {
                 FL_Caravan toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
-                if (toFind == null) Printer.Warning("Caravan to remove wasn't found", LogImportanceMode.Verbose);
+                if (toFind == null) Printer.Warning("Caravan to remove wasn't found", Verbosity.Verbose);
                 else
                 {
                     WO_Caravan toRemove = CaravanManagerH.GetAllExistingOnlineCaravans()

@@ -49,7 +49,7 @@ namespace GameClient.Misc
 
             SynchronousInstance.PatchCategory(Assembly.GetExecutingAssembly(), "Synchronous");
 
-            Printer.Warning("Patched Synchronous methods", LogImportanceMode.Verbose);
+            Printer.Warning("Patched Synchronous methods", Verbosity.Verbose);
         }
 
         [OnSessionEnd]
@@ -60,7 +60,7 @@ namespace GameClient.Misc
             {
                 SynchronousInstance.UnpatchCategory(Assembly.GetExecutingAssembly(), "Synchronous");
 
-                Printer.Warning("Unpatched Synchronous methods", LogImportanceMode.Verbose);
+                Printer.Warning("Unpatched Synchronous methods", Verbosity.Verbose);
             }
         }
 

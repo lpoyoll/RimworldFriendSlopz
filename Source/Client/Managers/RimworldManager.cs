@@ -105,7 +105,7 @@ namespace GameClient.Managers
         {
             if (!DropCellFinder.TryFindDropSpotNear(center, map, out IntVec3 vectorForUse, false, true))
             {
-                Printer.Warning("Couldn't find any good drop spot near " + center + "Will use random valid location instead.", LogImportanceMode.Verbose);
+                Printer.Warning("Couldn't find any good drop spot near " + center + "Will use random valid location instead.", Verbosity.Verbose);
                 vectorForUse = CellFinderLoose.RandomCellWith(c => c.Standable(map) && !c.Fogged(map), map);
             }
 

@@ -169,7 +169,7 @@ namespace GameClient.PacketManagers
 
         private static void TrySaveQuest(Quest quest)
         {
-            Printer.Warning($"Trying to save quest with id {quest.id}", LogImportanceMode.Verbose);
+            Printer.Warning($"Trying to save quest with id {quest.id}", Verbosity.Verbose);
 
             IEnumerable<QuestPart> questPart = quest.PartsListForReading.Where(x => x is QuestPart_SpawnWorldObject || x is QuestPart_DisableTradeRequest
                 || x is QuestPart_TradeRequestInactive || x is QuestPart_InitiateTradeRequest);
@@ -180,31 +180,31 @@ namespace GameClient.PacketManagers
 
                 if (part is QuestPart_SpawnWorldObject part2) 
                 {
-                    Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
+                    Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", Verbosity.Verbose);
                     tile = part2.worldObject?.Tile ?? -1;
                 }
 
                 else if (part is QuestPart_DisableTradeRequest part3) 
                 {
-                    Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
+                    Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", Verbosity.Verbose);
                     tile = part3.settlement?.Tile ?? -1;
                 }
 
                 else if (part is QuestPart_TradeRequestInactive part4) 
                 {
-                    Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
+                    Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", Verbosity.Verbose);
                     tile = part4.settlement?.Tile ?? -1;
                 }
 
                 else if (part is QuestPart_InitiateTradeRequest part5)
                 {
-                    Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
+                    Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", Verbosity.Verbose);
                     tile = part5.settlement?.Tile ?? -1;
                 }
 
                 if (tile != -1)
                 {
-                    Printer.Warning($"Saved quest {quest.id}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Saved quest {quest.id}", Verbosity.Verbose);
                     if (questToFixTemp.ContainsKey(tile))
                     {
                         questToFixTemp[tile].Add(part);
@@ -223,36 +223,36 @@ namespace GameClient.PacketManagers
             {
                 if (questToFixTemp.TryGetValue(obj.Tile, out List<QuestPart> parts))
                 {
-                    Printer.Warning($"Found quest with id {parts.First().quest.id}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Found quest with id {parts.First().quest.id}", Verbosity.Verbose);
 
                     foreach (QuestPart part in parts)
                     {
                         if (part is QuestPart_SpawnWorldObject part2)
                         {
-                            Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", LogImportanceMode.Verbose);
+                            Printer.Warning($"Found {typeof(QuestPart_SpawnWorldObject).Name}!", Verbosity.Verbose);
                             part2.worldObject = obj;
                         }
 
                         else if (part is QuestPart_DisableTradeRequest part3)
                         {
-                            Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", LogImportanceMode.Verbose);
+                            Printer.Warning($"Found {typeof(QuestPart_DisableTradeRequest).Name}!", Verbosity.Verbose);
                             part3.settlement = (Settlement)obj;
                         }
 
                         else if (part is QuestPart_TradeRequestInactive part4)
                         {
-                            Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", LogImportanceMode.Verbose);
+                            Printer.Warning($"Found {typeof(QuestPart_TradeRequestInactive).Name}!", Verbosity.Verbose);
                             part4.settlement = (Settlement)obj;
                         }
 
                         else if (part is QuestPart_InitiateTradeRequest part5)
                         {
-                            Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", LogImportanceMode.Verbose);
+                            Printer.Warning($"Found {typeof(QuestPart_InitiateTradeRequest).Name}!", Verbosity.Verbose);
                             part5.settlement = (Settlement)obj;
                         }
                     }
 
-                    Printer.Warning($"Loaded quest with id {parts.First().quest.id} on tile {obj.Tile}.", LogImportanceMode.Verbose);
+                    Printer.Warning($"Loaded quest with id {parts.First().quest.id} on tile {obj.Tile}.", Verbosity.Verbose);
                 }
             }
 

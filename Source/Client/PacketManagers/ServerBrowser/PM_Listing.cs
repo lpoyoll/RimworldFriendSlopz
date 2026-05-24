@@ -8,9 +8,9 @@ using TCPNetwork;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets.ServerBrowser;
 
-namespace GameClient.PacketManagers
+namespace GameClient.PacketManagers.ServerBrowser
 {
-    public class PM_ServerBrowserListing : PM_Base
+    public class PM_Listing : PM_Base
     {
         [HandlesPacket(PacketHeader.ServerBrowserListing)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)

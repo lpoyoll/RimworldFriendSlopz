@@ -64,7 +64,7 @@ namespace GameClient.Managers
 
                 scribeData = new Regex(@">\s*<").Replace(StringWriter.ToString(), "><");
             }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
+            catch (Exception e) { Printer.Error(e.ToString(), Verbosity.Extreme); }
 
             SessionHandler.IsUsingScriber = false;
 
@@ -97,7 +97,7 @@ namespace GameClient.Managers
                     if (!enforceID) pawn.thingIDNumber = Find.UniqueIDsManager.GetNextThingID();
                 }
             }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
+            catch (Exception e) { Printer.Error(e.ToString(), Verbosity.Extreme); }
 
             SessionHandler.IsUsingScriber = false;
 

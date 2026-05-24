@@ -32,11 +32,11 @@ namespace GameServer.Core
             Printer.Title(Printer.SeparatorString);
 
             EventManagerH.LoadAllEvents();
-            Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
+            Printer.Title(Printer.SeparatorString, Verbosity.Extreme);
             CMD_Base.GetAllCommands();
-            Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
+            Printer.Title(Printer.SeparatorString, Verbosity.Extreme);
             PM_Base.CacheAllPackets(PM_Base.AssemblyType.Server);
-            Printer.Title(Printer.SeparatorString, LogImportanceMode.Extreme);
+            Printer.Title(Printer.SeparatorString, Verbosity.Extreme);
 
             ServerNetwork.StartFeature();
             Task.Run(BackupManager.StartFeature);

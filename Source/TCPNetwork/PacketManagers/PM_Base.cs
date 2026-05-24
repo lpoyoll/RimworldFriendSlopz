@@ -25,7 +25,7 @@ namespace TCPNetwork.PacketManagers
                 if (attribute != null)
                 {
                     PacketDictionary.Add(attribute.header, new object[] { Activator.CreateInstance(type), method });
-                    if (assembly == AssemblyType.Server) Printer.Warning($"[Base] Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme);
+                    if (assembly == AssemblyType.Server) Printer.Warning($"[Base] Added packet '{type.Name}'", Printer.Verbosity.Extreme);
                 }
             }
 
@@ -36,7 +36,7 @@ namespace TCPNetwork.PacketManagers
                 if (attribute != null)
                 {
                     PacketDictionary.Add(attribute.header, new object[] { Activator.CreateInstance(type), method });
-                    if (assembly == AssemblyType.Server) Printer.Warning($"[Main] Added packet '{type.Name}'", Printer.LogImportanceMode.Extreme);
+                    if (assembly == AssemblyType.Server) Printer.Warning($"[Main] Added packet '{type.Name}'", Printer.Verbosity.Extreme);
                 }
             }
         }

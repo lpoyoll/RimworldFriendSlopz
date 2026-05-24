@@ -171,7 +171,7 @@ namespace GameClient.Patches
                 if (toTransfer > 0)
                 {
                     PM_Transfers.AddToTransferManifest(___thingsColony[0], toTransfer);
-                    Printer.Warning($"Transfered {Math.Abs(___countToTransfer)} of thing {___thingsColony[0]}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Transfered {Math.Abs(___countToTransfer)} of thing {___thingsColony[0]}", Verbosity.Verbose);
                 }
 
                 return true;
@@ -194,7 +194,7 @@ namespace GameClient.Patches
                 if (toTransfer > 0)
                 {
                     PM_Transfers.AddToTransferManifest(__instance.thingsColony[0], toTransfer);
-                    Printer.Warning($"Transfered {Math.Abs(__instance.CountToTransfer)} of thing {__instance.thingsColony[0]}", LogImportanceMode.Verbose);
+                    Printer.Warning($"Transfered {Math.Abs(__instance.CountToTransfer)} of thing {__instance.thingsColony[0]}", Verbosity.Verbose);
                 }
 
                 return true;

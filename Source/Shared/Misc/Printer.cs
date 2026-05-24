@@ -6,22 +6,22 @@ namespace Shared.Misc
     {
         public static Printer Instance { get; private set; } = null;
 
-        public virtual Action<object, LogImportanceMode> OnMessage { get; set; }
+        public virtual Action<object, Verbosity> OnMessage { get; set; }
 
-        public virtual Action<object, LogImportanceMode> OnWarning { get; set; }
+        public virtual Action<object, Verbosity> OnWarning { get; set; }
 
-        public virtual Action<object, LogImportanceMode> OnError { get; set; }
+        public virtual Action<object, Verbosity> OnError { get; set; }
 
-        public virtual Action<object, LogImportanceMode> OnTitle { get; set; }
+        public virtual Action<object, Verbosity> OnTitle { get; set; }
 
         public static string SeparatorString { get; set; } = "--------------------------------------------------";
         
         public enum LogMode { Message, Warning, Error, Title, Outsider }
 
-        public enum LogImportanceMode { Normal, Verbose, Extreme, Ludicrous }
+        public enum Verbosity { Normal, Verbose, Extreme }
 
-        public Printer(Action<object, LogImportanceMode> onMessage, Action<object, LogImportanceMode> onWarning, Action<object, 
-            LogImportanceMode> onError, Action<object, LogImportanceMode> onTitle)
+        public Printer(Action<object, Verbosity> onMessage, Action<object, Verbosity> onWarning, Action<object, 
+            Verbosity> onError, Action<object, Verbosity> onTitle)
         {
             Instance = this;
 
@@ -31,22 +31,22 @@ namespace Shared.Misc
             OnTitle = onTitle;
         }
 
-        public static void Message(object toPrint, LogImportanceMode mode = LogImportanceMode.Normal)
+        public static void Message(object toPrint, Verbosity mode = Verbosity.Normal)
         {
             Instance.OnMessage.Invoke(toPrint, mode);
         }
 
-        public static void Warning(object toPrint, LogImportanceMode mode = LogImportanceMode.Normal)
+        public static void Warning(object toPrint, Verbosity mode = Verbosity.Normal)
         {
             Instance.OnWarning.Invoke(toPrint, mode);
         }
 
-        public static void Error(object toPrint, LogImportanceMode mode = LogImportanceMode.Normal)
+        public static void Error(object toPrint, Verbosity mode = Verbosity.Normal)
         {
             Instance.OnError.Invoke(toPrint, mode);
         }
 
-        public static void Title(object toPrint, LogImportanceMode mode = LogImportanceMode.Normal)
+        public static void Title(object toPrint, Verbosity mode = Verbosity.Normal)
         {
             Instance.OnTitle.Invoke(toPrint, mode);
         }

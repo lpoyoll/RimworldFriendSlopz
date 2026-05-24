@@ -137,7 +137,7 @@ namespace GameClient.Misc
                 foreach (Thing thing in map.listerThings.AllThings.Where(fetch => !RimworldManager.CheckIfThingIsPawn(fetch)).ToArray())
                 {
                     try { file.Things.Add(ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing)); }
-                    catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
+                    catch (Exception e) { Printer.Warning(e.ToString(), Verbosity.Verbose); }
                 }
             }
 
@@ -150,7 +150,7 @@ namespace GameClient.Misc
                         Thing thing = ScribeManager.SerializeFromString<Thing>(str, ScribeManager.SerializableType.Thing, enforceIDs);
                         RimworldManager.PlaceThingIntoMap(thing, map, thing.Position);
                     }
-                    catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
+                    catch (Exception e) { Printer.Warning(e.ToString(), Verbosity.Verbose); }
                 }
             }
         }
@@ -162,7 +162,7 @@ namespace GameClient.Misc
                 foreach (Thing pawn in map.listerThings.AllThings.Where(fetch => RimworldManager.CheckIfThingIsPawn(fetch)).ToArray())
                 {
                     try { file.Pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn)); }
-                    catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
+                    catch (Exception e) { Printer.Warning(e.ToString(), Verbosity.Verbose); }
                 }
             }
 
@@ -175,7 +175,7 @@ namespace GameClient.Misc
                         Pawn pawn = ScribeManager.SerializeFromString<Pawn>(str, ScribeManager.SerializableType.Pawn, enforceIDs);
                         RimworldManager.PlaceThingIntoMap(pawn, map, pawn.PositionHeld);
                     }
-                    catch (Exception e) { Printer.Warning(e.ToString(), LogImportanceMode.Verbose); }
+                    catch (Exception e) { Printer.Warning(e.ToString(), Verbosity.Verbose); }
                 }
             }
         }

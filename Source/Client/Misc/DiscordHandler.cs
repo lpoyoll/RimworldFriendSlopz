@@ -37,14 +37,14 @@ namespace GameClient.Misc
                 }
             });
 
-            Printer.Message("Discord Rich Presence has been started", Printer.LogImportanceMode.Verbose);
+            Printer.Message("Discord Rich Presence has been started", Printer.Verbosity.Verbose);
         }
 
         [OnSessionEnd]
         private static void StopPresence()
         {
             RPClient?.Dispose();
-            Printer.Message("Discord Rich Presence has been stopped", Printer.LogImportanceMode.Verbose);
+            Printer.Message("Discord Rich Presence has been stopped", Printer.Verbosity.Verbose);
         }
     }
 }

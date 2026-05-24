@@ -37,7 +37,7 @@ namespace Shared.Commands
                 else
                 {
                     Commands.Add(command);
-                    Printer.Warning($"[Base] Added command '{type.Name}'", LogImportanceMode.Extreme);
+                    Printer.Warning($"[Base] Added command '{type.Name}'", Verbosity.Extreme);
                 }
             }
 
@@ -48,7 +48,7 @@ namespace Shared.Commands
                 else
                 {
                     Commands.Add(command);
-                    Printer.Warning($"[Main] Added command '{type.Name}'", LogImportanceMode.Extreme);
+                    Printer.Warning($"[Main] Added command '{type.Name}'", Verbosity.Extreme);
                 }
             }
         }

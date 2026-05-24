@@ -1,5 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
+using GameServer.PacketManagers.ServerBrowser;
 using Shared;
 using Shared.Files.Configs;
 using Shared.Misc;
@@ -14,9 +15,9 @@ namespace GameServer.Hooks.ServerBrowser
 {
     public static class ServerBrowserManager
     {
-        private static string ServerIPV4 { get; set; } = string.Empty;
+        public static string ServerIPV4 { get; set; } = string.Empty;
 
-        private static bool WasStartedOnce { get; set; } = false;
+        public static bool WasStartedOnce { get; set; } = false;
 
         public enum BrowserMode { Public, Private }
 
@@ -83,36 +84,15 @@ namespace GameServer.Hooks.ServerBrowser
                 ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.BrowserServerPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null, false));
                 Network.MultipurposeEndpoint = client.Listener;
                 PM_Handshake.Send(client);
-                SetupConnection(mode);
+                PM_Telemetry.Send(mode);
                 return true;
             }
 
             catch (Exception ex) 
             { 
-                Printer.Error(ex, LogImportanceMode.Ludicrous);
+                Printer.Error(ex, Verbosity.Extreme);
                 return false;
             }
-        }
-
-        private static async void SetupConnection(BrowserMode mode)
-        {
-            if (!WasStartedOnce) ServerIPV4 = await GetPublicIP();
-
-            PKT_ServerTelemetry telemetry = new PKT_ServerTelemetry();
-            telemetry.Name = Master.ServerConfig.Name;
-            telemetry.Description = Master.ServerConfig.Description;
-            telemetry.DiscordURL = Master.ServerConfig.DiscordURL;
-            telemetry.SteamWorkshopURL = Master.ServerConfig.SteamWorkshopURL;
-            telemetry.Version = CommonValues.ExecutableVersion;
-            telemetry.Endpoint = ServerIPV4;
-            telemetry.Port = Master.ServerConfig.Port;
-            telemetry.IsPrivate = mode == BrowserMode.Private;
-            telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
-            telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
-            telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != FL_ModConfig.ModType.Forbidden)
-                .OrderBy(fetch => fetch.FileName).ToList();
-            
-            Network.MultipurposeEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
         }
 
         public static async Task<string> GetPublicIP()
@@ -126,9 +106,9 @@ namespace GameServer.Hooks.ServerBrowser
                 }
             }
 
-            catch (Exception ex) 
+            catch (Exception ex)
             {
-                Printer.Error(ex, LogImportanceMode.Ludicrous);
+                Printer.Error(ex, Verbosity.Extreme);
                 return string.Empty;
             }
         }

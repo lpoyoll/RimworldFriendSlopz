@@ -111,7 +111,7 @@ namespace GameClient.Patches
             catch (Exception e)
             {
                 ___frameAssignments.Clear();
-                Printer.Error(e.ToString(), LogImportanceMode.Extreme);
+                Printer.Error(e.ToString(), Verbosity.Extreme);
             }
 
             ___tmpPawnsToFree.Clear();
@@ -148,12 +148,12 @@ namespace GameClient.Patches
         public static bool DoPre(ILoadReferenceable reffable, ref Dictionary<string, ILoadReferenceable> ___allObjectsByLoadID, ref Dictionary<int, ILoadReferenceable> ___allThingsByThingID)
         {
             try { ___allObjectsByLoadID.Add(reffable.GetUniqueLoadID(), reffable); }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
+            catch (Exception e) { Printer.Error(e.ToString(), Verbosity.Extreme); }
 
             if (reffable is not Thing thing) return false;
 
             try { ___allThingsByThingID.Add(thing.thingIDNumber, reffable); }
-            catch (Exception e) { Printer.Error(e.ToString(), LogImportanceMode.Extreme); }
+            catch (Exception e) { Printer.Error(e.ToString(), Verbosity.Extreme); }
 
             return false;
         }

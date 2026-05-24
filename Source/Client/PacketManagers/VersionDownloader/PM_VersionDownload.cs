@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using TCPNetwork;
@@ -16,7 +15,7 @@ using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets.VersionDownloader;
 using UnityEngine;
 
-namespace GameClient.PacketManagers
+namespace GameClient.PacketManagers.VersionDownloader
 {
     public class PM_VersionDownload : PM_Base
     {
@@ -51,10 +50,10 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "The specified version is not available!" }));
         }
 
-        private static void DownloadVersion(PKT_VersionDownload data, string startingPath) 
+        private static void DownloadVersion(PKT_VersionDownload data, string startingPath)
         {
             string filePath = Path.Combine(startingPath, "3005289691.zip");
-            File.WriteAllBytes(filePath, data.VersionContents); 
+            File.WriteAllBytes(filePath, data.VersionContents);
         }
 
         private static bool ExtractVersion(string startingPath)

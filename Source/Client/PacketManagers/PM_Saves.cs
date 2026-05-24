@@ -47,7 +47,7 @@ namespace GameClient.PacketManagers
 
         public static void ForceSave()
         {
-            Printer.Warning("Force saving", LogImportanceMode.Verbose);
+            Printer.Warning("Force saving", Verbosity.Verbose);
             DLG_Base.PushNewDialog(new DLG_Wait());
             Find.MainTabsRoot.EscapeCurrentTab(playSound: false);
 
@@ -108,7 +108,7 @@ namespace GameClient.PacketManagers
 
         private static void OnSaveReceived(PKT_Save data)
         {
-            Printer.Message($"Receiving save from server", LogImportanceMode.Verbose);
+            Printer.Message($"Receiving save from server", Verbosity.Verbose);
             File.WriteAllBytes(TempSaveFilePath, data._fileBytes);
 
             if (data._forceUseSave)
@@ -121,7 +121,7 @@ namespace GameClient.PacketManagers
             {
                 if (GetRealPlayTimeInteractingFromSave(TempSaveFilePath) >= GetRealPlayTimeInteractingFromSave(SaveFilePath))
                 {
-                    Printer.Message("Loading remote save", LogImportanceMode.Verbose);
+                    Printer.Message("Loading remote save", Verbosity.Verbose);
 
                     File.Delete(PM_Saves.SaveFilePath);
                     File.Move(PM_Saves.TempSaveFilePath, PM_Saves.SaveFilePath);
@@ -129,7 +129,7 @@ namespace GameClient.PacketManagers
 
                 else
                 {
-                    Printer.Message("Loading local save", LogImportanceMode.Verbose);
+                    Printer.Message("Loading local save", Verbosity.Verbose);
 
                     File.Delete(PM_Saves.TempSaveFilePath);
                 }
@@ -142,11 +142,11 @@ namespace GameClient.PacketManagers
         {
             if (DLG_Options.CurrentSyncingMode == DLG_Options.SyncingMode.Complete || SessionHandler.IsExiting)
             {
-                Printer.Message("Sending maps to server", LogImportanceMode.Verbose);
+                Printer.Message("Sending maps to server", Verbosity.Verbose);
                 PM_Map.SendPlayerMapsToServer();
             }
 
-            Printer.Message("Sending save to server", LogImportanceMode.Verbose);
+            Printer.Message("Sending save to server", Verbosity.Verbose);
             PM_Saves.SendSaveToServer();
         }
     }

@@ -30,6 +30,22 @@ namespace TCPNetwork.PacketManagers
             }
         }
 
+        public static void CheckForHandshake(ServerClient client, byte[] bytes, PacketHeader header)
+        {
+            PKT_Handshake packet = Serializer.ConvertBytesToObject<PKT_Handshake>(bytes);
+
+            switch (packet.CurrentMode)
+            {
+                case PKT_Handshake.StepMode.Accept:
+                    OnHandshakeAccept(client, packet);
+                    break;
+
+                case PKT_Handshake.StepMode.Deny:
+                    OnHandshakeDeny(client, packet);
+                    break;
+            }
+        }
+
         public static void Send(ServerClient client)
         {
             PKT_Handshake packet = new PKT_Handshake();
@@ -46,15 +62,12 @@ namespace TCPNetwork.PacketManagers
         {
             bool isValid = true;
 
-            if (!client.Ruleset.SkipHandshake)
+            foreach (string str in GetLocalManagers())
             {
-                foreach (string str in GetLocalManagers())
+                if (!packet.IncomingManagers.Contains(str))
                 {
-                    if (!packet.IncomingManagers.Contains(str))
-                    {
-                        Printer.Warning($"Missing existing manager '{str}'", Printer.LogImportanceMode.Verbose);
-                        isValid = false;
-                    }
+                    Printer.Warning($"Missing existing manager '{str}'", Printer.Verbosity.Verbose);
+                    isValid = false;
                 }
             }
 

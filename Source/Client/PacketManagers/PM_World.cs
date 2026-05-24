@@ -228,7 +228,7 @@ namespace GameClient.PacketManagers
     {
         public static void PopulateWorldValues()
         {
-            Printer.Warning("Populating world values", LogImportanceMode.Verbose);
+            Printer.Warning("Populating world values", Verbosity.Verbose);
             SessionHandler.CurrentWorld.Features = GetPlanetFeatures();
             SessionHandler.CurrentWorld.Roads = PM_RoadsHelper.GetPlanetRoads();
             SessionHandler.CurrentWorld.PollutedTiles = PM_Pollution.GetPlanetPollutedTiles();
