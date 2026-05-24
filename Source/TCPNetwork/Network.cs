@@ -30,7 +30,7 @@ namespace TCPNetwork
 
         public static int VersionDownloaderPort { get; set; } = 7779;
 
-        public static readonly int MaxPacketSize = 16777216;
+        public static readonly int MaxPacketSizeBytes = 16777216;
 
         public static ConcurrentDictionary<ServerClient, int> ServerClients { get; private set; } = new ConcurrentDictionary<ServerClient, int>();
 
@@ -58,7 +58,7 @@ namespace TCPNetwork
 
         public static bool CheckForPacketSize(ServerClient client, byte[] buffer)
         {
-            if (BitConverter.ToInt32(buffer, 0) < MaxPacketSize) return true;
+            if (BitConverter.ToInt32(buffer, 0) < MaxPacketSizeBytes) return true;
             else
             {
                 client.Listener.MarkForDisconnect();

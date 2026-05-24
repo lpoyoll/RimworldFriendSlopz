@@ -42,7 +42,7 @@ namespace GameServer.PacketManagers.ServerBrowser
             telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != FL_ModConfig.ModType.Forbidden)
                 .OrderBy(fetch => fetch.FileName).ToList();
 
-            Network.MultipurposeEndpoint.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
+            Network.MultipurposeEndpoint?.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
         }
     }
 }
