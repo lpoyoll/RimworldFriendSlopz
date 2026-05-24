@@ -18,11 +18,14 @@ namespace GameClient.Hooks.ServerBrowser
     {
         private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
         {
-            MainThreadHandler.Instance.Enqueue(delegate
+            Action toDo = delegate
             {
                 MethodInfo method = (MethodInfo)PM_Base.PacketDictionary[header][1];
                 method.Invoke(PM_Base.PacketDictionary[header][0], new object[] { client, buffer, header });
-            });
+            };
+
+            if (header == PacketHeader.Handshake) toDo.Invoke();
+            else MainThreadHandler.Instance.Enqueue(toDo);
         };
 
         public static void TryConnect() 

@@ -37,7 +37,11 @@ namespace TCPNetwork
 
         public void CreateListener() { Listener = new Listener(this, Tcp, Ruleset); }
 
-        public void VerifyClient() { IsVerified = true; }
+        public void VerifyClient() 
+        { 
+            IsVerified = true;
+            Printer.Warning($"Handshake with '{IP}' was valid", Printer.Verbosity.Extreme);
+        }
 
         public void DisposeTCP() { Tcp.Dispose(); }
 
