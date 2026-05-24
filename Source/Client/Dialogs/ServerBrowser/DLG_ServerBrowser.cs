@@ -13,10 +13,13 @@ namespace GameClient.Dialogs.ServerBrowser
     {
         public override Vector2 InitialSize => new Vector2(600f, 400f);
 
+        public static DLG_ServerBrowser Instance { get; private set; } = null;
+
         private List<PKT_ServerTelemetry> Elements { get; set; } = new List<PKT_ServerTelemetry>();
 
         public DLG_ServerBrowser(List<PKT_ServerTelemetry> elements) 
         {
+            Instance = this;
             this.Title = $"Server Browser [{elements.Count()}]";
             this.Elements = elements.OrderByDescending(fetch => fetch.CurrentPopulation).ToList();
         }

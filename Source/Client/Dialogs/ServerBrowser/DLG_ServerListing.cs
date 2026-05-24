@@ -57,6 +57,7 @@ namespace GameClient.Dialogs.ServerBrowser
                 Network.Port = Element.Port;
                 ClientNetwork.StartFeature();
 
+                DLG_ServerBrowser.Instance.Close();
                 Close();
             }
 
