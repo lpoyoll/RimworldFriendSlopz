@@ -71,6 +71,7 @@ namespace Shared
         ServerBrowserReachability,
         DisconnectManager,
         VersionDownload,
-        Handshake
+        Handshake,
+        WorldObject
     }
 }

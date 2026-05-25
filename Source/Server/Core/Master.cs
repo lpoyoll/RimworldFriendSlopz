@@ -29,6 +29,8 @@ namespace GameServer.Core
 
         public static string MapsPath { get; set; } = Path.Combine(Master.AssetsPath, "Maps");
 
+        public static string WorldObjectsPath { get; set; } = Path.Combine(Master.AssetsPath, "WorldObjects");
+
         public static string UsersPath { get; set; } = Path.Combine(Master.AssetsPath, "Users");
 
         public static string SavesPath { get; set; } = Path.Combine(Master.AssetsPath, "Saves");
