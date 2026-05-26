@@ -10,7 +10,7 @@ namespace GameServer.Managers
 
     public static class ResponseShortcutManager
     {
-        public static void SendIllegalPacket(ServerClient client, string message, bool shouldBroadcast = true)
+        public static void SendIllegalPacket(ServerClient client, string message = "", bool shouldBroadcast = true)
         {
             PKT_ResponseShortcut data = new PKT_ResponseShortcut();
             data._stepMode = ResponseStepMode.IllegalAction;

@@ -6,6 +6,7 @@ using RimWorld;
 using RimWorld.Planet;
 using Shared;
 using Shared.Files;
+using Shared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,16 +41,25 @@ namespace GameClient.PacketManagers
             }
         }
 
-        public static void Send(WorldObject wo, PKT_WorldObject.StepMode mode)
+        public static void Send(WorldObject wo, PKT_WorldObject.StepMode mode, PKT_WorldObject.WorldObjectMode type)
         {
             PKT_WorldObject packet = new PKT_WorldObject();
             packet.CurrentStepMode = mode;
             packet.WorldObject.Tile = wo.Tile.tileId;
 
-            Site site = wo as Site;
-            packet.WorldObject.Points = site.ActualThreatPoints;
-            packet.WorldObject.MainPartDef = site.MainSitePartDef.defName;
-            foreach (SitePart part in site.parts) packet.WorldObject.PartDefNames.Add(part.def.defName);
+            if (type == PKT_WorldObject.WorldObjectMode.Settlement)
+            {
+                Settlement settlement = wo as Settlement;
+                packet.WorldObject.FactionDef = settlement.Faction.def.defName;
+            }
+
+            else
+            {
+                Site site = wo as Site;
+                packet.WorldObject.Points = site.ActualThreatPoints;
+                packet.WorldObject.MainPartDef = site.MainSitePartDef.defName;
+                foreach (SitePart part in site.parts) packet.WorldObject.PartDefNames.Add(part.def.defName);
+            }
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.WorldObject, packet);
         }
@@ -58,9 +68,34 @@ namespace GameClient.PacketManagers
         {
             SetBypass(true);
 
-            SitePartDef partDef = DefDatabase<SitePartDef>.AllDefs.First(fetch => fetch.defName == packet.WorldObject.MainPartDef);
-            Site site = SiteMaker.MakeSite(partDef, packet.WorldObject.Tile, SessionHandler.EnemyFaction, threatPoints: packet.WorldObject.Points);
-            Find.WorldObjects.Add(site);
+            try
+            {
+                if (packet.WorldObject.MainPartDef == string.Empty)
+                {
+                    Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.Name == packet.WorldObject.FactionDef);
+                    if (faction == null) faction = SessionHandler.NeutralFaction;
+
+                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                    settlement.Name = packet.WorldObject.Name;
+                    settlement.Tile = packet.WorldObject.Tile;
+                    settlement.SetFaction(faction);
+
+                    Find.WorldObjects.Add(settlement);
+                }
+
+                else
+                {
+                    Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.Name == packet.WorldObject.FactionDef);
+                    if (faction == null) faction = SessionHandler.NeutralFaction;
+
+                    SitePartDef partDef = DefDatabase<SitePartDef>.AllDefs.First(fetch => fetch.defName == packet.WorldObject.MainPartDef);
+                    //Site site = SiteMaker.MakeSite(partDef, packet.WorldObject.Tile, faction, threatPoints: packet.WorldObject.Points);
+                    Site site = SiteMaker.MakeSite(partDef, packet.WorldObject.Tile, faction);
+
+                    Find.WorldObjects.Add(site);
+                }
+            }
+            catch (Exception ex) { Printer.Error(ex, Printer.Verbosity.Verbose); }
 
             SetBypass(false);
         }
@@ -69,12 +104,21 @@ namespace GameClient.PacketManagers
         {
             SetBypass(true);
 
-            WorldObject toFind = Find.World.worldObjects.AllWorldObjects.FirstOrDefault(fetch => fetch.Tile == packet.WorldObject.Tile);
-            if (toFind != null) Find.WorldObjects.Remove(toFind);
+            try
+            {
+                WorldObject toFind = Find.World.worldObjects.AllWorldObjects.FirstOrDefault(fetch => fetch.Tile == packet.WorldObject.Tile);
+                if (toFind != null) Find.WorldObjects.Remove(toFind);
+            }
+            catch (Exception ex) { Printer.Error(ex, Printer.Verbosity.Verbose); }
 
             SetBypass(false);
         }
 
-        public static void SetBypass(bool mode) { IsBypass = mode; }
+        public static void SetBypass(bool mode) 
+        {
+            if (IsBypass && mode) Printer.Error("Bypass shouldn't be enabled!", Printer.Verbosity.Verbose);
+            else if (!IsBypass && !mode) Printer.Error("Bypass shouldn't be disabled!", Printer.Verbosity.Verbose);
+            else IsBypass = mode; 
+        }
     }
 }

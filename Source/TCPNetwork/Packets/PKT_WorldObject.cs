@@ -11,6 +11,10 @@ namespace TCPNetwork.Packets
 
         public StepMode CurrentStepMode { get; set; } = StepMode.Add;
 
+        public enum WorldObjectMode { Settlement, Site}
+
+        public WorldObjectMode Type { get; set; } = WorldObjectMode.Settlement;
+
         public FL_WorldObject WorldObject { get; set; } = new FL_WorldObject();
     }
 }

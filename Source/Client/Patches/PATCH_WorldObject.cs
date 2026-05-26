@@ -2,6 +2,7 @@
 using GameClient.PacketManagers;
 using GameClient.WorldObjects;
 using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using Shared.Misc;
 using System;
@@ -21,14 +22,28 @@ namespace GameClient.Patches
         public static bool DoPre(WorldObject o)
         {
             if (!SessionHandler.IsReadyToPlay) return true;
-            else if (o.GetType() != typeof(Site)) return true;
+
+            if (PM_WorldObject.IsBypass) return true;
             else
             {
-                if (PM_WorldObject.IsBypass) return true;
+                if (o.def == WorldObjectDefOf.Settlement)
+                {
+                    if (o.Faction == Faction.OfPlayer) return true;
+                    else
+                    {
+                        PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Settlement);
+                        return false;
+                    }
+                }
+
                 else
                 {
-                    PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add);
-                    return false;
+                    if (o.Faction == Faction.OfPlayer) return true;
+                    else
+                    {
+                        PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Site);
+                        return false;
+                    }
                 }
             }
         }
@@ -41,14 +56,28 @@ namespace GameClient.Patches
         public static bool DoPre(WorldObject o)
         {
             if (!SessionHandler.IsReadyToPlay) return true;
-            else if (o.GetType() != typeof(Site)) return true;
+
+            if (PM_WorldObject.IsBypass) return true;
             else
             {
-                if (PM_WorldObject.IsBypass) return true;
+                if (o.def == WorldObjectDefOf.Settlement)
+                {
+                    if (o.Faction == Faction.OfPlayer) return true;
+                    else
+                    {
+                        PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Settlement);
+                        return false;
+                    }
+                }
+
                 else
                 {
-                    PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove);
-                    return false;
+                    if (o.Faction == Faction.OfPlayer) return true;
+                    else
+                    {
+                        PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Site);
+                        return false;
+                    }
                 }
             }
         }

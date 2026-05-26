@@ -1,5 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
+using GameServer.Managers;
 using Shared;
 using System;
 using System.Collections.Generic;
@@ -34,16 +35,26 @@ namespace GameServer.PacketManagers
 
         private static void AddWorldObject(ServerClient client, PKT_WorldObject packet)
         {
-            string path = Path.Combine(Master.WorldObjectsPath, packet.WorldObject.Tile + ".json");
-            Serializer.SerializeToFile(path, packet.WorldObject);
+            //string path = Path.Combine(Master.WorldObjectsPath, packet.WorldObject.Tile + ".json");
+            //if (File.Exists(path)) ResponseShortcutManager.SendIllegalPacket(client);
+            //else
+            //{
+            //    Serializer.SerializeToFile(path, packet.WorldObject);
+            //    ServerNetwork.SendPacketToAllClients(PacketHeader.WorldObject, packet);
+            //}
 
             ServerNetwork.SendPacketToAllClients(PacketHeader.WorldObject, packet);
         }
 
         private static void RemoveWorldObject(ServerClient client, PKT_WorldObject packet)
         {
-            string path = Path.Combine(Master.WorldObjectsPath, packet.WorldObject.Tile + ".json");
-            File.Delete(path);
+            //string path = Path.Combine(Master.WorldObjectsPath, packet.WorldObject.Tile + ".json");
+            //if (!File.Exists(path)) ResponseShortcutManager.SendIllegalPacket(client);
+            //else
+            //{
+            //    File.Delete(path);
+            //    ServerNetwork.SendPacketToAllClients(PacketHeader.WorldObject, packet);
+            //}
 
             ServerNetwork.SendPacketToAllClients(PacketHeader.WorldObject, packet);
         }
