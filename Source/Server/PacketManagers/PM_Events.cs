@@ -16,7 +16,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Events : PM_Base
     {
-        [HandlesPacket(PacketHeader.EventManager)]
+        [HandlesPacket(PacketHeader.Event)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Event data = Serializer.ConvertBytesToObject<PKT_Event>(bytes);
@@ -26,7 +26,7 @@ namespace GameServer.PacketManager
                 if (!PlayerCooldown.CheckIfCanEvent(client.GetData<UserFile>(), Master.ActionConfigs.EventAction))
                 {
                     data._stepMode = EventStepMode.Recover;
-                    client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+                    client.Listener.EnqueuePacket(PacketHeader.Event, data);
                 }
             }
 
@@ -54,7 +54,7 @@ namespace GameServer.PacketManager
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
                 {
                     data._stepMode = EventStepMode.Recover;
-                    client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+                    client.Listener.EnqueuePacket(PacketHeader.Event, data);
                 }
 
                 else
@@ -63,7 +63,7 @@ namespace GameServer.PacketManager
 
                     //Back to player
 
-                    client.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+                    client.Listener.EnqueuePacket(PacketHeader.Event, data);
 
                     //To the person that should receive it
 
@@ -71,7 +71,7 @@ namespace GameServer.PacketManager
 
                     target.GetData<UserFile>().Cooldowns.SetEventTimer(target.GetData<UserFile>());
 
-                    target.Listener.EnqueuePacket(PacketHeader.EventManager, data);
+                    target.Listener.EnqueuePacket(PacketHeader.Event, data);
                 }
             }
         }
@@ -88,7 +88,7 @@ namespace GameServer.PacketManager
 
                 EventManagerH.LoadAllEvents();
                 InformationDisplayer.DisplaySetEvents(client);
-                ServerNetwork.SendPacketToAllClients(PacketHeader.EventManager, data);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.Event, data);
             }
         }
     }

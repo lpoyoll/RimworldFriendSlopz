@@ -21,7 +21,7 @@ namespace GameClient.PacketManagers
     {
         public static List<WO_Settlement> PlayerSettlements { get; set; } = new List<WO_Settlement>();
 
-        [HandlesPacket(PacketHeader.SettlementManager)]
+        [HandlesPacket(PacketHeader.Settlement)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_PlayerSettlement data = Serializer.ConvertBytesToObject<PKT_PlayerSettlement>(bytes);
@@ -43,18 +43,6 @@ namespace GameClient.PacketManagers
             foreach (FL_Settlement toAdd in settlements)
             {
                 SpawnSingleSettlement(toAdd);
-            }
-        }
-
-        public static void ClearAllSettlements()
-        {
-            PlayerSettlements.Clear();
-        
-            foreach (WorldObject settlement in Finder.GetAllRTSettlements())
-            {
-                FL_Settlement toRemove = new FL_Settlement();
-                toRemove.Tile = settlement.Tile;
-                RemoveSingleSettlement(toRemove);
             }
         }
 
@@ -111,7 +99,7 @@ namespace GameClient.PacketManagers
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Add;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Settlement, settlementData);
 
             //TODO
             //Find a way to enable this
@@ -125,7 +113,7 @@ namespace GameClient.PacketManagers
             settlementData._settlementFile.Tile = settlementTile;
             settlementData._stepMode = SettlementStepMode.Remove;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Settlement, settlementData);
             PM_Saves.ForceSave();
         }
     }

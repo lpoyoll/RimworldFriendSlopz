@@ -36,19 +36,4 @@ namespace GameClient.Patches
             PM_Settlements.AbandonSettlement(settlement.Tile);
         }
     }
-
-    [HarmonyPatch(typeof(Settlement), nameof(Settlement.PostRemove))]
-    public static class Patch_Settlement_PostRemove
-    {
-        [HarmonyPostfix]
-        public static void ModifyPost(Settlement __instance)
-        {
-            if (!SessionHandler.CurrentActionValues.NPCAction.IsEnabled) return;
-            else
-            {
-                if (__instance.Faction == Faction.OfPlayer) return;
-                else if (NPCManagerH.lastRemovedSettlement != __instance) PM_Npcs.RequestSettlementRemoval(__instance);
-            }
-        }
-    }
 }

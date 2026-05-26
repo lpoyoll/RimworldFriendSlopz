@@ -18,7 +18,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Guilds : PM_Base
     {
-        [HandlesPacket(PacketHeader.GuildManager)]
+        [HandlesPacket(PacketHeader.Guild)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_PlayerGuild data = Serializer.ConvertBytesToObject<PKT_PlayerGuild>(bytes);
@@ -72,7 +72,7 @@ namespace GameClient.PacketManagers
                 PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                 playerFactionData._stepMode = GuildStepMode.MemberList;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
 
             Action r2 = delegate
@@ -81,7 +81,7 @@ namespace GameClient.PacketManagers
                 playerFactionData._stepMode = GuildStepMode.RemoveMember;
                 playerFactionData._dataInt = Find.AnyPlayerHomeMap.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
 
             Action r1 = delegate
@@ -91,7 +91,7 @@ namespace GameClient.PacketManagers
                 PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                 playerFactionData._stepMode = GuildStepMode.Delete;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
 
             DLG_YesNo d3 = new DLG_YesNo("Are you sure you want to LEAVE your guild?", r2, null);
@@ -123,7 +123,7 @@ namespace GameClient.PacketManagers
                     playerFactionData._stepMode = GuildStepMode.Create;
                     playerFactionData._guild.Name = DLG_Inputs.DialogInputResults[0];
 
-                    Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
+                    Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
                 }
             };
             DLG_Inputs d2 = new DLG_Inputs("New Guild Name", new string[] { "Input the name of your new guild" }, new bool[] { false }, r2);
@@ -142,7 +142,7 @@ namespace GameClient.PacketManagers
                 playerFactionData._stepMode = GuildStepMode.Demote;
                 playerFactionData._dataInt = SessionHandler.ChosenSettlement.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
 
             Action r4 = delegate
@@ -151,7 +151,7 @@ namespace GameClient.PacketManagers
                 playerFactionData._stepMode = GuildStepMode.Promote;
                 playerFactionData._dataInt = SessionHandler.ChosenSettlement.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
 
             Action r3 = delegate
@@ -160,7 +160,7 @@ namespace GameClient.PacketManagers
                 playerFactionData._stepMode = GuildStepMode.RemoveMember;
                 playerFactionData._dataInt = SessionHandler.ChosenSettlement.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
 
             DLG_YesNo d5 = new DLG_YesNo("Are you sure you want to demote this player?", r5);
@@ -189,7 +189,7 @@ namespace GameClient.PacketManagers
                 playerFactionData._stepMode = GuildStepMode.Invite;
                 playerFactionData._dataInt = SessionHandler.ChosenSettlement.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, playerFactionData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
 
             DLG_YesNo d1 = new DLG_YesNo("Do you want to invite this player to your guild?", r1, null);
@@ -233,7 +233,7 @@ namespace GameClient.PacketManagers
 
                 factionManifest._stepMode = GuildStepMode.AddMember;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, factionManifest);
 
                 RimworldManager.GenerateLetter("Joined guild", "You have joined a guild!", LetterDefOf.PositiveEvent);
             };

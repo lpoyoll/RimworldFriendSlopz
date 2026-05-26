@@ -15,7 +15,7 @@ namespace GameServer.Managers
             PKT_ResponseShortcut data = new PKT_ResponseShortcut();
             data._stepMode = ResponseStepMode.IllegalAction;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcut, data);
             client.Listener.MarkForDisconnect();
 
             if (shouldBroadcast)
@@ -30,7 +30,7 @@ namespace GameServer.Managers
             PKT_ResponseShortcut data = new PKT_ResponseShortcut();
             data._stepMode = ResponseStepMode.UserUnavailable;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcut, data);
         }
 
         public static void SendUnavailablePacket(ServerClient client)
@@ -38,7 +38,7 @@ namespace GameServer.Managers
             PKT_ResponseShortcut data = new PKT_ResponseShortcut();
             data._stepMode = ResponseStepMode.Unavailable;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcut, data);
         }
 
         public static void SendBreakPacket(ServerClient client)
@@ -46,7 +46,7 @@ namespace GameServer.Managers
             PKT_ResponseShortcut data = new PKT_ResponseShortcut();
             data._stepMode = ResponseStepMode.Pop;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcut, data);
         }
 
         public static void SendNoPowerPacket(ServerClient client)
@@ -54,7 +54,7 @@ namespace GameServer.Managers
             PKT_ResponseShortcut data = new PKT_ResponseShortcut();
             data._stepMode = ResponseStepMode.NoPower;
 
-            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcutManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.ResponseShortcut, data);
         }
     }
 }

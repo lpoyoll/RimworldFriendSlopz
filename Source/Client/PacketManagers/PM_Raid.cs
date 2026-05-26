@@ -17,7 +17,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Raid : PM_Base
     {
-        [HandlesPacket(PacketHeader.RaidManager)]
+        [HandlesPacket(PacketHeader.Raid)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Raid data = Serializer.ConvertBytesToObject<PKT_Raid>(bytes);
@@ -53,7 +53,7 @@ namespace GameClient.PacketManagers
             data.CurrentStepMode = StepMode.Request;
             data.TargetTile = targetTile;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.RaidManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Raid, data);
         }
 
         private static void OnAccept(PKT_Raid data) 

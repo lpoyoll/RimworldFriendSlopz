@@ -15,7 +15,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Pollution : PM_Base
     {
-        [HandlesPacket(PacketHeader.PollutionManager)]
+        [HandlesPacket(PacketHeader.Pollution)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (ModsConfig.BiotechActive)

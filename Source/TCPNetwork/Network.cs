@@ -38,7 +38,7 @@ namespace TCPNetwork
 
         public static readonly TimeSpan KeepAliveInterval = TimeSpan.FromSeconds(10);
 
-        public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAliveManager };
+        public static readonly PacketHeader[] IgnoreLogPackets = { PacketHeader.KeepAlive };
 
         public static void ReadFullPacket(Stream stream, byte[] content)
         {

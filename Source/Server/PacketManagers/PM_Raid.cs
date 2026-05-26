@@ -11,7 +11,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Raid : PM_Base
     {
-        [HandlesPacket(PacketHeader.RaidManager)]
+        [HandlesPacket(PacketHeader.Raid)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!Master.ActionConfigs.RaidAction.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
@@ -34,14 +34,14 @@ namespace GameServer.PacketManager
             if (!PM_Map.CheckIfMapExists(data.TargetTile))
             {
                 data.CurrentStepMode = StepMode.Deny;
-                client.Listener.EnqueuePacket(PacketHeader.RaidManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.Raid, data);
             }
 
             else
             {
                 data.CurrentStepMode = StepMode.Request;
                 data.Map = PM_Map.GetMapFromTile(data.TargetTile);
-                client.Listener.EnqueuePacket(PacketHeader.RaidManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.Raid, data);
                 client.GetData<UserFile>().Cooldowns.SetRaidTimer(client.GetData<UserFile>());
             }
         }

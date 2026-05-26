@@ -25,7 +25,7 @@ namespace GameClient.PacketManagers
 
         public static List<FL_Caravan> GuestCaravans { get; private set; } = new List<FL_Caravan>();
 
-        [HandlesPacket(PacketHeader.CaravanManager)]
+        [HandlesPacket(PacketHeader.Caravan)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Caravan data = Serializer.ConvertBytesToObject<PKT_Caravan>(bytes);
@@ -50,7 +50,7 @@ namespace GameClient.PacketManagers
         {
             try
             {
-                if (CaravanManagerH.GetExistingCaravanFromFile(file) != null)
+                if (GetExistingCaravanFromFile(file) != null)
                 {
                     Printer.Warning("Caravan to add already existed", Verbosity.Verbose);
                 }
@@ -72,11 +72,11 @@ namespace GameClient.PacketManagers
         {
             try
             {
-                FL_Caravan toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
+                FL_Caravan toFind = GetExistingCaravanFromFile(file);
                 if (toFind == null) Printer.Warning("Caravan to remove wasn't found", Verbosity.Verbose);
                 else
                 {
-                    WO_Caravan toRemove = CaravanManagerH.GetAllExistingOnlineCaravans()
+                    WO_Caravan toRemove = GetAllExistingOnlineCaravans()
                         .FirstOrDefault(fetch => fetch.Tile == toFind.Tile);
 
                     if (toRemove != null)
@@ -93,11 +93,11 @@ namespace GameClient.PacketManagers
         {
             try
             {
-                FL_Caravan toFind = CaravanManagerH.GetExistingCaravanFromFile(file);
+                FL_Caravan toFind = GetExistingCaravanFromFile(file);
                 if (toFind == null) AddCaravan(file);
                 else
                 {
-                    WO_Caravan onlineCaravan = CaravanManagerH.GetAllExistingOnlineCaravans()
+                    WO_Caravan onlineCaravan = GetAllExistingOnlineCaravans()
                         .FirstOrDefault(fetch => fetch.Tile == toFind.Tile);
 
                     if (onlineCaravan != null)
@@ -121,7 +121,7 @@ namespace GameClient.PacketManagers
             data._caravanFile.Username = SessionHandler.Username;
             data._caravanFile.ID = caravan.ID;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.CaravanManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Caravan, data);
         }
 
         public static void RequestCaravanRemove(Caravan caravan)
@@ -135,7 +135,7 @@ namespace GameClient.PacketManagers
 
             PlayerCaravans.Remove(caravan);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.CaravanManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Caravan, data);
         }
 
         public static void RequestCaravanUpdate(Caravan caravan)
@@ -147,44 +147,42 @@ namespace GameClient.PacketManagers
             data._caravanFile.Username = SessionHandler.Username;
             data._caravanFile.ID = caravan.ID;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.CaravanManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Caravan, data);
         }
 
-        public static void ClearAllCaravans()
+        [OnSessionEnd]
+        private static void CleanValues()
         {
             GuestCaravans.Clear();
             PlayerCaravans.Clear();
 
-            foreach (WorldObject worldObject in CaravanManagerH.GetAllExistingOnlineCaravans())
+            foreach (WorldObject worldObject in GetAllExistingOnlineCaravans())
             {
                 Find.World.worldObjects.Remove(worldObject);
             }
         }
-    }
-}
 
-public class CaravanManagerH
-{
-    public static WO_Caravan[] GetAllExistingOnlineCaravans()
-    {
-        List<WO_Caravan> onlineCaravans = new List<WO_Caravan>();
-        foreach (WorldObject wo in Find.World.worldObjects.AllWorldObjects)
+        public static WO_Caravan[] GetAllExistingOnlineCaravans()
         {
-            if (wo.def == RTWorldObjectDefOf.RTCaravan) onlineCaravans.Add((WO_Caravan)wo);
+            List<WO_Caravan> onlineCaravans = new List<WO_Caravan>();
+            foreach (WorldObject wo in Find.World.worldObjects.AllWorldObjects)
+            {
+                if (wo.def == RTWorldObjectDefOf.RTCaravan) onlineCaravans.Add((WO_Caravan)wo);
+            }
+
+            return onlineCaravans.ToArray();
         }
 
-        return onlineCaravans.ToArray();
-    }
+        public static FL_Caravan GetExistingCaravanFromFile(FL_Caravan file)
+        {
+            return PM_Caravan.GuestCaravans.FirstOrDefault(fetch => fetch.Username == file.Username
+                && fetch.ID == file.ID);
+        }
 
-    public static FL_Caravan GetExistingCaravanFromFile(FL_Caravan file)
-    {
-        return PM_Caravan.GuestCaravans.FirstOrDefault(fetch => fetch.Username == file.Username
-            && fetch.ID == file.ID);
-    }
-
-    public static void SetAllPlayerCaravans()
-    {
-        Caravan[] playerCaravans = Find.World.worldObjects.Caravans.Where(fetch => fetch.Faction == Faction.OfPlayer).ToArray();
-        foreach (Caravan caravan in playerCaravans) PM_Caravan.PlayerCaravans.Add(caravan);
+        public static void AddCaravans()
+        {
+            Caravan[] playerCaravans = Find.World.worldObjects.Caravans.Where(fetch => fetch.Faction == Faction.OfPlayer).ToArray();
+            foreach (Caravan caravan in playerCaravans) PM_Caravan.PlayerCaravans.Add(caravan);
+        }
     }
 }

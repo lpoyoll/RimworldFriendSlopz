@@ -9,7 +9,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Leaderboard : PM_Base
     {
-        [HandlesPacket(PacketHeader.LeaderboardManager)]
+        [HandlesPacket(PacketHeader.Leaderboard)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) 
         {
             PKT_Leaderboard data = Serializer.ConvertBytesToObject<PKT_Leaderboard>(bytes);
@@ -19,7 +19,7 @@ namespace GameClient.PacketManagers
         public static void Ask()
         {
             PKT_Leaderboard data = new PKT_Leaderboard();
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.LeaderboardManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Leaderboard, data);
         }
 
         private static void DisplayLeaderboard(FL_Leaderboard file) { DLG_Base.PushNewDialog(new DLG_Leaderboard(file)); }

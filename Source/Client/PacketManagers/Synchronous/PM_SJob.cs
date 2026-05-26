@@ -42,7 +42,7 @@ namespace GameClient.PacketManagers.Synchronous
                     packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerJob;
                     packet.Contents = Serializer.ConvertObjectToBytes(PlayerJobs, false);
 
-                    Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
+                    Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, packet);
 
                     PlayerJobs.Clear();
                 }

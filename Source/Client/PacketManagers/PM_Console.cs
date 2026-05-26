@@ -16,7 +16,7 @@ namespace GameClient.PacketManagers
     {
         //Parses the received packet into a command to execute
 
-        [HandlesPacket(PacketHeader.ConsoleManager)]
+        [HandlesPacket(PacketHeader.Console)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Command data = Serializer.ConvertBytesToObject<PKT_Command>(bytes);

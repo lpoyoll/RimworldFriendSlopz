@@ -37,7 +37,7 @@ namespace GameServer.Commands
                         commandData._commandMode = CommandMode.Deop;
 
                         client.GetData<UserFile>().UpdateAdmin(false);
-                        client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                        client.Listener.EnqueuePacket(PacketHeader.Console, commandData);
                     }
 
                     Printer.Warning($"User '{toFind.Username}' is no longer an admin");

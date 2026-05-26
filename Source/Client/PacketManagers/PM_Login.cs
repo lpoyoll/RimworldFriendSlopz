@@ -20,7 +20,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Login : PM_Base
     {
-        [HandlesPacket(PacketHeader.LoginManager)]
+        [HandlesPacket(PacketHeader.Login)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Login data = Serializer.ConvertBytesToObject<PKT_Login>(bytes);
@@ -83,7 +83,7 @@ namespace GameClient.PacketManagers
 
                 SessionHandler.Username = data._username;
                 data._runningMods = ModManagerH.GetRunningModList();
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.LoginManager, data);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Login, data);
             }
         }
 

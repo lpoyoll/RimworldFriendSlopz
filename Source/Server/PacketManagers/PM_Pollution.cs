@@ -14,7 +14,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Pollution : PM_Base
     {
-        [HandlesPacket(PacketHeader.PollutionManager)]
+        [HandlesPacket(PacketHeader.Pollution)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!PlayerCooldown.CheckIfCanPollute(client.GetData<UserFile>(), Master.ActionConfigs.PollutionAction)) return;
@@ -46,7 +46,7 @@ namespace GameServer.PacketManager
             }
 
             FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
-            ServerNetwork.SendPacketToAllClients(PacketHeader.PollutionManager, data, client);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Pollution, data, client);
             client.GetData<UserFile>().Cooldowns.SetPollutionTimer(client.GetData<UserFile>());
         }
     }

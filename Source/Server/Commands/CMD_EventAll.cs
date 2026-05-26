@@ -34,7 +34,7 @@ namespace GameServer.Commands
                     //We set it to -1 to let the client know it will fall at any settlement
                     eventData._toTile = -1;
 
-                    client.Listener.EnqueuePacket(PacketHeader.EventManager, eventData);
+                    client.Listener.EnqueuePacket(PacketHeader.Event, eventData);
                 }
 
                 Printer.Title($"Sent event '{CMD_Base.CommandParameters[0]}' to every connected player");

@@ -29,7 +29,7 @@ namespace GameClient.PacketManagers.Synchronous
             packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerMentalState;
             packet.Contents = Serializer.ConvertObjectToBytes(playerMentalState, false);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, packet);
         }
 
         public static void Handle(ServerClient client, PKT_Synchronous data)

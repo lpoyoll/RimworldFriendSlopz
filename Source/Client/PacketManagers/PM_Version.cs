@@ -17,7 +17,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Version : PM_Base
     {
-        [HandlesPacket(PacketHeader.VersionManager)]
+        [HandlesPacket(PacketHeader.Version)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) 
         {
             PM_Login.UseLoginData();
@@ -26,7 +26,7 @@ namespace GameClient.PacketManagers
         public static void Send(ServerClient client)
         {
             PKT_Version data = new PKT_Version() { Version = CommonValues.ExecutableVersion };
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.VersionManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Version, data);
         }
 
         public static void PromptChangeVersion()

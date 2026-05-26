@@ -10,7 +10,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Caravan : PM_Base
     {
-        [HandlesPacket(PacketHeader.CaravanManager)]
+        [HandlesPacket(PacketHeader.Caravan)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Caravan data = Serializer.ConvertBytesToObject<PKT_Caravan>(bytes);
@@ -37,7 +37,7 @@ namespace GameServer.PacketManager
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = file;
 
-            ServerNetwork.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Caravan, data, client);
         }
 
         public static void RemoveCaravan(ServerClient client, FL_Caravan file)
@@ -46,7 +46,7 @@ namespace GameServer.PacketManager
             data._stepMode = CaravanStepMode.Remove;
             data._caravanFile = file;
 
-            ServerNetwork.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Caravan, data, client);
         }
 
         private static void MoveCaravan(ServerClient client, FL_Caravan file)
@@ -55,7 +55,7 @@ namespace GameServer.PacketManager
             data._stepMode = CaravanStepMode.Move;
             data._caravanFile = file;
 
-            ServerNetwork.SendPacketToAllClients(PacketHeader.CaravanManager, data, client);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Caravan, data, client);
         }
     }
 }

@@ -10,6 +10,7 @@ using Shared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using TCPNetwork;
@@ -32,11 +33,11 @@ namespace GameClient.PacketManagers
             switch(packet.CurrentStepMode)
             {
                 case PKT_WorldObject.StepMode.Add:
-                    AddWorldObject(packet);
+                    AddWorldObject(packet.WorldObject);
                     break;
 
                 case PKT_WorldObject.StepMode.Remove:
-                    RemoveWorldObject(packet);
+                    RemoveWorldObject(packet.WorldObject);
                     break;
             }
         }
@@ -50,6 +51,7 @@ namespace GameClient.PacketManagers
             if (type == PKT_WorldObject.WorldObjectMode.Settlement)
             {
                 Settlement settlement = wo as Settlement;
+                packet.WorldObject.Name = settlement.Name;
                 packet.WorldObject.FactionDef = settlement.Faction.def.defName;
             }
 
@@ -64,54 +66,114 @@ namespace GameClient.PacketManagers
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.WorldObject, packet);
         }
 
-        private static void AddWorldObject(PKT_WorldObject packet)
+        public static void SendAllWorldObjects()
         {
-            SetBypass(true);
-
-            try
+            List<FL_WorldObject> worldObjects = new List<FL_WorldObject>();
+            foreach (WorldObject wo in Find.World.worldObjects.AllWorldObjects)
             {
-                if (packet.WorldObject.MainPartDef == string.Empty)
-                {
-                    Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.Name == packet.WorldObject.FactionDef);
-                    if (faction == null) faction = SessionHandler.NeutralFaction;
-
-                    Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
-                    settlement.Name = packet.WorldObject.Name;
-                    settlement.Tile = packet.WorldObject.Tile;
-                    settlement.SetFaction(faction);
-
-                    Find.WorldObjects.Add(settlement);
-                }
-
+                if (wo.Faction == Faction.OfPlayer) continue;
                 else
                 {
-                    Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.Name == packet.WorldObject.FactionDef);
-                    if (faction == null) faction = SessionHandler.NeutralFaction;
+                    FL_WorldObject file = new FL_WorldObject();
+                    file.Tile = wo.Tile.tileId;
 
-                    SitePartDef partDef = DefDatabase<SitePartDef>.AllDefs.First(fetch => fetch.defName == packet.WorldObject.MainPartDef);
-                    //Site site = SiteMaker.MakeSite(partDef, packet.WorldObject.Tile, faction, threatPoints: packet.WorldObject.Points);
-                    Site site = SiteMaker.MakeSite(partDef, packet.WorldObject.Tile, faction);
+                    if (wo.def == WorldObjectDefOf.Settlement)
+                    {
+                        Settlement settlement = wo as Settlement;
+                        file.Name = settlement.Name;
+                        file.FactionDef = settlement.Faction.def.defName;
+                    }
 
-                    Find.WorldObjects.Add(site);
+                    else
+                    {
+                        Site site = wo as Site;
+                        file.Points = site.ActualThreatPoints;
+                        file.MainPartDef = site.MainSitePartDef.defName;
+                        foreach (SitePart part in site.parts) file.PartDefNames.Add(part.def.defName);
+                    }
+
+                    worldObjects.Add(file);
                 }
             }
-            catch (Exception ex) { Printer.Error(ex, Printer.Verbosity.Verbose); }
 
-            SetBypass(false);
+            PKT_WorldObject packet = new PKT_WorldObject();
+            packet.CurrentStepMode = PKT_WorldObject.StepMode.Bulk;
+            packet.Bulk = worldObjects;
+
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.WorldObject, packet);
         }
 
-        private static void RemoveWorldObject(PKT_WorldObject packet)
+        private static void AddWorldObject(FL_WorldObject wo)
         {
-            SetBypass(true);
-
-            try
+            if (SessionHandler.IsGeneratingFreshWorld) return;
+            else
             {
-                WorldObject toFind = Find.World.worldObjects.AllWorldObjects.FirstOrDefault(fetch => fetch.Tile == packet.WorldObject.Tile);
-                if (toFind != null) Find.WorldObjects.Remove(toFind);
-            }
-            catch (Exception ex) { Printer.Error(ex, Printer.Verbosity.Verbose); }
+                SetBypass(true);
 
-            SetBypass(false);
+                try
+                {
+                    if (wo.MainPartDef == string.Empty)
+                    {
+                        Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.def.defName == wo.FactionDef);
+                        if (faction == null) faction = SessionHandler.NeutralFaction;
+
+                        Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
+                        settlement.Name = wo.Name;
+                        settlement.Tile = wo.Tile;
+                        settlement.SetFaction(faction);
+
+                        Find.WorldObjects.Add(settlement);
+                    }
+
+                    else
+                    {
+                        Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.def.defName == wo.FactionDef);
+                        if (faction == null) faction = SessionHandler.NeutralFaction;
+
+                        SitePartDef partDef = DefDatabase<SitePartDef>.AllDefs.First(fetch => fetch.defName == wo.MainPartDef);
+                        Site site = SiteMaker.MakeSite(partDef, wo.Tile, faction, threatPoints: wo.Points);
+
+                        Find.WorldObjects.Add(site);
+                    }
+                }
+                catch (Exception ex) { Printer.Error(ex, Printer.Verbosity.Verbose); }
+
+                SetBypass(false);
+            }
+        }
+
+        private static void RemoveWorldObject(FL_WorldObject wo)
+        {
+            if (SessionHandler.IsGeneratingFreshWorld) return;
+            else
+            {
+                SetBypass(true);
+
+                try
+                {
+                    WorldObject toFind = Find.World.worldObjects.AllWorldObjects.FirstOrDefault(fetch => fetch.Tile == wo.Tile);
+                    if (toFind != null) Find.WorldObjects.Remove(toFind);
+                }
+                catch (Exception ex) { Printer.Error(ex, Printer.Verbosity.Verbose); }
+
+                SetBypass(false);
+            }
+        }
+
+        public static void ClearAllObjects()
+        {
+            foreach (WorldObject wo in Find.WorldObjects.AllWorldObjects.ToList().Where(fetch => fetch.Faction != Faction.OfPlayer))
+            {
+                if (wo.def == WorldObjectDefOf.Settlement && wo.Faction == Faction.OfPlayer) continue;
+                else if (wo.def == WorldObjectDefOf.Site && wo.Faction == Faction.OfPlayer) continue;
+                else if (wo.def == WorldObjectDefOf.Caravan && wo.Faction == Faction.OfPlayer) continue;
+                else Find.WorldObjects.Remove(wo);
+            }
+        }
+
+        public static void AddWorldObjects(List<FL_WorldObject> worldObjects)
+        {
+            foreach (FL_WorldObject wo in worldObjects) { AddWorldObject(wo); }
         }
 
         public static void SetBypass(bool mode) 

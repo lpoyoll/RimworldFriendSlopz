@@ -26,7 +26,7 @@ namespace GameServer.Commands
                 PKT_Command commandData = new PKT_Command();
                 commandData._commandMode = CommandMode.ForceSave;
 
-                toFind.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                toFind.Listener.EnqueuePacket(PacketHeader.Console, commandData);
 
                 Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' has been forced to save");
             }

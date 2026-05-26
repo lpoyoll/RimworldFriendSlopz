@@ -14,7 +14,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Aid : PM_Base
     {
-        [HandlesPacket(PacketHeader.AidManager)]
+        [HandlesPacket(PacketHeader.Aid)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Aid data = Serializer.ConvertBytesToObject<PKT_Aid>(bytes);
@@ -22,7 +22,7 @@ namespace GameServer.PacketManager
             if (!PlayerCooldown.CheckIfCanAid(client.GetData<UserFile>(), Master.ActionConfigs.AidAction))
             {
                 data._stepMode = AidStepMode.Reject;
-                client.Listener.EnqueuePacket(PacketHeader.AidManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.Aid, data);
             }
 
             else
@@ -54,13 +54,13 @@ namespace GameServer.PacketManager
                 {
                     data._stepMode = AidStepMode.Receive;
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlementFile.Username);
-                    target.Listener.EnqueuePacket(PacketHeader.AidManager, data);
+                    target.Listener.EnqueuePacket(PacketHeader.Aid, data);
                 }
 
                 else
                 {
                     data._stepMode = AidStepMode.Reject;
-                    client.Listener.EnqueuePacket(PacketHeader.AidManager, data);
+                    client.Listener.EnqueuePacket(PacketHeader.Aid, data);
                 }
             }
         }
@@ -76,7 +76,7 @@ namespace GameServer.PacketManager
                     client.GetData<UserFile>().Cooldowns.SetAidTimer(client.GetData<UserFile>());
 
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlementFile.Username);
-                    target.Listener.EnqueuePacket(PacketHeader.AidManager, data);
+                    target.Listener.EnqueuePacket(PacketHeader.Aid, data);
                 }
 
                 //Back to client sending the request
@@ -84,7 +84,7 @@ namespace GameServer.PacketManager
                 else
                 {
                     data._stepMode = AidStepMode.Reject;
-                    client.Listener.EnqueuePacket(PacketHeader.AidManager, data);
+                    client.Listener.EnqueuePacket(PacketHeader.Aid, data);
                 }
             }
         }
@@ -98,12 +98,12 @@ namespace GameServer.PacketManager
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlementFile.Username);
-                    target.Listener.EnqueuePacket(PacketHeader.AidManager, data);
+                    target.Listener.EnqueuePacket(PacketHeader.Aid, data);
                 }
 
                 //Back to client sending the request
 
-                else client.Listener.EnqueuePacket(PacketHeader.AidManager, data);
+                else client.Listener.EnqueuePacket(PacketHeader.Aid, data);
             }
         }
     }

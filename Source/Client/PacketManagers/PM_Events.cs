@@ -22,7 +22,7 @@ namespace GameClient.PacketManagers
 
         public static List<FL_Event> EnabledEvents { get; private set; } = new List<FL_Event>();
 
-        [HandlesPacket(PacketHeader.EventManager)]
+        [HandlesPacket(PacketHeader.Event)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Event data = Serializer.ConvertBytesToObject<PKT_Event>(bytes);
@@ -64,7 +64,7 @@ namespace GameClient.PacketManagers
             PKT_Event eventData = new PKT_Event();
             eventData._stepMode = EventStepMode.Set;
             eventData._eventFiles = existingEvents;
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, eventData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Event, eventData);
         }
 
         public static void ShowEventMenu()
@@ -111,7 +111,7 @@ namespace GameClient.PacketManagers
                 eventData._toTile = SessionHandler.ChosenSettlement.Tile;
                 eventData._eventFile = EnabledEvents[DLG_ScrollButtons.SelectedScrollButton];
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, eventData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Event, eventData);
 
                 DLG_Base.PushNewDialog(new DLG_Wait());
             }

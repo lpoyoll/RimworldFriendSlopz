@@ -10,7 +10,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Map : PM_Base
     {
-        [HandlesPacket(PacketHeader.MapManager)]
+        [HandlesPacket(PacketHeader.Map)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             throw new System.NotImplementedException();
@@ -31,7 +31,7 @@ namespace GameClient.PacketManagers
         {
             PKT_Map mapData = new PKT_Map();
             mapData.File = MapSaveLoader.MapToString(map);
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.MapManager, mapData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Map, mapData);
         }
     }
 }

@@ -15,7 +15,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Login : PM_Base
     {
-        [HandlesPacket(PacketHeader.LoginManager)]
+        [HandlesPacket(PacketHeader.Login)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Login data = Serializer.ConvertBytesToObject<PKT_Login>(bytes);
@@ -77,7 +77,7 @@ namespace GameServer.PacketManager
                 client.GetData<UserFile>().UpdateAdmin(true);
                 PKT_Command commandData = new PKT_Command();
                 commandData._commandMode = CommandMode.Op;
-                client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                client.Listener.EnqueuePacket(PacketHeader.Console, commandData);
                 Printer.Warning($"Giving first join admin permission to {client.GetData<UserFile>().Username}");
             }
         }
@@ -98,7 +98,7 @@ namespace GameServer.PacketManager
             if (response == LoginResponse.Mods) loginData._extraDetails = (List<string>)extraDetails;
             else if (response == LoginResponse.Version) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
 
-            client.Listener.EnqueuePacket(PacketHeader.LoginManager, loginData);
+            client.Listener.EnqueuePacket(PacketHeader.Login, loginData);
             client.Listener.MarkForDisconnect();
         }
     }

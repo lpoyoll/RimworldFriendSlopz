@@ -149,7 +149,7 @@ namespace TCPNetwork
                 {
                     LastKASentPacket = DateTime.Now;
                     PKT_KeepAlive keepAliveData = new PKT_KeepAlive();
-                    EnqueuePacket(PacketHeader.KeepAliveManager, keepAliveData);
+                    EnqueuePacket(PacketHeader.KeepAlive, keepAliveData);
                 }
             }
         }
@@ -167,7 +167,7 @@ namespace TCPNetwork
                 try
                 {
                     PKT_Disconnect packet = new PKT_Disconnect();
-                    EnqueuePacket(PacketHeader.DisconnectManager, packet);
+                    EnqueuePacket(PacketHeader.Disconnect, packet);
                 }
                 catch (Exception ex) { Printer.Error(ex); }
             }

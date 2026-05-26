@@ -14,7 +14,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Settlements : PM_Base
     {
-        [HandlesPacket(PacketHeader.SettlementManager)]
+        [HandlesPacket(PacketHeader.Settlement)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_PlayerSettlement data = Serializer.ConvertBytesToObject<PKT_PlayerSettlement>(bytes);
@@ -52,7 +52,7 @@ namespace GameServer.PacketManager
                     {
                         settlementData._settlementFile.Goodwill = PM_Goodwills.GetSettlementGoodwill(cClient, settlementFile);
 
-                        cClient.Listener.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+                        cClient.Listener.EnqueuePacket(PacketHeader.Settlement, settlementData);
                     }
                 }
 
@@ -98,7 +98,7 @@ namespace GameServer.PacketManager
             {
                 settlementData._stepMode = SettlementStepMode.Remove;
 
-                ServerNetwork.SendPacketToAllClients(PacketHeader.SettlementManager, settlementData, client);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.Settlement, settlementData, client);
             }
         }
 

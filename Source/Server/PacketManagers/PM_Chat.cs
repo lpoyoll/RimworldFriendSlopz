@@ -29,7 +29,7 @@ namespace GameServer.PacketManager
 
         public static string DefaultJoinMessage { get; set; } = "Use '/help' to check all the available commands.";
 
-        [HandlesPacket(PacketHeader.ChatManager)]
+        [HandlesPacket(PacketHeader.Chat)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Chat data = Serializer.ConvertBytesToObject<PKT_Chat>(bytes);
@@ -46,7 +46,7 @@ namespace GameServer.PacketManager
             chatData.UsernameColor = ChatColor.Console;
             chatData.MessageColor = ChatColor.Console;
 
-            client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            client.Listener.EnqueuePacket(PacketHeader.Chat, chatData);
         }
 
         public static void SendServerMessage(ServerClient client, string message)
@@ -57,7 +57,7 @@ namespace GameServer.PacketManager
             chatData.UsernameColor = ChatColor.Server;
             chatData.MessageColor = ChatColor.Server;
 
-            client.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            client.Listener.EnqueuePacket(PacketHeader.Chat, chatData);
         }
 
         private static void BroadcastChatMessage(ServerClient client, string message)
@@ -68,7 +68,7 @@ namespace GameServer.PacketManager
             chatData.UsernameColor = client.GetData<UserFile>().IsAdmin ? ChatColor.Admin : ChatColor.Normal;
             chatData.MessageColor = ChatColor.Normal;
 
-            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Chat, chatData);
             PM_Chat.WriteChatInConsole(client.GetData<UserFile>().Username, message);
             WriteToLogs(client.GetData<UserFile>().Username, message);
         }
@@ -81,7 +81,7 @@ namespace GameServer.PacketManager
             chatData.UsernameColor = ChatColor.Console;
             chatData.MessageColor = ChatColor.Console;
 
-            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Chat, chatData);
             PM_Chat.WriteChatInConsole(chatData.Username, message);
             WriteToLogs(chatData.Username, message);
         }
@@ -94,7 +94,7 @@ namespace GameServer.PacketManager
             chatData.UsernameColor = ChatColor.Server;
             chatData.MessageColor = ChatColor.Server;
 
-            ServerNetwork.SendPacketToAllClients(PacketHeader.ChatManager, chatData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Chat, chatData);
             PM_Chat.WriteChatInConsole(chatData.Username, message);
             WriteToLogs(chatData.Username, message);
         }

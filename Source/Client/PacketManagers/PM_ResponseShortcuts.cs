@@ -10,7 +10,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_ResponseShortcuts : PM_Base
     {
-        [HandlesPacket(PacketHeader.ResponseShortcutManager)]
+        [HandlesPacket(PacketHeader.ResponseShortcut)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_ResponseShortcut data = Serializer.ConvertBytesToObject<PKT_ResponseShortcut>(bytes);

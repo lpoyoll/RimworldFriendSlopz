@@ -63,7 +63,7 @@ namespace GameClient.Patches
                     settlementData._settlementFile.Tile = settlement;
                     settlementData._stepMode = CommonEnumerators.SettlementStepMode.Remove;
 
-                    Network.ServerEndpoint.EnqueuePacket(PacketHeader.SettlementManager, settlementData);
+                    Network.ServerEndpoint.EnqueuePacket(PacketHeader.Settlement, settlementData);
                 }
             }
         }

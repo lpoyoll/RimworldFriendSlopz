@@ -21,7 +21,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Roads : PM_Base
     {
-        [HandlesPacket(PacketHeader.RoadManager)]
+        [HandlesPacket(PacketHeader.Road)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Road data = Serializer.ConvertBytesToObject<PKT_Road>(bytes);
@@ -48,7 +48,7 @@ namespace GameClient.PacketManagers
             data._details.ToTile = tileBID;
             data._details.DefName = roadDef.defName;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.RoadManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Road, data);
         }
 
         public static void SendRoadRemoveRequest(int tileAID, int tileBID)
@@ -60,7 +60,7 @@ namespace GameClient.PacketManagers
             data._details.FromTile = tileAID;
             data._details.ToTile = tileBID;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.RoadManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Road, data);
         }
 
         public static void AddRoads(List<RoadDetail> details, bool forceRefresh)

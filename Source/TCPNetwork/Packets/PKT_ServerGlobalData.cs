@@ -28,7 +28,7 @@ namespace TCPNetwork.Packets
 
         public FL_DifficultyConfig DifficultyValues { get; set; } = null;
 
-        public List<NPCSettlementDetail> _npcSettlements { get; set; } = new List<NPCSettlementDetail>();
+        public List<FL_WorldObject> WorldObjects { get; set; } = new List<FL_WorldObject>();
 
         public List<FL_Settlement> PlayerSettlements { get; set; } = new List<FL_Settlement>();
 

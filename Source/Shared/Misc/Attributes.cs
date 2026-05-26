@@ -34,44 +34,11 @@ namespace Shared
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class OnUpdate : Attribute { }
 
-    public enum PacketHeader : byte
-    {
-        None,
-        KeepAliveManager,
-        LoginManager,
-        TransferManager,
-        RaidManager,
-        ZoomManager,
-        AidManager,
-        CaravanManager,
-        ChatManager,
-        EventManager,
-        GameParameterManager,
-        GoodWillManager,
-        GuildManager,
-        MapManager,
-        ModManager,
-        NPCManager,
-        RoadManager,
-        SaveManager,
-        SettlementManager,
-        SiteManager,
-        VersionManager,
-        WorldManager,
-        PollutionManager,
-        ConsoleManager,
-        GlobalDataManager,
-        ResponseShortcutManager,
-        RecountManager,
-        InformationManager,
-        LeaderboardManager,
-        ServerBrowserTelemetry,
-        ServerBrowserListing,
-        SynchronousManager,
-        ServerBrowserReachability,
-        DisconnectManager,
-        VersionDownload,
-        Handshake,
-        WorldObject
+    public enum PacketHeader : byte 
+    { 
+        None, Handshake, KeepAlive, Login, Transfer, Raid, Zoom, Aid, Caravan, Chat, Event, 
+        GameParameter, GoodWill, Guild, Map, Mod, Road, Save, Settlement, Site, Version, World, 
+        Pollution, Console, GlobalData, ResponseShortcut, PlayerRecount, Information, Leaderboard, 
+        ServerBrowserTelemetry, ServerBrowserListing, Synchronous, Disconnect, VersionDownload, WorldObject 
     }
 }

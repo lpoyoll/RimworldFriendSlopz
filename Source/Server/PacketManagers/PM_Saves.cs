@@ -15,7 +15,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Saves : PM_Base
     {
-        [HandlesPacket(PacketHeader.SaveManager)]
+        [HandlesPacket(PacketHeader.Save)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Save data = Serializer.ConvertBytesToObject<PKT_Save>(bytes);
@@ -92,7 +92,7 @@ namespace GameServer.PacketManager
             data._fileBytes = File.ReadAllBytes(savePath);
             if (!Master.ServerConfig.SyncLocalSave) data._forceUseSave = true;
 
-            client.Listener.EnqueuePacket(PacketHeader.SaveManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.Save, data);
         }
         
         public static void ReceiveSaveFromClient(ServerClient client, PKT_Save data)

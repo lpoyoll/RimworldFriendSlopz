@@ -28,7 +28,7 @@ namespace GameClient.PacketManagers.Synchronous
                 packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerDraft;
                 packet.Contents = Serializer.ConvertObjectToBytes(PlayerDrafts, false);
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, packet);
 
                 PlayerDrafts.Clear();
             }

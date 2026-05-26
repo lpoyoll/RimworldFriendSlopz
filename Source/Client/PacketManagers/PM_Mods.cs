@@ -19,7 +19,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Mods : PM_Base
     {
-        [HandlesPacket(PacketHeader.ModManager)]
+        [HandlesPacket(PacketHeader.Mod)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_ModConfig data = Serializer.ConvertBytesToObject<PKT_ModConfig>(bytes);

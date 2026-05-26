@@ -11,14 +11,14 @@ namespace GameServer.PacketManager
     {
         private static float ScoreMultiplier = 0.001f;
 
-        [HandlesPacket(PacketHeader.LeaderboardManager)]
+        [HandlesPacket(PacketHeader.Leaderboard)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) { SendLeaderboard(client); }
 
         private static void SendLeaderboard(ServerClient client)
         {
             PKT_Leaderboard data = new PKT_Leaderboard();
             data._file = (FL_Leaderboard)FL_Leaderboard.Load<FL_Leaderboard>(FL_Leaderboard.SavePath);
-            client.Listener.EnqueuePacket(PacketHeader.LeaderboardManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.Leaderboard, data);
         }
 
         public static void UpdateLeaderboard(ServerClient client, FL_Map map)

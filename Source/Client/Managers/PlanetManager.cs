@@ -22,24 +22,15 @@ namespace GameClient.Managers
             if (SessionHandler.IsGeneratingFreshWorld) return;
             else
             {
-                PM_Settlements.ClearAllSettlements();
-                PM_Settlements.AddSettlements(SessionHandler.GlobalData.PlayerSettlements);
-                
-                PM_Sites.ClearAllSites();
-                PM_Sites.AddSites(SessionHandler.GlobalData.PlayerSites);
-                
-                PM_Npcs.ClearAllSettlements();
-                NPCManagerH.SaveAllQuests();
-                
-                PM_Npcs.AddSettlements(SessionHandler.GlobalData._npcSettlements);
-                NPCManagerH.CleanupQuests();
-                
+                PM_WorldObject.ClearAllObjects();
                 PM_Roads.ClearAllRoads();
-                PM_Roads.AddRoads(SessionHandler.GlobalData.Roads, false);
-                
-                PM_Caravan.ClearAllCaravans();
-                CaravanManagerH.SetAllPlayerCaravans();
 
+                PM_WorldObject.AddWorldObjects(SessionHandler.GlobalData.WorldObjects);
+                PM_Settlements.AddSettlements(SessionHandler.GlobalData.PlayerSettlements);
+                PM_Roads.AddRoads(SessionHandler.GlobalData.Roads, false);
+                PM_Sites.AddSites(SessionHandler.GlobalData.PlayerSites);
+                PM_Caravan.AddCaravans();
+                
                 if (ModLister.BiotechInstalled)
                 {
                     PM_Pollution.ClearAllPollution();
@@ -49,12 +40,8 @@ namespace GameClient.Managers
         }
     }
 
-    //Helper class for the PlanetManager class
-
     public static class PlanetManagerHelper
     {
-        //Returns an online faction depending on the value
-
         public static Faction GetPlayerFactionFromGoodwill(Goodwill goodwill)
         {
             Faction factionToUse = null;

@@ -27,7 +27,7 @@ namespace GameClient.PacketManagers.Synchronous
                 packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerGameSpeed;
                 packet.Contents = Serializer.ConvertObjectToBytes(data, false);
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, packet);
             }
         }
 
@@ -45,7 +45,7 @@ namespace GameClient.PacketManagers.Synchronous
                 packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerGameSpeed;
                 packet.Contents = Serializer.ConvertObjectToBytes(data, false);
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, packet);
             }
         }
 

@@ -11,7 +11,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Information : PM_Base
     {
-        [HandlesPacket(PacketHeader.InformationManager)]
+        [HandlesPacket(PacketHeader.Information)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Information data = Serializer.ConvertBytesToObject<PKT_Information>(bytes);
@@ -36,7 +36,7 @@ namespace GameClient.PacketManagers
             data._stepMode = PKT_Information.InfoStepMode.Connection;
             data._settlementTile = SessionHandler.ChosenSettlement.Tile;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.InformationManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Information, data);
         }
 
         public static void AskForWealth()
@@ -47,7 +47,7 @@ namespace GameClient.PacketManagers
             data._stepMode = PKT_Information.InfoStepMode.Wealth;
             data._settlementTile = SessionHandler.ChosenSettlement.Tile;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.InformationManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Information, data);
         }
 
         public static void ReceiveInformation(PKT_Information data)

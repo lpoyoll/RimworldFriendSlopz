@@ -71,7 +71,7 @@ namespace GameClient.Dialogs
                 PKT_Event data = new PKT_Event();
                 data._stepMode = EventStepMode.Set;
                 data._eventFiles = PM_Events.AvailableEvents;
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.EventManager, data);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Event, data);
 
                 Close();
             }

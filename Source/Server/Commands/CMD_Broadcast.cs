@@ -26,7 +26,7 @@ namespace GameServer.Commands
             commandData._commandMode = CommandMode.Broadcast;
             commandData._details = fullText;
 
-            ServerNetwork.SendPacketToAllClients(PacketHeader.ConsoleManager, commandData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Console, commandData);
 
             Printer.Title($"Sent broadcast: '{fullText}'");
         }

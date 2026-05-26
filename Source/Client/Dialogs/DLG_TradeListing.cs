@@ -119,7 +119,7 @@ namespace GameClient.Dialogs
             else if (TransferMode == TransferMode.Rebound)
             {
                 SessionHandler.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReAccept;
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.TransferManager, SessionHandler.IncomingManifest);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionHandler.IncomingManifest);
                 foreach (Thing thing in ListedThings) RimworldManager.PlaceThingIntoCaravan(thing, SessionHandler.ChosenCaravan);
 
                 PM_Transfers.FinishTransfer(true);

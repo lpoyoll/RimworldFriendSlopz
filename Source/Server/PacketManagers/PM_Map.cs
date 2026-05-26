@@ -10,7 +10,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Map : PM_Base
     {
-        [HandlesPacket(PacketHeader.MapManager)]
+        [HandlesPacket(PacketHeader.Map)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Map data = Serializer.ConvertBytesToObject<PKT_Map>(bytes);

@@ -43,7 +43,7 @@ namespace GameClient.PacketManagers
             typeof(WorldGenStep_Features)
         };
 
-        [HandlesPacket(PacketHeader.WorldManager)]
+        [HandlesPacket(PacketHeader.World)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_World data = Serializer.ConvertBytesToObject<PKT_World>(bytes);
@@ -86,7 +86,7 @@ namespace GameClient.PacketManagers
             data._stepMode = WorldStepMode.Sent;
             data.File = SessionHandler.CurrentWorld;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.WorldManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.World, data);
 
             File.Delete(PM_World.tempWorldPath);
             SessionHandler.IsGeneratingFreshWorld = false;
@@ -232,8 +232,9 @@ namespace GameClient.PacketManagers
             SessionHandler.CurrentWorld.Features = GetPlanetFeatures();
             SessionHandler.CurrentWorld.Roads = PM_RoadsHelper.GetPlanetRoads();
             SessionHandler.CurrentWorld.PollutedTiles = PM_Pollution.GetPlanetPollutedTiles();
-            SessionHandler.CurrentWorld.NPCSettlements = GetPlanetNPCSettlements();
             SessionHandler.CurrentWorld.NPCFactions = GetPlanetNPCFactions();
+
+            PM_WorldObject.SendAllWorldObjects();
         }
 
         public static List<NPCFactionDetail> GetNPCFactionsFromDef(FactionDef[] factionDefs)
@@ -284,31 +285,6 @@ namespace GameClient.PacketManagers
             }
 
             return planetFactions;
-        }
-
-        public static List<NPCSettlementDetail> GetPlanetNPCSettlements()
-        {
-            Faction[] worldNPCFactions = Find.FactionManager.AllFactions.Where(fetch => !SessionHandler.PlayerFactions.Contains(fetch) &&
-                fetch != Faction.OfPlayer).ToArray();
-
-            List<FactionDef> worldNPCFactionDefs = new List<FactionDef>();
-            foreach (Faction faction in worldNPCFactions) worldNPCFactionDefs.Add(faction.def);
-
-            List<NPCSettlementDetail> npcSettlements = new List<NPCSettlementDetail>();
-            foreach (Settlement settlement in Find.World.worldObjects.Settlements.Where(fetch => worldNPCFactionDefs.Contains(fetch.Faction.def)))
-            {
-                try
-                {
-                    NPCSettlementDetail PlanetNPCSettlementDetails = new NPCSettlementDetail();
-                    PlanetNPCSettlementDetails.Tile = settlement.Tile;
-                    PlanetNPCSettlementDetails.DefName = settlement.Faction.def.defName;
-                    PlanetNPCSettlementDetails.Name = settlement.Name;
-                    PlanetNPCSettlementDetails.FactionName = settlement.Faction.Name;
-                    npcSettlements.Add(PlanetNPCSettlementDetails);
-                }
-                catch (Exception e) { Printer.Warning($"Failed to get NPC settlement '{settlement.Tile}' to populate. Reason: {e}"); }
-            }
-            return npcSettlements;
         }
 
         public static List<FeatureDetail> GetPlanetFeatures()

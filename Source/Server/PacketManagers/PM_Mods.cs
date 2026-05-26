@@ -17,7 +17,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Mods : PM_Base
     {
-        [HandlesPacket(PacketHeader.ModManager)]
+        [HandlesPacket(PacketHeader.Mod)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_ModConfig data = Serializer.ConvertBytesToObject<PKT_ModConfig>(bytes);
@@ -48,7 +48,7 @@ namespace GameServer.PacketManager
                 packet._configFile = Master.ModConfig;
                 packet._stepMode = ModConfigStepMode.Send;
 
-                ServerNetwork.SendPacketToAllClients(PacketHeader.ModManager, packet);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.Mod, packet);
             }
         }
 

@@ -20,7 +20,7 @@ namespace GameServer.Managers
         {
             PKT_PlayerRecount playerRecountData = new PKT_PlayerRecount();
             playerRecountData.CurrentPlayerCount = ServerNetwork.GetConnectedClients().Count();
-            ServerNetwork.SendPacketToAllClients(PacketHeader.RecountManager, playerRecountData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.PlayerRecount, playerRecountData);
         }
 
         public static void BanPlayerFromName(string username)

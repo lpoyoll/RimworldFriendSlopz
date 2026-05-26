@@ -21,7 +21,7 @@ namespace GameClient.PacketManagers.Synchronous
             packet.CurrentActionType = PKT_Synchronous.ActionType.SPlayerDestroy;
             packet.Contents = Serializer.ConvertObjectToBytes(destroy, false);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, packet);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, packet);
         }
 
         public static void Handle(ServerClient client, PKT_Synchronous data)

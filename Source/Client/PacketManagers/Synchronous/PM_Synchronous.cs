@@ -22,7 +22,7 @@ namespace GameClient.PacketManagers.Synchronous
     {
         private enum SynchronousSide { Host, Guest }
 
-        [HandlesPacket(PacketHeader.SynchronousManager)]
+        [HandlesPacket(PacketHeader.Synchronous)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Synchronous data = Serializer.ConvertBytesToObject<PKT_Synchronous>(bytes);
@@ -95,7 +95,7 @@ namespace GameClient.PacketManagers.Synchronous
             data.CurrentType = type;
             data.Party = GetPawnParty(SynchronousSide.Guest);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, data);
         }
 
         private static void OnAsk(PKT_Synchronous data)
@@ -118,7 +118,7 @@ namespace GameClient.PacketManagers.Synchronous
 
                 SpawnOtherPawns(SynchronousSide.Host, data);
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, _);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, _);
             };
 
             Action actionNo = delegate
@@ -128,7 +128,7 @@ namespace GameClient.PacketManagers.Synchronous
                 _.FromTile = data.ToTile;
                 _.ToTile = data.FromTile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, _);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, _);
             };
 
             if (!DLG_Options.EnablePreviewFeatures) actionNo();
@@ -174,7 +174,7 @@ namespace GameClient.PacketManagers.Synchronous
             {
                 PKT_Synchronous data = new PKT_Synchronous();
                 data.CurrentStepMode = PKT_Synchronous.StepMode.Start;
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SynchronousManager, data);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, data);
 
                 MainThreadHandler.Instance.DoOnSynchronousStartMethods();
 

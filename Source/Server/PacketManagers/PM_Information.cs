@@ -10,7 +10,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Information : PM_Base
     {
-        [HandlesPacket(PacketHeader.InformationManager)]
+        [HandlesPacket(PacketHeader.Information)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Information data = Serializer.ConvertBytesToObject<PKT_Information>(bytes);
@@ -34,7 +34,7 @@ namespace GameServer.PacketManager
 
             data._isPlayerOnline = clientToFind != null ? true : false;
 
-            client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.Information, data);
         }
 
         private static void SendWealth(ServerClient client, PKT_Information data)
@@ -43,7 +43,7 @@ namespace GameServer.PacketManager
             else 
             {
                 data._settlementWealth = PM_Map.GetMapFromTile(data._settlementTile).Wealth;
-                client.Listener.EnqueuePacket(PacketHeader.InformationManager, data);
+                client.Listener.EnqueuePacket(PacketHeader.Information, data);
             }
         }
     }

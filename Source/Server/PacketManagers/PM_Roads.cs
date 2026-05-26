@@ -15,7 +15,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Roads : PM_Base
     {
-        [HandlesPacket(PacketHeader.RoadManager)]
+        [HandlesPacket(PacketHeader.Road)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!PlayerCooldown.CheckIfCanRoad(client.GetData<UserFile>(), Master.ActionConfigs.RoadAction)) ResponseShortcutManager.SendUnavailablePacket(client);
@@ -44,7 +44,7 @@ namespace GameServer.PacketManager
             }
 
             SaveRoad(data._details, client);
-            ServerNetwork.SendPacketToAllClients(PacketHeader.RoadManager, data);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Road, data);
             client.GetData<UserFile>().Cooldowns.SetRoadTimer(client.GetData<UserFile>());
         }
 
@@ -77,7 +77,7 @@ namespace GameServer.PacketManager
 
             void PostDelete(RoadDetail toRemove)
             {
-                ServerNetwork.SendPacketToAllClients(PacketHeader.RoadManager, data);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.Road, data);
                 client.GetData<UserFile>().Cooldowns.SetRoadTimer(client.GetData<UserFile>());
             }
         }

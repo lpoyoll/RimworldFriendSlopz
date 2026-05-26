@@ -13,7 +13,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Transfers : PM_Base
     {
-        [HandlesPacket(PacketHeader.TransferManager)]
+        [HandlesPacket(PacketHeader.Transfer)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!Master.ActionConfigs.EnableTrading)
@@ -58,7 +58,7 @@ namespace GameServer.PacketManager
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.Username)) 
                 {
                     packet.CurrentStepMode = TransferStepMode.Recover;
-                    client.Listener.EnqueuePacket(PacketHeader.TransferManager, packet);
+                    client.Listener.EnqueuePacket(PacketHeader.Transfer, packet);
                 }
 
                 else
@@ -66,17 +66,17 @@ namespace GameServer.PacketManager
                     if (packet.CurrentTransferMode == TransferMode.Gift)
                     {
                         packet.CurrentStepMode = TransferStepMode.TradeAccept;
-                        client.Listener.EnqueuePacket(PacketHeader.TransferManager, packet);
+                        client.Listener.EnqueuePacket(PacketHeader.Transfer, packet);
                     }
 
                     else if (packet.CurrentTransferMode == TransferMode.Pod)
                     {
                         packet.CurrentStepMode = TransferStepMode.TradeAccept;
-                        client.Listener.EnqueuePacket(PacketHeader.TransferManager, packet);
+                        client.Listener.EnqueuePacket(PacketHeader.Transfer, packet);
                     }
 
                     packet.CurrentStepMode = TransferStepMode.TradeRequest;
-                    ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.TransferManager, packet);
+                    ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.Transfer, packet);
                 }
             }
         }
@@ -89,13 +89,13 @@ namespace GameServer.PacketManager
             if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
             {
                 transferData.CurrentStepMode = TransferStepMode.Recover;
-                client.Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                client.Listener.EnqueuePacket(PacketHeader.Transfer, transferData);
             }
 
             else
             {
                 transferData.CurrentStepMode = TransferStepMode.TradeReject;
-                ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.Transfer, transferData);
             }
         }
 
@@ -107,14 +107,14 @@ namespace GameServer.PacketManager
             if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
             {
                 transferData.CurrentStepMode = TransferStepMode.TradeReReject;
-                client.Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                client.Listener.EnqueuePacket(PacketHeader.Transfer, transferData);
             }
 
             else
             {
                 transferData.CurrentTransferMode = TransferMode.Rebound;
                 transferData.CurrentStepMode = TransferStepMode.TradeReRequest;
-                ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.Transfer, transferData);
             }
         }
 
@@ -126,13 +126,13 @@ namespace GameServer.PacketManager
             if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
             {
                 transferData.CurrentStepMode = TransferStepMode.Recover;
-                client.Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                client.Listener.EnqueuePacket(PacketHeader.Transfer, transferData);
             }
 
             else
             {
                 transferData.CurrentStepMode = TransferStepMode.TradeReAccept;
-                ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.Transfer, transferData);
             }
         }
 
@@ -144,13 +144,13 @@ namespace GameServer.PacketManager
             if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
             {
                 transferData.CurrentStepMode = TransferStepMode.Recover;
-                client.Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                client.Listener.EnqueuePacket(PacketHeader.Transfer, transferData);
             }
 
             else
             {
                 transferData.CurrentStepMode = TransferStepMode.TradeReReject;
-                ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.TransferManager, transferData);
+                ServerNetwork.GetConnectedClientFromUsername(settlement.Username).Listener.EnqueuePacket(PacketHeader.Transfer, transferData);
             }
         }
     }

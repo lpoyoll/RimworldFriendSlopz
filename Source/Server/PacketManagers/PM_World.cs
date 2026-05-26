@@ -12,7 +12,7 @@ namespace GameServer.PacketManager
 {
     public class PM_World : PM_Base
     {
-        [HandlesPacket(PacketHeader.WorldManager)]
+        [HandlesPacket(PacketHeader.World)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_World data = Serializer.ConvertBytesToObject<PKT_World>(bytes);
@@ -31,7 +31,7 @@ namespace GameServer.PacketManager
         {
             PKT_World worldData = new PKT_World();
             worldData._stepMode = WorldStepMode.AskFor;
-            client.Listener.EnqueuePacket(PacketHeader.WorldManager, worldData);
+            client.Listener.EnqueuePacket(PacketHeader.World, worldData);
         }
 
         public static void SendWorld(ServerClient client)
@@ -40,7 +40,7 @@ namespace GameServer.PacketManager
             data._stepMode = WorldStepMode.Sent;
             data.File = Serializer.SerializeFromFile<FL_PlanetConfig>(FL_PlanetConfig.SavePath);
 
-            client.Listener.EnqueuePacket(PacketHeader.WorldManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.World, data);
         }
 
         public static void ReceiveWorld(ServerClient client, PKT_World data)

@@ -15,7 +15,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Aid : PM_Base
     {
-        [HandlesPacket(PacketHeader.AidManager)]
+        [HandlesPacket(PacketHeader.Aid)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Aid data = Serializer.ConvertBytesToObject<PKT_Aid>(bytes);
@@ -55,7 +55,7 @@ namespace GameClient.PacketManagers
             aidData._humanData = ScribeManager.SerializeToString(toGet, ScribeManager.SerializableType.Thing);
             RimworldManager.RemovePawnFromGame(toGet);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.AidManager, aidData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Aid, aidData);
 
             DLG_Base.PushNewDialog(new DLG_Wait());
         }
@@ -87,7 +87,7 @@ namespace GameClient.PacketManagers
             RimworldManager.PlaceThingIntoMap(pawn, map, RimworldManager.GetTransferLocationInMap(map), true);
 
             data._stepMode = AidStepMode.Accept;
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.AidManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Aid, data);
 
             RimworldManager.GenerateLetter("Received aid", "You have received aid from a player! The pawn should come to help soon",
                 LetterDefOf.PositiveEvent);
@@ -98,7 +98,7 @@ namespace GameClient.PacketManagers
         private static void RejectAid(PKT_Aid data)
         {
             data._stepMode = AidStepMode.Reject;
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.AidManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Aid, data);
         }
     }
 }

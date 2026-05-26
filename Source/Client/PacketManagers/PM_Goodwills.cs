@@ -20,7 +20,7 @@ namespace GameClient.PacketManagers
 
     public class PM_Goodwills : PM_Base
     {
-        [HandlesPacket(PacketHeader.GoodWillManager)]
+        [HandlesPacket(PacketHeader.GoodWill)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_FactionGoodwill data = Serializer.ConvertBytesToObject<PKT_FactionGoodwill>(bytes);
@@ -80,7 +80,7 @@ namespace GameClient.PacketManagers
             factionGoodwillData._tile = structureTile;
             factionGoodwillData._goodwill = goodwill;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.GoodWill, factionGoodwillData);
 
             DLG_Wait d1 = new DLG_Wait();
             DLG_Base.PushNewDialog(d1);

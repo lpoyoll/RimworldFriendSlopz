@@ -59,7 +59,7 @@ namespace GameClient.Patches
                 PKT_Pollution data = new PKT_Pollution();
                 data._pollutionData = pollution;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.PollutionManager, data);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Pollution, data);
             }
         }
     }

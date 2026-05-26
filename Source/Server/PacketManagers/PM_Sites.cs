@@ -15,7 +15,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Sites : PM_Base
     {
-        [HandlesPacket(PacketHeader.SiteManager)]
+        [HandlesPacket(PacketHeader.Site)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!Master.ActionConfigs.SiteAction.IsEnabled)
@@ -65,11 +65,11 @@ namespace GameServer.PacketManager
             foreach (ServerClient cClient in ServerNetwork.GetConnectedClients())
             {
                 siteData._file.Goodwill = PM_Goodwills.GetSiteGoodwill(cClient, siteFile);
-                cClient.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+                cClient.Listener.EnqueuePacket(PacketHeader.Site, siteData);
             }
 
             siteData._stepMode = SiteStepMode.Accept;
-            client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            client.Listener.EnqueuePacket(PacketHeader.Site, siteData);
 
             InformationDisplayer.DisplayAddSite(siteFile.Tile.ToString());
         }
@@ -103,7 +103,7 @@ namespace GameServer.PacketManager
             siteData._stepMode = SiteStepMode.Destroy;
             siteData._file = siteFile;
 
-            ServerNetwork.SendPacketToAllClients(PacketHeader.SiteManager, siteData);
+            ServerNetwork.SendPacketToAllClients(PacketHeader.Site, siteData);
 
             File.Delete(Path.Combine(Master.SitesPath, siteFile.Tile + CommonValues.DefaultSaveFormat));
 
@@ -138,7 +138,7 @@ namespace GameServer.PacketManager
                 PKT_Site siteData = new PKT_Site();
                 siteData._stepMode = SiteStepMode.Rewards;
                 siteData._rewardFiles = toReward.ToArray();
-                client.Listener.EnqueuePacket(PacketHeader.SiteManager, siteData);
+                client.Listener.EnqueuePacket(PacketHeader.Site, siteData);
             }
         }
 
@@ -211,7 +211,7 @@ namespace GameServer.PacketManager
             data._stepMode = SiteStepMode.Info;
             data._file = siteFile;
 
-            client.Listener.EnqueuePacket(PacketHeader.SiteManager, data);
+            client.Listener.EnqueuePacket(PacketHeader.Site, data);
         }
 
         public static FL_Site[] GetAllSites()

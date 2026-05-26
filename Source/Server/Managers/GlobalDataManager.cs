@@ -1,5 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.PacketManager;
+using GameServer.PacketManagers;
 using Shared;
 using Shared.Files;
 using Shared.Files.Sites;
@@ -19,6 +20,7 @@ namespace GameServer.Managers
             globalData.ActionValues = Master.ActionConfigs;
             globalData.RoadValues = Master.ActionConfigs.RoadAction.RoadValues;
             globalData.SiteValues = Master.ActionConfigs.SiteAction.SiteTypes;
+            globalData.WorldObjects = PM_WorldObject.GetAllWorldObjects();
             globalData.PlayerSettlements = PM_Settlements.GetSettlementsFromGoodwill(client);
             globalData.PlayerSites = PM_Sites.GetSitesFromGoodwill(client);
             globalData.ScenarioValues = Master.ScenarioValues;
@@ -31,10 +33,9 @@ namespace GameServer.Managers
             {
                 globalData.Roads = Master.WorldValues.Roads;
                 globalData.PollutedTiles = Master.WorldValues.PollutedTiles;
-                globalData._npcSettlements = Master.WorldValues.NPCSettlements;
             }
 
-            client.Listener.EnqueuePacket(PacketHeader.GlobalDataManager, globalData);
+            client.Listener.EnqueuePacket(PacketHeader.GlobalData, globalData);
         }
     }
 }

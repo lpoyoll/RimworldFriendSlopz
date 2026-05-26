@@ -35,7 +35,7 @@ namespace GameClient.PacketManagers
 
         public static double RewardDelay { get; set; } = -1;
 
-        [HandlesPacket(PacketHeader.SiteManager)]
+        [HandlesPacket(PacketHeader.Site)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Site data = Serializer.ConvertBytesToObject<PKT_Site>(bytes);
@@ -80,7 +80,7 @@ namespace GameClient.PacketManagers
             siteData._file.Tile = SessionHandler.ChosenCaravan.Tile;
             siteData._file.Type.DefName = configFile.DefName;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
 
             DLG_Base.PushNewDialog(new DLG_Wait());
         }
@@ -93,7 +93,7 @@ namespace GameClient.PacketManagers
                 siteData._file.Tile = SessionHandler.ChosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
             };
 
             DLG_YesNo d1 = new DLG_YesNo("Are you sure you want to destroy this site?", r1, null);
@@ -110,7 +110,7 @@ namespace GameClient.PacketManagers
             siteData._stepMode = SiteStepMode.Config;
             siteData._rewardConfig = rewardConfig;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
         }
 
         private static void OnReceiveRewards(FL_SiteReward[] files)
@@ -147,18 +147,6 @@ namespace GameClient.PacketManagers
             foreach (FL_Site toAdd in sites)
             {
                 OnSiteBuild(toAdd);
-            }
-        }
-
-        public static void ClearAllSites()
-        {
-            PlayerSites.Clear();
-
-            foreach (WorldObject site in Finder.GetAllRTSites())
-            {
-                FL_Site siteFile = new FL_Site();
-                siteFile.Tile = site.Tile;
-                OnSiteDestroy(siteFile);
             }
         }
 
@@ -234,7 +222,7 @@ namespace GameClient.PacketManagers
                 Find.WorldPawns.RemovePawn(toSend);
                 toSend.Destroy();
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
                 PM_Saves.ForceSave();
             };
 
@@ -247,7 +235,7 @@ namespace GameClient.PacketManagers
                 siteData._stepMode = SiteStepMode.Worker;
                 siteData._file.Tile = SessionHandler.ChosenSite.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
             };
 
             if (file.WorkerString == null)
@@ -298,7 +286,7 @@ namespace GameClient.PacketManagers
             PKT_Site siteData = new PKT_Site();
             siteData._stepMode = SiteStepMode.Rewards;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
         }
 
         public static void AskForInformation()
@@ -307,7 +295,7 @@ namespace GameClient.PacketManagers
             siteData._stepMode = SiteStepMode.Info;
             siteData._file.Tile = SessionHandler.ChosenSite.Tile;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SiteManager, siteData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
         }
 
         public static void SetValues()

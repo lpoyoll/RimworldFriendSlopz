@@ -9,7 +9,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_GlobalData : PM_Base
     {
-        [HandlesPacket(PacketHeader.GlobalDataManager)]
+        [HandlesPacket(PacketHeader.GlobalData)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<PKT_ServerGlobalData>(bytes);

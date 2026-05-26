@@ -18,7 +18,7 @@ namespace GameClient.Managers
 {
     public class PM_GameParameter : PM_Base
     {
-        [HandlesPacket(PacketHeader.GameParameterManager)]
+        [HandlesPacket(PacketHeader.GameParameter)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             throw new System.NotImplementedException();
@@ -86,7 +86,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Scenario;
             data._bytes = Serializer.ConvertObjectToBytes(file);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.GameParameter, data);
         }
 
         public static void SendCurrentStoryteller(bool isEnforced)
@@ -99,7 +99,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Storyteller;
             data._bytes = Serializer.ConvertObjectToBytes(file);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.GameParameter, data);
         }
 
         public static void SendCurrentDifficulty(bool isEnforced)
@@ -113,7 +113,7 @@ namespace GameClient.Managers
             data._stepMode = GenStepMode.Difficulty;
             data._bytes = Serializer.ConvertObjectToBytes(file);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.GameParameterManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.GameParameter, data);
         }
 
         public static void SendCurrentModConfigs(bool isEnforced)
@@ -122,7 +122,7 @@ namespace GameClient.Managers
             data._stepMode = ModConfigStepMode.Send;
             data._configFile = ModManagerH.SortModsIntoCategories(DLG_ModConfig.ResultMods, DLG_ModConfig.ResultInt);
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.ModManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Mod, data);
         }
 
         private static void SendFirstTimeSetup()

@@ -24,6 +24,7 @@ namespace GameClient.Patches
             if (!SessionHandler.IsReadyToPlay) return true;
 
             if (PM_WorldObject.IsBypass) return true;
+            else if (o.def.defName.StartsWith("RT")) return true;
             else
             {
                 if (o.def == WorldObjectDefOf.Settlement)
@@ -58,6 +59,7 @@ namespace GameClient.Patches
             if (!SessionHandler.IsReadyToPlay) return true;
 
             if (PM_WorldObject.IsBypass) return true;
+            else if (o.def.defName.StartsWith("RT")) return true;
             else
             {
                 if (o.def == WorldObjectDefOf.Settlement)

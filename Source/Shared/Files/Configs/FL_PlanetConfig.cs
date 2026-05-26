@@ -30,7 +30,5 @@ namespace Shared.Files.Configs
         public List<PollutionDetail> PollutedTiles { get; set; } = new List<PollutionDetail>();
 
         public List<NPCFactionDetail> NPCFactions { get; set; } = new List<NPCFactionDetail>();
-
-        public List<NPCSettlementDetail> NPCSettlements { get; set; } = new List<NPCSettlementDetail>();
     }
 }

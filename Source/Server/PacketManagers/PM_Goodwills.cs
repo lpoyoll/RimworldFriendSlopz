@@ -12,7 +12,7 @@ namespace GameServer.PacketManager
 {
     public class PM_Goodwills : PM_Base
     {
-        [HandlesPacket(PacketHeader.GoodWillManager)]
+        [HandlesPacket(PacketHeader.GoodWill)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_FactionGoodwill data = Serializer.ConvertBytesToObject<PKT_FactionGoodwill>(bytes);
@@ -63,7 +63,7 @@ namespace GameServer.PacketManager
                 factionGoodwillData._sites.Add(goodwill);
             }
 
-            client.Listener.EnqueuePacket(PacketHeader.GoodWillManager, factionGoodwillData);
+            client.Listener.EnqueuePacket(PacketHeader.GoodWill, factionGoodwillData);
         }
 
         public static Goodwill GetSettlementGoodwill(ServerClient client, FL_Settlement settlement)

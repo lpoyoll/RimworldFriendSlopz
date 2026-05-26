@@ -12,7 +12,7 @@ namespace GameServer.PacketManagers
 {
     public class PM_Synchronous : PM_Base
     {
-        [HandlesPacket(PacketHeader.SynchronousManager)]
+        [HandlesPacket(PacketHeader.Synchronous)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Synchronous data = Serializer.ConvertBytesToObject<PKT_Synchronous>(bytes);
@@ -63,7 +63,7 @@ namespace GameServer.PacketManagers
                 _.Party = data.Party;
                 _.CurrentType = data.CurrentType;
 
-                toFind.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
+                toFind.Listener.EnqueuePacket(PacketHeader.Synchronous, _);
             }
         }
 
@@ -76,7 +76,7 @@ namespace GameServer.PacketManagers
             toFind.GetData<UserFile>().SynchronousClient = client;
 
             data.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
-            toFind.Listener.EnqueuePacket(PacketHeader.SynchronousManager, data);
+            toFind.Listener.EnqueuePacket(PacketHeader.Synchronous, data);
         }
 
         private static void RejectSynchronousSession(ServerClient client, PKT_Synchronous data)
@@ -89,7 +89,7 @@ namespace GameServer.PacketManagers
             _.FromTile = data.FromTile;
             _.ToTile = data.ToTile;
 
-            toFind.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
+            toFind.Listener.EnqueuePacket(PacketHeader.Synchronous, _);
         }
 
         private static void StartSynchronousSession(ServerClient client, PKT_Synchronous data)
@@ -97,7 +97,7 @@ namespace GameServer.PacketManagers
             PKT_Synchronous _ = new PKT_Synchronous();
             _.CurrentStepMode = PKT_Synchronous.StepMode.Start;
 
-            client.GetData<UserFile>().SynchronousClient.Listener.EnqueuePacket(PacketHeader.SynchronousManager, _);
+            client.GetData<UserFile>().SynchronousClient.Listener.EnqueuePacket(PacketHeader.Synchronous, _);
         }
     }
 }

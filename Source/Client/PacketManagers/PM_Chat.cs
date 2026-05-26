@@ -17,7 +17,7 @@ namespace GameClient.PacketManagers
     [StaticConstructorOnStartup]
     public class PM_Chat : PM_Base
     {
-        [HandlesPacket(PacketHeader.ChatManager)]
+        [HandlesPacket(PacketHeader.Chat)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Chat data = Serializer.ConvertBytesToObject<PKT_Chat>(bytes);
@@ -34,7 +34,7 @@ namespace GameClient.PacketManagers
             chatData.Message = messageToSend;
             chatData.IsCommand = messageToSend.StartsWith("/");
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.ChatManager, chatData);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Chat, chatData);
         }
 
         public static void AddMessageToChat(PKT_Chat data)

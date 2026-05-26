@@ -13,7 +13,7 @@ namespace GameServer.PacketManager
 {
     public class PM_GameParameter : PM_Base
     {
-        [HandlesPacket(PacketHeader.GameParameterManager)]
+        [HandlesPacket(PacketHeader.GameParameter)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             GameParameterData data = Serializer.ConvertBytesToObject<GameParameterData>(bytes);

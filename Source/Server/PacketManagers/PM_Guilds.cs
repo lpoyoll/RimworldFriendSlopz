@@ -18,7 +18,7 @@ namespace GameServer.PacketManager
 
     public class PM_Guilds : PM_Base
     {
-        [HandlesPacket(PacketHeader.GuildManager)]
+        [HandlesPacket(PacketHeader.Guild)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!Master.ActionConfigs.EnableFactions)
@@ -70,7 +70,7 @@ namespace GameServer.PacketManager
             if (GuildManagerH.CheckIfFactionExistsByName(factionManifest._guild.Name))
             {
                 factionManifest._stepMode = GuildStepMode.NameInUse;
-                client.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
+                client.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
             }
 
             else
@@ -89,7 +89,7 @@ namespace GameServer.PacketManager
 
                 foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetData<UserFile>().Username)) site.UpdateFaction(factionFile);
 
-                client.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
+                client.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
 
                 InformationDisplayer.DisplayAddFaction(factionFile.Name);
             }
@@ -110,7 +110,7 @@ namespace GameServer.PacketManager
                 foreach (ServerClient toUpdateConnected in GuildManagerH.GetConnectedFactionMembers(guild))
                 {
                     toUpdateConnected.GetData<UserFile>().UpdateFaction(null);
-                    toUpdateConnected.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
+                    toUpdateConnected.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
                     PM_Goodwills.UpdateClientGoodwills(toUpdateConnected);
                 }
 
@@ -133,7 +133,7 @@ namespace GameServer.PacketManager
                 else
                 {
                     guildManifest._guild.Name = guild.Name;
-                    toAdd.Listener.EnqueuePacket(PacketHeader.GuildManager, guildManifest);
+                    toAdd.Listener.EnqueuePacket(PacketHeader.Guild, guildManifest);
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace GameServer.PacketManager
                 else
                 {
                     guildManifest._stepMode = GuildStepMode.AdminProtection;
-                    client.Listener.EnqueuePacket(PacketHeader.GuildManager, guildManifest);
+                    client.Listener.EnqueuePacket(PacketHeader.Guild, guildManifest);
                 }
             }
 
@@ -190,7 +190,7 @@ namespace GameServer.PacketManager
 
                     PM_Goodwills.UpdateClientGoodwills(toRemoveOnline);
 
-                    toRemoveOnline.Listener.EnqueuePacket(PacketHeader.GuildManager, guildManifest);
+                    toRemoveOnline.Listener.EnqueuePacket(PacketHeader.Guild, guildManifest);
                 }
 
                 toRemoveOffline.UpdateFaction(null);
@@ -220,7 +220,7 @@ namespace GameServer.PacketManager
                     guild.PromoteMember(member);
 
                     ServerClient toPromoteOnline = ServerNetwork.GetConnectedClientFromUsername(toPromoteOffline.Username);
-                    if (toPromoteOnline != null) toPromoteOnline.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
+                    if (toPromoteOnline != null) toPromoteOnline.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
                 }
             }
         }
@@ -242,7 +242,7 @@ namespace GameServer.PacketManager
                     guild.DemoteMember(member);
 
                     ServerClient toDemoteOnline = ServerNetwork.GetConnectedClientFromUsername(toDemoteOffline.Username);
-                    if (toDemoteOnline != null) toDemoteOnline.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
+                    if (toDemoteOnline != null) toDemoteOnline.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
                 }
             }
         }
@@ -250,7 +250,7 @@ namespace GameServer.PacketManager
         private static void SendMemberList(ServerClient client, PKT_PlayerGuild factionManifest)
         {
             factionManifest._guild = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName);
-            client.Listener.EnqueuePacket(PacketHeader.GuildManager, factionManifest);
+            client.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
         }
     }
 

@@ -37,7 +37,7 @@ namespace GameServer.Commands
                         commandData._commandMode = CommandMode.Op;
 
                         client.GetData<UserFile>().UpdateAdmin(true);
-                        client.Listener.EnqueuePacket(PacketHeader.ConsoleManager, commandData);
+                        client.Listener.EnqueuePacket(PacketHeader.Console, commandData);
                     }
 
                     Printer.Warning($"User '{toFind.Username}' has now admin privileges");

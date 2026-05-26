@@ -32,7 +32,7 @@ namespace GameClient.PacketManagers
 
         public static string TempSaveFilePath => SaveFilePath + ".temp";
 
-        [HandlesPacket(PacketHeader.SaveManager)]
+        [HandlesPacket(PacketHeader.Save)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Save data = Serializer.ConvertBytesToObject<PKT_Save>(bytes);
@@ -74,7 +74,7 @@ namespace GameClient.PacketManagers
         {
             PKT_Save data = new PKT_Save();
             data._stepMode = SaveStepMode.Reset;
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SaveManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Save, data);
         }
 
         public static double GetRealPlayTimeInteractingFromSave(string filePath)
@@ -103,7 +103,7 @@ namespace GameClient.PacketManagers
             data._forceDisconnect = SessionHandler.IsExiting;
             data._fileBytes = saveBytes;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.SaveManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Save, data);
         }
 
         private static void OnSaveReceived(PKT_Save data)

@@ -22,7 +22,7 @@ namespace GameClient.PacketManagers
 {
     public class PM_Zoom : PM_Base
     {
-        [HandlesPacket(PacketHeader.ZoomManager)]
+        [HandlesPacket(PacketHeader.Zoom)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Zoom data = Serializer.ConvertBytesToObject<PKT_Zoom>(bytes);
@@ -58,7 +58,7 @@ namespace GameClient.PacketManagers
             data.CurrentStepMode = StepMode.Request;
             data.TargetTile = targetTile;
 
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.ZoomManager, data);
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Zoom, data);
         }
 
         private static void OnAccept(PKT_Zoom data)

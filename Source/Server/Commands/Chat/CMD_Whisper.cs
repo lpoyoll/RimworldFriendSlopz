@@ -40,11 +40,11 @@ namespace GameServer.Commands.Chat
 
                         //Send to sender
                         chatData.Username = $"Whisper to '{toFind.GetData<UserFile>().Username}'";
-                        PM_Chat.TargetClient.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+                        PM_Chat.TargetClient.Listener.EnqueuePacket(PacketHeader.Chat, chatData);
 
                         //Send to recipient
                         chatData.Username = $"Whisper from '{PM_Chat.TargetClient.GetData<UserFile>().Username}'";
-                        toFind.Listener.EnqueuePacket(PacketHeader.ChatManager, chatData);
+                        toFind.Listener.EnqueuePacket(PacketHeader.Chat, chatData);
                         PM_Chat.WriteChatInConsole(chatData.Username, message);
                     }
                 }

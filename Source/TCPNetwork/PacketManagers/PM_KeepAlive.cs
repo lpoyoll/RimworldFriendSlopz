@@ -11,7 +11,7 @@ namespace TCPNetwork.PacketManagers
 
         public static int CurrentPing { get; set; } = 0;
 
-        [HandlesPacket(PacketHeader.KeepAliveManager)]
+        [HandlesPacket(PacketHeader.KeepAlive)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) { ComparePing(); }
 
         private static void ComparePing()
