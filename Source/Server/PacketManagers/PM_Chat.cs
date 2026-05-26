@@ -27,11 +27,7 @@ namespace GameServer.PacketManager
 
         public static string[] LatestCommand { get; set; } = null;
 
-        public static string[] DefaultJoinMessages { get; set; } = new string[]
-        {
-            "Welcome to the global chat!",
-            "Use '/help' to check all the available commands."
-        };
+        public static string DefaultJoinMessage { get; set; } = "Use '/help' to check all the available commands.";
 
         [HandlesPacket(PacketHeader.ChatManager)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
@@ -162,7 +158,7 @@ namespace GameServer.PacketManager
 
         public static void SendLoginChatMessages(ServerClient client)
         {
-            foreach (string str in PM_Chat.DefaultJoinMessages) PM_Chat.SendConsoleMessage(client, str);
+            PM_Chat.SendConsoleMessage(client, PM_Chat.DefaultJoinMessage);
 
             if (Master.ChatConfig.EnableMoTD) PM_Chat.SendServerMessage(client, $"MoTD > {Master.ChatConfig.MessageOfTheDay}");
 
