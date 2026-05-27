@@ -7,7 +7,7 @@ using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
 using Shared;
-using Shared.Files.Sites;
+using Shared.Files;
 using Shared.Misc;
 using System;
 using System.Collections.Generic;
@@ -27,13 +27,9 @@ namespace GameClient.PacketManagers
 {
     public class PM_Sites : PM_Base
     {
-        public static List<FL_SiteType> SiteValues { get; set; }
-
         public static List<WO_Site> PlayerSites { get; set; } = new List<WO_Site>();
 
         private static CancellationTokenSource Token { get; set; } = new CancellationTokenSource();
-
-        public static double RewardDelay { get; set; } = -1;
 
         [HandlesPacket(PacketHeader.Site)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
@@ -46,40 +42,39 @@ namespace GameClient.PacketManagers
                     OnSiteAccept();
                     break;
 
-                case SiteStepMode.Info:
-                    OnSiteInfo(data._file);
+                case SiteStepMode.Worker:
+                    OnSiteWorkerInfo(data.File);
                     break;
 
                 case SiteStepMode.Build:
-                    OnSiteBuild(data._file);
+                    OnSiteBuild(data.File);
                     break;
 
                 case SiteStepMode.Destroy:
-                    OnSiteDestroy(data._file);
+                    OnSiteDestroy(data.File);
                     break;
 
                 case SiteStepMode.Rewards:
-                    OnReceiveRewards(data._rewardFiles);
+                    OnReceiveRewards(data.Files);
                     break;
             }
         }
 
-        public static void RequestSiteBuild(FL_SiteType configFile)
+        public static void RequestSiteBuild()
         {
-            if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionHandler.ChosenCaravan, ThingDefOf.Silver.defName, configFile.Cost))
+            int toRemove = SessionHandler.CurrentActionValues.SiteAction.BuildingCost;
+
+            if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionHandler.ChosenCaravan, ThingDefOf.Silver.defName, toRemove))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You do not have enough silver!" }));
                 return;
             }
 
-            RimworldManager.RemoveThingFromCaravan(SessionHandler.ChosenCaravan,
-                DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName), configFile.Cost);
+            RimworldManager.RemoveThingFromCaravan(SessionHandler.ChosenCaravan, DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName), toRemove);
 
             PKT_Site siteData = new PKT_Site();
             siteData._stepMode = SiteStepMode.Build;
-            siteData._file.Tile = SessionHandler.ChosenCaravan.Tile;
-            siteData._file.Type.DefName = configFile.DefName;
-
+            siteData.File.Tile = SessionHandler.ChosenCaravan.Tile;
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
 
             DLG_Base.PushNewDialog(new DLG_Wait());
@@ -90,7 +85,7 @@ namespace GameClient.PacketManagers
             Action r1 = delegate
             {
                 PKT_Site siteData = new PKT_Site();
-                siteData._file.Tile = SessionHandler.ChosenSite.Tile;
+                siteData.File.Tile = SessionHandler.ChosenSite.Tile;
                 siteData._stepMode = SiteStepMode.Destroy;
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
@@ -100,33 +95,84 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        public static void RequestSiteChangeConfig(FL_SiteType config, string reward)
+        private static void RequestPutWorker()
         {
-            PKT_SiteRewardConfig rewardConfig = new PKT_SiteRewardConfig();
-            rewardConfig._siteDef = config.DefName;
-            rewardConfig._rewardDef = reward;
+            DLG_Wait.Instance.Close();
 
+            Action selectWorker = delegate
+            {
+                Pawn toSend = SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)).ToList()
+                    [DLG_ListingWithButton.ResultInt];
+
+                PKT_Site siteData = new PKT_Site();
+                siteData._stepMode = SiteStepMode.Worker;
+                siteData.File.Tile = SessionHandler.ChosenSite.Tile;
+                siteData.File.WorkerString = ScribeManager.SerializeToString(toSend, ScribeManager.SerializableType.Pawn);
+
+                SessionHandler.ChosenCaravan.RemovePawn(toSend);
+                Find.WorldPawns.RemovePawn(toSend);
+                toSend.Destroy();
+
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
+                PM_Saves.ForceSave();
+            };
+
+            List<string> contents = new List<string>();
+            foreach (Pawn pawn in SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)))
+            {
+                contents.Add(pawn.LabelCap);
+            }
+
+            string title = "Available pawns";
+            string description = "Choose the pawn you want to send as a worker";
+            DLG_Base.PushNewDialog(new DLG_ListingWithButton(title, description, contents.ToArray(), selectWorker, null));
+        }
+
+        private static void RequestRetrieveWorker(FL_Site file)
+        {
+            DLG_Wait.Instance.Close();
+
+            Action retrieveWorker = delegate
+            {
+                Pawn toRetrieve = ScribeManager.SerializeFromString<Pawn>(file.WorkerString, ScribeManager.SerializableType.Pawn);
+                RimworldManager.PlaceThingIntoCaravan(toRetrieve, SessionHandler.ChosenCaravan);
+
+                PKT_Site siteData = new PKT_Site();
+                siteData._stepMode = SiteStepMode.RetrieveWorker;
+                siteData.File.Tile = SessionHandler.ChosenSite.Tile;
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
+            };
+
+            DLG_Base.PushNewDialog(new DLG_YesNo("Do you want to retrieve the worker from the site?", retrieveWorker));
+        }
+
+        public static void RequestSiteRewards()
+        {
             PKT_Site siteData = new PKT_Site();
-            siteData._stepMode = SiteStepMode.Config;
-            siteData._rewardConfig = rewardConfig;
-
+            siteData._stepMode = SiteStepMode.Rewards;
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
         }
 
-        private static void OnReceiveRewards(FL_SiteReward[] files)
+        public static void RequestWorkerInfo()
+        {
+            PKT_Site siteData = new PKT_Site();
+            siteData._stepMode = SiteStepMode.Worker;
+            siteData.File.Tile = SessionHandler.ChosenSite.Tile;
+            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
+        }
+
+        private static void OnReceiveRewards(List<FL_Site> files)
         {
             List<Thing> rewards = new List<Thing>();
-            foreach (FL_SiteReward reward in files)
+            foreach (FL_Site file in files)
             {
                 try
                 {
-                    ThingDef def = DefDatabase<ThingDef>.AllDefs.First(fetch => fetch.defName == reward.DefName);
-                    Thing toMake = ThingMaker.MakeThing(def);
-                    toMake.stackCount = reward.Amount;
-                    toMake.HitPoints = def.BaseMaxHitPoints;
-                    rewards.Add(toMake);
+                    Thing toMake = ThingMaker.MakeThing(ThingDefOf.Silver);
+                    toMake.stackCount = SessionHandler.CurrentActionValues.SiteAction.RewardsCount;
+                    toMake.HitPoints = toMake.def.BaseMaxHitPoints;
 
-                    Printer.Message($"Received {reward.Amount} of {reward.DefName}", Verbosity.Verbose);
+                    rewards.Add(toMake);
                 }
                 catch (Exception e) { Printer.Warning(e.ToString(), Verbosity.Verbose); }
             }
@@ -152,23 +198,18 @@ namespace GameClient.PacketManagers
 
         public static void OnSiteBuild(FL_Site toAdd)
         {
-            if (!RimworldManager.CheckIfTileIsValid(toAdd.Tile)) return;
-            else if (Find.WorldObjects.Sites.FirstOrDefault(fetch => fetch.Tile == toAdd.Tile) != null) return;
-            else
+            try
             {
-                try
-                {
-                    SitePartDef siteDef = RTSitePartDefs.Defs.First(fetch => fetch.defName == toAdd.Type.DefName);
-                    WO_Site site = (WO_Site)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSite"));
-                    site.Tile = toAdd.Tile;
-                    site.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
-                    site.AddPart(new RTSitePart(site, siteDef));
+                SitePartDef siteDef = RTSitePartDefOf.RTBase;
+                WO_Site site = (WO_Site)WorldObjectMaker.MakeWorldObject(DefDatabase<WorldObjectDef>.AllDefs.First(fetch => fetch.defName == "RTSite"));
+                site.Tile = toAdd.Tile;
+                site.SetFaction(PlanetManagerHelper.GetPlayerFactionFromGoodwill(toAdd.Goodwill));
+                site.AddPart(new RTSitePart(site, siteDef));
 
-                    PlayerSites.Add(site);
-                    Find.WorldObjects.Add(site);
-                }
-                catch (Exception e) { Printer.Error($"Failed to spawn site at {toAdd.Tile}. Reason: {e}"); }
+                PlayerSites.Add(site);
+                Find.WorldObjects.Add(site);
             }
+            catch (Exception e) { Printer.Error($"Failed to spawn site at {toAdd.Tile}. Reason: {e}"); }
         }
 
         public static void OnSiteDestroy(FL_Site toRemove)
@@ -191,7 +232,6 @@ namespace GameClient.PacketManagers
             FL_Site file = new FL_Site();
             file.Tile = site.Tile;
             file.Goodwill = goodwill;
-            file.Type = SiteValues.First(fetch => fetch.DefName == site.MainSitePartDef.defName);
 
             OnSiteDestroy(file);
             OnSiteBuild(file);
@@ -204,53 +244,10 @@ namespace GameClient.PacketManagers
             PM_Saves.ForceSave();
         }
 
-        private static void OnSiteInfo(FL_Site file)
+        private static void OnSiteWorkerInfo(FL_Site file)
         {
-            DLG_Wait.Instance.Close();
-
-            Action selectWorker = delegate
-            {
-                Pawn toSend = SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)).ToList()
-                    [DLG_ListingWithButton.ResultInt];
-
-                PKT_Site siteData = new PKT_Site();
-                siteData._stepMode = SiteStepMode.Worker;
-                siteData._file.Tile = SessionHandler.ChosenSite.Tile;
-                siteData._file.WorkerString = ScribeManager.SerializeToString(toSend, ScribeManager.SerializableType.Thing);
-
-                SessionHandler.ChosenCaravan.RemovePawn(toSend);
-                Find.WorldPawns.RemovePawn(toSend);
-                toSend.Destroy();
-
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
-                PM_Saves.ForceSave();
-            };
-
-            Action retrieveWorker = delegate
-            {
-                Pawn toRetrieve = ScribeManager.SerializeFromString<Pawn>(file.WorkerString, ScribeManager.SerializableType.Pawn);
-                RimworldManager.PlaceThingIntoCaravan(toRetrieve, SessionHandler.ChosenCaravan);
-
-                PKT_Site siteData = new PKT_Site();
-                siteData._stepMode = SiteStepMode.Worker;
-                siteData._file.Tile = SessionHandler.ChosenSite.Tile;
-
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
-            };
-
-            if (file.WorkerString == null)
-            {
-                List<string> contents = new List<string>();
-                foreach (Pawn pawn in SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)))
-                {
-                    contents.Add(pawn.LabelCap);
-                }
-
-                string title = "Available pawns";
-                string description = "Choose the pawn you want to send as a worker";
-                DLG_Base.PushNewDialog(new DLG_ListingWithButton(title, description, contents.ToArray(), selectWorker, null));
-            }
-            else { DLG_Base.PushNewDialog(new DLG_YesNo("Do you want to retrieve the worker from the site?", retrieveWorker)); }
+            if (string.IsNullOrEmpty(file.WorkerString)) RequestPutWorker();
+            else { RequestRetrieveWorker(file); }
         }
 
         [OnSessionStart]
@@ -263,9 +260,9 @@ namespace GameClient.PacketManagers
             {
                 while (!Token.Token.IsCancellationRequested)
                 {
-                    if (currentRewardDelay >= RewardDelay)
+                    if (currentRewardDelay >= SessionHandler.CurrentActionValues.SiteAction.TimeInterval)
                     {
-                        MainThreadHandler.Instance.Enqueue(AskForSiteRewards);
+                        MainThreadHandler.Instance.Enqueue(RequestSiteRewards);
                         currentRewardDelay = 0;
                     }
 
@@ -281,27 +278,7 @@ namespace GameClient.PacketManagers
         [OnSessionEnd]
         private static void StopTickingSites() { Token.Cancel(); }
 
-        public static void AskForSiteRewards()
-        {
-            PKT_Site siteData = new PKT_Site();
-            siteData._stepMode = SiteStepMode.Rewards;
-
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
-        }
-
-        public static void AskForInformation()
-        {
-            PKT_Site siteData = new PKT_Site();
-            siteData._stepMode = SiteStepMode.Info;
-            siteData._file.Tile = SessionHandler.ChosenSite.Tile;
-
-            Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
-        }
-
-        public static void SetValues()
-        {
-            PM_Sites.SiteValues = SessionHandler.GlobalData.SiteValues;
-            PM_Sites.RewardDelay = SessionHandler.GlobalData.ActionValues.SiteAction.TimeInterval;
-        }
+        [OnSessionEnd]
+        private static void CleanValues() { PlayerSites.Clear(); }
     }
 }

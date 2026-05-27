@@ -3,7 +3,6 @@ using GameServer.Misc;
 using GameServer.PacketManager;
 using Shared;
 using Shared.Files;
-using Shared.Files.Sites;
 using Shared.Misc;
 using System.IO.Compression;
 using static Shared.Misc.Printer;
@@ -76,7 +75,7 @@ namespace GameServer.Managers
                 string userSavePath = Path.Combine(Master.SavesPath, username + CommonValues.DefaultSaveFormat);
                 if (File.Exists(userSavePath)) toArchive.Add(userSavePath);
 
-                FL_Site[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+                FL_Site[] playerSites = PM_Sites.GetAllSitesFromUsername(username);
                 foreach (FL_Site site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
 
                 FL_Settlement[] playerSettlements = PM_Settlements.GetAllSettlementsFromUsername(username);

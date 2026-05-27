@@ -3,7 +3,6 @@ using GameServer.PacketManager;
 using GameServer.PacketManagers;
 using Shared;
 using Shared.Files;
-using Shared.Files.Sites;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.Packets;
@@ -19,7 +18,6 @@ namespace GameServer.Managers
             globalData.IsClientFactionMember = GuildManagerH.GetFactionFromName(client.GetData<UserFile>().GuildName) != null;
             globalData.ActionValues = Master.ActionConfigs;
             globalData.RoadValues = Master.ActionConfigs.RoadAction.RoadValues;
-            globalData.SiteValues = Master.ActionConfigs.SiteAction.SiteTypes;
             globalData.WorldObjects = PM_WorldObject.GetAllWorldObjects();
             globalData.PlayerSettlements = PM_Settlements.GetSettlementsFromGoodwill(client);
             globalData.PlayerSites = PM_Sites.GetSitesFromGoodwill(client);

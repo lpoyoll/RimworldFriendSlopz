@@ -80,7 +80,7 @@ namespace GameClient.PacketManagers
 
         public static void SendWorld()
         {
-            WorldManagerH.PopulateWorldValues();
+            PopulateWorldValues();
 
             PKT_World data = new PKT_World();
             data._stepMode = WorldStepMode.Sent;
@@ -110,7 +110,7 @@ namespace GameClient.PacketManagers
             SessionHandler.CurrentWorld.Population = (int)population;
             SessionHandler.CurrentWorld.LandmarkDensity = (int)density;
             SessionHandler.CurrentWorld.Pollution = pollution;
-            SessionHandler.CurrentWorld.NPCFactions = WorldManagerH.GetNPCFactionsFromDef(factions.ToArray());
+            SessionHandler.CurrentWorld.NPCFactions = GetNPCFactionsFromDef(factions.ToArray());
         }
 
         private static void SetValuesFromServer(PKT_World data) { SessionHandler.CurrentWorld = data.File; }
@@ -131,7 +131,7 @@ namespace GameClient.PacketManagers
                     (OverallTemperature)SessionHandler.CurrentWorld.Temperature,
                     (OverallPopulation)SessionHandler.CurrentWorld.Population,
                     (LandmarkDensity)SessionHandler.CurrentWorld.LandmarkDensity,
-                    WorldManagerH.GetFactionDefsFromNPCFaction(SessionHandler.CurrentWorld.NPCFactions),
+                    GetFactionDefsFromNPCFaction(SessionHandler.CurrentWorld.NPCFactions),
                     SessionHandler.CurrentWorld.Pollution);
 
                 LongEventHandler.ExecuteWhenFinished(delegate
@@ -222,10 +222,7 @@ namespace GameClient.PacketManagers
                 catch (Exception e) { Printer.Warning($"Failed set planet faction from def '{SessionHandler.CurrentWorld.NPCFactions[i].DefName}'. Reason: {e}"); }
             }
         }
-    }
 
-    public class WorldManagerH
-    {
         public static void PopulateWorldValues()
         {
             Printer.Warning("Populating world values", Verbosity.Verbose);

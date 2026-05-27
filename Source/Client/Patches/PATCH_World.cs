@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Dialogs.Sites;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
@@ -51,20 +50,7 @@ namespace GameClient.Patches
                 }
             };
 
-            Command_Action command_SiteConfigMenu = new Command_Action
-            {
-                defaultLabel = "Site settings",
-                defaultDesc = "Configure the settings for your sites",
-                icon = ContentFinder<Texture2D>.Get("Commands/Config"),
-                action = delegate
-                {
-                    if (SessionHandler.CurrentActionValues.SiteAction.IsEnabled) DLG_Base.PushNewDialog(new DLG_SiteMenu(true));
-                    else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
-                }
-            };
-
             if (__instance.Faction == Find.FactionManager.OfPlayer) gizmoList.Add(command_PersonalFactionMenu);
-            gizmoList.Add(command_SiteConfigMenu);
             gizmoList.Add(command_Leaderboard);
             __result = gizmoList;
         }
@@ -85,15 +71,23 @@ namespace GameClient.Patches
 
                 Command_Action Command_BuildSite = new Command_Action
                 {
-                    defaultLabel = "Build a Site",
+                    defaultLabel = "Build a production site",
                     defaultDesc = "Build an utility site for your faction",
                     icon = ContentFinder<Texture2D>.Get("Commands/Site"),
                     action = delegate
                     {
                         SessionHandler.ChosenCaravan = __instance;
 
-                        if (SessionHandler.CurrentActionValues.SiteAction.IsEnabled) DLG_Base.PushNewDialog(new DLG_SiteMenu(false));
-                        else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                        if (SessionHandler.CurrentActionValues.SiteAction.IsEnabled) 
+                        {
+                            DLG_Base.PushNewDialog(new DLG_YesNo($"Building a site costs {SessionHandler.CurrentActionValues.SiteAction.BuildingCost} " +
+                                $"silver. Continue?", PM_Sites.RequestSiteBuild));
+                        }
+
+                        else
+                        {
+                            DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
+                        }
                     }
                 };
 

@@ -5,7 +5,6 @@ using GameServer.Misc;
 using Shared;
 using Shared.Files;
 using Shared.Files.Guilds;
-using Shared.Files.Sites;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
@@ -87,7 +86,7 @@ namespace GameServer.PacketManager
 
                 client.GetData<UserFile>().UpdateFaction(factionFile);
 
-                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetData<UserFile>().Username)) site.UpdateFaction(factionFile);
+                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<UserFile>().Username)) site.UpdateFaction(factionFile);
 
                 client.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
 
@@ -151,7 +150,7 @@ namespace GameServer.PacketManager
 
                 client.GetData<UserFile>().UpdateFaction(guild);
 
-                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(client.GetData<UserFile>().Username)) site.UpdateFaction(guild);
+                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<UserFile>().Username)) site.UpdateFaction(guild);
 
                 foreach (ServerClient sc in GuildManagerH.GetConnectedFactionMembers(guild)) PM_Goodwills.UpdateClientGoodwills(sc);
             }
@@ -197,7 +196,7 @@ namespace GameServer.PacketManager
 
                 guild.RemoveMember(guild.GuildMembers.First(fetch => fetch.Username == toRemoveOffline.Username));
 
-                foreach (FL_Site site in SiteManagerHelper.GetAllSitesFromUsername(toRemoveOffline.Username)) site.UpdateFaction(null);
+                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(toRemoveOffline.Username)) site.UpdateFaction(null);
 
                 foreach (ServerClient member in GuildManagerH.GetConnectedFactionMembers(guild)) PM_Goodwills.UpdateClientGoodwills(member);
             }
@@ -281,7 +280,7 @@ namespace GameServer.PacketManager
 
         public static FL_Site[] GetFactionSites(FL_Guild factionFile)
         {
-            return SiteManagerHelper.GetAllSites().Where(fetch => fetch.GuildName == factionFile.Name).ToArray();
+            return PM_Sites.GetAllSites().Where(fetch => fetch.GuildName == factionFile.Name).ToArray();
         }
 
         public static ServerClient[] GetConnectedFactionMembers(FL_Guild factionFile)

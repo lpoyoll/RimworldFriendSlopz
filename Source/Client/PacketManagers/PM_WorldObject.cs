@@ -71,29 +71,33 @@ namespace GameClient.PacketManagers
             List<FL_WorldObject> worldObjects = new List<FL_WorldObject>();
             foreach (WorldObject wo in Find.World.worldObjects.AllWorldObjects)
             {
-                if (wo.Faction == Faction.OfPlayer) continue;
-                else
+                try
                 {
-                    FL_WorldObject file = new FL_WorldObject();
-                    file.Tile = wo.Tile.tileId;
-
-                    if (wo.def == WorldObjectDefOf.Settlement)
-                    {
-                        Settlement settlement = wo as Settlement;
-                        file.Name = settlement.Name;
-                        file.FactionDef = settlement.Faction.def.defName;
-                    }
-
+                    if (wo.Faction == Faction.OfPlayer) continue;
                     else
                     {
-                        Site site = wo as Site;
-                        file.Points = site.ActualThreatPoints;
-                        file.MainPartDef = site.MainSitePartDef.defName;
-                        foreach (SitePart part in site.parts) file.PartDefNames.Add(part.def.defName);
-                    }
+                        FL_WorldObject file = new FL_WorldObject();
+                        file.Tile = wo.Tile.tileId;
 
-                    worldObjects.Add(file);
+                        if (wo.def == WorldObjectDefOf.Settlement)
+                        {
+                            Settlement settlement = wo as Settlement;
+                            file.Name = settlement.Name;
+                            file.FactionDef = settlement.Faction.def.defName;
+                        }
+
+                        else
+                        {
+                            Site site = wo as Site;
+                            file.Points = site.ActualThreatPoints;
+                            file.MainPartDef = site.MainSitePartDef.defName;
+                            foreach (SitePart part in site.parts) file.PartDefNames.Add(part.def.defName);
+                        }
+
+                        worldObjects.Add(file);
+                    }
                 }
+                catch (Exception ex) { Printer.Warning(ex); }
             }
 
             PKT_WorldObject packet = new PKT_WorldObject();
@@ -162,13 +166,16 @@ namespace GameClient.PacketManagers
 
         public static void ClearAllObjects()
         {
-            foreach (WorldObject wo in Find.WorldObjects.AllWorldObjects.ToList().Where(fetch => fetch.Faction != Faction.OfPlayer))
+            foreach (WorldObject wo in Find.WorldObjects.AllWorldObjects.ToList())
             {
                 if (wo.def == WorldObjectDefOf.Settlement && wo.Faction == Faction.OfPlayer) continue;
                 else if (wo.def == WorldObjectDefOf.Site && wo.Faction == Faction.OfPlayer) continue;
                 else if (wo.def == WorldObjectDefOf.Caravan && wo.Faction == Faction.OfPlayer) continue;
                 else Find.WorldObjects.Remove(wo);
             }
+
+            PM_Roads.ClearAllRoads();
+            if (ModLister.BiotechInstalled) PM_Pollution.ClearAllPollution();
         }
 
         public static void AddWorldObjects(List<FL_WorldObject> worldObjects)

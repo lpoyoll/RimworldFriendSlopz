@@ -108,4 +108,8 @@
 	    <Private>False</Private>
 	  </Reference>
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Dialogs\Sites\" />
+	</ItemGroup>
 </Project>

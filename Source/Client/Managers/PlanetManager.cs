@@ -23,7 +23,6 @@ namespace GameClient.Managers
             else
             {
                 PM_WorldObject.ClearAllObjects();
-                PM_Roads.ClearAllRoads();
 
                 PM_WorldObject.AddWorldObjects(SessionHandler.GlobalData.WorldObjects);
                 PM_Settlements.AddSettlements(SessionHandler.GlobalData.PlayerSettlements);
@@ -31,11 +30,7 @@ namespace GameClient.Managers
                 PM_Sites.AddSites(SessionHandler.GlobalData.PlayerSites);
                 PM_Caravan.AddCaravans();
                 
-                if (ModLister.BiotechInstalled)
-                {
-                    PM_Pollution.ClearAllPollution();
-                    PM_Pollution.AddPollutedTiles(SessionHandler.GlobalData.PollutedTiles, false);
-                }
+                if (ModLister.BiotechInstalled) PM_Pollution.AddPollutedTiles(SessionHandler.GlobalData.PollutedTiles, false);
             }
         }
     }

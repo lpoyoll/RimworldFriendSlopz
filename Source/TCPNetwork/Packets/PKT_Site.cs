@@ -1,17 +1,18 @@
-﻿using Shared.Files.Sites;
+﻿using Shared.Files;
+using System.Collections.Generic;
 
 namespace TCPNetwork.Packets
 {
     public class PKT_Site : PKT_Base
     {
-        public enum SiteStepMode { Accept, Build, Destroy, Info, Config, Rewards, Worker }
+        public enum SiteStepMode { Accept, Build, Destroy, Rewards, Worker,
+            RetrieveWorker
+        }
 
         public SiteStepMode _stepMode { get; set; } = SiteStepMode.Accept;
 
-        public FL_Site _file { get; set; } = new FL_Site();
+        public FL_Site File { get; set; } = new FL_Site();
 
-        public PKT_SiteRewardConfig _rewardConfig { get; set; } = null;
-
-        public FL_SiteReward[] _rewardFiles { get; set; } = null;
+        public List<FL_Site> Files { get; set; } = new List<FL_Site>();
     }
 }

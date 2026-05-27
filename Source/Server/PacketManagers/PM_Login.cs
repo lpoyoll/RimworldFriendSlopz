@@ -49,8 +49,6 @@ namespace GameServer.PacketManager
         {
             client.GetData<UserFile>(UserFile.LoadOrCreateUserFile(client, data));
 
-            PM_Sites.SetSiteInfoForClient(client);
-
             InformationDisplayer.DisplayRegister(client);
 
             LoginUser(client, data);

@@ -1,7 +1,6 @@
 ﻿using GameServer.Managers;
 using Shared;
 using Shared.Files;
-using Shared.Files.Sites;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
 using TCPNetwork.PacketManagers;
@@ -23,7 +22,7 @@ namespace GameServer.PacketManager
         public static void ChangeUserGoodwills(ServerClient client, PKT_FactionGoodwill data)
         {
             FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._tile);
-            FL_Site siteFile = SiteManagerHelper.GetSiteFileFromTile(data._tile);
+            FL_Site siteFile = PM_Sites.GetSiteFileFromTile(data._tile);
 
             if (settlementFile != null) data._username = settlementFile.Username;
             else data._username = siteFile.Username;
@@ -42,7 +41,7 @@ namespace GameServer.PacketManager
         public static void UpdateClientGoodwills(ServerClient client)
         {
             FL_Settlement[] settlements = PM_Settlements.GetAllSettlements().Where(fetch => fetch.Username != client.GetData<UserFile>().Username).ToArray();
-            FL_Site[] sites = SiteManagerHelper.GetAllSites().Where(fetch => fetch.Username != client.GetData<UserFile>().Username).ToArray();
+            FL_Site[] sites = PM_Sites.GetAllSites().Where(fetch => fetch.Username != client.GetData<UserFile>().Username).ToArray();
 
             PKT_FactionGoodwill factionGoodwillData = new PKT_FactionGoodwill();
             foreach (FL_Settlement settlement in settlements)

@@ -24,8 +24,8 @@
 
         public ACT_Aid AidAction { get; set; } = new ACT_Aid();
 
-        public ACT_Road RoadAction { get; set; } = new ACT_Road();
-
         public ACT_Site SiteAction { get; set; } = new ACT_Site();
+
+        public ACT_Road RoadAction { get; set; } = new ACT_Road();
     }
 }

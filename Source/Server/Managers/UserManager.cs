@@ -3,7 +3,6 @@ using TCPNetwork.Packets;
 using Shared;
 using Shared.Files;
 using TCPNetwork.Files.Client;
-using Shared.Files.Sites;
 using Shared.Misc;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
@@ -144,7 +143,7 @@ namespace GameServer.Managers
         public static int[] GetUserStructuresTilesFromUsername(string username)
         {
             FL_Settlement[] settlements = PM_Settlements.GetAllSettlements().ToList().FindAll(x => x.Username == username).ToArray();
-            FL_Site[] sites = SiteManagerHelper.GetAllSites().ToList().FindAll(x => x.Username == username).ToArray();
+            FL_Site[] sites = PM_Sites.GetAllSites().ToList().FindAll(x => x.Username == username).ToArray();
 
             List<int> tilesToExclude = new List<int>();
             foreach (FL_Settlement settlement in settlements) tilesToExclude.Add(settlement.Tile);

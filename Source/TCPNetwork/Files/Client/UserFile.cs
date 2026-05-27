@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Shared;
 using Shared.Files;
-using Shared.Files.Sites;
 using Shared.Misc;
 using System;
 using System.Collections.Generic;
@@ -32,8 +31,6 @@ namespace TCPNetwork.Files.Client
         public PlayerCooldown Cooldowns { get; set; } = new PlayerCooldown();
 
         public List<PlayerGoodwill> Goodwills { get; set; } = new List<PlayerGoodwill>();
-
-        public List<PlayerSiteConfig> SiteConfigs { get; set; } = new List<PlayerSiteConfig>();
 
         [JsonIgnore] public ServerClient SynchronousClient { get; set; } = null;
 
@@ -86,22 +83,6 @@ namespace TCPNetwork.Files.Client
                 newGoodwill.Goodwill = goodwill;
 
                 Goodwills.Add(newGoodwill);
-            }
-
-            SaveUserFile();
-        }
-
-        public void UpdateSiteConfigs(List<FL_SiteType> configs)
-        {
-            foreach (FL_SiteType type in configs)
-            {
-                if (SiteConfigs.FirstOrDefault(fetch => fetch.DefName == type.DefName) == null)
-                {
-                    PlayerSiteConfig newConfig = new PlayerSiteConfig();
-                    newConfig.DefName = type.DefName;
-                    newConfig.Reward = type.Rewards[0];
-                    SiteConfigs.Add(newConfig);
-                }
             }
 
             SaveUserFile();

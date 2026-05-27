@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using static Shared.CommonEnumerators;
 
-namespace Shared.Files.Sites
+namespace Shared.Files
 {
     public class FL_Site
     {
@@ -15,9 +15,7 @@ namespace Shared.Files.Sites
 
         public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
 
-        public string WorkerString { get; set; } = null;
-
-        public FL_SiteType Type { get; set; } = new FL_SiteType();
+        public string WorkerString { get; set; } = string.Empty;
 
         [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
 

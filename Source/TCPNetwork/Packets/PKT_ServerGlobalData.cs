@@ -3,7 +3,6 @@ using Shared.Files;
 using Shared.Files.Actions;
 using Shared.Files.Configs;
 using Shared.Files.Mods;
-using Shared.Files.Sites;
 using System.Collections.Generic;
 
 namespace TCPNetwork.Packets
@@ -13,8 +12,6 @@ namespace TCPNetwork.Packets
         public bool IsClientAdmin { get; set; } = false;
 
         public bool IsClientFactionMember { get; set; } = false;
-
-        public List<FL_SiteType> SiteValues { get; set; } = new List<FL_SiteType>();
 
         public List<FL_Event> EventValues { get; set; } = new List<FL_Event>();
 

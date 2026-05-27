@@ -3,7 +3,6 @@ using GameServer.Managers;
 using GameServer.Misc;
 using Shared;
 using Shared.Files;
-using Shared.Files.Sites;
 using Shared.Misc;
 using TCPNetwork;
 using TCPNetwork.Files.Client;
@@ -66,7 +65,7 @@ namespace GameServer.PacketManager
             if (File.Exists(path)) File.Delete(path);
 
             // Delete site files
-            FL_Site[] playerSites = SiteManagerHelper.GetAllSitesFromUsername(username);
+            FL_Site[] playerSites = PM_Sites.GetAllSitesFromUsername(username);
             foreach (FL_Site site in playerSites) PM_Sites.DestroySiteFromFile(site);
 
             // Delete settlement files
