@@ -13,9 +13,9 @@ namespace Shared.Files
 
         public string GuildName { get; set; } = string.Empty;
 
-        public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
-
         public string WorkerString { get; set; } = string.Empty;
+
+        public Goodwill Goodwill { get; set; } = Goodwill.Neutral;
 
         [NonSerialized] public Semaphore SavingSemaphore = new Semaphore(1, 1);
 

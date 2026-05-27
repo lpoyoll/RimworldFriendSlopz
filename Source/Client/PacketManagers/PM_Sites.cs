@@ -36,7 +36,7 @@ namespace GameClient.PacketManagers
         {
             PKT_Site data = Serializer.ConvertBytesToObject<PKT_Site>(bytes);
 
-            switch (data._stepMode)
+            switch (data.StepMode)
             {
                 case SiteStepMode.Accept:
                     OnSiteAccept();
@@ -73,7 +73,7 @@ namespace GameClient.PacketManagers
             RimworldManager.RemoveThingFromCaravan(SessionHandler.ChosenCaravan, DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName), toRemove);
 
             PKT_Site siteData = new PKT_Site();
-            siteData._stepMode = SiteStepMode.Build;
+            siteData.StepMode = SiteStepMode.Build;
             siteData.File.Tile = SessionHandler.ChosenCaravan.Tile;
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
 
@@ -86,7 +86,7 @@ namespace GameClient.PacketManagers
             {
                 PKT_Site siteData = new PKT_Site();
                 siteData.File.Tile = SessionHandler.ChosenSite.Tile;
-                siteData._stepMode = SiteStepMode.Destroy;
+                siteData.StepMode = SiteStepMode.Destroy;
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
             };
@@ -105,7 +105,7 @@ namespace GameClient.PacketManagers
                     [DLG_ListingWithButton.ResultInt];
 
                 PKT_Site siteData = new PKT_Site();
-                siteData._stepMode = SiteStepMode.Worker;
+                siteData.StepMode = SiteStepMode.Worker;
                 siteData.File.Tile = SessionHandler.ChosenSite.Tile;
                 siteData.File.WorkerString = ScribeManager.SerializeToString(toSend, ScribeManager.SerializableType.Pawn);
 
@@ -138,7 +138,7 @@ namespace GameClient.PacketManagers
                 RimworldManager.PlaceThingIntoCaravan(toRetrieve, SessionHandler.ChosenCaravan);
 
                 PKT_Site siteData = new PKT_Site();
-                siteData._stepMode = SiteStepMode.RetrieveWorker;
+                siteData.StepMode = SiteStepMode.RetrieveWorker;
                 siteData.File.Tile = SessionHandler.ChosenSite.Tile;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
             };
@@ -149,14 +149,14 @@ namespace GameClient.PacketManagers
         public static void RequestSiteRewards()
         {
             PKT_Site siteData = new PKT_Site();
-            siteData._stepMode = SiteStepMode.Rewards;
+            siteData.StepMode = SiteStepMode.Rewards;
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
         }
 
         public static void RequestWorkerInfo()
         {
             PKT_Site siteData = new PKT_Site();
-            siteData._stepMode = SiteStepMode.Worker;
+            siteData.StepMode = SiteStepMode.Worker;
             siteData.File.Tile = SessionHandler.ChosenSite.Tile;
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
         }

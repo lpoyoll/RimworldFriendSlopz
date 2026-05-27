@@ -26,7 +26,7 @@ namespace GameServer.PacketManager
 
             PKT_Site data = Serializer.ConvertBytesToObject<PKT_Site>(bytes);
 
-            switch (data._stepMode)
+            switch (data.StepMode)
             {
                 case SiteStepMode.Build:
                     AddNewSite(client, data);
@@ -55,7 +55,7 @@ namespace GameServer.PacketManager
             siteFile.SaveSite();
 
             PKT_Site siteData = new PKT_Site();
-            siteData._stepMode = SiteStepMode.Build;
+            siteData.StepMode = SiteStepMode.Build;
             siteData.File = siteFile;
 
             foreach (ServerClient cClient in ServerNetwork.GetConnectedClients())
@@ -64,7 +64,7 @@ namespace GameServer.PacketManager
                 cClient.Listener.EnqueuePacket(PacketHeader.Site, siteData);
             }
 
-            siteData._stepMode = SiteStepMode.Accept;
+            siteData.StepMode = SiteStepMode.Accept;
             client.Listener.EnqueuePacket(PacketHeader.Site, siteData);
 
             InformationDisplayer.DisplayAddSite(siteFile.Tile.ToString());
@@ -95,7 +95,7 @@ namespace GameServer.PacketManager
         public static void DestroySiteFromFile(FL_Site siteFile)
         {
             PKT_Site siteData = new PKT_Site();
-            siteData._stepMode = SiteStepMode.Destroy;
+            siteData.StepMode = SiteStepMode.Destroy;
             siteData.File = siteFile;
 
             ServerNetwork.SendPacketToAllClients(PacketHeader.Site, siteData);
@@ -110,7 +110,7 @@ namespace GameServer.PacketManager
             if (string.IsNullOrWhiteSpace(packet.File.WorkerString))
             {
                 FL_Site siteFile = GetSiteFileFromTile(packet.File.Tile);
-                packet._stepMode = SiteStepMode.Worker;
+                packet.StepMode = SiteStepMode.Worker;
                 packet.File = siteFile;
 
                 client.Listener.EnqueuePacket(PacketHeader.Site, packet);
@@ -146,7 +146,7 @@ namespace GameServer.PacketManager
             if (availableSites.Count > 0)
             {
                 PKT_Site siteData = new PKT_Site();
-                siteData._stepMode = SiteStepMode.Rewards;
+                siteData.StepMode = SiteStepMode.Rewards;
                 siteData.Files = availableSites;
 
                 client.Listener.EnqueuePacket(PacketHeader.Site, siteData);
