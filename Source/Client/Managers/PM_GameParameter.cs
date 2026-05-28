@@ -29,7 +29,7 @@ namespace GameClient.Managers
             string title = "Server Enforcements";
             string description = "Chose what features to enforce";
             string[] keys = new string[] { "Scenario", "Storyteller", "Difficulty" };
-            string[] values = new string[] { "Free", "Enforced" };
+            string[] values = new string[] { "Enforced", "Free" };
 
             DLG_Base.PushNewDialog(new DLG_ListingWithTuple(title, description, keys, values, null,
                 PM_GameParameter.SendFirstTimeSetup));
@@ -127,9 +127,9 @@ namespace GameClient.Managers
 
         private static void SendFirstTimeSetup()
         {
-            if (DLG_ListingWithTuple.DialogTupleListingResultInt[0] == 1) { PM_GameParameter.SendCurrentScenario(true); }
-            if (DLG_ListingWithTuple.DialogTupleListingResultInt[1] == 1) { PM_GameParameter.SendCurrentStoryteller(true); }
-            if (DLG_ListingWithTuple.DialogTupleListingResultInt[2] == 1) { PM_GameParameter.SendCurrentDifficulty(true); }
+            if (DLG_ListingWithTuple.DialogTupleListingResultInt[0] == 0) { PM_GameParameter.SendCurrentScenario(true); }
+            if (DLG_ListingWithTuple.DialogTupleListingResultInt[1] == 0) { PM_GameParameter.SendCurrentStoryteller(true); }
+            if (DLG_ListingWithTuple.DialogTupleListingResultInt[2] == 0) { PM_GameParameter.SendCurrentDifficulty(true); }
 
             PM_World.SendWorld();
             PM_Events.SendExistingEventsToServer();
