@@ -16,11 +16,11 @@ namespace GameServer.Commands
 
         public override void Action() 
         {
-            PlayerFile[] userFiles = UserManagerH.GetAllUserFiles().Where(x => x.IsBanned).ToArray();
+            FL_Player[] userFiles = UserManagerH.GetAllUserFiles().Where(x => x.IsBanned).ToArray();
 
             Printer.Title($"Banned players: [{userFiles.Count()}]");
             Printer.Title("----------------------------------------");
-            foreach (PlayerFile user in userFiles) Printer.Warning($"{user.Username} - {user.LatestIP}");
+            foreach (FL_Player user in userFiles) Printer.Warning($"{user.Username} - {user.LatestIP}");
             Printer.Title("----------------------------------------");
         }
     }

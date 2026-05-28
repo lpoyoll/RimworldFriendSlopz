@@ -14,8 +14,8 @@ namespace GameServer.Managers
         public static void SendServerGlobalData(ServerClient client)
         {
             PKT_ServerGlobalData globalData = new PKT_ServerGlobalData();
-            globalData.IsClientAdmin = client.GetData<PlayerFile>().IsAdmin;
-            globalData.IsClientFactionMember = GuildManagerH.GetFactionFromName(client.GetData<PlayerFile>().GuildName) != null;
+            globalData.IsClientAdmin = client.GetData<FL_Player>().IsAdmin;
+            globalData.IsClientFactionMember = GuildManagerH.GetFactionFromName(client.GetData<FL_Player>().GuildName) != null;
             globalData.ActionValues = Master.ActionConfigs;
             globalData.RoadValues = Master.ActionConfigs.RoadAction.RoadValues;
             globalData.WorldObjects = PM_WorldObject.GetAllWorldObjects();

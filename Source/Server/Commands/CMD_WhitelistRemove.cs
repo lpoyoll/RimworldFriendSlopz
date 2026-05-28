@@ -17,7 +17,7 @@ namespace GameServer.Commands
 
         public override void Action()
         {
-            PlayerFile userFile = UserManagerH.GetUserFileFromName(CMD_Base.CommandParameters[0]);
+            FL_Player userFile = UserManagerH.GetUserFileFromName(CMD_Base.CommandParameters[0]);
             if (userFile == null) Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' was not found");
             else
             {

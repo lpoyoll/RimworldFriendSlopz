@@ -50,7 +50,7 @@ namespace GameServer.PacketManager
 
         public static void TransferThings(ServerClient client, PKT_Transfer packet)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(packet.ToTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<PlayerFile>().Username} attempted to send items to a settlement at tile {packet.ToTile}, but no settlement could be found");
+            if (!PM_Settlements.CheckIfTileIsInUse(packet.ToTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to send items to a settlement at tile {packet.ToTile}, but no settlement could be found");
             else
             {
                 FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet.ToTile);

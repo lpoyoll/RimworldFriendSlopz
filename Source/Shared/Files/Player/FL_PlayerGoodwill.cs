@@ -2,7 +2,7 @@
 
 namespace Shared.Files.ServerClient
 {
-    public class PlayerGoodwill
+    public class FL_PlayerGoodwill
     {
         public string Name { get; set; } = string.Empty;
 

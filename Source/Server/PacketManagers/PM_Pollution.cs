@@ -17,7 +17,7 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.Pollution)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!PlayerCooldown.CheckIfCanPollute(client.GetData<PlayerFile>(), Master.ActionConfigs.PollutionAction)) return;
+            if (!FL_PlayerCooldown.CheckIfCanPollute(client.GetData<FL_Player>(), Master.ActionConfigs.PollutionAction)) return;
             else
             {
                 PKT_Pollution data = Serializer.ConvertBytesToObject<PKT_Pollution>(bytes);
@@ -47,7 +47,7 @@ namespace GameServer.PacketManager
 
             FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
             ServerNetwork.SendPacketToAllClients(PacketHeader.Pollution, data, client);
-            client.GetData<PlayerFile>().Cooldowns.SetPollutionTimer(client.GetData<PlayerFile>());
+            client.GetData<FL_Player>().Cooldowns.SetPollutionTimer(client.GetData<FL_Player>());
         }
     }
 }

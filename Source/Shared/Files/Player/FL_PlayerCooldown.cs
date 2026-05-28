@@ -5,7 +5,7 @@ using static System.Collections.Specialized.BitVector32;
 
 namespace Shared.Files.ServerClient
 {
-    public class PlayerCooldown
+    public class FL_PlayerCooldown
     {
         public DateTime RaidProtectionTime { get; set; } = DateTime.MinValue;
 
@@ -21,91 +21,91 @@ namespace Shared.Files.ServerClient
 
         public DateTime NPCProtectionTime { get; set; } = DateTime.MinValue;
 
-        public void SetEventTimer(PlayerFile file) 
+        public void SetEventTimer(FL_Player file) 
         { 
             EventProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetAidTimer(PlayerFile file) 
+        public void SetAidTimer(FL_Player file) 
         { 
             AidProtectionTime = DateTime.Now; 
             file.SaveUserFile();
         }
 
-        public void SetPollutionTimer(PlayerFile file)
+        public void SetPollutionTimer(FL_Player file)
         {
             PollutionProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetRoadTimer(PlayerFile file)
+        public void SetRoadTimer(FL_Player file)
         {
             RoadProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetNPCTimer(PlayerFile file)
+        public void SetNPCTimer(FL_Player file)
         {
             NPCProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetRaidTimer(PlayerFile file)
+        public void SetRaidTimer(FL_Player file)
         {
             RaidProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetZoomTimer(PlayerFile file)
+        public void SetZoomTimer(FL_Player file)
         {
             ZoomProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public static bool CheckIfCanRaid(PlayerFile file, ACT_Base action)
+        public static bool CheckIfCanRaid(FL_Player file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.RaidProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanZoom(PlayerFile file, ACT_Base action)
+        public static bool CheckIfCanZoom(FL_Player file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.ZoomProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanEvent(PlayerFile file, ACT_Base action)
+        public static bool CheckIfCanEvent(FL_Player file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.EventProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanAid(PlayerFile file, ACT_Base action)
+        public static bool CheckIfCanAid(FL_Player file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.AidProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanPollute(PlayerFile file, ACT_Base action)
+        public static bool CheckIfCanPollute(FL_Player file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.PollutionProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanRoad(PlayerFile file, ACT_Base action)
+        public static bool CheckIfCanRoad(FL_Player file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.RoadProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanNPC(PlayerFile file, ACT_Base action)
+        public static bool CheckIfCanNPC(FL_Player file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.NPCProtectionTime, action.Cooldown)) return false;

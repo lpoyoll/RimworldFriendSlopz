@@ -15,7 +15,7 @@ namespace GameServer.PacketManager
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             if (!Master.ActionConfigs.RaidAction.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-            else if (!PlayerCooldown.CheckIfCanRaid(client.GetData<PlayerFile>(), Master.ActionConfigs.RaidAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            else if (!FL_PlayerCooldown.CheckIfCanRaid(client.GetData<FL_Player>(), Master.ActionConfigs.RaidAction)) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 PKT_Raid data = Serializer.ConvertBytesToObject<PKT_Raid>(bytes);
@@ -42,7 +42,7 @@ namespace GameServer.PacketManager
                 data.CurrentStepMode = StepMode.Request;
                 data.Map = PM_Map.GetMapFromTile(data.TargetTile);
                 client.Listener.EnqueuePacket(PacketHeader.Raid, data);
-                client.GetData<PlayerFile>().Cooldowns.SetRaidTimer(client.GetData<PlayerFile>());
+                client.GetData<FL_Player>().Cooldowns.SetRaidTimer(client.GetData<FL_Player>());
             }
         }
     }

@@ -11,7 +11,7 @@ using static Shared.CommonEnumerators;
 
 namespace Shared.Files.ServerClient
 {
-    public class PlayerFile
+    public class FL_Player
     {
         public string Username { get; set; } = string.Empty;
 
@@ -27,9 +27,9 @@ namespace Shared.Files.ServerClient
 
         public bool IsBanned { get; set; } = false;
 
-        public PlayerCooldown Cooldowns { get; set; } = new PlayerCooldown();
+        public FL_PlayerCooldown Cooldowns { get; set; } = new FL_PlayerCooldown();
 
-        public List<PlayerGoodwill> Goodwills { get; set; } = new List<PlayerGoodwill>();
+        public List<FL_PlayerGoodwill> Goodwills { get; set; } = new List<FL_PlayerGoodwill>();
 
         [JsonIgnore] public byte SynchronousClientID { get; set; } = byte.MinValue;
 
@@ -73,11 +73,11 @@ namespace Shared.Files.ServerClient
 
         public void UpdateGoodwill(string username, Goodwill goodwill)
         {
-            PlayerGoodwill toFind = Goodwills.FirstOrDefault(fetch => fetch.Name == username);
+            FL_PlayerGoodwill toFind = Goodwills.FirstOrDefault(fetch => fetch.Name == username);
             if (toFind != null) toFind.Goodwill = goodwill;
             else
             {
-                PlayerGoodwill newGoodwill = new PlayerGoodwill();
+                FL_PlayerGoodwill newGoodwill = new FL_PlayerGoodwill();
                 newGoodwill.Name = username;
                 newGoodwill.Goodwill = goodwill;
 
@@ -87,17 +87,17 @@ namespace Shared.Files.ServerClient
             SaveUserFile();
         }
 
-        public static PlayerFile LoadOrCreateUserFile(string username, string password)
+        public static FL_Player LoadOrCreateUserFile(string username, string password)
         {
-            List<PlayerFile> files = new List<PlayerFile>();
+            List<FL_Player> files = new List<FL_Player>();
             string[] userFiles = Directory.GetFiles(CommonValues.ServerUsersPath);
-            foreach (string userFile in userFiles) files.Add(Serializer.SerializeFromFile<PlayerFile>(userFile));
+            foreach (string userFile in userFiles) files.Add(Serializer.SerializeFromFile<FL_Player>(userFile));
 
-            PlayerFile toFind = files.FirstOrDefault(fetch => fetch.Username == username && fetch.Password == password);
+            FL_Player toFind = files.FirstOrDefault(fetch => fetch.Username == username && fetch.Password == password);
             if (toFind != null) return toFind;
             else
             {
-                toFind = new PlayerFile();
+                toFind = new FL_Player();
                 toFind.Username = username;
                 toFind.Password = password;
                 toFind.Hash = Hasher.GetHashFromString($"{toFind.Username}:{toFind.Password}");

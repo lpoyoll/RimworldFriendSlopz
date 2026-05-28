@@ -15,11 +15,11 @@ namespace GameServer.Commands
 
         public override void Action() 
         {
-            PlayerFile[] userFiles = UserManagerH.GetAllUserFiles();
+            FL_Player[] userFiles = UserManagerH.GetAllUserFiles();
 
             Printer.Title($"Server players: [{userFiles.Count()}]");
             Printer.Title("----------------------------------------");
-            foreach (PlayerFile user in userFiles) Printer.Warning($"{user.Username}");
+            foreach (FL_Player user in userFiles) Printer.Warning($"{user.Username}");
             Printer.Title("----------------------------------------");
         }
     }

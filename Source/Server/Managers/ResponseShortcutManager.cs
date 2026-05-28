@@ -20,7 +20,7 @@ namespace GameServer.Managers
 
             if (shouldBroadcast)
             {
-                Printer.Warning($"[Illegal action] > {client.GetData<PlayerFile>().Username} > {client.IP}");
+                Printer.Warning($"[Illegal action] > {client.GetData<FL_Player>().Username} > {client.IP}");
                 Printer.Warning($"[Illegal reason] > {message}");
             }
         }

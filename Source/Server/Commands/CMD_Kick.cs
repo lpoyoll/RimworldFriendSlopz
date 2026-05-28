@@ -22,7 +22,7 @@ namespace GameServer.Commands
             else
             {
                 toFind.Listener.MarkForDisconnect();
-                Printer.Warning($"User '{toFind.GetData<PlayerFile>().Username}' has been kicked from the server");
+                Printer.Warning($"User '{toFind.GetData<FL_Player>().Username}' has been kicked from the server");
             }
         }
     }

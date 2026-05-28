@@ -79,8 +79,8 @@ namespace GameServer.PacketManager
                 FL_Site siteFile = new FL_Site();
 
                 siteFile.Tile = siteData.File.Tile;
-                siteFile.Username = client.GetData<PlayerFile>().Username;
-                if (!string.IsNullOrEmpty(client.GetData<PlayerFile>().GuildName)) siteFile.GuildName = client.GetData<PlayerFile>().GuildName;
+                siteFile.Username = client.GetData<FL_Player>().Username;
+                if (!string.IsNullOrEmpty(client.GetData<FL_Player>().GuildName)) siteFile.GuildName = client.GetData<FL_Player>().GuildName;
                 ConfirmNewSite(client, siteFile);
             }
         }
@@ -88,7 +88,7 @@ namespace GameServer.PacketManager
         private static void DestroySite(ServerClient client, PKT_Site siteData)
         {
             FL_Site siteFile = GetSiteFileFromTile(siteData.File.Tile);
-            if (siteFile.Username == client.GetData<PlayerFile>().Username) DestroySiteFromFile(siteFile);
+            if (siteFile.Username == client.GetData<FL_Player>().Username) DestroySiteFromFile(siteFile);
             else ResponseShortcutManager.SendNoPowerPacket(client);
         }
 
@@ -155,8 +155,8 @@ namespace GameServer.PacketManager
 
         private static List<FL_Site> GetPlayerRewardableSites(ServerClient client)
         {
-            return GetAllSites().Where(fetch => (fetch.Username == client.GetData<PlayerFile>().Username ||
-                (client.GetData<PlayerFile>().GuildName != null && client.GetData<PlayerFile>().GuildName == fetch.GuildName)) &&
+            return GetAllSites().Where(fetch => (fetch.Username == client.GetData<FL_Player>().Username ||
+                (client.GetData<FL_Player>().GuildName != null && client.GetData<FL_Player>().GuildName == fetch.GuildName)) &&
                     !string.IsNullOrEmpty(fetch.WorkerString)).ToList();
         }
 
