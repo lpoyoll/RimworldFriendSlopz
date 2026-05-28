@@ -6,7 +6,7 @@ using Shared.Commands;
 using Shared.Misc;
 using System.Text;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static TCPNetwork.Packets.PKT_Chat;

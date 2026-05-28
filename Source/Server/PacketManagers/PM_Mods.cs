@@ -7,7 +7,7 @@ using Shared.Files.Configs;
 using Shared.Files.Mods;
 using Shared.Misc;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static TCPNetwork.Packets.PKT_Login;

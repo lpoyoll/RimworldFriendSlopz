@@ -4,7 +4,7 @@ using Shared;
 using Shared.Commands;
 using Shared.Misc;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
 

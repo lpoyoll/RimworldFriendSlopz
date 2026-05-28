@@ -1,6 +1,6 @@
 ﻿using Shared.Misc;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 
 namespace GameServer.Misc
 {

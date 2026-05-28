@@ -7,10 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Files.Client
+namespace Shared.Files.ServerClient
 {
     public class UserFile
     {
@@ -32,7 +31,7 @@ namespace TCPNetwork.Files.Client
 
         public List<PlayerGoodwill> Goodwills { get; set; } = new List<PlayerGoodwill>();
 
-        [JsonIgnore] public ServerClient SynchronousClient { get; set; } = null;
+        [JsonIgnore] public byte SynchronousClientID { get; set; } = byte.MinValue;
 
         private Semaphore SavingSemaphore { get; set; } = new Semaphore(1, 1);
 
@@ -88,19 +87,19 @@ namespace TCPNetwork.Files.Client
             SaveUserFile();
         }
 
-        public static UserFile LoadOrCreateUserFile(ServerClient client, PKT_Login data)
+        public static UserFile LoadOrCreateUserFile(string username, string password)
         {
             List<UserFile> files = new List<UserFile>();
             string[] userFiles = Directory.GetFiles(CommonValues.ServerUsersPath);
             foreach (string userFile in userFiles) files.Add(Serializer.SerializeFromFile<UserFile>(userFile));
 
-            UserFile toFind = files.FirstOrDefault(fetch => fetch.Username == data._username && fetch.Password == data._password);
+            UserFile toFind = files.FirstOrDefault(fetch => fetch.Username == username && fetch.Password == password);
             if (toFind != null) return toFind;
             else
             {
                 toFind = new UserFile();
-                toFind.Username = data._username;
-                toFind.Password = data._password;
+                toFind.Username = username;
+                toFind.Password = password;
                 toFind.Hash = Hasher.GetHashFromString($"{toFind.Username}:{toFind.Password}");
                 toFind.SaveUserFile();
 

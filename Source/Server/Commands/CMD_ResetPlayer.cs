@@ -4,7 +4,7 @@ using GameServer.PacketManager;
 using Shared.Commands;
 using Shared.Misc;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 
 namespace GameServer.Commands
 {

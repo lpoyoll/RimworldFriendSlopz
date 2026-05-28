@@ -1,6 +1,6 @@
 ﻿using Shared;
 using TCPNetwork.Packets;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using Shared.Misc;
 using static TCPNetwork.Packets.PKT_ResponseShortcut;
 using TCPNetwork;

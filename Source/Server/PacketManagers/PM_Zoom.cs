@@ -1,7 +1,7 @@
 ﻿using GameServer.Core;
 using Shared;
 using TCPNetwork.Packets;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using GameServer.Managers;
 using TCPNetwork.PacketManagers;
 using static TCPNetwork.Packets.PKT_Zoom;

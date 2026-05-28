@@ -6,7 +6,7 @@ using Shared.Details.Planet;
 using Shared.Files.Configs;
 using Shared.Misc;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 

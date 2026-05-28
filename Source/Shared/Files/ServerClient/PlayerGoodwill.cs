@@ -1,6 +1,6 @@
 ﻿using static Shared.CommonEnumerators;
 
-namespace TCPNetwork.Files.Client
+namespace Shared.Files.ServerClient
 {
     public class PlayerGoodwill
     {

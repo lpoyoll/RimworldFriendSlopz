@@ -1,7 +1,7 @@
 ﻿using GameServer.Managers;
 using Shared.Commands;
 using Shared.Misc;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 
 namespace GameServer.Commands
 {

@@ -5,7 +5,7 @@ using GameServer.Misc;
 using Shared;
 using Shared.Misc;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static Shared.CommonEnumerators;
@@ -28,7 +28,7 @@ namespace GameServer.PacketManager
         {
             if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return false;
 
-            client.GetData<UserFile>(UserFile.LoadOrCreateUserFile(client, data));
+            client.GetData<UserFile>(UserFile.LoadOrCreateUserFile(data._username, data._password));
 
             if (UserManagerH.CheckIfUserBanned(client)) return false;
 
@@ -47,7 +47,7 @@ namespace GameServer.PacketManager
 
         public static void RegisterUser(ServerClient client, PKT_Login data)
         {
-            client.GetData<UserFile>(UserFile.LoadOrCreateUserFile(client, data));
+            client.GetData<UserFile>(UserFile.LoadOrCreateUserFile(data._username, data._password));
 
             InformationDisplayer.DisplayRegister(client);
 

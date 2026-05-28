@@ -4,7 +4,7 @@ using GameServer.PacketManager;
 using Shared;
 using Shared.Files;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 
@@ -44,7 +44,7 @@ namespace GameServer.PacketManagers
         private static void RouteToManager(ServerClient client, PKT_Synchronous data, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, data);
-            client.GetData<UserFile>().SynchronousClient.Listener.EnqueuePacket(header, data);
+            ServerNetwork.GetClientFromID(client.GetData<UserFile>().SynchronousClientID).Listener.EnqueuePacket(header, data);
         }
 
         private static void TryStartSynchronousSession(ServerClient client, PKT_Synchronous data)
@@ -72,8 +72,8 @@ namespace GameServer.PacketManagers
             FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            client.GetData<UserFile>().SynchronousClient = toFind;
-            toFind.GetData<UserFile>().SynchronousClient = client;
+            client.GetData<UserFile>().SynchronousClientID = toFind.ID;
+            toFind.GetData<UserFile>().SynchronousClientID = client.ID;
 
             data.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
             toFind.Listener.EnqueuePacket(PacketHeader.Synchronous, data);
@@ -94,10 +94,8 @@ namespace GameServer.PacketManagers
 
         private static void StartSynchronousSession(ServerClient client, PKT_Synchronous data)
         {
-            PKT_Synchronous _ = new PKT_Synchronous();
-            _.CurrentStepMode = PKT_Synchronous.StepMode.Start;
-
-            client.GetData<UserFile>().SynchronousClient.Listener.EnqueuePacket(PacketHeader.Synchronous, _);
+            PKT_Synchronous _ = new PKT_Synchronous() { CurrentStepMode = PKT_Synchronous.StepMode.Start };
+            ServerNetwork.GetClientFromID(client.GetData<UserFile>().SynchronousClientID).Listener.EnqueuePacket(PacketHeader.Synchronous, _);
         }
     }
 }

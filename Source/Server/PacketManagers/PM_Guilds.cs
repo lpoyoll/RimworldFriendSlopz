@@ -6,7 +6,7 @@ using Shared;
 using Shared.Files;
 using Shared.Files.Guilds;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 using static Shared.Files.Guilds.GuildMember;

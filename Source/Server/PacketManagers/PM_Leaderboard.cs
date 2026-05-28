@@ -1,7 +1,7 @@
 ﻿using Shared;
 using Shared.Files;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.PacketManagers;
 using TCPNetwork.Packets;
 

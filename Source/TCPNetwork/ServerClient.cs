@@ -13,6 +13,8 @@ namespace TCPNetwork
     {
         public string IP { get; private set; } = string.Empty;
 
+        public byte ID { get; private set; } = byte.MinValue;
+
         public bool IsVerified { get; private set; } = false;
 
         public object ClientData { get; private set; } = null;
@@ -21,21 +23,19 @@ namespace TCPNetwork
 
         public TcpClient Tcp { get; private set; } = null;
 
-        public NetworkRuleset Ruleset { get; private set; } = null;
-
         public ServerClient(TcpClient tcp, NetworkRuleset ruleset, bool createListener = true)
         {
             if (tcp == null) return;
             else
             {
                 Tcp = tcp;
-                Ruleset = ruleset;
+                ID = (byte)Network.ServerClients.Keys.Count;
                 IP = ((IPEndPoint)tcp.Client.RemoteEndPoint).Address.ToString();
-                if (createListener) CreateListener();
+                if (createListener) CreateListener(ruleset);
             }
         }
 
-        public void CreateListener() { Listener = new Listener(this, Tcp, Ruleset); }
+        public void CreateListener(NetworkRuleset ruleset) { Listener = new Listener(this, Tcp, ruleset); }
 
         public void VerifyClient() 
         { 

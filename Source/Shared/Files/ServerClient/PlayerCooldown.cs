@@ -3,7 +3,7 @@ using Shared.Files.Actions;
 using System;
 using static System.Collections.Specialized.BitVector32;
 
-namespace TCPNetwork.Files.Client
+namespace Shared.Files.ServerClient
 {
     public class PlayerCooldown
     {

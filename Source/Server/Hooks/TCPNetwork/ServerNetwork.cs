@@ -8,7 +8,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.PacketManagers;
 using static TCPNetwork.Packets.PKT_Login;
 
@@ -84,6 +84,8 @@ namespace GameServer.Hooks.TCPNetwork
         {
             return GetConnectedClients().FirstOrDefault(fetch => fetch.GetData<UserFile>().Username == username);
         }
+
+        public static ServerClient GetClientFromID(byte id) { return Network.ServerClients.Keys.First(fetch => fetch.ID == id); }
 
         public static void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
         {

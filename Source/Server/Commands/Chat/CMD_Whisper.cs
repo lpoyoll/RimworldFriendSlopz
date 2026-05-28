@@ -3,7 +3,7 @@ using GameServer.PacketManager;
 using Shared;
 using Shared.Commands;
 using TCPNetwork;
-using TCPNetwork.Files.Client;
+using Shared.Files.ServerClient;
 using TCPNetwork.Packets;
 using static TCPNetwork.Packets.PKT_Chat;
 
