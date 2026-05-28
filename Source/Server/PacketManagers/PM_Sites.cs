@@ -54,18 +54,18 @@ namespace GameServer.PacketManager
         {
             siteFile.SaveSite();
 
-            PKT_Site siteData = new PKT_Site();
-            siteData.StepMode = SiteStepMode.Build;
-            siteData.File = siteFile;
+            PKT_Site packet = new PKT_Site();
+            packet.StepMode = SiteStepMode.Build;
+            packet.File = siteFile;
 
-            foreach (ServerClient cClient in ServerNetwork.GetConnectedClients())
+            foreach (ServerClient sc in ServerNetwork.GetConnectedClients())
             {
-                siteData.File.Goodwill = PM_Goodwills.GetSiteGoodwill(cClient, siteFile);
-                cClient.Listener.EnqueuePacket(PacketHeader.Site, siteData);
+                packet.File.Goodwill = PM_Goodwills.GetSiteGoodwill(sc, siteFile);
+                sc.Listener.EnqueuePacket(PacketHeader.Site, packet);
             }
 
-            siteData.StepMode = SiteStepMode.Accept;
-            client.Listener.EnqueuePacket(PacketHeader.Site, siteData);
+            packet.StepMode = SiteStepMode.Accept;
+            client.Listener.EnqueuePacket(PacketHeader.Site, packet);
 
             InformationDisplayer.DisplayAddSite(siteFile.Tile.ToString());
         }

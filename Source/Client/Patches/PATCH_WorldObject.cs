@@ -1,4 +1,5 @@
-﻿using GameClient.Misc;
+﻿using GameClient.Defs;
+using GameClient.Misc;
 using GameClient.PacketManagers;
 using GameClient.WorldObjects;
 using HarmonyLib;
@@ -15,6 +16,21 @@ using Verse;
 
 namespace GameClient.Patches
 {
+    public static class Patch_WorldObjectsHolder
+    {
+        public static List<Def> RestrictedDefs = new List<Def>()
+        {
+            WorldObjectDefOf.AbandonedSettlement,
+            WorldObjectDefOf.TravelingShuttle,
+            WorldObjectDefOf.TravellingTransporters,
+            WorldObjectDefOf.GravshipLaunch,
+            WorldObjectDefOf.Gravship,
+            WorldObjectDefOf.RoutePlannerWaypoint,
+            WorldObjectDefOf.Caravan,
+            RTSitePartDefOf.RTBase
+        };
+    }
+
     [HarmonyPatch(typeof(WorldObjectsHolder), nameof(WorldObjectsHolder.Add))]
     public static class Patch_WorldObjectsHolder_Add
     {
@@ -24,7 +40,6 @@ namespace GameClient.Patches
             if (!SessionHandler.IsReadyToPlay) return true;
 
             if (PM_WorldObject.IsBypass) return true;
-            else if (o.def.defName.StartsWith("RT")) return true;
             else
             {
                 if (o.def == WorldObjectDefOf.Settlement)
@@ -40,6 +55,7 @@ namespace GameClient.Patches
                 else
                 {
                     if (o.Faction == Faction.OfPlayer) return true;
+                    else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(o.def)) return true;
                     else
                     {
                         PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Site);
@@ -59,7 +75,6 @@ namespace GameClient.Patches
             if (!SessionHandler.IsReadyToPlay) return true;
 
             if (PM_WorldObject.IsBypass) return true;
-            else if (o.def.defName.StartsWith("RT")) return true;
             else
             {
                 if (o.def == WorldObjectDefOf.Settlement)
@@ -75,6 +90,7 @@ namespace GameClient.Patches
                 else
                 {
                     if (o.Faction == Faction.OfPlayer) return true;
+                    else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(o.def)) return true;
                     else
                     {
                         PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Site);
