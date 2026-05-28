@@ -1,11 +1,11 @@
 ﻿using GameClient.Dialogs;
-using TCPNetwork.Packets;
-using Shared;
+using RTNetwork.Packets;
+using RTShared;
 using GameClient.Misc;
-using TCPNetwork;
-using Shared.Files;
+using RTNetwork;
+using RTShared.Files;
 using GameClient.Dialogs.Default;
-using TCPNetwork.PacketManagers;
+using RTNetwork.PacketManagers;
 
 namespace GameClient.PacketManagers
 {

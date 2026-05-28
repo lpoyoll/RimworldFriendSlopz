@@ -1,7 +1,7 @@
 ﻿using GameServer.Core;
-using Shared.Misc;
+using RTShared.Misc;
 using System.Text;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameServer.Hooks.Shared
 {

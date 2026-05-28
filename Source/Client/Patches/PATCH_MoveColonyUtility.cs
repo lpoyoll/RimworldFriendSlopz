@@ -5,10 +5,10 @@ using System.Reflection.Emit;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RTShared;
 using Verse;
-using TCPNetwork.Packets;
-using TCPNetwork;
+using RTNetwork.Packets;
+using RTNetwork;
 using GameClient.PacketManagers;
 
 namespace GameClient.Patches

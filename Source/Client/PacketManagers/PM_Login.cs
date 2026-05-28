@@ -4,17 +4,17 @@ using GameClient.Files;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Hooks.VersionDownloader;
 using GameClient.Misc;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using UnityEngine;
 using Verse;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
-using static TCPNetwork.Packets.PKT_Login;
+using static RTNetwork.Packets.PKT_Login;
 
 namespace GameClient.PacketManagers
 {
@@ -123,10 +123,10 @@ namespace GameClient.PacketManagers
         public static void QuickConnectUser()
         {
             PersistentSettings settings = PersistentSettings.Load();
-            TCPNetwork.Network.Ip = settings.ServerSettings.LatestIP;
-            TCPNetwork.Network.Port = settings.ServerSettings.LatestPort;
+            RTNetwork.Network.Ip = settings.ServerSettings.LatestIP;
+            RTNetwork.Network.Port = settings.ServerSettings.LatestPort;
 
-            if (StringChecker.CheckIfStringValid(TCPNetwork.Network.Ip) && StringChecker.CheckIfStringValid(TCPNetwork.Network.Port.ToString()))
+            if (StringChecker.CheckIfStringValid(RTNetwork.Network.Ip) && StringChecker.CheckIfStringValid(RTNetwork.Network.Port.ToString()))
             {
                 LoginManagerH.ShowQuickConnectFloatMenu();
             }
@@ -150,7 +150,7 @@ namespace GameClient.PacketManagers
         {
             List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
             {
-                Tuple.Create($"Join latest server > {TCPNetwork.Network.Ip}:{TCPNetwork.Network.Port}", 0),
+                Tuple.Create($"Join latest server > {RTNetwork.Network.Ip}:{RTNetwork.Network.Port}", 0),
             };
 
             FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate { ClientNetwork.StartFeature(); });

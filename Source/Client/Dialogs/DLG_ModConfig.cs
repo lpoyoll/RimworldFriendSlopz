@@ -1,6 +1,6 @@
 ﻿using GameClient.Managers;
 using GameClient.PacketManagers;
-using Shared.Files.Mods;
+using RTShared.Files.Mods;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

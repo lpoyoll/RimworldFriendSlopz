@@ -1,14 +1,15 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using Shared;
-using Shared.Details.Planet;
-using Shared.Files.Configs;
-using Shared.Misc;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTShared;
+using RTShared.Details.Planet;
+using RTShared.Files.Configs;
+using RTShared.Misc;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTShared.Files.Player;
 
 namespace GameServer.PacketManager
 {

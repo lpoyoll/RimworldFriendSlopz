@@ -1,9 +1,9 @@
-﻿using Shared.Files.Guilds;
+﻿using RTShared.Files.Guilds;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using static Shared.Files.Guilds.GuildMember;
+using static RTShared.Files.Guilds.GuildMember;
 
 namespace GameClient.Dialogs
 {

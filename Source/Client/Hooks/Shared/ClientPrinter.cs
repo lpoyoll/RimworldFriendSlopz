@@ -1,10 +1,10 @@
 ﻿using GameClient.Core.Configs;
 using GameClient.Misc;
-using Shared.Misc;
+using RTShared.Misc;
 using System;
 using UnityEngine;
 using Verse;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameClient.Hooks.Shared
 {

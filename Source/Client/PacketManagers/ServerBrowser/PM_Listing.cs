@@ -2,11 +2,11 @@
 using GameClient.Dialogs.Default;
 using GameClient.Dialogs.ServerBrowser;
 using GameClient.Hooks.TCPNetwork;
-using Shared;
+using RTShared;
 using System;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets.ServerBrowser;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets.ServerBrowser;
 
 namespace GameClient.PacketManagers.ServerBrowser
 {

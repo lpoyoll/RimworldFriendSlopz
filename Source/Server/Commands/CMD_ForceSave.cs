@@ -1,10 +1,10 @@
 ﻿using GameServer.Hooks.TCPNetwork;
-using Shared;
-using Shared.Commands;
-using Shared.Misc;
-using TCPNetwork;
-using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
+using RTShared;
+using RTShared.Commands;
+using RTShared.Misc;
+using RTNetwork;
+using RTNetwork.Packets;
+using static RTShared.CommonEnumerators;
 
 namespace GameServer.Commands
 {

@@ -2,14 +2,14 @@
 using GameClient.Patches;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
-using Shared.Details.Planet;
-using Shared.Misc;
+using RTShared;
+using RTShared.Details.Planet;
+using RTShared.Misc;
 using System;
 using System.Collections.Generic;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
 namespace GameClient.PacketManagers
 {

@@ -1,8 +1,8 @@
 ﻿using GameServer.Core;
 using GameServer.Managers;
-using Shared.Commands;
-using Shared.Misc;
-using Shared.Files.ServerClient;
+using RTShared.Commands;
+using RTShared.Misc;
+using RTShared.Files.ServerClient;
 
 namespace GameServer.Commands
 {

@@ -3,11 +3,11 @@ using GameClient.Dialogs.Default;
 using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
-using Shared;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
+using RTShared;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using static RTShared.CommonEnumerators;
 
 namespace GameClient.PacketManagers
 {

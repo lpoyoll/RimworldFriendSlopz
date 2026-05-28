@@ -1,7 +1,7 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,9 +10,9 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets.VersionDownloader;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets.VersionDownloader;
 using UnityEngine;
 
 namespace GameClient.PacketManagers.VersionDownloader

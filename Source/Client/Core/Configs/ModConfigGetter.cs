@@ -1,5 +1,5 @@
 ﻿using Verse;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameClient.Core.Configs
 {

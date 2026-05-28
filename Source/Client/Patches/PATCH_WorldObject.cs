@@ -5,13 +5,13 @@ using GameClient.WorldObjects;
 using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
-using Shared.Misc;
+using RTShared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TCPNetwork.Packets;
+using RTNetwork.Packets;
 using Verse;
 
 namespace GameClient.Patches

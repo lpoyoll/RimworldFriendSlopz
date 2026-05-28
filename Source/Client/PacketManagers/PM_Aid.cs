@@ -1,15 +1,15 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
 using RimWorld;
-using Shared;
+using RTShared;
 using System;
 using Verse;
-using TCPNetwork.Packets;
-using TCPNetwork;
+using RTNetwork.Packets;
+using RTNetwork;
 using GameClient.Managers;
-using static TCPNetwork.Packets.PKT_Aid;
+using static RTNetwork.Packets.PKT_Aid;
 using GameClient.Dialogs.Default;
-using TCPNetwork.PacketManagers;
+using RTNetwork.PacketManagers;
 
 namespace GameClient.PacketManagers
 {

@@ -1,11 +1,11 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
 using GameServer.PacketManager;
-using Shared;
-using Shared.Files;
-using Shared.Misc;
+using RTShared;
+using RTShared.Files;
+using RTShared.Misc;
 using System.IO.Compression;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameServer.Managers
 {

@@ -1,9 +1,9 @@
-﻿using Shared;
-using Shared.Files;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+﻿using RTShared;
+using RTShared.Files;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 
 namespace GameServer.PacketManager
 {

@@ -1,12 +1,12 @@
 ﻿using GameClient.Hooks.Synchronous;
 using GameClient.Misc;
 using RimWorld;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
 
 namespace GameClient.PacketManagers.Synchronous

@@ -1,6 +1,6 @@
 ﻿using GameClient.Dialogs.Default;
 using GameClient.PacketManagers;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
 using UnityEngine;

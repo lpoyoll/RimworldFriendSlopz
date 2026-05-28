@@ -1,7 +1,7 @@
 ﻿using DiscordRPC;
 using DiscordRPC.Logging;
-using Shared;
-using Shared.Misc;
+using RTShared;
+using RTShared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;

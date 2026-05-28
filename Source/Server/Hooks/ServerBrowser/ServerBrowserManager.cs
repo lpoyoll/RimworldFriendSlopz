@@ -1,15 +1,15 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManagers.ServerBrowser;
-using Shared;
-using Shared.Files.Configs;
-using Shared.Misc;
+using RTShared;
+using RTShared.Files.Configs;
+using RTShared.Misc;
 using System.Net.Sockets;
 using System.Reflection;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets.ServerBrowser;
-using static Shared.Misc.Printer;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets.ServerBrowser;
+using static RTShared.Misc.Printer;
 
 namespace GameServer.Hooks.ServerBrowser
 {

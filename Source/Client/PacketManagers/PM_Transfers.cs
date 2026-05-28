@@ -3,16 +3,16 @@ using GameClient.Dialogs.Default;
 using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
-using Shared;
+using RTShared;
 using System.Collections.Generic;
 using System.Linq;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using UnityEngine.UIElements;
 using Verse;
 using Verse.Noise;
-using static TCPNetwork.Packets.PKT_Transfer;
+using static RTNetwork.Packets.PKT_Transfer;
 
 namespace GameClient.PacketManagers
 {

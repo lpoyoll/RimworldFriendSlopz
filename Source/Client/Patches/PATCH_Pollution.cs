@@ -1,15 +1,15 @@
 ﻿using HarmonyLib;
 using RimWorld.Planet;
-using Shared;
+using RTShared;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Verse;
-using TCPNetwork.Packets;
-using Shared.Details.Planet;
+using RTNetwork.Packets;
+using RTShared.Details.Planet;
 using GameClient.Misc;
-using TCPNetwork;
+using RTNetwork;
 
 namespace GameClient.Patches
 {

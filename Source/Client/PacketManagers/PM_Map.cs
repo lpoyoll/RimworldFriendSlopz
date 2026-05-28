@@ -1,9 +1,9 @@
 ﻿using GameClient.Misc;
-using Shared;
-using Shared.Files;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTShared;
+using RTShared.Files;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
 
 namespace GameClient.PacketManagers

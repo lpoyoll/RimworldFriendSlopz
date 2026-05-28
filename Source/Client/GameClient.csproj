@@ -38,18 +38,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="Newtonsoft.Json">
-	    <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
-	    <Private>True</Private>
-	  </Reference>
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Shared\Shared.csproj" />
-		<ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Reference Update="System">
 	    <Private>False</Private>
 	  </Reference>
@@ -98,6 +86,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Reference Include="Newtonsoft.Json">
+		  <HintPath>..\Assemblies\Client\Newtonsoft.Json.dll</HintPath>
+		</Reference>
+		<Reference Include="RTNetwork">
+		  <HintPath>..\Assemblies\Shared\RTNetwork.dll</HintPath>
+		</Reference>
+		<Reference Include="RTShared">
+		  <HintPath>..\Assemblies\Shared\RTShared.dll</HintPath>
+		</Reference>
 		<Reference Include="System.Memory">
 			<Aliases>sysmem</Aliases>
 		</Reference>

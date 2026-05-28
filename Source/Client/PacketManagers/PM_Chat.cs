@@ -1,14 +1,14 @@
 ﻿using GameClient.Defs;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
 using Verse.Sound;
 

@@ -1,6 +1,6 @@
 ﻿using GameServer.Hooks.ServerBrowser;
-using Shared.Commands;
-using Shared.Misc;
+using RTShared.Commands;
+using RTShared.Misc;
 
 namespace GameServer.Commands
 {

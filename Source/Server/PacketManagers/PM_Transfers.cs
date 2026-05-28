@@ -1,13 +1,13 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using Shared;
-using Shared.Files;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
-using static TCPNetwork.Packets.PKT_Transfer;
+using RTShared;
+using RTShared.Files;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using static RTNetwork.Packets.PKT_Transfer;
 
 namespace GameServer.PacketManager
 {

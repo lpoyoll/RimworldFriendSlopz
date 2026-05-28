@@ -6,15 +6,15 @@ using GameClient.PacketManagers;
 using GameClient.PacketManagers.Synchronous;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using static Shared.CommonEnumerators;
-using static TCPNetwork.Packets.PKT_Raid;
-using static TCPNetwork.Packets.PKT_Transfer;
+using static RTShared.CommonEnumerators;
+using static RTNetwork.Packets.PKT_Raid;
+using static RTNetwork.Packets.PKT_Transfer;
 
 namespace GameClient.WorldObjects
 {
@@ -234,7 +234,7 @@ namespace GameClient.WorldObjects
                     {
                         SessionHandler.ChosenSettlement = this;
                         SessionHandler.ChosenCaravan = caravan;
-                        PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.PKT_Synchronous.Type.Visit);
+                        PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, RTNetwork.Packets.PKT_Synchronous.Type.Visit);
                     }
 
                     else
@@ -257,7 +257,7 @@ namespace GameClient.WorldObjects
                     {
                         SessionHandler.ChosenSettlement = this;
                         SessionHandler.ChosenCaravan = caravan;
-                        PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, TCPNetwork.Packets.PKT_Synchronous.Type.Raid);
+                        PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, RTNetwork.Packets.PKT_Synchronous.Type.Raid);
                     }
 
                     else

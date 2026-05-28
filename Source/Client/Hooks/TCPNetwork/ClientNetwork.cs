@@ -4,16 +4,16 @@ using GameClient.Files;
 using GameClient.Managers;
 using GameClient.Misc;
 using GameClient.PacketManagers;
-using Shared;
-using Shared.Misc;
+using RTShared;
+using RTShared.Misc;
 using System;
 using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using static Shared.Misc.Printer;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using static RTShared.Misc.Printer;
 
 namespace GameClient.Hooks.TCPNetwork
 {

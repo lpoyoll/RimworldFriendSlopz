@@ -1,12 +1,12 @@
 ﻿using GameClient.Dialogs.Default;
 using GameClient.Hooks.TCPNetwork;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TCPNetwork;
+using RTNetwork;
 using UnityEngine;
 using Verse;
 

@@ -1,9 +1,9 @@
-﻿using Shared;
+﻿using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using TCPNetwork.Packets.ServerBrowser;
+using RTNetwork.Packets.ServerBrowser;
 using UnityEngine;
 using Verse;
 

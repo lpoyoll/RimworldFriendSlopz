@@ -3,16 +3,16 @@ using GameClient.Dialogs.Default;
 using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
-using Shared;
-using Shared.Files.Guilds;
+using RTShared;
+using RTShared.Files.Guilds;
 using System;
 using System.Collections.Generic;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
-using static Shared.Files.Guilds.GuildMember;
-using static TCPNetwork.Packets.PKT_PlayerGuild;
+using static RTShared.Files.Guilds.GuildMember;
+using static RTNetwork.Packets.PKT_PlayerGuild;
 
 namespace GameClient.PacketManagers
 {

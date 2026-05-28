@@ -1,12 +1,12 @@
 ﻿using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using Shared;
-using Shared.Commands;
-using Shared.Misc;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.Packets;
-using static Shared.CommonEnumerators;
+using RTShared;
+using RTShared.Commands;
+using RTShared.Misc;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.Packets;
+using static RTShared.CommonEnumerators;
 
 namespace GameServer.Commands
 {

@@ -2,7 +2,7 @@
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Misc;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,10 +14,10 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets.ServerBrowser;
-using TCPNetwork.Packets.VersionDownloader;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets.ServerBrowser;
+using RTNetwork.Packets.VersionDownloader;
 using UnityEngine;
 
 namespace GameClient.Hooks.VersionDownloader

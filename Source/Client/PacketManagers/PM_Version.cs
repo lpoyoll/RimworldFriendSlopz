@@ -2,15 +2,15 @@
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Hooks.VersionDownloader;
-using Shared;
-using Shared.Misc;
+using RTShared;
+using RTShared.Misc;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using UnityEngine;
 
 namespace GameClient.PacketManagers

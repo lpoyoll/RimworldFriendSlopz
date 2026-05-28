@@ -1,17 +1,17 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using Shared;
-using Shared.Files;
-using Shared.Misc;
+using RTShared;
+using RTShared.Files;
+using RTShared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer.PacketManagers

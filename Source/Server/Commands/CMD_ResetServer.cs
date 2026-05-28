@@ -1,6 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Managers;
-using Shared.Commands;
+using RTShared.Commands;
 
 namespace GameServer.Commands
 {

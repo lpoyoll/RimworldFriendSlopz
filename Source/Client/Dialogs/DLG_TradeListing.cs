@@ -1,13 +1,13 @@
 ﻿using GameClient.Managers;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RTShared;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using static TCPNetwork.Packets.PKT_Transfer;
+using static RTNetwork.Packets.PKT_Transfer;
 using GameClient.Misc;
-using TCPNetwork;
+using RTNetwork;
 using GameClient.PacketManagers;
 using GameClient.Dialogs.Default;
 using System.Collections.Generic;

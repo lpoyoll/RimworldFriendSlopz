@@ -1,7 +1,7 @@
-﻿using Shared;
+﻿using RTShared;
 using System;
 using System.IO;
-using Shared.Misc;
+using RTShared.Misc;
 
 namespace GameClient.Files
 {

@@ -2,15 +2,15 @@
 using GameServer.Managers;
 using GameServer.Misc;
 using GameServer.PacketManager;
-using Shared;
-using Shared.Misc;
+using RTShared;
+using RTShared.Misc;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using static TCPNetwork.Packets.PKT_Login;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using static RTNetwork.Packets.PKT_Login;
 
 namespace GameServer.Hooks.TCPNetwork
 {

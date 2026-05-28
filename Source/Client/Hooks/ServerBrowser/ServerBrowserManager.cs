@@ -2,15 +2,15 @@
 using GameClient.Dialogs.Default;
 using GameClient.Misc;
 using RimWorld;
-using Shared;
-using Shared.Misc;
+using RTShared;
+using RTShared.Misc;
 using System;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets.ServerBrowser;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets.ServerBrowser;
 
 namespace GameClient.Hooks.ServerBrowser
 {

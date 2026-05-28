@@ -6,21 +6,21 @@ using GameClient.Misc;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
-using Shared.Files;
-using Shared.Misc;
+using RTShared;
+using RTShared.Files;
+using RTShared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
-using static Shared.CommonEnumerators;
-using static Shared.Misc.Printer;
-using static TCPNetwork.Packets.PKT_Site;
+using static RTShared.CommonEnumerators;
+using static RTShared.Misc.Printer;
+using static RTNetwork.Packets.PKT_Site;
 
 
 namespace GameClient.PacketManagers

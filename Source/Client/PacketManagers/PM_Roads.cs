@@ -1,21 +1,21 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using TCPNetwork.Packets;
+using RTNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
-using Shared.Details.Planet;
-using Shared.Misc;
-using TCPNetwork;
+using RTShared.Details.Planet;
+using RTShared.Misc;
+using RTNetwork;
 using GameClient.Managers;
-using static TCPNetwork.Packets.PKT_Road;
+using static RTNetwork.Packets.PKT_Road;
 using GameClient.Dialogs.Default;
-using TCPNetwork.PacketManagers;
+using RTNetwork.PacketManagers;
 
 namespace GameClient.PacketManagers
 {

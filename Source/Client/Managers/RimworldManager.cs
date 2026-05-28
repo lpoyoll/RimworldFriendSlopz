@@ -2,11 +2,11 @@
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
-using Shared.Misc;
+using RTShared.Misc;
 using UnityEngine;
 using Verse;
 using Verse.AI.Group;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameClient.Managers
 {

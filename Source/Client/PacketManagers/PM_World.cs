@@ -1,10 +1,10 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Misc;
-using TCPNetwork.Packets;
+using RTNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
+using RTShared;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,14 +12,14 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using Verse.Profile;
-using Shared.Details.Planet;
-using Shared.Files.Configs;
-using Shared.Misc;
-using TCPNetwork;
-using static Shared.Misc.Printer;
-using static TCPNetwork.Packets.PKT_World;
+using RTShared.Details.Planet;
+using RTShared.Files.Configs;
+using RTShared.Misc;
+using RTNetwork;
+using static RTShared.Misc.Printer;
+using static RTNetwork.Packets.PKT_World;
 using GameClient.Dialogs.Default;
-using TCPNetwork.PacketManagers;
+using RTNetwork.PacketManagers;
 
 namespace GameClient.PacketManagers
 {

@@ -5,7 +5,7 @@ using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using System;
-using TCPNetwork;
+using RTNetwork;
 using UnityEngine;
 using Verse;
 

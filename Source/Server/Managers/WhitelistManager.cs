@@ -1,7 +1,7 @@
 using GameServer.Core;
-using Shared.Commands;
-using Shared.Files.Configs;
-using Shared.Misc;
+using RTShared.Commands;
+using RTShared.Files.Configs;
+using RTShared.Misc;
 
 namespace GameServer.Managers
 {

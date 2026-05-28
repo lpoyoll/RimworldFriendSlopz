@@ -1,9 +1,9 @@
 using GameClient.Managers;
 using GameClient.Misc;
-using Shared;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTShared;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 
 namespace GameClient.PacketManagers
 {

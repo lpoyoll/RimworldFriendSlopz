@@ -1,7 +1,7 @@
 ﻿using GameServer.PacketManager;
-using Shared.Commands;
-using Shared.Files;
-using Shared.Misc;
+using RTShared.Commands;
+using RTShared.Files;
+using RTShared.Misc;
 
 namespace GameServer.Commands
 {

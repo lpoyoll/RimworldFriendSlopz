@@ -3,17 +3,17 @@ using GameClient.Misc;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
-using Shared.Files;
-using Shared.Misc;
+using RTShared;
+using RTShared.Files;
+using RTShared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
-using static Shared.CommonEnumerators;
+using static RTShared.CommonEnumerators;
 
 namespace GameClient.PacketManagers
 {

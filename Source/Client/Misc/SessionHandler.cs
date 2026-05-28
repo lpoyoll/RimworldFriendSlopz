@@ -4,17 +4,17 @@ using GameClient.Patches.Pages;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
-using Shared.Files.Actions;
-using Shared.Files.Configs;
-using Shared.Files.Mods;
+using RTShared;
+using RTShared.Files.Actions;
+using RTShared.Files.Configs;
+using RTShared.Files.Mods;
 using System.Collections.Generic;
 using System.Linq;
-using TCPNetwork.Packets;
+using RTNetwork.Packets;
 using Verse;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
-using static Shared.CommonEnumerators;
-using static TCPNetwork.Packets.PKT_Raid;
+using static RTShared.CommonEnumerators;
+using static RTNetwork.Packets.PKT_Raid;
 
 namespace GameClient.Misc
 {

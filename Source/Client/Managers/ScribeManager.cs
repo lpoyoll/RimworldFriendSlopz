@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Text.RegularExpressions;
 using GameClient.Misc;
-using Shared.Misc;
+using RTShared.Misc;
 using Verse;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameClient.Managers
 {

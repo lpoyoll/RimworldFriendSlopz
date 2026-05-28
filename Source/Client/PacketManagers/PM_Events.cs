@@ -4,15 +4,15 @@ using System.Linq;
 using GameClient.Dialogs;
 using GameClient.Misc;
 using RimWorld;
-using Shared;
+using RTShared;
 using Verse;
-using Shared.Files;
-using TCPNetwork.Packets;
-using TCPNetwork;
+using RTShared.Files;
+using RTNetwork.Packets;
+using RTNetwork;
 using GameClient.Managers;
-using static TCPNetwork.Packets.PKT_Event;
+using static RTNetwork.Packets.PKT_Event;
 using GameClient.Dialogs.Default;
-using TCPNetwork.PacketManagers;
+using RTNetwork.PacketManagers;
 
 namespace GameClient.PacketManagers
 {

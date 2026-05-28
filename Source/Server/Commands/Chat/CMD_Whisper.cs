@@ -1,11 +1,11 @@
 ﻿using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
-using Shared;
-using Shared.Commands;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.Packets;
-using static TCPNetwork.Packets.PKT_Chat;
+using RTShared;
+using RTShared.Commands;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.Packets;
+using static RTNetwork.Packets.PKT_Chat;
 
 namespace GameServer.Commands.Chat
 {

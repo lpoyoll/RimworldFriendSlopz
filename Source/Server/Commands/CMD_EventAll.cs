@@ -1,12 +1,12 @@
 ﻿using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
-using Shared;
-using Shared.Commands;
-using Shared.Files;
-using Shared.Misc;
-using TCPNetwork;
-using TCPNetwork.Packets;
-using static TCPNetwork.Packets.PKT_Event;
+using RTShared;
+using RTShared.Commands;
+using RTShared.Files;
+using RTShared.Misc;
+using RTNetwork;
+using RTNetwork.Packets;
+using static RTNetwork.Packets.PKT_Event;
 
 namespace GameServer.Commands
 {

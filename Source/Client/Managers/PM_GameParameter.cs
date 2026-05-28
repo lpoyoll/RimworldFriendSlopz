@@ -1,18 +1,18 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
 using RimWorld;
-using Shared;
+using RTShared;
 using System.IO;
 using System.Linq;
 using Verse;
-using TCPNetwork.Packets;
-using Shared.Files.Configs;
-using TCPNetwork;
+using RTNetwork.Packets;
+using RTShared.Files.Configs;
+using RTNetwork;
 using GameClient.PacketManagers;
-using static TCPNetwork.Packets.GameParameterData;
-using static TCPNetwork.Packets.PKT_ModConfig;
+using static RTNetwork.Packets.GameParameterData;
+using static RTNetwork.Packets.PKT_ModConfig;
 using GameClient.Dialogs.Default;
-using TCPNetwork.PacketManagers;
+using RTNetwork.PacketManagers;
 
 namespace GameClient.Managers
 {

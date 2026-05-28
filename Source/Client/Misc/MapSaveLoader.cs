@@ -1,13 +1,13 @@
 ﻿using GameClient.Managers;
 using RimWorld;
 using RimWorld.Planet;
-using Shared.Files;
-using Shared.Misc;
+using RTShared.Files;
+using RTShared.Misc;
 using Synchronous.Misc;
 using System;
 using System.Linq;
 using Verse;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameClient.Misc
 {

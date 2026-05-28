@@ -4,15 +4,15 @@ using GameServer.Hooks.Shared;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.PacketManager;
-using Shared;
-using Shared.Commands;
-using Shared.Files;
-using Shared.Files.Actions;
-using Shared.Files.Configs;
-using Shared.Misc;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using static Shared.Misc.Printer;
+using RTShared;
+using RTShared.Commands;
+using RTShared.Files;
+using RTShared.Files.Actions;
+using RTShared.Files.Configs;
+using RTShared.Misc;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using static RTShared.Misc.Printer;
 
 namespace GameServer.Core
 {

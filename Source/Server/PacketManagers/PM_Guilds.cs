@@ -2,15 +2,15 @@
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.Misc;
-using Shared;
-using Shared.Files;
-using Shared.Files.Guilds;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
-using static Shared.Files.Guilds.GuildMember;
-using static TCPNetwork.Packets.PKT_PlayerGuild;
+using RTShared;
+using RTShared.Files;
+using RTShared.Files.Guilds;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using static RTShared.Files.Guilds.GuildMember;
+using static RTNetwork.Packets.PKT_PlayerGuild;
 
 namespace GameServer.PacketManager
 {

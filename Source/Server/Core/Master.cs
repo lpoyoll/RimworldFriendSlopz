@@ -1,7 +1,7 @@
 ﻿using GameServer.Files;
-using Shared.Files;
-using Shared.Files.Actions;
-using Shared.Files.Configs;
+using RTShared.Files;
+using RTShared.Files.Actions;
+using RTShared.Files.Configs;
 
 namespace GameServer.Core
 {

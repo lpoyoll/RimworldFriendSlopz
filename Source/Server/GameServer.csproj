@@ -29,19 +29,16 @@
 	<ItemGroup>
 		<PackageReference Include="MessagePack" Version="3.1.4" />
 		<PackageReference Include="Mono.Nat" Version="3.0.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="System.Security.Permissions" Version="10.0.1" />
     </ItemGroup>
 
-    <ItemGroup>
-
-	    <Reference Include="Newtonsoft.Json">
-	      <HintPath>..\Shared\Assemblies\Newtonsoft.Json.dll</HintPath>
-	      <Private>True</Private>
-	    </Reference>
-	</ItemGroup>
-
 	<ItemGroup>
-		<ProjectReference Include="..\Shared\Shared.csproj" />
-		<ProjectReference Include="..\TCPNetwork\TCPNetwork.csproj" />
+	  <Reference Include="RTNetwork">
+	    <HintPath>..\Assemblies\Shared\RTNetwork.dll</HintPath>
+	  </Reference>
+	  <Reference Include="RTShared">
+	    <HintPath>..\Assemblies\Shared\RTShared.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 </Project>

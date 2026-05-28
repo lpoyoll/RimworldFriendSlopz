@@ -1,11 +1,11 @@
 ﻿using GameClient.Dialogs.Default;
 using GameClient.Hooks.TCPNetwork;
-using Shared.Files.Mods;
+using RTShared.Files.Mods;
 using System;
 using System.Diagnostics;
 using System.Linq;
-using TCPNetwork;
-using TCPNetwork.Packets.ServerBrowser;
+using RTNetwork;
+using RTNetwork.Packets.ServerBrowser;
 using UnityEngine;
 using Verse;
 using Verse.Noise;

@@ -4,8 +4,8 @@ using GameClient.Dialogs.Default;
 using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
-using Shared;
-using Shared.Misc;
+using RTShared;
+using RTShared.Misc;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -13,12 +13,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.XPath;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
-using static Shared.Misc.Printer;
-using static TCPNetwork.Packets.PKT_Save;
+using static RTShared.Misc.Printer;
+using static RTNetwork.Packets.PKT_Save;
 
 namespace GameClient.PacketManagers
 {

@@ -1,10 +1,10 @@
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using Shared;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
-using static TCPNetwork.Packets.PKT_ResponseShortcut;
+using RTShared;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using static RTNetwork.Packets.PKT_ResponseShortcut;
 
 namespace GameClient.PacketManagers
 {

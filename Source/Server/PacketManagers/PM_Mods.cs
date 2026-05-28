@@ -2,16 +2,16 @@
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.Misc;
-using Shared;
-using Shared.Files.Configs;
-using Shared.Files.Mods;
-using Shared.Misc;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
-using static TCPNetwork.Packets.PKT_Login;
-using static TCPNetwork.Packets.PKT_ModConfig;
+using RTShared;
+using RTShared.Files.Configs;
+using RTShared.Files.Mods;
+using RTShared.Misc;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using static RTNetwork.Packets.PKT_Login;
+using static RTNetwork.Packets.PKT_ModConfig;
 
 namespace GameServer.PacketManager
 {

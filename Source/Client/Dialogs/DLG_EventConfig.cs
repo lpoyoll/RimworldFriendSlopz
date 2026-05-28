@@ -1,13 +1,13 @@
 ﻿using GameClient.PacketManagers;
-using Shared;
-using Shared.Files;
+using RTShared;
+using RTShared.Files;
 using System;
 using System.Collections.Generic;
-using TCPNetwork;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.Packets;
 using UnityEngine;
 using Verse;
-using static TCPNetwork.Packets.PKT_Event;
+using static RTNetwork.Packets.PKT_Event;
 
 namespace GameClient.Dialogs
 {

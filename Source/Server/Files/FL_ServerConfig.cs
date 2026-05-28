@@ -1,4 +1,4 @@
-﻿using Shared.Files;
+﻿using RTShared.Files;
 
 namespace GameServer.Files
 {

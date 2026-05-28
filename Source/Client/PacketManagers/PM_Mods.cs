@@ -1,19 +1,19 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Misc;
-using Shared;
-using Shared.Files.Configs;
-using Shared.Files.Mods;
-using Shared.Misc;
+using RTShared;
+using RTShared.Files.Configs;
+using RTShared.Files.Mods;
+using RTShared.Misc;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
-using static Shared.Files.Configs.FL_ModConfig;
-using static Shared.Misc.Printer;
-using static TCPNetwork.Packets.PKT_ModConfig;
+using static RTShared.Files.Configs.FL_ModConfig;
+using static RTShared.Misc.Printer;
+using static RTNetwork.Packets.PKT_ModConfig;
 
 namespace GameClient.PacketManagers
 {

@@ -2,7 +2,7 @@
 using GameClient.Dialogs.Default;
 using GameClient.Files;
 using GameClient.PacketManagers;
-using Shared.Misc;
+using RTShared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -1,12 +1,12 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
-using Shared;
-using Shared.Files.Configs;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
-using static TCPNetwork.Packets.PKT_World;
+using RTShared;
+using RTShared.Files.Configs;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using static RTNetwork.Packets.PKT_World;
 
 namespace GameServer.PacketManager
 {

@@ -1,5 +1,5 @@
 ﻿using GameServer.PacketManager;
-using Shared.Commands;
+using RTShared.Commands;
 
 namespace GameServer.Commands.Chat
 {

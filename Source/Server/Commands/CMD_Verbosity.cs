@@ -1,7 +1,7 @@
 ﻿using GameServer.Core;
 using GameServer.Files;
-using Shared.Commands;
-using Shared.Misc;
+using RTShared.Commands;
+using RTShared.Misc;
 
 namespace RTServerBrowser.Commands
 {

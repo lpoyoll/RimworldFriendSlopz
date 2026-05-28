@@ -8,11 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Verse;
-using static TCPNetwork.Packets.PKT_Transfer;
-using Shared;
-using Shared.Misc;
+using static RTNetwork.Packets.PKT_Transfer;
+using RTShared;
+using RTShared.Misc;
 using GameClient.PacketManagers;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameClient.Patches
 {

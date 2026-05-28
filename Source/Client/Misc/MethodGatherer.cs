@@ -1,9 +1,10 @@
+using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Shared
+namespace GameClient.Misc
 {
     public static class MethodGatherer
     {

@@ -1,14 +1,15 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using Shared;
-using Shared.Files;
-using TCPNetwork;
-using Shared.Files.ServerClient;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTShared;
+using RTShared.Files;
+using RTNetwork;
+using RTShared.Files.ServerClient;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using static TCPNetwork.Packets.PKT_Aid;
+using static RTNetwork.Packets.PKT_Aid;
+using RTShared.Files.Player;
 
 namespace GameServer.PacketManager
 {

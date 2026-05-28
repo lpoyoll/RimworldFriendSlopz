@@ -2,13 +2,13 @@
 using GameClient.Core.Configs;
 using GameClient.Dialogs;
 using HarmonyLib;
-using Shared;
-using Shared.Misc;
+using RTShared;
+using RTShared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using static Shared.Misc.Printer;
+using static RTShared.Misc.Printer;
 
 namespace GameClient.Misc
 {

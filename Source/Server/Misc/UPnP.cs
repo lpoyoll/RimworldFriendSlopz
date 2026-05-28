@@ -1,6 +1,6 @@
 ﻿using Mono.Nat;
-using Shared.Misc;
-using TCPNetwork;
+using RTShared.Misc;
+using RTNetwork;
 
 namespace GameServer.Misc
 {

@@ -1,11 +1,11 @@
-﻿using Shared;
+﻿using RTShared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
+using RTNetwork;
+using RTNetwork.PacketManagers;
 
 namespace GameClient.PacketManagers.ServerBrowser
 {

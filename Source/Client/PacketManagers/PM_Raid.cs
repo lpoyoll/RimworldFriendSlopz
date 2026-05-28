@@ -5,13 +5,13 @@ using GameClient.Managers;
 using GameClient.Misc;
 using RimWorld;
 using RimWorld.Planet;
-using Shared;
-using Shared.Files;
-using TCPNetwork;
-using TCPNetwork.PacketManagers;
-using TCPNetwork.Packets;
+using RTShared;
+using RTShared.Files;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using Verse;
-using static TCPNetwork.Packets.PKT_Raid;
+using static RTNetwork.Packets.PKT_Raid;
 
 namespace GameClient.PacketManagers
 {
