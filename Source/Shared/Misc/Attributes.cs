@@ -5,12 +5,9 @@ namespace Shared
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class HandlesPacket : Attribute
     {
-        public HandlesPacket(PacketHeader header)
-        {
-            this.header = header;
-        }
+        public readonly PacketHeader Header;
 
-        public readonly PacketHeader header;
+        public HandlesPacket(PacketHeader header) { this.Header = header; }
     }
 
     [AttributeUsage(AttributeTargets.Class, Inherited = true)]

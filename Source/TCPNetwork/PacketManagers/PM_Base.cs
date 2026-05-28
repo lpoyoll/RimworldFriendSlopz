@@ -24,7 +24,7 @@ namespace TCPNetwork.PacketManagers
                 HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
                 if (attribute != null)
                 {
-                    PacketDictionary.Add(attribute.header, new object[] { Activator.CreateInstance(type), method });
+                    PacketDictionary.Add(attribute.Header, new object[] { Activator.CreateInstance(type), method });
                     if (assembly == AssemblyType.Server) Printer.Warning($"[Base] Added packet '{type.Name}'", Printer.Verbosity.Extreme);
                 }
             }
@@ -35,7 +35,7 @@ namespace TCPNetwork.PacketManagers
                 HandlesPacket attribute = method.GetCustomAttribute<HandlesPacket>();
                 if (attribute != null)
                 {
-                    PacketDictionary.Add(attribute.header, new object[] { Activator.CreateInstance(type), method });
+                    PacketDictionary.Add(attribute.Header, new object[] { Activator.CreateInstance(type), method });
                     if (assembly == AssemblyType.Server) Printer.Warning($"[Main] Added packet '{type.Name}'", Printer.Verbosity.Extreme);
                 }
             }
