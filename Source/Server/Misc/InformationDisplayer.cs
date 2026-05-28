@@ -10,19 +10,19 @@ namespace GameServer.Misc
 
         public static void DisplayDisconnect(ServerClient client) { Printer.Message($"[Disconnect] > {client.IP}"); }
 
-        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.GetData<UserFile>().Username}"); }
+        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.GetData<PlayerFile>().Username}"); }
 
-        public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.GetData<UserFile>().Username}"); }
+        public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.GetData<PlayerFile>().Username}"); }
 
-        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.GetData<UserFile>().Username}"); }
+        public static void DisplaySaveGame(ServerClient client) { Printer.Message($"[Save game] > {client.GetData<PlayerFile>().Username}"); }
 
-        public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save Map] > {client.GetData<UserFile>().Username}"); }
+        public static void DisplaySaveMap(ServerClient client) { Printer.Message($"[Save Map] > {client.GetData<PlayerFile>().Username}"); }
 
-        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.GetData<UserFile>().Username}"); }
+        public static void DisplaySetMods(ServerClient client) { Printer.Warning($"[Set mods] > {client.GetData<PlayerFile>().Username}"); }
 
-        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set world] > {client.GetData<UserFile>().Username}"); }
+        public static void DisplaySetWorld(ServerClient client) { Printer.Warning($"[Set world] > {client.GetData<PlayerFile>().Username}"); }
 
-        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set events] > {client.GetData<UserFile>().Username}"); }
+        public static void DisplaySetEvents(ServerClient client) { Printer.Warning($"[Set events] > {client.GetData<PlayerFile>().Username}"); }
 
         public static void DisplayChatMap(string label, string message) { Printer.Message($"[Chat - {label}] > {message}"); }
 

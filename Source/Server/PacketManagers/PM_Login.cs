@@ -28,7 +28,7 @@ namespace GameServer.PacketManager
         {
             if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return false;
 
-            client.GetData<UserFile>(UserFile.LoadOrCreateUserFile(data._username, data._password));
+            client.GetData<PlayerFile>(PlayerFile.LoadOrCreateUserFile(data._username, data._password));
 
             if (UserManagerH.CheckIfUserBanned(client)) return false;
 
@@ -47,7 +47,7 @@ namespace GameServer.PacketManager
 
         public static void RegisterUser(ServerClient client, PKT_Login data)
         {
-            client.GetData<UserFile>(UserFile.LoadOrCreateUserFile(data._username, data._password));
+            client.GetData<PlayerFile>(PlayerFile.LoadOrCreateUserFile(data._username, data._password));
 
             InformationDisplayer.DisplayRegister(client);
 
@@ -72,18 +72,18 @@ namespace GameServer.PacketManager
             {
                 PM_World.RequireWorldFile(client);
 
-                client.GetData<UserFile>().UpdateAdmin(true);
+                client.GetData<PlayerFile>().UpdateAdmin(true);
                 PKT_Command commandData = new PKT_Command();
                 commandData._commandMode = CommandMode.Op;
                 client.Listener.EnqueuePacket(PacketHeader.Console, commandData);
-                Printer.Warning($"Giving first join admin permission to {client.GetData<UserFile>().Username}");
+                Printer.Warning($"Giving first join admin permission to {client.GetData<PlayerFile>().Username}");
             }
         }
 
         public static void RemoveOldClientSessions(ServerClient client)
         {
-            ServerClient[] oldClients = ServerNetwork.GetConnectedClients().Where(fetch => fetch.GetData<UserFile>().Username 
-                == client.GetData<UserFile>().Username && fetch != client).ToArray();
+            ServerClient[] oldClients = ServerNetwork.GetConnectedClients().Where(fetch => fetch.GetData<PlayerFile>().Username 
+                == client.GetData<PlayerFile>().Username && fetch != client).ToArray();
 
             foreach (ServerClient sc in oldClients) sc.Listener.MarkForDisconnect();
         }

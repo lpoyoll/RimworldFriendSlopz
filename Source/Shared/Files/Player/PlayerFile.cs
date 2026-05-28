@@ -11,7 +11,7 @@ using static Shared.CommonEnumerators;
 
 namespace Shared.Files.ServerClient
 {
-    public class UserFile
+    public class PlayerFile
     {
         public string Username { get; set; } = string.Empty;
 
@@ -87,17 +87,17 @@ namespace Shared.Files.ServerClient
             SaveUserFile();
         }
 
-        public static UserFile LoadOrCreateUserFile(string username, string password)
+        public static PlayerFile LoadOrCreateUserFile(string username, string password)
         {
-            List<UserFile> files = new List<UserFile>();
+            List<PlayerFile> files = new List<PlayerFile>();
             string[] userFiles = Directory.GetFiles(CommonValues.ServerUsersPath);
-            foreach (string userFile in userFiles) files.Add(Serializer.SerializeFromFile<UserFile>(userFile));
+            foreach (string userFile in userFiles) files.Add(Serializer.SerializeFromFile<PlayerFile>(userFile));
 
-            UserFile toFind = files.FirstOrDefault(fetch => fetch.Username == username && fetch.Password == password);
+            PlayerFile toFind = files.FirstOrDefault(fetch => fetch.Username == username && fetch.Password == password);
             if (toFind != null) return toFind;
             else
             {
-                toFind = new UserFile();
+                toFind = new PlayerFile();
                 toFind.Username = username;
                 toFind.Password = password;
                 toFind.Hash = Hasher.GetHashFromString($"{toFind.Username}:{toFind.Password}");

@@ -33,13 +33,13 @@ namespace GameServer.PacketManager
 
         public static void AddSettlement(ServerClient client, PKT_PlayerSettlement settlementData)
         {
-            if (CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<UserFile>().Username} attempted to add a settlement at tile {settlementData._settlementFile.Tile}, but that tile already has a settlement");
+            if (CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<PlayerFile>().Username} attempted to add a settlement at tile {settlementData._settlementFile.Tile}, but that tile already has a settlement");
             else
             {
                 FL_Settlement settlementFile = new FL_Settlement();
                 settlementFile.Tile = settlementData._settlementFile.Tile;
-                settlementFile.Username = client.GetData<UserFile>().Username;
-                settlementFile.Username = client.GetData<UserFile>().Username;
+                settlementFile.Username = client.GetData<PlayerFile>().Username;
+                settlementFile.Username = client.GetData<PlayerFile>().Username;
                 settlementData._settlementFile = settlementFile;
 
                 Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat), settlementFile);
@@ -68,10 +68,10 @@ namespace GameServer.PacketManager
 
             if (client != null)
             {
-                if (settlementFile.Username != client.GetData<UserFile>().Username)
+                if (settlementFile.Username != client.GetData<PlayerFile>().Username)
                 {
                     ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementFile.Tile} attempted to be removed by " +
-                        $"{client.GetData<UserFile>().Username}, but {settlementFile.Username} owns the settlement");
+                        $"{client.GetData<PlayerFile>().Username}, but {settlementFile.Username} owns the settlement");
                 }
 
                 else
@@ -169,7 +169,7 @@ namespace GameServer.PacketManager
             {
                 FL_Settlement file = new FL_Settlement();
 
-                if (settlement.Username == client.GetData<UserFile>().Username) continue;
+                if (settlement.Username == client.GetData<PlayerFile>().Username) continue;
                 else
                 {
                     file.Tile = settlement.Tile;

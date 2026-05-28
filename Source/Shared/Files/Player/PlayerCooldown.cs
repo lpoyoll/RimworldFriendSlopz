@@ -21,91 +21,91 @@ namespace Shared.Files.ServerClient
 
         public DateTime NPCProtectionTime { get; set; } = DateTime.MinValue;
 
-        public void SetEventTimer(UserFile file) 
+        public void SetEventTimer(PlayerFile file) 
         { 
             EventProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetAidTimer(UserFile file) 
+        public void SetAidTimer(PlayerFile file) 
         { 
             AidProtectionTime = DateTime.Now; 
             file.SaveUserFile();
         }
 
-        public void SetPollutionTimer(UserFile file)
+        public void SetPollutionTimer(PlayerFile file)
         {
             PollutionProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetRoadTimer(UserFile file)
+        public void SetRoadTimer(PlayerFile file)
         {
             RoadProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetNPCTimer(UserFile file)
+        public void SetNPCTimer(PlayerFile file)
         {
             NPCProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetRaidTimer(UserFile file)
+        public void SetRaidTimer(PlayerFile file)
         {
             RaidProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public void SetZoomTimer(UserFile file)
+        public void SetZoomTimer(PlayerFile file)
         {
             ZoomProtectionTime = DateTime.Now;
             file.SaveUserFile();
         }
 
-        public static bool CheckIfCanRaid(UserFile file, ACT_Base action)
+        public static bool CheckIfCanRaid(PlayerFile file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.RaidProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanZoom(UserFile file, ACT_Base action)
+        public static bool CheckIfCanZoom(PlayerFile file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.ZoomProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanEvent(UserFile file, ACT_Base action)
+        public static bool CheckIfCanEvent(PlayerFile file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.EventProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanAid(UserFile file, ACT_Base action)
+        public static bool CheckIfCanAid(PlayerFile file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.AidProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanPollute(UserFile file, ACT_Base action)
+        public static bool CheckIfCanPollute(PlayerFile file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.PollutionProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanRoad(UserFile file, ACT_Base action)
+        public static bool CheckIfCanRoad(PlayerFile file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.RoadProtectionTime, action.Cooldown)) return false;
             else return true;
         }
 
-        public static bool CheckIfCanNPC(UserFile file, ACT_Base action)
+        public static bool CheckIfCanNPC(PlayerFile file, ACT_Base action)
         {
             if (!action.IsEnabled) return false;
             else if (!TimeConverter.CompareTimes(file.Cooldowns.NPCProtectionTime, action.Cooldown)) return false;

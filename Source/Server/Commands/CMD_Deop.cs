@@ -21,7 +21,7 @@ namespace GameServer.Commands
 
         public override void Action()
         {
-            UserFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Username == CMD_Base.CommandParameters[0]).FirstOrDefault();
+            PlayerFile toFind = UserManagerH.GetAllUserFiles().Where(x => x.Username == CMD_Base.CommandParameters[0]).FirstOrDefault();
 
             if (toFind == null) Printer.Warning($"User '{CMD_Base.CommandParameters[0]}' was not found");
             else
@@ -36,7 +36,7 @@ namespace GameServer.Commands
                         PKT_Command commandData = new PKT_Command();
                         commandData._commandMode = CommandMode.Deop;
 
-                        client.GetData<UserFile>().UpdateAdmin(false);
+                        client.GetData<PlayerFile>().UpdateAdmin(false);
                         client.Listener.EnqueuePacket(PacketHeader.Console, commandData);
                     }
 

@@ -32,10 +32,10 @@ namespace GameServer.PacketManager
 
         private static void SaveModConfig(ServerClient client, FL_ModConfig file)
         {
-            if (Master.WorldValues != null && !client.GetData<UserFile>().IsAdmin)
+            if (Master.WorldValues != null && !client.GetData<PlayerFile>().IsAdmin)
             {
-                UserManager.BanPlayerFromName(client.GetData<UserFile>().Username);
-                Printer.Warning($"Player {client.GetData<UserFile>().Username} tried to change mod config without being admin");
+                UserManager.BanPlayerFromName(client.GetData<PlayerFile>().Username);
+                Printer.Warning($"Player {client.GetData<PlayerFile>().Username} tried to change mod config without being admin");
             }
 
             else
@@ -87,15 +87,15 @@ namespace GameServer.PacketManager
             if (conflictingModNames.Count == 0) return false;
             else
             {
-                if (client.GetData<UserFile>().IsAdmin)
+                if (client.GetData<PlayerFile>().IsAdmin)
                 {
-                    InformationDisplayer.DisplayModBypass(client.GetData<UserFile>().Username);
+                    InformationDisplayer.DisplayModBypass(client.GetData<PlayerFile>().Username);
                     return false;
                 }
 
                 else
                 {
-                    InformationDisplayer.DisplayModMismatch(client.GetData<UserFile>().Username);
+                    InformationDisplayer.DisplayModMismatch(client.GetData<PlayerFile>().Username);
                     PM_Login.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
                     return true;
                 }

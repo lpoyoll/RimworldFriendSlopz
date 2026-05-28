@@ -44,7 +44,7 @@ namespace GameServer.PacketManagers
         private static void RouteToManager(ServerClient client, PKT_Synchronous data, PacketHeader header)
         {
             client.Listener.EnqueuePacket(header, data);
-            ServerNetwork.GetClientFromID(client.GetData<UserFile>().SynchronousClientID).Listener.EnqueuePacket(header, data);
+            ServerNetwork.GetClientFromID(client.GetData<PlayerFile>().SynchronousClientID).Listener.EnqueuePacket(header, data);
         }
 
         private static void TryStartSynchronousSession(ServerClient client, PKT_Synchronous data)
@@ -57,8 +57,8 @@ namespace GameServer.PacketManagers
             {
                 PKT_Synchronous _ = new PKT_Synchronous();
                 _.CurrentStepMode = PKT_Synchronous.StepMode.Ask;
-                _.FromTile = PM_Settlements.GetSettlementFileFromUsername(client.GetData<UserFile>().Username).Tile;
-                _.Username = client.GetData<UserFile>().Username;
+                _.FromTile = PM_Settlements.GetSettlementFileFromUsername(client.GetData<PlayerFile>().Username).Tile;
+                _.Username = client.GetData<PlayerFile>().Username;
                 _.ToTile = data.ToTile;
                 _.Party = data.Party;
                 _.CurrentType = data.CurrentType;
@@ -72,8 +72,8 @@ namespace GameServer.PacketManagers
             FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            client.GetData<UserFile>().SynchronousClientID = toFind.ID;
-            toFind.GetData<UserFile>().SynchronousClientID = client.ID;
+            client.GetData<PlayerFile>().SynchronousClientID = toFind.ID;
+            toFind.GetData<PlayerFile>().SynchronousClientID = client.ID;
 
             data.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
             toFind.Listener.EnqueuePacket(PacketHeader.Synchronous, data);
@@ -95,7 +95,7 @@ namespace GameServer.PacketManagers
         private static void StartSynchronousSession(ServerClient client, PKT_Synchronous data)
         {
             PKT_Synchronous _ = new PKT_Synchronous() { CurrentStepMode = PKT_Synchronous.StepMode.Start };
-            ServerNetwork.GetClientFromID(client.GetData<UserFile>().SynchronousClientID).Listener.EnqueuePacket(PacketHeader.Synchronous, _);
+            ServerNetwork.GetClientFromID(client.GetData<PlayerFile>().SynchronousClientID).Listener.EnqueuePacket(PacketHeader.Synchronous, _);
         }
     }
 }
