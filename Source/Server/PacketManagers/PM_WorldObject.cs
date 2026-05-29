@@ -1,17 +1,19 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
+using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using RTShared;
 using RTShared.Files;
+using RTShared.Files.Player;
+using RTShared.Files.ServerClient;
 using RTShared.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RTNetwork;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer.PacketManagers
@@ -21,21 +23,27 @@ namespace GameServer.PacketManagers
         [HandlesPacket(PacketHeader.WorldObject)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PKT_WorldObject packet = Serializer.ConvertBytesToObject<PKT_WorldObject>(bytes);
-
-            switch (packet.CurrentStepMode)
+            if (!FL_PlayerCooldown.CheckIfCanWorldObject(client.GetData<FL_Player>(), Master.ActionConfigs.WorldObjectAction)) return;
+            else
             {
-                case PKT_WorldObject.StepMode.Add:
-                    AddWorldObject(client, packet, packet.WorldObject);
-                    break;
+                PKT_WorldObject packet = Serializer.ConvertBytesToObject<PKT_WorldObject>(bytes);
 
-                case PKT_WorldObject.StepMode.Remove:
-                    RemoveWorldObject(client, packet);
-                    break;
+                switch (packet.CurrentStepMode)
+                {
+                    case PKT_WorldObject.StepMode.Add:
+                        AddWorldObject(client, packet, packet.WorldObject);
+                        break;
 
-                case PKT_WorldObject.StepMode.Bulk:
-                    AddAllWorldObjects(client, packet);
-                    break;
+                    case PKT_WorldObject.StepMode.Remove:
+                        RemoveWorldObject(client, packet);
+                        break;
+
+                    case PKT_WorldObject.StepMode.Bulk:
+                        AddAllWorldObjects(client, packet);
+                        break;
+                }
+
+                client.GetData<FL_Player>().Cooldowns.SetWorldObjectTimer(client.GetData<FL_Player>());
             }
         }
 

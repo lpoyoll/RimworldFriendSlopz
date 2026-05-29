@@ -16,9 +16,9 @@ namespace GameServer.Commands
 
         public override void Action()
         {
-            Printer.Title($"Available events: [{EventManagerH.LoadedEvents.Count}]");
+            Printer.Title($"Available events: [{PM_Events.LoadedEvents.Count}]");
             Printer.Title("----------------------------------------");
-            foreach (FL_Event eventFile in EventManagerH.LoadedEvents) Printer.Warning($"{eventFile.DefName}");
+            foreach (FL_Event eventFile in PM_Events.LoadedEvents) Printer.Warning($"{eventFile.DefName}");
             Printer.Title("----------------------------------------");
         }
     }

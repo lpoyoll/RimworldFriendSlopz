@@ -23,6 +23,7 @@ namespace GameServer.PacketManager
             else
             {
                 PKT_Road data = Serializer.ConvertBytesToObject<PKT_Road>(bytes);
+
                 switch (data._stepMode)
                 {
                     case RoadStepMode.Add:
@@ -33,6 +34,8 @@ namespace GameServer.PacketManager
                         RemoveRoad(client, data);
                         break;
                 }
+
+                client.GetData<FL_Player>().Cooldowns.SetRoadTimer(client.GetData<FL_Player>());
             }
         }
 
@@ -46,7 +49,6 @@ namespace GameServer.PacketManager
 
             SaveRoad(data._details, client);
             ServerNetwork.SendPacketToAllClients(PacketHeader.Road, data);
-            client.GetData<FL_Player>().Cooldowns.SetRoadTimer(client.GetData<FL_Player>());
         }
 
         private static void RemoveRoad(ServerClient client, PKT_Road data)
@@ -76,11 +78,7 @@ namespace GameServer.PacketManager
                 else continue;
             }
 
-            void PostDelete(RoadDetail toRemove)
-            {
-                ServerNetwork.SendPacketToAllClients(PacketHeader.Road, data);
-                client.GetData<FL_Player>().Cooldowns.SetRoadTimer(client.GetData<FL_Player>());
-            }
+            void PostDelete(RoadDetail toRemove) { ServerNetwork.SendPacketToAllClients(PacketHeader.Road, data); }
         }
 
         private static void SaveRoad(RoadDetail details, ServerClient client = null)

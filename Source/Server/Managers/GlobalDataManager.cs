@@ -25,7 +25,7 @@ namespace GameServer.Managers
             globalData.DifficultyValues = Master.DifficultyValues;
             globalData.StorytellerValues = Master.StorytellerValues;
             globalData.ModConfigs = Master.ModConfig.ModConfigs;
-            globalData.EventValues = EventManagerH.LoadedEvents;
+            globalData.EventValues = PM_Events.LoadedEvents;
 
             if (Master.WorldValues != null)
             {

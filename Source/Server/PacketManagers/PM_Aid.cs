@@ -42,6 +42,8 @@ namespace GameServer.PacketManager
                         SendAidReject(client, data);
                         break;
                 }
+
+                client.GetData<FL_Player>().Cooldowns.SetAidTimer(client.GetData<FL_Player>());
             }
         }
 
@@ -74,8 +76,6 @@ namespace GameServer.PacketManager
                 FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._fromTile);
                 if (UserManagerH.CheckIfUserIsConnected(settlementFile.Username))
                 {
-                    client.GetData<FL_Player>().Cooldowns.SetAidTimer(client.GetData<FL_Player>());
-
                     ServerClient target = ServerNetwork.GetConnectedClientFromUsername(settlementFile.Username);
                     target.Listener.EnqueuePacket(PacketHeader.Aid, data);
                 }

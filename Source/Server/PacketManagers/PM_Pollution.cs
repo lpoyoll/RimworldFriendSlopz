@@ -23,6 +23,8 @@ namespace GameServer.PacketManager
             {
                 PKT_Pollution data = Serializer.ConvertBytesToObject<PKT_Pollution>(bytes);
                 AddPollutionToTile(data, client);
+
+                client.GetData<FL_Player>().Cooldowns.SetPollutionTimer(client.GetData<FL_Player>());
             }
         }
 
@@ -48,7 +50,6 @@ namespace GameServer.PacketManager
 
             FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
             ServerNetwork.SendPacketToAllClients(PacketHeader.Pollution, data, client);
-            client.GetData<FL_Player>().Cooldowns.SetPollutionTimer(client.GetData<FL_Player>());
         }
     }
 }

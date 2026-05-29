@@ -15,8 +15,7 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.Zoom)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.ZoomAction.IsEnabled) ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-            else if (!FL_PlayerCooldown.CheckIfCanZoom(client.GetData<FL_Player>(), Master.ActionConfigs.ZoomAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            if (!FL_PlayerCooldown.CheckIfCanZoom(client.GetData<FL_Player>(), Master.ActionConfigs.ZoomAction)) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 PKT_Zoom data = Serializer.ConvertBytesToObject<PKT_Zoom>(bytes);
@@ -27,6 +26,8 @@ namespace GameServer.PacketManager
                         SendRequestedMap(client, data);
                         break;
                 }
+
+                client.GetData<FL_Player>().Cooldowns.SetZoomTimer(client.GetData<FL_Player>());
             }
         }
 
@@ -43,7 +44,6 @@ namespace GameServer.PacketManager
                 data.CurrentStepMode = StepMode.Request;
                 data.Map = PM_Map.GetMapFromTile(data.TargetTile);
                 client.Listener.EnqueuePacket(PacketHeader.Raid, data);
-                client.GetData<FL_Player>().Cooldowns.SetZoomTimer(client.GetData<FL_Player>());
             }
         }
     }

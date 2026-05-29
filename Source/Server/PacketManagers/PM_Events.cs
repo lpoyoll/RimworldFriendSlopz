@@ -17,18 +17,17 @@ namespace GameServer.PacketManager
 {
     public class PM_Events : PM_Base
     {
+        public static List<FL_Event> LoadedEvents { get; private set; } = null;
+
         [HandlesPacket(PacketHeader.Event)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Event data = Serializer.ConvertBytesToObject<PKT_Event>(bytes);
 
-            if (!client.GetData<FL_Player>().IsAdmin)
+            if (!FL_PlayerCooldown.CheckIfCanEvent(client.GetData<FL_Player>(), Master.ActionConfigs.EventAction))
             {
-                if (!FL_PlayerCooldown.CheckIfCanEvent(client.GetData<FL_Player>(), Master.ActionConfigs.EventAction))
-                {
-                    data._stepMode = EventStepMode.Recover;
-                    client.Listener.EnqueuePacket(PacketHeader.Event, data);
-                }
+                data._stepMode = EventStepMode.Recover;
+                client.Listener.EnqueuePacket(PacketHeader.Event, data);
             }
 
             else
@@ -43,6 +42,8 @@ namespace GameServer.PacketManager
                         SetEvents(client, data);
                         break;
                 }
+
+                client.GetData<FL_Player>().Cooldowns.SetEventTimer(client.GetData<FL_Player>());
             }
         }
 
@@ -70,8 +71,6 @@ namespace GameServer.PacketManager
 
                     data._stepMode = EventStepMode.Receive;
 
-                    target.GetData<FL_Player>().Cooldowns.SetEventTimer(target.GetData<FL_Player>());
-
                     target.Listener.EnqueuePacket(PacketHeader.Event, data);
                 }
             }
@@ -87,18 +86,11 @@ namespace GameServer.PacketManager
                     Serializer.SerializeToFile(Path.Combine(Master.EventsPath, file.DefName + CommonValues.DefaultSaveFormat), file);
                 }
 
-                EventManagerH.LoadAllEvents();
+                LoadAllEvents();
                 InformationDisplayer.DisplaySetEvents(client);
                 ServerNetwork.SendPacketToAllClients(PacketHeader.Event, data);
             }
         }
-    }
-
-    public class EventManagerH
-    {
-        public static string FileExtension { get; private set; } = ".mpevent";
-
-        public static List<FL_Event> LoadedEvents { get; private set; } = null;
 
         public static void LoadAllEvents()
         {

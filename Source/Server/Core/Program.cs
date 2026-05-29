@@ -31,7 +31,7 @@ namespace GameServer.Core
             Printer.Title($"Loading all necessary resources");
             Printer.Title(Printer.SeparatorString);
 
-            EventManagerH.LoadAllEvents();
+            PM_Events.LoadAllEvents();
             Printer.Title(Printer.SeparatorString, Verbosity.Extreme);
             CMD_Base.GetAllCommands();
             Printer.Title(Printer.SeparatorString, Verbosity.Extreme);

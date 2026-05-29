@@ -1,15 +1,16 @@
 ﻿using GameServer.Core;
-using GameServer.Misc;
-using RTShared;
-using RTNetwork.Packets;
-using RTShared.Files.ServerClient;
-using RTShared.Misc;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using static RTNetwork.Packets.PKT_Site;
-using RTNetwork.PacketManagers;
+using GameServer.Misc;
 using RTNetwork;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTShared;
 using RTShared.Files;
+using RTShared.Files.Player;
+using RTShared.Files.ServerClient;
+using RTShared.Misc;
+using static RTNetwork.Packets.PKT_Site;
 
 namespace GameServer.PacketManager
 {
@@ -18,35 +19,35 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.Site)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.SiteAction.IsEnabled)
+            if (!FL_PlayerCooldown.CheckIfCanSite(client.GetData<FL_Player>(), Master.ActionConfigs.SiteAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
-            }
+                PKT_Site data = Serializer.ConvertBytesToObject<PKT_Site>(bytes);
 
-            PKT_Site data = Serializer.ConvertBytesToObject<PKT_Site>(bytes);
+                switch (data.StepMode)
+                {
+                    case SiteStepMode.Build:
+                        AddNewSite(client, data);
+                        break;
 
-            switch (data.StepMode)
-            {
-                case SiteStepMode.Build:
-                    AddNewSite(client, data);
-                    break;
+                    case SiteStepMode.Destroy:
+                        DestroySite(client, data);
+                        break;
 
-                case SiteStepMode.Destroy:
-                    DestroySite(client, data);
-                    break;
+                    case SiteStepMode.Rewards:
+                        SendRewardsToPlayer(client);
+                        break;
 
-                case SiteStepMode.Rewards:
-                    SendRewardsToPlayer(client);
-                    break;
+                    case SiteStepMode.Worker:
+                        ManageWorker(client, data);
+                        break;
 
-                case SiteStepMode.Worker:
-                    ManageWorker(client, data);
-                    break;
+                    case SiteStepMode.RetrieveWorker:
+                        RetrieveWorker(client, data);
+                        break;
+                }
 
-                case SiteStepMode.RetrieveWorker:
-                    RetrieveWorker(client, data);
-                    break;
+                client.GetData<FL_Player>().Cooldowns.SetSiteTimer(client.GetData<FL_Player>());
             }
         }
 
