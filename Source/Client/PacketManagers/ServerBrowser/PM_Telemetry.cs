@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RTNetwork;
 using RTNetwork.PacketManagers;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers.ServerBrowser
 {

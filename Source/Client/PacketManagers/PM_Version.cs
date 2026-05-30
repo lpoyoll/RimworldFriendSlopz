@@ -12,6 +12,7 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using UnityEngine;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {

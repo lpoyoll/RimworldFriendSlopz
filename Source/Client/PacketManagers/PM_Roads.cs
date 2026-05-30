@@ -1,5 +1,4 @@
 ﻿using GameClient.Dialogs;
-using GameClient.Misc;
 using RTNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
@@ -16,6 +15,7 @@ using GameClient.Managers;
 using static RTNetwork.Packets.PKT_Road;
 using GameClient.Dialogs.Default;
 using RTNetwork.PacketManagers;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -174,19 +174,19 @@ namespace GameClient.PacketManagers
         public static void SetValues()
         {
             List<RoadDef> allowedRoads = new List<RoadDef>();
-            if (SessionHandler.GlobalData.RoadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
-            if (SessionHandler.GlobalData.RoadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
-            if (SessionHandler.GlobalData.RoadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
-            if (SessionHandler.GlobalData.RoadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
-            if (SessionHandler.GlobalData.RoadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
+            if (SessionManager.GlobalData.RoadValues.AllowDirtPath) allowedRoads.Add(DirtPathDef);
+            if (SessionManager.GlobalData.RoadValues.AllowDirtRoad) allowedRoads.Add(DirtRoadDef);
+            if (SessionManager.GlobalData.RoadValues.AllowStoneRoad) allowedRoads.Add(StoneRoadDef);
+            if (SessionManager.GlobalData.RoadValues.AllowAsphaltPath) allowedRoads.Add(AncientAsphaltRoadDef);
+            if (SessionManager.GlobalData.RoadValues.AllowAsphaltHighway) allowedRoads.Add(AncientAsphaltHighwayDef);
             allowedRoadDefs = allowedRoads.ToArray();
 
             List<int> allowedCosts = new List<int>();
-            if (SessionHandler.GlobalData.RoadValues.AllowDirtPath) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.DirtPathCost);
-            if (SessionHandler.GlobalData.RoadValues.AllowDirtRoad) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.DirtRoadCost);
-            if (SessionHandler.GlobalData.RoadValues.AllowStoneRoad) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.StoneRoadCost);
-            if (SessionHandler.GlobalData.RoadValues.AllowAsphaltPath) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.AsphaltPathCost);
-            if (SessionHandler.GlobalData.RoadValues.AllowAsphaltHighway) allowedCosts.Add(SessionHandler.GlobalData.RoadValues.AsphaltHighwayCost);
+            if (SessionManager.GlobalData.RoadValues.AllowDirtPath) allowedCosts.Add(SessionManager.GlobalData.RoadValues.DirtPathCost);
+            if (SessionManager.GlobalData.RoadValues.AllowDirtRoad) allowedCosts.Add(SessionManager.GlobalData.RoadValues.DirtRoadCost);
+            if (SessionManager.GlobalData.RoadValues.AllowStoneRoad) allowedCosts.Add(SessionManager.GlobalData.RoadValues.StoneRoadCost);
+            if (SessionManager.GlobalData.RoadValues.AllowAsphaltPath) allowedCosts.Add(SessionManager.GlobalData.RoadValues.AsphaltPathCost);
+            if (SessionManager.GlobalData.RoadValues.AllowAsphaltHighway) allowedCosts.Add(SessionManager.GlobalData.RoadValues.AsphaltHighwayCost);
             allowedRoadCosts = allowedCosts.ToArray();
         }
 
@@ -246,7 +246,7 @@ namespace GameClient.PacketManagers
             foreach (int tileID in neighborTiles)
             {
                 if (!RimworldManager.CheckIfTileIsValid(tileID)) continue;
-                else if (CheckIfTwoTilesAreConnected(SessionHandler.ChosenCaravan.Tile, tileID)) continue;
+                else if (CheckIfTwoTilesAreConnected(SessionManager.ChosenCaravan.Tile, tileID)) continue;
                 else
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
@@ -266,10 +266,10 @@ namespace GameClient.PacketManagers
                     {
                         int selectedIndex = DLG_ListingWithButton.ResultInt;
 
-                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionHandler.ChosenCaravan, allowedRoadCosts[selectedIndex]))
+                        if (RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionManager.ChosenCaravan, allowedRoadCosts[selectedIndex]))
                         {
-                            RimworldManager.RemoveThingFromCaravan(SessionHandler.ChosenCaravan, ThingDefOf.Silver, allowedRoadCosts[selectedIndex]);
-                            PM_Roads.SendRoadAddRequest(SessionHandler.ChosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
+                            RimworldManager.RemoveThingFromCaravan(SessionManager.ChosenCaravan, ThingDefOf.Silver, allowedRoadCosts[selectedIndex]);
+                            PM_Roads.SendRoadAddRequest(SessionManager.ChosenCaravan.Tile, selectedTile, allowedRoadDefs[selectedIndex]);
                             PM_Saves.ForceSave();
                         }
                         else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You do not have enough silver for this action!" }));
@@ -289,7 +289,7 @@ namespace GameClient.PacketManagers
 
             foreach (int tileID in neighborTiles)
             {
-                if (CheckIfTwoTilesAreConnected(SessionHandler.ChosenCaravan.Tile, tileID))
+                if (CheckIfTwoTilesAreConnected(SessionManager.ChosenCaravan.Tile, tileID))
                 {
                     Vector2 vector = Find.WorldGrid.LongLatOf(tileID);
                     string toDisplay = $"Tile at {vector.y.ToStringLatitude()} - {vector.x.ToStringLongitude()}";
@@ -302,7 +302,7 @@ namespace GameClient.PacketManagers
             {
                 int selectedTile = selectableTiles[DLG_ListingWithButton.ResultInt];
 
-                PM_Roads.SendRoadRemoveRequest(SessionHandler.ChosenCaravan.Tile, selectedTile);
+                PM_Roads.SendRoadRemoveRequest(SessionManager.ChosenCaravan.Tile, selectedTile);
             };
 
             DLG_Base.PushNewDialog(new DLG_ListingWithButton("Road destroyer", "Select a tile to disconnect from",

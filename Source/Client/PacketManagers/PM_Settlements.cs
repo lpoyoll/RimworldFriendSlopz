@@ -14,6 +14,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
 using static RTShared.CommonEnumerators;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -84,9 +85,9 @@ namespace GameClient.PacketManagers
             file.Tile = _.Tile;
             file.Username = _.Label.Replace("'s settlement", "");
 
-            if (_.Faction == SessionHandler.EnemyFaction) file.Goodwill = Goodwill.Enemy;
-            else if (_.Faction == SessionHandler.AllyFaction) file.Goodwill = Goodwill.Ally;
-            else if (_.Faction == SessionHandler.GuildFaction) file.Goodwill = Goodwill.Guild;
+            if (_.Faction == SessionManager.EnemyFaction) file.Goodwill = Goodwill.Enemy;
+            else if (_.Faction == SessionManager.AllyFaction) file.Goodwill = Goodwill.Ally;
+            else if (_.Faction == SessionManager.GuildFaction) file.Goodwill = Goodwill.Guild;
             else file.Goodwill = Goodwill.Neutral;
 
             RemoveSingleSettlement(file);

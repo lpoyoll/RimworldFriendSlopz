@@ -21,6 +21,7 @@ using Verse;
 using static RTShared.CommonEnumerators;
 using static RTShared.Misc.Printer;
 using static RTNetwork.Packets.PKT_Site;
+using RTNetwork.Components;
 
 
 namespace GameClient.PacketManagers
@@ -62,19 +63,19 @@ namespace GameClient.PacketManagers
 
         public static void RequestSiteBuild()
         {
-            int toRemove = SessionHandler.CurrentActionValues.SiteAction.BuildingCost;
+            int toRemove = SessionManager.CurrentActionValues.SiteAction.BuildingCost;
 
-            if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionHandler.ChosenCaravan, ThingDefOf.Silver.defName, toRemove))
+            if (!RimworldManager.CheckIfHasEnoughItemInCaravan(SessionManager.ChosenCaravan, ThingDefOf.Silver.defName, toRemove))
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You do not have enough silver!" }));
                 return;
             }
 
-            RimworldManager.RemoveThingFromCaravan(SessionHandler.ChosenCaravan, DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName), toRemove);
+            RimworldManager.RemoveThingFromCaravan(SessionManager.ChosenCaravan, DefDatabase<ThingDef>.GetNamed(ThingDefOf.Silver.defName), toRemove);
 
             PKT_Site siteData = new PKT_Site();
             siteData.StepMode = SiteStepMode.Build;
-            siteData.File.Tile = SessionHandler.ChosenCaravan.Tile;
+            siteData.File.Tile = SessionManager.ChosenCaravan.Tile;
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
 
             DLG_Base.PushNewDialog(new DLG_Wait());
@@ -85,7 +86,7 @@ namespace GameClient.PacketManagers
             Action r1 = delegate
             {
                 PKT_Site siteData = new PKT_Site();
-                siteData.File.Tile = SessionHandler.ChosenSite.Tile;
+                siteData.File.Tile = SessionManager.ChosenSite.Tile;
                 siteData.StepMode = SiteStepMode.Destroy;
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
@@ -101,15 +102,15 @@ namespace GameClient.PacketManagers
 
             Action selectWorker = delegate
             {
-                Pawn toSend = SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)).ToList()
+                Pawn toSend = SessionManager.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)).ToList()
                     [DLG_ListingWithButton.ResultInt];
 
                 PKT_Site siteData = new PKT_Site();
                 siteData.StepMode = SiteStepMode.Worker;
-                siteData.File.Tile = SessionHandler.ChosenSite.Tile;
+                siteData.File.Tile = SessionManager.ChosenSite.Tile;
                 siteData.File.WorkerString = ScribeManager.SerializeToString(toSend, ScribeManager.SerializableType.Pawn);
 
-                SessionHandler.ChosenCaravan.RemovePawn(toSend);
+                SessionManager.ChosenCaravan.RemovePawn(toSend);
                 Find.WorldPawns.RemovePawn(toSend);
                 toSend.Destroy();
 
@@ -118,7 +119,7 @@ namespace GameClient.PacketManagers
             };
 
             List<string> contents = new List<string>();
-            foreach (Pawn pawn in SessionHandler.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)))
+            foreach (Pawn pawn in SessionManager.ChosenCaravan.PawnsListForReading.Where(fetch => RimworldManager.CheckIfThingIsHuman(fetch)))
             {
                 contents.Add(pawn.LabelCap);
             }
@@ -135,11 +136,11 @@ namespace GameClient.PacketManagers
             Action retrieveWorker = delegate
             {
                 Pawn toRetrieve = ScribeManager.SerializeFromString<Pawn>(file.WorkerString, ScribeManager.SerializableType.Pawn);
-                RimworldManager.PlaceThingIntoCaravan(toRetrieve, SessionHandler.ChosenCaravan);
+                RimworldManager.PlaceThingIntoCaravan(toRetrieve, SessionManager.ChosenCaravan);
 
                 PKT_Site siteData = new PKT_Site();
                 siteData.StepMode = SiteStepMode.RetrieveWorker;
-                siteData.File.Tile = SessionHandler.ChosenSite.Tile;
+                siteData.File.Tile = SessionManager.ChosenSite.Tile;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
             };
 
@@ -157,7 +158,7 @@ namespace GameClient.PacketManagers
         {
             PKT_Site siteData = new PKT_Site();
             siteData.StepMode = SiteStepMode.Worker;
-            siteData.File.Tile = SessionHandler.ChosenSite.Tile;
+            siteData.File.Tile = SessionManager.ChosenSite.Tile;
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Site, siteData);
         }
 
@@ -169,7 +170,7 @@ namespace GameClient.PacketManagers
                 try
                 {
                     Thing toMake = ThingMaker.MakeThing(ThingDefOf.Silver);
-                    toMake.stackCount = SessionHandler.CurrentActionValues.SiteAction.RewardsCount;
+                    toMake.stackCount = SessionManager.CurrentActionValues.SiteAction.RewardsCount;
                     toMake.HitPoints = toMake.def.BaseMaxHitPoints;
 
                     rewards.Add(toMake);
@@ -260,7 +261,7 @@ namespace GameClient.PacketManagers
             {
                 while (!Token.Token.IsCancellationRequested)
                 {
-                    if (currentRewardDelay >= SessionHandler.CurrentActionValues.SiteAction.TimeInterval)
+                    if (currentRewardDelay >= SessionManager.CurrentActionValues.SiteAction.TimeInterval)
                     {
                         MainThreadHandler.Instance.Enqueue(RequestSiteRewards);
                         currentRewardDelay = 0;

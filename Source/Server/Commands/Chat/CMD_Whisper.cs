@@ -6,6 +6,7 @@ using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Chat;
+using RTNetwork.Components;
 
 namespace GameServer.Commands.Chat
 {

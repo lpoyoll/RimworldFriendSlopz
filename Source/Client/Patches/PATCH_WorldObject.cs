@@ -1,5 +1,4 @@
 ﻿using GameClient.Defs;
-using GameClient.Misc;
 using GameClient.PacketManagers;
 using GameClient.WorldObjects;
 using HarmonyLib;
@@ -13,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RTNetwork.Packets;
 using Verse;
+using GameClient.Managers;
 
 namespace GameClient.Patches
 {
@@ -37,7 +37,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(WorldObject o)
         {
-            if (!SessionHandler.IsReadyToPlay) return true;
+            if (!SessionManager.IsReadyToPlay) return true;
 
             if (PM_WorldObject.IsBypass) return true;
             else
@@ -72,7 +72,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(WorldObject o)
         {
-            if (!SessionHandler.IsReadyToPlay) return true;
+            if (!SessionManager.IsReadyToPlay) return true;
 
             if (PM_WorldObject.IsBypass) return true;
             else

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using GameClient.Misc;
+using GameClient.Managers;
 using HarmonyLib;
 using RimWorld;
 
@@ -12,7 +12,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Quest quest)
         {
-            foreach (Faction faction in SessionHandler.PlayerFactions)
+            foreach (Faction faction in SessionManager.PlayerFactions)
             {
                 if (quest.InvolvedFactions.Contains(faction))
                 {

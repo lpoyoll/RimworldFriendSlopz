@@ -19,71 +19,92 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
 using RTNetwork.Packets.VersionDownloader;
 using UnityEngine;
+using RTShared.Misc;
 
 namespace GameClient.Hooks.VersionDownloader
 {
     public static class VersionDownloadManager
     {
-        private static string VersionToDownload { get; set; } = string.Empty;
+        private static readonly string GitHubURL = "https://github.com/RimWorld-Together/Rimworld-Together/releases/download";
+
+        private static readonly string FileName = "3005289691.zip";
+
+        private static WebClient Client { get; set; } = new WebClient();
 
         public static void ChangeVersion(string version)
         {
-            VersionToDownload = version;
+            if (!DownloadFile(Directory.GetParent(Master.ModMainPath).FullName))
+            {
+                DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Error occurred while downloading the file!" }));
+                return;
+            }
 
-            TryConnect();
+            if (!ExtractVersion(Directory.GetParent(Master.ModMainPath).FullName))
+            {
+                DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "Error occurred while downloading the file!" }));
+                return;
+            }
+
+            PrepareShellInstall(Directory.GetParent(Master.ModMainPath).FullName);
         }
 
-        private static Action<PacketHeader, byte[], ServerClient> OnReadPacket { get; set; } = delegate (PacketHeader header, byte[] buffer, ServerClient client)
-        {
-            Action toDo = delegate
-            {
-                MethodInfo method = (MethodInfo)PM_Base.PacketDictionary[header][1];
-                method.Invoke(PM_Base.PacketDictionary[header][0], new object[] { client, buffer, header });
-            };
-
-            if (header == PacketHeader.Handshake) toDo.Invoke();
-            else MainThreadHandler.Instance.Enqueue(toDo);
-        };
-
-        private static Action<ServerClient> OnDisconnect { get; set; } = delegate (ServerClient client) { DLG_Wait.Instance.Close(); };
-
-        public static void TryConnect()
-        {
-            DLG_Base.PushNewDialog(new DLG_Wait());
-
-            Task.Run(delegate
-            {
-                if (ConnectToServer()) AskForVersionDownload();
-                else
-                {
-                    MainThreadHandler.Instance.Enqueue(delegate
-                    {
-                        DLG_Wait.Instance.Close();
-                        DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "The server did not respond in time" }));
-                    });
-                }
-            });
-        }
-
-        private static bool ConnectToServer()
+        private static bool DownloadFile(string startingPath)
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.VersionDownloaderPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
-                Network.MultipurposeEndpoint = client.Listener;
-                PM_Handshake.Send(client);
+                string completeURL = GitHubURL + "/" + DLG_Inputs.DialogInputResults[0] + "/" + FileName;
+                Client.DownloadFile(completeURL, Path.Combine(startingPath, "3005289691.zip"));
                 return true;
             }
-            catch { return false; }
+
+            catch (Exception ex)
+            {
+                Printer.Error(ex);
+                return false;
+            }
         }
 
-        private static void AskForVersionDownload()
+        private static bool ExtractVersion(string startingPath)
         {
-            PKT_VersionDownload data = new PKT_VersionDownload();
-            data.CurrentStepMode = PKT_VersionDownload.StepMode.Ask;
-            data.RequestedVersion = VersionToDownload;
+            string zipPath = Path.Combine(startingPath, "3005289691.zip");
+            string destination = Path.Combine(startingPath, "3005289691-Temp");
 
-            Network.MultipurposeEndpoint.EnqueuePacket(PacketHeader.VersionDownload, data);
+            if (!File.Exists(zipPath)) return false;
+            else
+            {
+                if (Directory.Exists(destination)) Directory.Delete(destination);
+                Directory.CreateDirectory(destination);
+
+                try
+                {
+                    ZipFile.ExtractToDirectory(zipPath, destination);
+                    File.Delete(zipPath);
+                    return true;
+                }
+                catch { return false; }
+            }
+        }
+
+        private static void PrepareShellInstall(string startingPath)
+        {
+            string scriptStartingLocation = Path.Combine(Master.ModScriptsPath, "VersionUpdater.bat");
+            string scriptCopyPath = Path.Combine(startingPath, "VersionUpdater.bat");
+            if (File.Exists(scriptCopyPath)) File.Delete(scriptCopyPath);
+            File.Copy(scriptStartingLocation, scriptCopyPath);
+
+            string txtPath = Path.Combine(Directory.GetParent(startingPath).FullName, "ModPath.txt");
+            if (File.Exists(txtPath)) File.Delete(txtPath);
+            File.WriteAllText(txtPath, Directory.GetParent(Master.ModMainPath).FullName);
+
+            Action toDo = delegate
+            {
+                ProcessStartInfo processInfo = new ProcessStartInfo(scriptCopyPath);
+                processInfo.UseShellExecute = false;
+                Process.Start(processInfo);
+                Application.Quit();
+            };
+
+            DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "The game will close to apply the new version" }, toDo));
         }
     }
 }

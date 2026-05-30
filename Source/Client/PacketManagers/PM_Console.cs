@@ -1,21 +1,18 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
-using GameClient.Misc;
 using RimWorld;
 using RTShared;
 using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using static RTShared.CommonEnumerators;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
-    //Class that handles how the client will answer to incoming server commands
     public class PM_Console : PM_Base
     {
-        //Parses the received packet into a command to execute
-
         [HandlesPacket(PacketHeader.Console)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
@@ -43,13 +40,13 @@ namespace GameClient.PacketManagers
 
         private static void OnOpCommand()
         {
-            SessionHandler.IsAdmin = true;
+            SessionManager.IsAdmin = true;
             DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "You are now an admin!" }));
         }
 
         private static void OnDeopCommand()
         {
-            SessionHandler.IsAdmin = false;
+            SessionManager.IsAdmin = false;
             DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "You are no longer an admin!" }));
         }
 

@@ -1,5 +1,4 @@
 ﻿using GameClient.Defs;
-using GameClient.Misc;
 using GameClient.PacketManagers;
 using GameClient.WorldObjects;
 using RimWorld;
@@ -16,6 +15,8 @@ using RTNetwork.Packets;
 using Verse;
 using static RTShared.Misc.Printer;
 using static RTNetwork.Packets.PKT_Caravan;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers
 {
@@ -61,7 +62,7 @@ namespace GameClient.PacketManagers
 
                     WO_Caravan onlineCaravan = (WO_Caravan)WorldObjectMaker.MakeWorldObject(RTWorldObjectDefOf.RTCaravan);
                     onlineCaravan.Tile = file.Tile;
-                    onlineCaravan.SetFaction(SessionHandler.NeutralFaction);
+                    onlineCaravan.SetFaction(SessionManager.NeutralFaction);
                     Find.World.worldObjects.AllWorldObjects.Add(onlineCaravan);
                 }
             }
@@ -118,7 +119,7 @@ namespace GameClient.PacketManagers
             data._stepMode = CaravanStepMode.Add;
             data._caravanFile = new FL_Caravan();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.Username = SessionHandler.Username;
+            data._caravanFile.Username = SessionManager.Username;
             data._caravanFile.ID = caravan.ID;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Caravan, data);
@@ -130,7 +131,7 @@ namespace GameClient.PacketManagers
             data._stepMode = CaravanStepMode.Remove;
             data._caravanFile = new FL_Caravan();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.Username = SessionHandler.Username;
+            data._caravanFile.Username = SessionManager.Username;
             data._caravanFile.ID = caravan.ID;
 
             PlayerCaravans.Remove(caravan);
@@ -144,7 +145,7 @@ namespace GameClient.PacketManagers
             data._stepMode = CaravanStepMode.Move;
             data._caravanFile = new FL_Caravan();
             data._caravanFile.Tile = caravan.Tile;
-            data._caravanFile.Username = SessionHandler.Username;
+            data._caravanFile.Username = SessionManager.Username;
             data._caravanFile.ID = caravan.ID;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Caravan, data);

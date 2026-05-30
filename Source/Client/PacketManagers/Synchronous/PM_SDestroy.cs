@@ -6,6 +6,8 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers.Synchronous
 {
@@ -30,7 +32,7 @@ namespace GameClient.PacketManagers.Synchronous
 
             PatchHandler.ExecuteInBypass(delegate
             {
-                Thing thing = Finder.GetThingFromID(SessionHandler.SynchronousMap, destroy.ThingID);
+                Thing thing = Finder.GetThingFromID(SessionManager.SynchronousMap, destroy.ThingID);
                 thing.Destroy();
             });
         }

@@ -7,6 +7,7 @@ using static RTNetwork.Packets.PKT_Raid;
 using RTNetwork.PacketManagers;
 using RTNetwork;
 using RTShared.Files.Player;
+using RTNetwork.Components;
 
 namespace GameServer.PacketManager
 {

@@ -1,5 +1,4 @@
 ﻿using GameClient.Dialogs;
-using GameClient.Misc;
 using RimWorld;
 using RTShared;
 using System;
@@ -10,6 +9,7 @@ using GameClient.Managers;
 using static RTNetwork.Packets.PKT_Aid;
 using GameClient.Dialogs.Default;
 using RTNetwork.PacketManagers;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -49,7 +49,7 @@ namespace GameClient.PacketManagers
             PKT_Aid aidData = new PKT_Aid();
             aidData._stepMode = AidStepMode.Send;
             aidData._fromTile = Find.AnyPlayerHomeMap.Tile;
-            aidData._toTile = SessionHandler.ChosenSettlement.Tile;
+            aidData._toTile = SessionManager.ChosenSettlement.Tile;
 
             Pawn toGet = RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)[DLG_ListingWithButton.ResultInt];
             aidData._humanData = ScribeManager.SerializeToString(toGet, ScribeManager.SerializableType.Thing);

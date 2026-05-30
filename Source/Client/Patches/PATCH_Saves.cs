@@ -1,5 +1,5 @@
 ﻿using GameClient.Dialogs.Default;
-using GameClient.Misc;
+using GameClient.Managers;
 using GameClient.PacketManagers;
 using HarmonyLib;
 using RTShared.Misc;
@@ -16,10 +16,10 @@ namespace GameClient.Patches
         {
             try
             {
-                if (SessionHandler.IsSavingGame) return false;
-                if (SessionHandler.SynchronousMap != null) return false;
+                if (SessionManager.IsSavingGame) return false;
+                if (SessionManager.SynchronousMap != null) return false;
 
-                SessionHandler.IsSavingGame = true;
+                SessionManager.IsSavingGame = true;
                 PM_Saves.LatestSavePath = GenFilePaths.FilePathForSavedGame(fileName);
 
                 try
@@ -40,7 +40,7 @@ namespace GameClient.Patches
             }
             catch (Exception e) { Printer.Error(e); }
 
-            SessionHandler.IsSavingGame = false;
+            SessionManager.IsSavingGame = false;
 
             return false;
         }

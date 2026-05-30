@@ -1,6 +1,5 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
-using GameClient.Misc;
 using RTNetwork.Packets;
 using RimWorld;
 using RimWorld.Planet;
@@ -20,6 +19,8 @@ using static RTShared.Misc.Printer;
 using static RTNetwork.Packets.PKT_World;
 using GameClient.Dialogs.Default;
 using RTNetwork.PacketManagers;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers
 {
@@ -62,7 +63,7 @@ namespace GameClient.PacketManagers
 
         public static void OnAskForWorld()
         {
-            SessionHandler.IsGeneratingFreshWorld = true;
+            SessionManager.IsGeneratingFreshWorld = true;
 
             DLG_Wait.Instance.Close();
 
@@ -71,7 +72,7 @@ namespace GameClient.PacketManagers
 
         public static void OnExistingWorld()
         {
-            SessionHandler.IsGeneratingFreshWorld = false;
+            SessionManager.IsGeneratingFreshWorld = false;
 
             DLG_Wait.Instance.Close();
 
@@ -84,12 +85,12 @@ namespace GameClient.PacketManagers
 
             PKT_World data = new PKT_World();
             data._stepMode = WorldStepMode.Sent;
-            data.File = SessionHandler.CurrentWorld;
+            data.File = SessionManager.CurrentWorld;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.World, data);
 
             File.Delete(PM_World.tempWorldPath);
-            SessionHandler.IsGeneratingFreshWorld = false;
+            SessionManager.IsGeneratingFreshWorld = false;
         }
 
         public static void OnReceiveWorld(PKT_World data)
@@ -101,19 +102,19 @@ namespace GameClient.PacketManagers
         public static void SetValuesFromGame(string seedString, float planetCoverage, OverallRainfall rainfall, OverallTemperature temperature, 
             OverallPopulation population, LandmarkDensity density, List<FactionDef> factions, float pollution)
         {
-            SessionHandler.CurrentWorld = new FL_PlanetConfig();
-            SessionHandler.CurrentWorld.SeedString = seedString;
-            SessionHandler.CurrentWorld.PersistentRandomValue = GenText.StableStringHash(seedString);
-            SessionHandler.CurrentWorld.PlanetCoverage = planetCoverage;
-            SessionHandler.CurrentWorld.Rainfall = (int)rainfall;
-            SessionHandler.CurrentWorld.Temperature = (int)temperature;
-            SessionHandler.CurrentWorld.Population = (int)population;
-            SessionHandler.CurrentWorld.LandmarkDensity = (int)density;
-            SessionHandler.CurrentWorld.Pollution = pollution;
-            SessionHandler.CurrentWorld.NPCFactions = GetNPCFactionsFromDef(factions.ToArray());
+            SessionManager.CurrentWorld = new FL_PlanetConfig();
+            SessionManager.CurrentWorld.SeedString = seedString;
+            SessionManager.CurrentWorld.PersistentRandomValue = GenText.StableStringHash(seedString);
+            SessionManager.CurrentWorld.PlanetCoverage = planetCoverage;
+            SessionManager.CurrentWorld.Rainfall = (int)rainfall;
+            SessionManager.CurrentWorld.Temperature = (int)temperature;
+            SessionManager.CurrentWorld.Population = (int)population;
+            SessionManager.CurrentWorld.LandmarkDensity = (int)density;
+            SessionManager.CurrentWorld.Pollution = pollution;
+            SessionManager.CurrentWorld.NPCFactions = GetNPCFactionsFromDef(factions.ToArray());
         }
 
-        private static void SetValuesFromServer(PKT_World data) { SessionHandler.CurrentWorld = data.File; }
+        private static void SetValuesFromServer(PKT_World data) { SessionManager.CurrentWorld = data.File; }
 
         public static void GenerateNormalWorld()
         {
@@ -122,17 +123,17 @@ namespace GameClient.PacketManagers
                 Find.GameInitData.ResetWorldRelatedMapInitData();
 
                 Rand.EnsureStateStackEmpty();
-                Rand.PushState(SessionHandler.CurrentWorld.PersistentRandomValue);
+                Rand.PushState(SessionManager.CurrentWorld.PersistentRandomValue);
 
                 Current.Game.World = WorldGenerator.GenerateWorld(
-                    SessionHandler.CurrentWorld.PlanetCoverage,
-                    SessionHandler.CurrentWorld.SeedString,
-                    (OverallRainfall)SessionHandler.CurrentWorld.Rainfall,
-                    (OverallTemperature)SessionHandler.CurrentWorld.Temperature,
-                    (OverallPopulation)SessionHandler.CurrentWorld.Population,
-                    (LandmarkDensity)SessionHandler.CurrentWorld.LandmarkDensity,
-                    GetFactionDefsFromNPCFaction(SessionHandler.CurrentWorld.NPCFactions),
-                    SessionHandler.CurrentWorld.Pollution);
+                    SessionManager.CurrentWorld.PlanetCoverage,
+                    SessionManager.CurrentWorld.SeedString,
+                    (OverallRainfall)SessionManager.CurrentWorld.Rainfall,
+                    (OverallTemperature)SessionManager.CurrentWorld.Temperature,
+                    (OverallPopulation)SessionManager.CurrentWorld.Population,
+                    (LandmarkDensity)SessionManager.CurrentWorld.LandmarkDensity,
+                    GetFactionDefsFromNPCFaction(SessionManager.CurrentWorld.NPCFactions),
+                    SessionManager.CurrentWorld.Pollution);
 
                 LongEventHandler.ExecuteWhenFinished(delegate
                 {
@@ -176,9 +177,9 @@ namespace GameClient.PacketManagers
             WorldFeature[] worldFeatures = Find.WorldFeatures.features.ToArray();
             foreach (WorldFeature feature in worldFeatures) Find.WorldFeatures.features.Remove(feature);
 
-            for (int i = 0; i < SessionHandler.CurrentWorld.Features.Count; i++)
+            for (int i = 0; i < SessionManager.CurrentWorld.Features.Count; i++)
             {
-                FeatureDetail planetFeature = SessionHandler.CurrentWorld.Features[i];
+                FeatureDetail planetFeature = SessionManager.CurrentWorld.Features[i];
 
                 try
                 {
@@ -204,13 +205,13 @@ namespace GameClient.PacketManagers
         {
             Faction[] planetFactions = Find.World.factionManager.AllFactions.ToArray();
 
-            for (int i = 0; i < SessionHandler.CurrentWorld.NPCFactions.Count; i++)
+            for (int i = 0; i < SessionManager.CurrentWorld.NPCFactions.Count; i++)
             {
                 try
                 {
-                    NPCFactionDetail faction = SessionHandler.CurrentWorld.NPCFactions[i];
+                    NPCFactionDetail faction = SessionManager.CurrentWorld.NPCFactions[i];
 
-                    Faction toModify = planetFactions.First(fetch => fetch.def.defName == SessionHandler.CurrentWorld.NPCFactions[i].DefName);
+                    Faction toModify = planetFactions.First(fetch => fetch.def.defName == SessionManager.CurrentWorld.NPCFactions[i].DefName);
 
                     toModify.Name = faction.Name;
 
@@ -219,17 +220,17 @@ namespace GameClient.PacketManagers
                         faction.Color[2],
                         faction.Color[3]);
                 }
-                catch (Exception e) { Printer.Warning($"Failed set planet faction from def '{SessionHandler.CurrentWorld.NPCFactions[i].DefName}'. Reason: {e}"); }
+                catch (Exception e) { Printer.Warning($"Failed set planet faction from def '{SessionManager.CurrentWorld.NPCFactions[i].DefName}'. Reason: {e}"); }
             }
         }
 
         public static void PopulateWorldValues()
         {
             Printer.Warning("Populating world values", Verbosity.Verbose);
-            SessionHandler.CurrentWorld.Features = GetPlanetFeatures();
-            SessionHandler.CurrentWorld.Roads = PM_RoadsHelper.GetPlanetRoads();
-            SessionHandler.CurrentWorld.PollutedTiles = PM_Pollution.GetPlanetPollutedTiles();
-            SessionHandler.CurrentWorld.NPCFactions = GetPlanetNPCFactions();
+            SessionManager.CurrentWorld.Features = GetPlanetFeatures();
+            SessionManager.CurrentWorld.Roads = PM_RoadsHelper.GetPlanetRoads();
+            SessionManager.CurrentWorld.PollutedTiles = PM_Pollution.GetPlanetPollutedTiles();
+            SessionManager.CurrentWorld.NPCFactions = GetPlanetNPCFactions();
 
             PM_WorldObject.SendAllWorldObjects();
         }

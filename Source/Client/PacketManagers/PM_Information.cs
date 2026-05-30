@@ -1,11 +1,12 @@
 ﻿using GameClient.Dialogs;
 using RTNetwork.Packets;
 using RTShared;
-using GameClient.Misc;
 using RTNetwork;
 using RTShared.Files;
 using GameClient.Dialogs.Default;
 using RTNetwork.PacketManagers;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers
 {
@@ -34,7 +35,7 @@ namespace GameClient.PacketManagers
 
             PKT_Information data = new PKT_Information();
             data._stepMode = PKT_Information.InfoStepMode.Connection;
-            data._settlementTile = SessionHandler.ChosenSettlement.Tile;
+            data._settlementTile = SessionManager.ChosenSettlement.Tile;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Information, data);
         }
@@ -45,7 +46,7 @@ namespace GameClient.PacketManagers
 
             PKT_Information data = new PKT_Information();
             data._stepMode = PKT_Information.InfoStepMode.Wealth;
-            data._settlementTile = SessionHandler.ChosenSettlement.Tile;
+            data._settlementTile = SessionManager.ChosenSettlement.Tile;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Information, data);
         }

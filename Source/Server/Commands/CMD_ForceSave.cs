@@ -5,6 +5,7 @@ using RTShared.Misc;
 using RTNetwork;
 using RTNetwork.Packets;
 using static RTShared.CommonEnumerators;
+using RTNetwork.Components;
 
 namespace GameServer.Commands
 {

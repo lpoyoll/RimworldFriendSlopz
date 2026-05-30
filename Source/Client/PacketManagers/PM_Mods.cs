@@ -1,5 +1,4 @@
 ﻿using GameClient.Dialogs;
-using GameClient.Misc;
 using RTShared;
 using RTShared.Files.Configs;
 using RTShared.Files.Mods;
@@ -14,6 +13,8 @@ using Verse;
 using static RTShared.Files.Configs.FL_ModConfig;
 using static RTShared.Misc.Printer;
 using static RTNetwork.Packets.PKT_ModConfig;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers
 {
@@ -34,11 +35,11 @@ namespace GameClient.PacketManagers
 
         public static void OpenModManagerMenu() 
         { 
-            if (SessionHandler.CurrentMods.Count > 0) DLG_Base.PushNewDialog(new DLG_ModConfig(SessionHandler.CurrentMods));
+            if (SessionManager.CurrentMods.Count > 0) DLG_Base.PushNewDialog(new DLG_ModConfig(SessionManager.CurrentMods));
             else DLG_Base.PushNewDialog(new DLG_ModConfig(ModManagerH.GetRunningModList().ModConfigs));
         }
 
-        public static void SetValues(List<ModConfig> mods) { SessionHandler.CurrentMods = mods; }
+        public static void SetValues(List<ModConfig> mods) { SessionManager.CurrentMods = mods; }
     }
 
     public class ModManagerH

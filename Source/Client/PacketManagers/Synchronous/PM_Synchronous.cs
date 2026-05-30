@@ -15,6 +15,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
 using Verse.Noise;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers.Synchronous
 {
@@ -114,7 +115,7 @@ namespace GameClient.PacketManagers.Synchronous
                 _.FromTile = data.ToTile;
                 _.ToTile = data.FromTile;
                 _.Party = GetPawnParty(SynchronousSide.Host);
-                _.Contents = Serializer.ConvertObjectToBytes(MapSaveLoader.MapToString(SessionHandler.SynchronousMap), false);
+                _.Contents = Serializer.ConvertObjectToBytes(MapSaveLoader.MapToString(SessionManager.SynchronousMap), false);
 
                 SpawnOtherPawns(SynchronousSide.Host, data);
 
@@ -162,7 +163,7 @@ namespace GameClient.PacketManagers.Synchronous
         {
             if (side == SynchronousSide.Host)
             {
-                SessionHandler.IsSynchronousHost = true;
+                SessionManager.IsSynchronousHost = true;
                 MainThreadHandler.Instance.DoOnSynchronousStartMethods();
                 DLG_Wait.Instance.Close();
 
@@ -186,20 +187,20 @@ namespace GameClient.PacketManagers.Synchronous
         private static void EndSession()
         {
             MainThreadHandler.Instance.DoOnSynchronousEndMethods();
-            SessionHandler.IsSynchronousHost = false;
+            SessionManager.IsSynchronousHost = false;
         }
 
         private static void SetMap(SynchronousSide side, PKT_Synchronous data)
         {
-            if (side == SynchronousSide.Host) SessionHandler.SynchronousMap = Find.AnyPlayerHomeMap;
+            if (side == SynchronousSide.Host) SessionManager.SynchronousMap = Find.AnyPlayerHomeMap;
             else
             {
-                SessionHandler.SynchronousMap = MapSaveLoader.StringToMap(Serializer.ConvertBytesToObject<FL_Map>(data.Contents, false), true);
+                SessionManager.SynchronousMap = MapSaveLoader.StringToMap(Serializer.ConvertBytesToObject<FL_Map>(data.Contents, false), true);
 
-                foreach (Pawn pawn in SessionHandler.SynchronousMap.mapPawns.AllPawns.Where(fetch => fetch.Faction == Faction.OfPlayer))
+                foreach (Pawn pawn in SessionManager.SynchronousMap.mapPawns.AllPawns.Where(fetch => fetch.Faction == Faction.OfPlayer))
                 {
-                    if (data.CurrentType == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionHandler.AllyFaction);
-                    else pawn.SetFactionDirect(SessionHandler.EnemyFaction);
+                    if (data.CurrentType == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionManager.AllyFaction);
+                    else pawn.SetFactionDirect(SessionManager.EnemyFaction);
                 }
             }
         }
@@ -208,15 +209,15 @@ namespace GameClient.PacketManagers.Synchronous
         {
             if (side == SynchronousSide.Host)
             {
-                CameraJumper.TryJump(SessionHandler.SynchronousMap.Center, SessionHandler.SynchronousMap, CameraJumper.MovementMode.Pan);
+                CameraJumper.TryJump(SessionManager.SynchronousMap.Center, SessionManager.SynchronousMap, CameraJumper.MovementMode.Pan);
             }
 
             else
             {
-                CaravanEnterMapUtility.Enter(SessionHandler.ChosenCaravan, SessionHandler.SynchronousMap, CaravanEnterMode.Center,
+                CaravanEnterMapUtility.Enter(SessionManager.ChosenCaravan, SessionManager.SynchronousMap, CaravanEnterMode.Center,
                     CaravanDropInventoryMode.DoNotDrop, draftColonists: false);
 
-                CameraJumper.TryJump(SessionHandler.SynchronousMap.Center, SessionHandler.SynchronousMap, CameraJumper.MovementMode.Pan);
+                CameraJumper.TryJump(SessionManager.SynchronousMap.Center, SessionManager.SynchronousMap, CameraJumper.MovementMode.Pan);
             }
         }
 
@@ -228,11 +229,11 @@ namespace GameClient.PacketManagers.Synchronous
                 {
                     Pawn pawn = ScribeManager.SerializeFromString<Pawn>(str, ScribeManager.SerializableType.Pawn, true);
 
-                    RimworldManager.PlaceThingIntoMap(pawn, SessionHandler.SynchronousMap,
-                        side == SynchronousSide.Host ? SessionHandler.SynchronousMap.Center : pawn.PositionHeld);
+                    RimworldManager.PlaceThingIntoMap(pawn, SessionManager.SynchronousMap,
+                        side == SynchronousSide.Host ? SessionManager.SynchronousMap.Center : pawn.PositionHeld);
 
-                    if (data.CurrentType == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionHandler.AllyFaction);
-                    else pawn.SetFactionDirect(SessionHandler.EnemyFaction);
+                    if (data.CurrentType == PKT_Synchronous.Type.Visit) pawn.SetFactionDirect(SessionManager.AllyFaction);
+                    else pawn.SetFactionDirect(SessionManager.EnemyFaction);
                 }
             }
         }
@@ -241,8 +242,8 @@ namespace GameClient.PacketManagers.Synchronous
         {
             SyncronousParty file = new SyncronousParty();
 
-            if (side == SynchronousSide.Host) file.Pawns = RimworldManager.GetMapPawnsIntoString(SessionHandler.SynchronousMap, true, true);
-            else file.Pawns = RimworldManager.GetCaravanPawnsIntoString(SessionHandler.ChosenCaravan, true);
+            if (side == SynchronousSide.Host) file.Pawns = RimworldManager.GetMapPawnsIntoString(SessionManager.SynchronousMap, true, true);
+            else file.Pawns = RimworldManager.GetCaravanPawnsIntoString(SessionManager.ChosenCaravan, true);
 
             return file;
         }

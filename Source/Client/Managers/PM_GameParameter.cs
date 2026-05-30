@@ -1,5 +1,4 @@
 ﻿using GameClient.Dialogs;
-using GameClient.Misc;
 using RimWorld;
 using RTShared;
 using System.IO;
@@ -13,6 +12,7 @@ using static RTNetwork.Packets.GameParameterData;
 using static RTNetwork.Packets.PKT_ModConfig;
 using GameClient.Dialogs.Default;
 using RTNetwork.PacketManagers;
+using RTNetwork.Components;
 
 namespace GameClient.Managers
 {
@@ -37,9 +37,9 @@ namespace GameClient.Managers
 
         public static void SetValues()
         {
-            SessionHandler.CurrentScenario = SessionHandler.GlobalData.ScenarioValues;
-            SessionHandler.CurrentStoryteller = SessionHandler.GlobalData.StorytellerValues;
-            SessionHandler.CurrentDifficulty = SessionHandler.GlobalData.DifficultyValues;
+            SessionManager.CurrentScenario = SessionManager.GlobalData.ScenarioValues;
+            SessionManager.CurrentStoryteller = SessionManager.GlobalData.StorytellerValues;
+            SessionManager.CurrentDifficulty = SessionManager.GlobalData.DifficultyValues;
         }
 
         public static void SetScenario(FL_ScenarioConfig file)

@@ -1,9 +1,10 @@
-using GameClient.Misc;
 using RTShared;
 using System.Collections.Generic;
 using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers
 {
@@ -15,7 +16,7 @@ namespace GameClient.PacketManagers
         public static void SetServerPlayers(byte[] bytes)
         {
             PKT_PlayerRecount data = Serializer.ConvertBytesToObject<PKT_PlayerRecount>(bytes);
-            SessionHandler.CurrentServerPlayers = data.CurrentPlayerCount;
+            SessionManager.CurrentServerPlayers = data.CurrentPlayerCount;
         }
     }
 }

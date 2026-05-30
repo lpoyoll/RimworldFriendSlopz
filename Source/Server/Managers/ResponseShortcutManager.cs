@@ -4,6 +4,7 @@ using RTShared.Files.ServerClient;
 using RTShared.Misc;
 using static RTNetwork.Packets.PKT_ResponseShortcut;
 using RTNetwork;
+using RTNetwork.Components;
 
 namespace GameServer.Managers
 {

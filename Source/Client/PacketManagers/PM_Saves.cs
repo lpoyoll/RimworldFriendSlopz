@@ -19,6 +19,8 @@ using RTNetwork.Packets;
 using Verse;
 using static RTShared.Misc.Printer;
 using static RTNetwork.Packets.PKT_Save;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers
 {
@@ -26,7 +28,7 @@ namespace GameClient.PacketManagers
     {
         public static string LatestSavePath { get; set; } = string.Empty;
 
-        public static string CustomSaveName => $"MP - {Network.Ip} - {Network.Port} - {SessionHandler.Username}";
+        public static string CustomSaveName => $"MP - {Network.Ip} - {Network.Port} - {SessionManager.Username}";
 
         public static string SaveFilePath => Path.Combine(Master.SavesFolderPath, CustomSaveName + ".rws");
 
@@ -100,7 +102,7 @@ namespace GameClient.PacketManagers
 
             PKT_Save data = new PKT_Save();
             data._stepMode = SaveStepMode.Receive;
-            data._forceDisconnect = SessionHandler.IsExiting;
+            data._forceDisconnect = SessionManager.IsExiting;
             data._fileBytes = saveBytes;
 
             Network.ServerEndpoint.EnqueuePacket(PacketHeader.Save, data);
@@ -140,7 +142,7 @@ namespace GameClient.PacketManagers
 
         public static void OnSave()
         {
-            if (DLG_Options.CurrentSyncingMode == DLG_Options.SyncingMode.Complete || SessionHandler.IsExiting)
+            if (DLG_Options.CurrentSyncingMode == DLG_Options.SyncingMode.Complete || SessionManager.IsExiting)
             {
                 Printer.Message("Sending maps to server", Verbosity.Verbose);
                 PM_Map.SendPlayerMapsToServer();

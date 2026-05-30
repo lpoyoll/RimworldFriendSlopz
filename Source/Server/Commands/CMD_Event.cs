@@ -7,6 +7,7 @@ using RTShared.Misc;
 using RTNetwork;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Event;
+using RTNetwork.Components;
 
 namespace GameServer.Commands
 {

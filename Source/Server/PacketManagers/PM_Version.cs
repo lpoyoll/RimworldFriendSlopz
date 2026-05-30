@@ -4,6 +4,7 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Login;
+using RTNetwork.Components;
 
 namespace GameServer.PacketManager
 {

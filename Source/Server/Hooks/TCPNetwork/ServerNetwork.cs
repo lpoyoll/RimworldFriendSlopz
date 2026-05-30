@@ -11,6 +11,7 @@ using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using static RTNetwork.Packets.PKT_Login;
+using RTNetwork.Components;
 
 namespace GameServer.Hooks.TCPNetwork
 {

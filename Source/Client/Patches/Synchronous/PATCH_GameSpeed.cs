@@ -1,4 +1,5 @@
-﻿using GameClient.Misc;
+﻿using GameClient.Managers;
+using GameClient.Misc;
 using GameClient.PacketManagers.Synchronous;
 using HarmonyLib;
 using Verse;
@@ -13,7 +14,7 @@ namespace GameClient.Patches.Synchronous
         public static bool CurTimeSpeed(TimeSpeed value)
         {
             if (PatchHandler.BypassFlag) return true;
-            else if (!SessionHandler.IsSynchronousHost) return false;
+            else if (!SessionManager.IsSynchronousHost) return false;
             else if (value > TimeSpeed.Normal) return false;
             else
             {
@@ -31,7 +32,7 @@ namespace GameClient.Patches.Synchronous
         public static bool TogglePaused()
         {
             if (PatchHandler.BypassFlag) return false;
-            else if (!SessionHandler.IsSynchronousHost) return false;
+            else if (!SessionManager.IsSynchronousHost) return false;
             else
             {
                 PM_SGameSpeed.Ask(TimeSpeed.Paused);

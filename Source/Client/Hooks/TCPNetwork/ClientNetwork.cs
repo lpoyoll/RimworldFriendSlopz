@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using RTNetwork;
 using RTNetwork.PacketManagers;
 using static RTShared.Misc.Printer;
+using RTNetwork.Components;
 
 namespace GameClient.Hooks.TCPNetwork
 {
@@ -59,7 +60,7 @@ namespace GameClient.Hooks.TCPNetwork
             {
                 if (TryConnect())
                 {
-                    SessionHandler.CurrentNetworkState = ClientNetworkState.Connected;
+                    SessionManager.CurrentNetworkState = ClientNetworkState.Connected;
 
                     PersistentSettings settings = PersistentSettings.Load();
                     settings.ServerSettings.Set(Network.Ip, Network.Port);
@@ -81,7 +82,7 @@ namespace GameClient.Hooks.TCPNetwork
 
         private static bool TryConnect()
         {
-            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return false;
+            if (SessionManager.CurrentNetworkState != ClientNetworkState.Disconnected) return false;
             else
             {
                 try

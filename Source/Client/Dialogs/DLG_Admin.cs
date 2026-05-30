@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs.Default;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.PacketManagers;
 using RTShared;
 using System;
@@ -40,13 +39,13 @@ namespace GameClient.Dialogs
             Listing_Standard listingStandard = new Listing_Standard();
             listingStandard.Begin(rect);
 
-            if (listingStandard.ButtonText("Mod Manager") && SessionHandler.IsAdmin) PM_Mods.OpenModManagerMenu();
+            if (listingStandard.ButtonText("Mod Manager") && SessionManager.IsAdmin) PM_Mods.OpenModManagerMenu();
 
-            if (listingStandard.ButtonText("Event Manager") && SessionHandler.IsAdmin) PM_Events.OpenEventManagerMenu();
+            if (listingStandard.ButtonText("Event Manager") && SessionManager.IsAdmin) PM_Events.OpenEventManagerMenu();
 
-            if (listingStandard.ButtonText("Difficulty Manager") && SessionHandler.IsAdmin) DifficultyManager.OpenDifficultyManagerMenu();
+            if (listingStandard.ButtonText("Difficulty Manager") && SessionManager.IsAdmin) DifficultyManager.OpenDifficultyManagerMenu();
 
-            if (listingStandard.ButtonText("Force Save") && SessionHandler.IsAdmin) PM_Saves.ForceSave();
+            if (listingStandard.ButtonText("Force Save") && SessionManager.IsAdmin) PM_Saves.ForceSave();
 
             listingStandard.End();
         }

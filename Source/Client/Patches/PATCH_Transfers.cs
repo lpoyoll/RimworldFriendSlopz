@@ -22,13 +22,13 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return;
             else
             {
-                if (TradeSession.giftMode) SessionHandler.OutgoingManifest.CurrentTransferMode = TransferMode.Gift;
-                else SessionHandler.OutgoingManifest.CurrentTransferMode = TransferMode.Trade;
+                if (TradeSession.giftMode) SessionManager.OutgoingManifest.CurrentTransferMode = TransferMode.Gift;
+                else SessionManager.OutgoingManifest.CurrentTransferMode = TransferMode.Trade;
 
-                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving) PM_Transfers.SendRequest(TransferLocation.Caravan);
+                if (SessionManager.LastTradeStep != CommonEnumerators.TradeMode.Receiving) PM_Transfers.SendRequest(TransferLocation.Caravan);
                 else
                 {
                     PM_Transfers.SendRequest(TransferLocation.Settlement);
@@ -44,7 +44,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref bool __result, TraderKindDef __instance)
         {
-            if (SessionHandler.PlayerFactionDefs.Contains(__instance.faction)) return true;
+            if (SessionManager.PlayerFactionDefs.Contains(__instance.faction)) return true;
             else
             {
                 __result = true;
@@ -59,15 +59,15 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(TradeDeal __instance)
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
-                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving)
+                if (SessionManager.LastTradeStep != CommonEnumerators.TradeMode.Receiving)
                 {
-                    if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionHandler.ChosenCaravan, 1))
+                    if (!RimworldManager.CheckIfHasEnoughSilverInCaravan(SessionManager.ChosenCaravan, 1))
                     {
                         Thing silver = ThingMaker.MakeThing(ThingDefOf.Silver);
-                        RimworldManager.PlaceThingIntoCaravan(silver, SessionHandler.ChosenCaravan);
+                        RimworldManager.PlaceThingIntoCaravan(silver, SessionManager.ChosenCaravan);
                     }
                 }
 
@@ -84,9 +84,9 @@ namespace GameClient.Patches
 
                 // This means we are adding items from the CARAVAN
 
-                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving)
+                if (SessionManager.LastTradeStep != CommonEnumerators.TradeMode.Receiving)
                 {
-                    foreach (Thing thing in SessionHandler.ChosenCaravan.AllThings)
+                    foreach (Thing thing in SessionManager.ChosenCaravan.AllThings)
                     {
                         if (TradeSession.playerNegotiator == thing) continue;
                         else toInvoke.Invoke(__instance, new object[] { thing, Transactor.Colony });
@@ -117,7 +117,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Transactor trans)
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 if (trans == Transactor.Trader) return false;
@@ -132,7 +132,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref bool __result)
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 __result = true;
@@ -147,7 +147,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ref int __result)
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 __result = int.MaxValue;
@@ -162,7 +162,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(List<Thing> ___thingsColony, int ___countToTransfer)
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 // We need to set it back to positive because the way RimWorld treats traded items
@@ -185,7 +185,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Tradeable_Pawn __instance)
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 // We need to set it back to positive because the way RimWorld treats traded items
@@ -210,12 +210,12 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Thing toGive, int countToGive)
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else
             {
                 // This means we are calculating from the CARAVAN
 
-                if (SessionHandler.LastTradeStep != CommonEnumerators.TradeMode.Receiving) return true;
+                if (SessionManager.LastTradeStep != CommonEnumerators.TradeMode.Receiving) return true;
 
                 // This means we are adding items from the SETTLEMENT
 
@@ -239,7 +239,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
+            if (SessionManager.LastTradeStep == CommonEnumerators.TradeMode.None) return true;
             else return false;
         }
     }
@@ -250,7 +250,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPre()
         {
-            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.None;
+            SessionManager.LastTradeStep = CommonEnumerators.TradeMode.None;
         }
     }
 }

@@ -21,7 +21,7 @@ namespace GameClient.Patches.Synchronous
         {
             if (PatchHandler.BypassFlag) return true;
             else if (!SynchronousManager.CheckIfShouldPatch(__instance.MapHeld)) return true;
-            else if (!SessionHandler.IsSynchronousHost) return false;
+            else if (!SessionManager.IsSynchronousHost) return false;
             else
             {
                 PM_SDestroy.Ask(__instance);

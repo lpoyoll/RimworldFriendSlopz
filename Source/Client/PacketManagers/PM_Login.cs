@@ -3,7 +3,6 @@ using GameClient.Dialogs.Default;
 using GameClient.Files;
 using GameClient.Hooks.TCPNetwork;
 using GameClient.Hooks.VersionDownloader;
-using GameClient.Misc;
 using RTShared;
 using System;
 using System.Collections.Generic;
@@ -15,6 +14,8 @@ using UnityEngine;
 using Verse;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
 using static RTNetwork.Packets.PKT_Login;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers
 {
@@ -63,7 +64,7 @@ namespace GameClient.PacketManagers
 
         public static void UseLoginData()
         {
-            if (SessionHandler.CurrentNetworkState != ClientNetworkState.Connected) return;
+            if (SessionManager.CurrentNetworkState != ClientNetworkState.Connected) return;
             else
             {
                 PKT_Login data = new PKT_Login();
@@ -81,7 +82,7 @@ namespace GameClient.PacketManagers
                     data._password = settings.UserSettings.Password;
                 }
 
-                SessionHandler.Username = data._username;
+                SessionManager.Username = data._username;
                 data._runningMods = ModManagerH.GetRunningModList();
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Login, data);
             }
@@ -123,10 +124,10 @@ namespace GameClient.PacketManagers
         public static void QuickConnectUser()
         {
             PersistentSettings settings = PersistentSettings.Load();
-            RTNetwork.Network.Ip = settings.ServerSettings.LatestIP;
-            RTNetwork.Network.Port = settings.ServerSettings.LatestPort;
+            Network.Ip = settings.ServerSettings.LatestIP;
+            Network.Port = settings.ServerSettings.LatestPort;
 
-            if (StringChecker.CheckIfStringValid(RTNetwork.Network.Ip) && StringChecker.CheckIfStringValid(RTNetwork.Network.Port.ToString()))
+            if (StringChecker.CheckIfStringValid(Network.Ip) && StringChecker.CheckIfStringValid(Network.Port.ToString()))
             {
                 LoginManagerH.ShowQuickConnectFloatMenu();
             }
@@ -150,7 +151,7 @@ namespace GameClient.PacketManagers
         {
             List<Tuple<string, int>> quickConnectTuples = new List<Tuple<string, int>>()
             {
-                Tuple.Create($"Join latest server > {RTNetwork.Network.Ip}:{RTNetwork.Network.Port}", 0),
+                Tuple.Create($"Join latest server > {Network.Ip}:{Network.Port}", 0),
             };
 
             FloatMenuOption tuple1 = new FloatMenuOption(quickConnectTuples[0].Item1, delegate { ClientNetwork.StartFeature(); });

@@ -16,7 +16,7 @@ namespace GameClient.Patches.Synchronous
         public static bool TryStartMentalState(MentalStateDef stateDef, Pawn ___pawn)
         {
             if (PatchHandler.BypassFlag) return true;
-            else if (!SessionHandler.IsSynchronousHost) return false;
+            else if (!SessionManager.IsSynchronousHost) return false;
             else if (!SynchronousManager.CheckIfShouldPatch(___pawn.MapHeld)) return true;
             else
             {
@@ -35,7 +35,7 @@ namespace GameClient.Patches.Synchronous
         public static bool RecoverFromState(MentalState __instance)
         {
             if (PatchHandler.BypassFlag) return true;
-            else if (!SessionHandler.IsSynchronousHost) return false;
+            else if (!SessionManager.IsSynchronousHost) return false;
             else if (!SynchronousManager.CheckIfShouldPatch(__instance.pawn.MapHeld)) return true;
             else if (PM_SMentalState.LatestMentalState == __instance) return false;
             else

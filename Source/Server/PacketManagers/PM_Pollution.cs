@@ -10,6 +10,7 @@ using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using RTShared.Files.Player;
+using RTNetwork.Components;
 
 namespace GameServer.PacketManager
 {

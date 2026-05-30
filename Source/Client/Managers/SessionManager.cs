@@ -16,9 +16,9 @@ using static GameClient.Hooks.TCPNetwork.ClientNetwork;
 using static RTShared.CommonEnumerators;
 using static RTNetwork.Packets.PKT_Raid;
 
-namespace GameClient.Misc
+namespace GameClient.Managers
 {
-    public static class SessionHandler
+    public static class SessionManager
     {
         public static string Username { get; set; } = string.Empty;
 

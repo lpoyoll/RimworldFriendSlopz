@@ -7,6 +7,7 @@ using System;
 using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers.ServerBrowser
 {

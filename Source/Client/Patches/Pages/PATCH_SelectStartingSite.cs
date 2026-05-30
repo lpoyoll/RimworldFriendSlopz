@@ -1,5 +1,4 @@
 ﻿using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.PacketManagers;
 using HarmonyLib;
 using RimWorld;
@@ -9,6 +8,7 @@ using System.Reflection.Emit;
 using RTNetwork;
 using UnityEngine.SceneManagement;
 using Verse;
+using RTNetwork.Components;
 
 namespace GameClient.Patches.Pages
 {
@@ -18,7 +18,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPostfix]
         public static void DoPost()
         {
-            if (!SessionHandler.IsGeneratingFreshWorld)
+            if (!SessionManager.IsGeneratingFreshWorld)
             {
                 PM_World.SetPlanetFeatures();
                 PM_World.SetPlanetFactions();

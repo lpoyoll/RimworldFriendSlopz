@@ -6,6 +6,8 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers.Synchronous
 {
@@ -16,7 +18,7 @@ namespace GameClient.PacketManagers.Synchronous
         [OnSynchronousStart]
         private static void SendFirstSpeed()
         {
-            if (SessionHandler.IsSynchronousHost)
+            if (SessionManager.IsSynchronousHost)
             {
                 PlayerGameSpeed data = new PlayerGameSpeed();
                 data.CurrentGameSpeed = (int)TimeSpeed.Paused;

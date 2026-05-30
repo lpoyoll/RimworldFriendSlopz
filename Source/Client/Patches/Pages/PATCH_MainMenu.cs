@@ -69,20 +69,20 @@ namespace GameClient.Patches.Pages
         {
             optList.Insert(0, new ListableOption("Local Host", delegate
             {
-                if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
+                if (SessionManager.CurrentNetworkState != ClientNetworkState.Disconnected) return;
                 else LocalServerHandler.ManageLocalServer();
             }));
 
             optList.Insert(0, new ListableOption("Server Browser", delegate
             {
-                if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
+                if (SessionManager.CurrentNetworkState != ClientNetworkState.Disconnected) return;
                 else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
                 else ServerBrowserManager.TryConnect();
             }));
 
             optList.Insert(0, new ListableOption("Direct Connect", delegate
             {
-                if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return;
+                if (SessionManager.CurrentNetworkState != ClientNetworkState.Disconnected) return;
                 else if (!HarmonyHandler.CheckForModCollision()) return;
                 else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
                 else DLG_Base.PushNewDialog(new DLG_Login());
@@ -112,7 +112,7 @@ namespace GameClient.Patches.Pages
                 if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                 {
                     if (!HarmonyHandler.CheckForModCollision()) return true;
-                    else if (SessionHandler.CurrentNetworkState != ClientNetworkState.Disconnected) return true;
+                    else if (SessionManager.CurrentNetworkState != ClientNetworkState.Disconnected) return true;
                     else if (!MainMenuPatch.CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
                     else PM_Login.QuickConnectUser();
                 }

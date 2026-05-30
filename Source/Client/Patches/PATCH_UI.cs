@@ -1,6 +1,6 @@
 ﻿using GameClient.Defs;
 using GameClient.Dialogs;
-using GameClient.Misc;
+using GameClient.Managers;
 using HarmonyLib;
 using RimWorld;
 using RTNetwork.PacketManagers;
@@ -58,7 +58,7 @@ namespace GameClient.Patches
 
         private static void DrawAdminButton(Rect rect)
         {
-            if (!SessionHandler.IsAdmin) return;
+            if (!SessionManager.IsAdmin) return;
 
             if (!DLG_Admin.IsDialogOpen)
             {

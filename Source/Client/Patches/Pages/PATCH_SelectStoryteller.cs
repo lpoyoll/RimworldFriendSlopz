@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
-using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using System;
@@ -20,7 +19,7 @@ namespace GameClient.Patches.Pages
             Find.GameInitData.permadeathChosen = true;
             Find.GameInitData.permadeath = true;
 
-            if (!SessionHandler.IsGeneratingFreshWorld)
+            if (!SessionManager.IsGeneratingFreshWorld)
             {
                 ___difficulty = DifficultyDefOf.Rough;
                 ___difficultyValues = new Difficulty(___difficulty);
@@ -38,15 +37,15 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_SelectStoryteller __instance)
         {
-            if (!SessionHandler.IsGeneratingFreshWorld && SessionHandler.CurrentStoryteller.IsEnforced)
+            if (!SessionManager.IsGeneratingFreshWorld && SessionManager.CurrentStoryteller.IsEnforced)
             {
                 if (executedMessage) return true;
                 else
                 {
                     Action toDo = delegate
                     {
-                        PM_GameParameter.SetStoryteller(SessionHandler.CurrentStoryteller);
-                        PM_GameParameter.SetDifficulty(SessionHandler.CurrentDifficulty, true);
+                        PM_GameParameter.SetStoryteller(SessionManager.CurrentStoryteller);
+                        PM_GameParameter.SetDifficulty(SessionManager.CurrentDifficulty, true);
                         DLG_Base.PushNewDialog(__instance.next);
                         __instance.Close();
 
@@ -68,18 +67,18 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.IsAdmin)
+            if (SessionManager.IsAdmin)
             {
                 DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Difficulty settings overriden due to being an admin" }));
                 return true;
             }
 
-            if (SessionHandler.CurrentDifficulty.IsEnforced || SessionHandler.CurrentStoryteller.IsEnforced)
+            if (SessionManager.CurrentDifficulty.IsEnforced || SessionManager.CurrentStoryteller.IsEnforced)
             {
                 Action toDo = delegate
                 {
-                    PM_GameParameter.SetStoryteller(SessionHandler.CurrentStoryteller);
-                    PM_GameParameter.SetDifficulty(SessionHandler.CurrentDifficulty);
+                    PM_GameParameter.SetStoryteller(SessionManager.CurrentStoryteller);
+                    PM_GameParameter.SetDifficulty(SessionManager.CurrentDifficulty);
                 };
 
                 DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Settings might change to reflect server enforcements" }, toDo));

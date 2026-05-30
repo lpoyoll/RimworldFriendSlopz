@@ -1,5 +1,4 @@
 ﻿using GameClient.Dialogs;
-using GameClient.Misc;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
@@ -12,6 +11,7 @@ using RTNetwork;
 using GameClient.Managers;
 using GameClient.Dialogs.Default;
 using RTNetwork.PacketManagers;
+using RTNetwork.Components;
 
 
 namespace GameClient.PacketManagers
@@ -34,16 +34,16 @@ namespace GameClient.PacketManagers
         public static void TryRequestGoodwill(Goodwill type, GoodwillTarget target)
         {
             int tileToUse = 0;
-            if (target == GoodwillTarget.Settlement) tileToUse = SessionHandler.ChosenSettlement.Tile;
-            else if (target == GoodwillTarget.Site) tileToUse = SessionHandler.ChosenSite.Tile;
+            if (target == GoodwillTarget.Settlement) tileToUse = SessionManager.ChosenSettlement.Tile;
+            else if (target == GoodwillTarget.Site) tileToUse = SessionManager.ChosenSite.Tile;
 
             Faction factionToUse = null;
-            if (target == GoodwillTarget.Settlement) factionToUse = SessionHandler.ChosenSettlement.Faction;
-            else if (target == GoodwillTarget.Site) factionToUse = SessionHandler.ChosenSite.Faction;
+            if (target == GoodwillTarget.Settlement) factionToUse = SessionManager.ChosenSettlement.Faction;
+            else if (target == GoodwillTarget.Site) factionToUse = SessionManager.ChosenSite.Faction;
 
             if (type == Goodwill.Enemy)
             {
-                if (factionToUse == SessionHandler.EnemyFaction)
+                if (factionToUse == SessionManager.EnemyFaction)
                 {
                     DLG_Message d1 = new DLG_Message("ERROR", new string[] { "Chosen settlement is already marked as enemy!" });
                     DLG_Base.PushNewDialog(d1);
@@ -53,7 +53,7 @@ namespace GameClient.PacketManagers
 
             else if (type == Goodwill.Neutral)
             {
-                if (factionToUse == SessionHandler.NeutralFaction)
+                if (factionToUse == SessionManager.NeutralFaction)
                 {
                     DLG_Message d1 = new DLG_Message("ERROR", new string[] { "Chosen settlement is already marked as neutral!" });
                     DLG_Base.PushNewDialog(d1);
@@ -63,7 +63,7 @@ namespace GameClient.PacketManagers
 
             else if (type == Goodwill.Ally)
             {
-                if (factionToUse == SessionHandler.AllyFaction)
+                if (factionToUse == SessionManager.AllyFaction)
                 {
                     DLG_Message d1 = new DLG_Message("ERROR", new string[] { "Chosen settlement is already marked as ally!" });
                     DLG_Base.PushNewDialog(d1);

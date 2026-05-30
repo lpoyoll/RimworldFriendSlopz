@@ -13,6 +13,7 @@ using RTNetwork.Packets;
 using UnityEngine;
 using Verse;
 using Verse.AI;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers.Synchronous
 {
@@ -90,7 +91,7 @@ namespace GameClient.PacketManagers.Synchronous
                         Job newJob = ScribeManager.SerializeFromString<Job>(playerJob.Job);
                         newJob = TypeConverter.PlayerJobToJob(newJob, playerJob);
 
-                        Pawn pawn = Finder.GetPawnFromID(SessionHandler.SynchronousMap, playerJob.PawnID);
+                        Pawn pawn = Finder.GetPawnFromID(SessionManager.SynchronousMap, playerJob.PawnID);
                         pawn.SetPositionDirect(TypeConverter.StringToIntVec3(playerJob.PawnPosition));
                         pawn.jobs.StartJob(newJob, JobCondition.InterruptForced);
                     }

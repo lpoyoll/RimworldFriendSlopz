@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
-using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using System;
@@ -11,6 +10,7 @@ using RTNetwork;
 using UnityEngine;
 using Verse;
 using Verse.Sound;
+using RTNetwork.Components;
 
 namespace GameClient.Patches.Pages
 {
@@ -28,7 +28,7 @@ namespace GameClient.Patches.Pages
                 Network.ServerEndpoint.MarkForDisconnect();
             }
 
-            if (!SessionHandler.IsGeneratingFreshWorld && SessionHandler.CurrentScenario.IsEnforced)
+            if (!SessionManager.IsGeneratingFreshWorld && SessionManager.CurrentScenario.IsEnforced)
             {
                 if (executedMessage) return true;
                 else
@@ -37,7 +37,7 @@ namespace GameClient.Patches.Pages
                     {
                         Scenario scenario = (Scenario)typeof(Page_SelectScenario).GetField("curScen", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(__instance);
                         Page_SelectScenario.BeginScenarioConfiguration(scenario, __instance);
-                        PM_GameParameter.SetScenario(SessionHandler.CurrentScenario);
+                        PM_GameParameter.SetScenario(SessionManager.CurrentScenario);
 
                         DLG_Base.PushNewDialog(__instance.next);
                         __instance.Close();
@@ -68,7 +68,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (SessionHandler.CurrentActionValues.EnableCustomScenarios) return true;
+            if (SessionManager.CurrentActionValues.EnableCustomScenarios) return true;
             else
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This server doesn't allow custom scenarios!" }));
@@ -87,7 +87,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, ref Scenario ___curScen)
         {
-            if (SessionHandler.CurrentActionValues.EnableCustomScenarios) return true;
+            if (SessionManager.CurrentActionValues.EnableCustomScenarios) return true;
 
             if (curScen != null) ___curScen = curScen;
             rect.xMax += 2f;

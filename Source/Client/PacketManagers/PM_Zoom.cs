@@ -17,6 +17,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
 using static RTNetwork.Packets.PKT_Zoom;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -41,7 +42,7 @@ namespace GameClient.PacketManagers
 
         public static void RequestZoom(int targetTile)
         {
-            if (!SessionHandler.CurrentActionValues.ZoomAction.IsEnabled)
+            if (!SessionManager.CurrentActionValues.ZoomAction.IsEnabled)
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 return;
@@ -79,9 +80,9 @@ namespace GameClient.PacketManagers
         {
             Map map = MapSaveLoader.StringToMap(mapFile);
 
-            RimworldManager.SetMapFactions(map, SessionHandler.NeutralFaction);
+            RimworldManager.SetMapFactions(map, SessionManager.NeutralFaction);
 
-            RimworldManager.SetMapLord(map, SessionHandler.NeutralFaction);
+            RimworldManager.SetMapLord(map, SessionManager.NeutralFaction);
 
             CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);
         }

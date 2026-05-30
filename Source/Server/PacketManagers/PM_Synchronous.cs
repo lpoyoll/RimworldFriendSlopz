@@ -7,6 +7,7 @@ using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
+using RTNetwork.Components;
 
 namespace GameServer.PacketManagers
 {

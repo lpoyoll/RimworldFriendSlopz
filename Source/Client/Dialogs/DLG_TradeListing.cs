@@ -6,11 +6,11 @@ using System.Linq;
 using UnityEngine;
 using Verse;
 using static RTNetwork.Packets.PKT_Transfer;
-using GameClient.Misc;
 using RTNetwork;
 using GameClient.PacketManagers;
 using GameClient.Dialogs.Default;
 using System.Collections.Generic;
+using RTNetwork.Components;
 
 namespace GameClient.Dialogs
 {
@@ -86,7 +86,7 @@ namespace GameClient.Dialogs
 
         private void Accept()
         {
-            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.Receiving;
+            SessionManager.LastTradeStep = CommonEnumerators.TradeMode.Receiving;
 
             if (TransferMode == TransferMode.Gift || TransferMode == TransferMode.Pod)
             {
@@ -118,9 +118,9 @@ namespace GameClient.Dialogs
 
             else if (TransferMode == TransferMode.Rebound)
             {
-                SessionHandler.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReAccept;
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionHandler.IncomingManifest);
-                foreach (Thing thing in ListedThings) RimworldManager.PlaceThingIntoCaravan(thing, SessionHandler.ChosenCaravan);
+                SessionManager.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReAccept;
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionManager.IncomingManifest);
+                foreach (Thing thing in ListedThings) RimworldManager.PlaceThingIntoCaravan(thing, SessionManager.ChosenCaravan);
 
                 PM_Transfers.FinishTransfer(true);
                 RimworldManager.GenerateLetter("Transfer completed", "The transfer was completed", LetterDefOf.PositiveEvent);

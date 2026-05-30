@@ -1,4 +1,5 @@
-﻿using RTShared;
+﻿using GameClient.Managers;
+using RTShared;
 using RTShared.Misc;
 using System;
 using System.Collections;
@@ -28,7 +29,7 @@ namespace GameClient.Misc
         { 
             ExecuteAllQueue();
 
-            if (SessionHandler.CurrentNetworkState == ClientNetworkState.Connected)
+            if (SessionManager.CurrentNetworkState == ClientNetworkState.Connected)
             {
                 DoPerFrameMethods();
             }

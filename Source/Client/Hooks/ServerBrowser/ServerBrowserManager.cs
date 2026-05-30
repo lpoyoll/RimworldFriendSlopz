@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
+using RTNetwork.Components;
 
 namespace GameClient.Hooks.ServerBrowser
 {

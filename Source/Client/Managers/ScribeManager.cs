@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using GameClient.Misc;
 using RTShared.Misc;
 using Verse;
 using static RTShared.Misc.Printer;
@@ -20,7 +19,7 @@ namespace GameClient.Managers
 
         public static string SerializeToString(object toSave, SerializableType type = SerializableType.Thing, int customCount = -1, string customID = null)
         {
-            SessionHandler.IsUsingScriber = true;
+            SessionManager.IsUsingScriber = true;
 
             string scribeData = string.Empty;
             int originalCount = -1;
@@ -66,14 +65,14 @@ namespace GameClient.Managers
             }
             catch (Exception e) { Printer.Error(e.ToString(), Verbosity.Extreme); }
 
-            SessionHandler.IsUsingScriber = false;
+            SessionManager.IsUsingScriber = false;
 
             return scribeData.ToString();
         }
 
         public static T SerializeFromString<T>(string scribeData, SerializableType type = SerializableType.Thing, bool enforceID = false)
         {
-            SessionHandler.IsUsingScriber = true;
+            SessionManager.IsUsingScriber = true;
 
             object toLoad = null;
 
@@ -99,7 +98,7 @@ namespace GameClient.Managers
             }
             catch (Exception e) { Printer.Error(e.ToString(), Verbosity.Extreme); }
 
-            SessionHandler.IsUsingScriber = false;
+            SessionManager.IsUsingScriber = false;
 
             return (T)toLoad;
         }

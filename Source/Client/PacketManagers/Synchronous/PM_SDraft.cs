@@ -8,6 +8,7 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers.Synchronous
 {

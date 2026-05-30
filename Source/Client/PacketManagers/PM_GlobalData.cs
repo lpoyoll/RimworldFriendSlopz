@@ -1,9 +1,9 @@
 using GameClient.Managers;
-using GameClient.Misc;
 using RTShared;
 using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -13,13 +13,13 @@ namespace GameClient.PacketManagers
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_ServerGlobalData serverGlobalData = Serializer.ConvertBytesToObject<PKT_ServerGlobalData>(bytes);
-            SessionHandler.GlobalData = serverGlobalData;
+            SessionManager.GlobalData = serverGlobalData;
 
-            SessionHandler.SetValues();
+            SessionManager.SetValues();
             PM_GameParameter.SetValues();
             PM_RoadsHelper.SetValues();
-            PM_Mods.SetValues(SessionHandler.GlobalData.ModConfigs);
-            PM_Events.SetValues(SessionHandler.GlobalData.EventValues);
+            PM_Mods.SetValues(SessionManager.GlobalData.ModConfigs);
+            PM_Events.SetValues(SessionManager.GlobalData.EventValues);
         }
     }
 }

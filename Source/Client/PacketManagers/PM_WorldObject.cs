@@ -1,6 +1,5 @@
 ﻿using GameClient.Defs;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.WorldObjects;
 using RimWorld;
 using RimWorld.Planet;
@@ -18,6 +17,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using UnityEngine.Tilemaps;
 using Verse;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -109,7 +109,7 @@ namespace GameClient.PacketManagers
 
         private static void AddWorldObject(FL_WorldObject wo)
         {
-            if (SessionHandler.IsGeneratingFreshWorld) return;
+            if (SessionManager.IsGeneratingFreshWorld) return;
             else
             {
                 SetBypass(true);
@@ -119,7 +119,7 @@ namespace GameClient.PacketManagers
                     if (wo.MainPartDef == string.Empty)
                     {
                         Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.def.defName == wo.FactionDef);
-                        if (faction == null) faction = SessionHandler.NeutralFaction;
+                        if (faction == null) faction = SessionManager.NeutralFaction;
 
                         Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                         settlement.Name = wo.Name;
@@ -132,7 +132,7 @@ namespace GameClient.PacketManagers
                     else
                     {
                         Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.def.defName == wo.FactionDef);
-                        if (faction == null) faction = SessionHandler.NeutralFaction;
+                        if (faction == null) faction = SessionManager.NeutralFaction;
 
                         SitePartDef partDef = DefDatabase<SitePartDef>.AllDefs.First(fetch => fetch.defName == wo.MainPartDef);
                         Site site = SiteMaker.MakeSite(partDef, wo.Tile, faction, threatPoints: wo.Points);
@@ -148,7 +148,7 @@ namespace GameClient.PacketManagers
 
         private static void RemoveWorldObject(FL_WorldObject wo)
         {
-            if (SessionHandler.IsGeneratingFreshWorld) return;
+            if (SessionManager.IsGeneratingFreshWorld) return;
             else
             {
                 SetBypass(true);

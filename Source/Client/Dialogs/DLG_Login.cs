@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using RTNetwork;
 using UnityEngine;
 using Verse;
+using RTNetwork.Components;
 
 namespace GameClient.Dialogs
 {

@@ -12,6 +12,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
 using static RTNetwork.Packets.PKT_Raid;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -36,7 +37,7 @@ namespace GameClient.PacketManagers
 
         public static void RequestRaid(int targetTile)
         {
-            if (!SessionHandler.CurrentActionValues.RaidAction.IsEnabled)
+            if (!SessionManager.CurrentActionValues.RaidAction.IsEnabled)
             {
                 DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 return;
@@ -74,11 +75,11 @@ namespace GameClient.PacketManagers
         {
             Map map = MapSaveLoader.StringToMap(mapFile);
 
-            RimworldManager.SetMapFactions(map, SessionHandler.EnemyFaction);
+            RimworldManager.SetMapFactions(map, SessionManager.EnemyFaction);
 
-            RimworldManager.SetMapLord(map, SessionHandler.EnemyFaction);
+            RimworldManager.SetMapLord(map, SessionManager.EnemyFaction);
 
-            CaravanEnterMapUtility.Enter(SessionHandler.ChosenCaravan, SessionHandler.ChosenSettlement.Map,
+            CaravanEnterMapUtility.Enter(SessionManager.ChosenCaravan, SessionManager.ChosenSettlement.Map,
                     CaravanEnterMode.Edge, CaravanDropInventoryMode.DoNotDrop, draftColonists: true);
 
             CameraJumper.TryJump(map.Center, map, CameraJumper.MovementMode.Pan);

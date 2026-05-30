@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using GameClient.Managers;
-using GameClient.Misc;
 using HarmonyLib;
 using RTShared.Misc;
 using Verse;
@@ -17,7 +16,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ScribeSaver __instance, ref XmlWriter ___writer, string documentElementName)
         {
-            if (!SessionHandler.IsUsingScriber) return true;
+            if (!SessionManager.IsUsingScriber) return true;
             else
             {
                 try
@@ -53,7 +52,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(ScribeLoader __instance, string filePath)
         {
-            if (!SessionHandler.IsUsingScriber) return true;
+            if (!SessionManager.IsUsingScriber) return true;
             else
             {
                 try
@@ -165,7 +164,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!SessionHandler.IsUsingScriber) return true;
+            if (!SessionManager.IsUsingScriber) return true;
             else return false;
         }
     }
@@ -176,7 +175,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre()
         {
-            if (!SessionHandler.IsUsingScriber) return true;
+            if (!SessionManager.IsUsingScriber) return true;
             else return false;
         }
     }

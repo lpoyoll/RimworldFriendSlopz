@@ -9,6 +9,7 @@ using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using static RTShared.CommonEnumerators;
+using RTNetwork.Components;
 
 namespace GameServer.PacketManager
 {

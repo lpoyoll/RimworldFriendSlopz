@@ -1,5 +1,5 @@
 ﻿using GameClient.Defs;
-using GameClient.Misc;
+using GameClient.Managers;
 using GameClient.PacketManagers;
 using RimWorld;
 using RTShared;
@@ -111,7 +111,7 @@ namespace GameClient.Dialogs
 
         private void DrawPlayerCount(Rect rect)
         {
-            string toShow = SessionHandler.CurrentServerPlayers > 1 ? $"{SessionHandler.CurrentServerPlayers} Players" : $"{SessionHandler.CurrentServerPlayers} Player";
+            string toShow = SessionManager.CurrentServerPlayers > 1 ? $"{SessionManager.CurrentServerPlayers} Players" : $"{SessionManager.CurrentServerPlayers} Player";
 
             Text.Font = GameFont.Small;
             Widgets.Label(new(rect.x, rect.y, Text.CalcSize(toShow).x, Text.CalcSize(toShow).y), $"<color=grey>{toShow}</color>");

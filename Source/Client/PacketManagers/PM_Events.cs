@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameClient.Dialogs;
-using GameClient.Misc;
 using RimWorld;
 using RTShared;
 using Verse;
@@ -13,6 +12,7 @@ using GameClient.Managers;
 using static RTNetwork.Packets.PKT_Event;
 using GameClient.Dialogs.Default;
 using RTNetwork.PacketManagers;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -108,7 +108,7 @@ namespace GameClient.PacketManagers
                 PKT_Event eventData = new PKT_Event();
                 eventData._stepMode = EventStepMode.Send;
                 eventData._fromTile = toGetSilverFrom.Tile;
-                eventData._toTile = SessionHandler.ChosenSettlement.Tile;
+                eventData._toTile = SessionManager.ChosenSettlement.Tile;
                 eventData._eventFile = EnabledEvents[DLG_ScrollButtons.SelectedScrollButton];
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Event, eventData);
@@ -127,7 +127,7 @@ namespace GameClient.PacketManagers
         {
             IncidentParms parms = StorytellerUtility.DefaultParmsNow(eventToTrigger.category, targetMap);
             parms.customLetterLabel = $"Event - {eventToTrigger.LabelCap}";
-            parms.faction = SessionHandler.NeutralFaction;
+            parms.faction = SessionManager.NeutralFaction;
             parms.target = targetMap;
 
             eventToTrigger.Worker.TryExecute(parms);

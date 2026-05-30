@@ -11,6 +11,7 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
+using RTNetwork.Components;
 namespace GameClient.PacketManagers
 {
     public class PM_Pollution : PM_Base

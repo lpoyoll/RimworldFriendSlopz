@@ -17,7 +17,7 @@ namespace GameClient.Patches.Synchronous
             if (PatchHandler.BypassFlag) return true;
             else
             {
-                if (!SessionHandler.IsSynchronousHost) return false;
+                if (!SessionManager.IsSynchronousHost) return false;
                 else if (!SynchronousManager.CheckIfShouldPatch(__instance.map)) return true;
                 else
                 {

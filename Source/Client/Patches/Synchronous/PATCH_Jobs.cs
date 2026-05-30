@@ -16,7 +16,7 @@ namespace GameClient.Patches.Synchronous
         {
             if (PatchHandler.BypassFlag) return true;
             else if (!SynchronousManager.CheckIfShouldPatch(___pawn.MapHeld)) return true;
-            else if (___pawn.Faction == SessionHandler.NeutralFaction) return false;
+            else if (___pawn.Faction == SessionManager.NeutralFaction) return false;
             else
             {
                 PM_SJob.Ask(newJob, ___pawn);

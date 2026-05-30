@@ -8,6 +8,7 @@ using RTNetwork.Packets;
 using UnityEngine;
 using Verse;
 using static RTNetwork.Packets.PKT_Event;
+using RTNetwork.Components;
 
 namespace GameClient.Dialogs
 {

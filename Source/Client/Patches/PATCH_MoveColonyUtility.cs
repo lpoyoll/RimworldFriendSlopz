@@ -10,6 +10,7 @@ using Verse;
 using RTNetwork.Packets;
 using RTNetwork;
 using GameClient.PacketManagers;
+using RTNetwork.Components;
 
 namespace GameClient.Patches
 {

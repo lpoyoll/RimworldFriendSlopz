@@ -1,4 +1,4 @@
-﻿using GameClient.Misc;
+﻿using GameClient.Managers;
 using HarmonyLib;
 using RimWorld.Planet;
 using System;
@@ -12,7 +12,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (!SessionHandler.PlayerFactions.Contains(map.Parent.Faction)) return;
+            if (!SessionManager.PlayerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
         }
@@ -24,7 +24,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(Map map)
         {
-            if (!SessionHandler.PlayerFactions.Contains(map.Parent.Faction)) return;
+            if (!SessionManager.PlayerFactions.Contains(map.Parent.Faction)) return;
 
             FloodFillerFog.DebugRefogMap(map);
         }

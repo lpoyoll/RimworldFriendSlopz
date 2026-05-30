@@ -5,6 +5,7 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_ResponseShortcut;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {

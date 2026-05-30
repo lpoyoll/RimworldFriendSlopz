@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
-using GameClient.Misc;
 using RimWorld;
 using RTShared;
 using RTShared.Files.Guilds;
@@ -13,6 +12,7 @@ using RTNetwork.Packets;
 using Verse;
 using static RTShared.Files.Guilds.GuildMember;
 using static RTNetwork.Packets.PKT_PlayerGuild;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -140,7 +140,7 @@ namespace GameClient.PacketManagers
             {
                 PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                 playerFactionData._stepMode = GuildStepMode.Demote;
-                playerFactionData._dataInt = SessionHandler.ChosenSettlement.Tile;
+                playerFactionData._dataInt = SessionManager.ChosenSettlement.Tile;
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
@@ -149,7 +149,7 @@ namespace GameClient.PacketManagers
             {
                 PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                 playerFactionData._stepMode = GuildStepMode.Promote;
-                playerFactionData._dataInt = SessionHandler.ChosenSettlement.Tile;
+                playerFactionData._dataInt = SessionManager.ChosenSettlement.Tile;
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
@@ -158,7 +158,7 @@ namespace GameClient.PacketManagers
             {
                 PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                 playerFactionData._stepMode = GuildStepMode.RemoveMember;
-                playerFactionData._dataInt = SessionHandler.ChosenSettlement.Tile;
+                playerFactionData._dataInt = SessionManager.ChosenSettlement.Tile;
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
@@ -187,7 +187,7 @@ namespace GameClient.PacketManagers
             {
                 PKT_PlayerGuild playerFactionData = new PKT_PlayerGuild();
                 playerFactionData._stepMode = GuildStepMode.Invite;
-                playerFactionData._dataInt = SessionHandler.ChosenSettlement.Tile;
+                playerFactionData._dataInt = SessionManager.ChosenSettlement.Tile;
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Guild, playerFactionData);
             };
@@ -198,7 +198,7 @@ namespace GameClient.PacketManagers
 
         private static void OnCreateFaction()
         {
-            SessionHandler.HasFaction = true;
+            SessionManager.HasFaction = true;
 
             string[] messages = new string[]
             {
@@ -213,9 +213,9 @@ namespace GameClient.PacketManagers
 
         private static void OnDeleteFaction()
         {
-            SessionHandler.HasFaction = false;
+            SessionManager.HasFaction = false;
 
-            if (!SessionHandler.IsInTransfer) DLG_Wait.Instance.Close();
+            if (!SessionManager.IsInTransfer) DLG_Wait.Instance.Close();
             DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Your guild has been deleted!" }));
         }
 
@@ -229,7 +229,7 @@ namespace GameClient.PacketManagers
         {
             Action r1 = delegate
             {
-                SessionHandler.HasFaction = true;
+                SessionManager.HasFaction = true;
 
                 factionManifest._stepMode = GuildStepMode.AddMember;
 
@@ -244,7 +244,7 @@ namespace GameClient.PacketManagers
 
         private static void OnFactionGetKicked()
         {
-            SessionHandler.HasFaction = false;
+            SessionManager.HasFaction = false;
 
             DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "You have been kicked from your guild!" }));
         }

@@ -1,6 +1,5 @@
 ﻿using GameClient.Defs;
 using GameClient.Dialogs;
-using GameClient.Misc;
 using RTShared;
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,8 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using Verse;
 using Verse.Sound;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.PacketManagers
 {
@@ -30,7 +31,7 @@ namespace GameClient.PacketManagers
             RTSoundDefs.ChatSend.PlayOneShotOnCamera();
 
             PKT_Chat chatData = new PKT_Chat();
-            chatData.Username = SessionHandler.Username;
+            chatData.Username = SessionManager.Username;
             chatData.Message = messageToSend;
             chatData.IsCommand = messageToSend.StartsWith("/");
 
@@ -43,7 +44,7 @@ namespace GameClient.PacketManagers
 
             if (PM_Chat.CheckIfHasBeenTagged(data.Message))
             {
-                data.Message = data.Message.Replace($"@{SessionHandler.Username}", $"<color=red>@{SessionHandler.Username}</color>");
+                data.Message = data.Message.Replace($"@{SessionManager.Username}", $"<color=red>@{SessionManager.Username}</color>");
             }
 
             string timeString = $"<color=grey>{DateTime.Now.ToString("HH:mm")}</color> ";
@@ -56,7 +57,7 @@ namespace GameClient.PacketManagers
 
         public static string[] GetMessageWords(string message) { return message.Split(' '); }
 
-        public static bool CheckIfHasBeenTagged(string message) { return GetMessageWords(message).Contains($"@{SessionHandler.Username}"); }
+        public static bool CheckIfHasBeenTagged(string message) { return GetMessageWords(message).Contains($"@{SessionManager.Username}"); }
 
         public static string ParseMessage(string message, bool fromBroadcast)
         {

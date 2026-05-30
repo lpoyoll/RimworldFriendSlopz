@@ -3,6 +3,7 @@ using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.Misc;
 using RTNetwork;
+using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using RTShared;

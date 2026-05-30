@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using GameClient.Misc;
+using GameClient.Managers;
 using GameClient.PacketManagers;
 using GameClient.WorldObjects;
 using RimWorld.Planet;
@@ -100,7 +100,7 @@ namespace GameClient.Tabs
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        SessionHandler.ChosenSettlement = settlement;
+                        SessionManager.ChosenSettlement = settlement;
 
                         PM_Goodwills.TryRequestGoodwill(Goodwill.Enemy,
                             GoodwillTarget.Settlement);
@@ -116,7 +116,7 @@ namespace GameClient.Tabs
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        SessionHandler.ChosenSettlement = settlement;
+                        SessionManager.ChosenSettlement = settlement;
 
                         PM_Goodwills.TryRequestGoodwill(Goodwill.Neutral,
                             GoodwillTarget.Settlement);
@@ -132,7 +132,7 @@ namespace GameClient.Tabs
                 {
                     if (settlement.Tile == playerSettlement.Tile)
                     {
-                        SessionHandler.ChosenSettlement = settlement;
+                        SessionManager.ChosenSettlement = settlement;
 
                         PM_Goodwills.TryRequestGoodwill(Goodwill.Ally,
                             GoodwillTarget.Settlement);

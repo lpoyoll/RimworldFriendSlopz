@@ -1,5 +1,4 @@
-﻿using GameClient.Misc;
-using Verse;
+﻿using Verse;
 
 namespace GameClient.Managers
 {
@@ -7,7 +6,7 @@ namespace GameClient.Managers
     {
         public static bool CheckIfShouldPatch(Map map)
         {
-            if (SessionHandler.SynchronousMap.Tile != map.Tile) return false;
+            if (SessionManager.SynchronousMap.Tile != map.Tile) return false;
             else return true;
         }
     }

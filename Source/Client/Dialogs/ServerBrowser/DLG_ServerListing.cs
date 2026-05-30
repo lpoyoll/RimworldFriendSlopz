@@ -9,6 +9,7 @@ using RTNetwork.Packets.ServerBrowser;
 using UnityEngine;
 using Verse;
 using Verse.Noise;
+using RTNetwork.Components;
 
 namespace GameClient.Dialogs.ServerBrowser
 {

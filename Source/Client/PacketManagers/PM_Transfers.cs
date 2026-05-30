@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
-using GameClient.Misc;
 using RimWorld;
 using RTShared;
 using System.Collections.Generic;
@@ -13,6 +12,7 @@ using UnityEngine.UIElements;
 using Verse;
 using Verse.Noise;
 using static RTNetwork.Packets.PKT_Transfer;
+using RTNetwork.Components;
 
 namespace GameClient.PacketManagers
 {
@@ -66,29 +66,29 @@ namespace GameClient.PacketManagers
 
             if (transferLocation == TransferLocation.Caravan)
             {
-                SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeRequest;
-                SessionHandler.OutgoingManifest.ToTile = TradeSession.playerNegotiator.Tile;
-                SessionHandler.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
+                SessionManager.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeRequest;
+                SessionManager.OutgoingManifest.ToTile = TradeSession.playerNegotiator.Tile;
+                SessionManager.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionHandler.OutgoingManifest);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionManager.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Settlement)
             {
-                SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeReRequest;
-                SessionHandler.OutgoingManifest.ToTile = SessionHandler.IncomingManifest.FromTile;
-                SessionHandler.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
+                SessionManager.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeReRequest;
+                SessionManager.OutgoingManifest.ToTile = SessionManager.IncomingManifest.FromTile;
+                SessionManager.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionHandler.OutgoingManifest);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionManager.OutgoingManifest);
             }
 
             else if (transferLocation == TransferLocation.Pod)
             {
-                SessionHandler.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeRequest;
-                SessionHandler.OutgoingManifest.ToTile = SessionHandler.ChosenSettlement.Tile;
-                SessionHandler.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
+                SessionManager.OutgoingManifest.CurrentStepMode = TransferStepMode.TradeRequest;
+                SessionManager.OutgoingManifest.ToTile = SessionManager.ChosenSettlement.Tile;
+                SessionManager.OutgoingManifest.FromTile = Find.AnyPlayerHomeMap.Tile;
 
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionHandler.OutgoingManifest);
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionManager.OutgoingManifest);
             }
         }
 
@@ -96,10 +96,10 @@ namespace GameClient.PacketManagers
         {
             if (success) PM_Saves.ForceSave();
 
-            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.None;
-            SessionHandler.IncomingManifest = new PKT_Transfer();
-            SessionHandler.OutgoingManifest = new PKT_Transfer();
-            SessionHandler.IsInTransfer = false;
+            SessionManager.LastTradeStep = CommonEnumerators.TradeMode.None;
+            SessionManager.IncomingManifest = new PKT_Transfer();
+            SessionManager.OutgoingManifest = new PKT_Transfer();
+            SessionManager.IsInTransfer = false;
         }
 
         public static void FinishRequest(TransferStepMode mode)
@@ -112,8 +112,8 @@ namespace GameClient.PacketManagers
 
             else if (mode == TransferStepMode.TradeReAccept)
             {
-                List<Thing> allTransferedItems = GetAllTransferedItems(SessionHandler.IncomingManifest);
-                Map map = Find.Maps.Find(x => x.Tile == SessionHandler.IncomingManifest.ToTile);
+                List<Thing> allTransferedItems = GetAllTransferedItems(SessionManager.IncomingManifest);
+                Map map = Find.Maps.Find(x => x.Tile == SessionManager.IncomingManifest.ToTile);
                 IntVec3 location = RimworldManager.GetTransferLocationInMap(map);
                 foreach (Thing thing in allTransferedItems) RimworldManager.PlaceThingIntoMap(thing, map, location);
 
@@ -145,11 +145,11 @@ namespace GameClient.PacketManagers
 
         public static void ReceiveRequest(PKT_Transfer transferData, bool isRebound)
         {
-            if (DLG_Options.AutorejectTransfersBool || (!isRebound && SessionHandler.IsInTransfer)) RejectRequest(transferData.CurrentTransferMode);
+            if (DLG_Options.AutorejectTransfersBool || (!isRebound && SessionManager.IsInTransfer)) RejectRequest(transferData.CurrentTransferMode);
             else
             {
-                SessionHandler.IsInTransfer = true;
-                SessionHandler.IncomingManifest = transferData;
+                SessionManager.IsInTransfer = true;
+                SessionManager.IncomingManifest = transferData;
                 DLG_Base.PushNewDialog(new DLG_TradeListing(GetAllTransferedItems(transferData),
                     transferData.CurrentTransferMode));
             }
@@ -159,14 +159,14 @@ namespace GameClient.PacketManagers
         {
             if (transferMode == TransferMode.Trade)
             {
-                SessionHandler.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReject;
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionHandler.IncomingManifest);
+                SessionManager.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReject;
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionManager.IncomingManifest);
             }
 
             else if (transferMode == TransferMode.Rebound)
             {
-                SessionHandler.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReReject;
-                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionHandler.IncomingManifest);
+                SessionManager.IncomingManifest.CurrentStepMode = TransferStepMode.TradeReReject;
+                Network.ServerEndpoint.EnqueuePacket(PacketHeader.Transfer, SessionManager.IncomingManifest);
                 RecoverTransferManifest(TransferLocation.Caravan);
             }
 
@@ -180,7 +180,7 @@ namespace GameClient.PacketManagers
                 Corpse corpse = thing as Corpse;
                 Pawn pawn = corpse.InnerPawn;
 
-                SessionHandler.OutgoingManifest.Pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn));
+                SessionManager.OutgoingManifest.Pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn));
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
@@ -188,13 +188,13 @@ namespace GameClient.PacketManagers
             {
                 Pawn pawn = thing as Pawn;
 
-                SessionHandler.OutgoingManifest.Pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn));
+                SessionManager.OutgoingManifest.Pawns.Add(ScribeManager.SerializeToString(pawn, ScribeManager.SerializableType.Pawn));
                 RimworldManager.RemovePawnFromGame(pawn);
             }
 
             else
             {
-                SessionHandler.OutgoingManifest.Things.Add(ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thingCount));
+                SessionManager.OutgoingManifest.Things.Add(ScribeManager.SerializeToString(thing, ScribeManager.SerializableType.Thing, thingCount));
             }
         }
 
@@ -202,9 +202,9 @@ namespace GameClient.PacketManagers
         {
             if (transferLocation == TransferLocation.Caravan)
             {
-                foreach (Thing thing in GetAllTransferedItems(SessionHandler.OutgoingManifest))
+                foreach (Thing thing in GetAllTransferedItems(SessionManager.OutgoingManifest))
                 {
-                    try { RimworldManager.PlaceThingIntoCaravan(thing, SessionHandler.ChosenCaravan); }
+                    try { RimworldManager.PlaceThingIntoCaravan(thing, SessionManager.ChosenCaravan); }
                     catch { continue; }
                 }
             }
@@ -213,7 +213,7 @@ namespace GameClient.PacketManagers
             {
                 IntVec3 location = RimworldManager.GetTransferLocationInMap(Find.AnyPlayerHomeMap);
 
-                foreach (Thing thing in GetAllTransferedItems(SessionHandler.OutgoingManifest))
+                foreach (Thing thing in GetAllTransferedItems(SessionManager.OutgoingManifest))
                 {
                     try { RimworldManager.PlaceThingIntoMap(thing, Find.AnyPlayerHomeMap, location); }
                     catch { continue; }

@@ -18,7 +18,7 @@ namespace GameClient.Patches.Synchronous
         {
             if (PatchHandler.BypassFlag) return true;
             else if (!SynchronousManager.CheckIfShouldPatch(___pawn.MapHeld)) return true;
-            else if (!SessionHandler.IsSynchronousHost) return false;
+            else if (!SessionManager.IsSynchronousHost) return false;
             else
             {
                 BodyPartRecord bodyPart = part != null ? part : dinfo.HitPart;
@@ -37,7 +37,7 @@ namespace GameClient.Patches.Synchronous
         {
             if (PatchHandler.BypassFlag) return true;
             else if (!SynchronousManager.CheckIfShouldPatch(___pawn.MapHeld)) return true;
-            else if (!SessionHandler.IsSynchronousHost) return false;
+            else if (!SessionManager.IsSynchronousHost) return false;
             else
             {
                 PM_SHediff.Ask(hediff, hediff.Part, ___pawn, PlayerHediff.HediffMode.Remove);
@@ -76,7 +76,7 @@ namespace GameClient.Patches.Synchronous
 
             else
             {
-                if (!SessionHandler.IsSynchronousHost) return false;
+                if (!SessionManager.IsSynchronousHost) return false;
                 else
                 {
                     float tendQuality = Mathf.Clamp(quality + Rand.Range(-0.25f, 0.25f), 0f, maxQuality);

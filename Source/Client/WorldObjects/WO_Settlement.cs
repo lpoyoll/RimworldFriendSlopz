@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.PacketManagers;
 using GameClient.PacketManagers.Synchronous;
 using RimWorld;
@@ -61,7 +60,7 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Goodwill"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
+                    SessionManager.ChosenSettlement = this;
 
                     Action r1 = delegate
                     {
@@ -97,11 +96,11 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Guild"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
+                    SessionManager.ChosenSettlement = this;
 
-                    if (SessionHandler.CurrentActionValues.EnableFactions)
+                    if (SessionManager.CurrentActionValues.EnableFactions)
                     {
-                        if (SessionHandler.ChosenSettlement.Faction == SessionHandler.GuildFaction) PM_Guilds.OnFactionOpenOnMember();
+                        if (SessionManager.ChosenSettlement.Faction == SessionManager.GuildFaction) PM_Guilds.OnFactionOpenOnMember();
                         else PM_Guilds.OnFactionOpenOnNonMember();
                     }
                     else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
@@ -115,7 +114,7 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("UI/Commands/FormCaravan"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
+                    SessionManager.ChosenSettlement = this;
 
                     Dialog_FormCaravan d1 = new Dialog_FormCaravan(this.Map, mapAboutToBeRemoved: true);
                     DLG_Base.PushNewDialog(d1);
@@ -129,9 +128,9 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Aid"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
+                    SessionManager.ChosenSettlement = this;
 
-                    if (SessionHandler.CurrentActionValues.AidAction.IsEnabled)
+                    if (SessionManager.CurrentActionValues.AidAction.IsEnabled)
                     {
                         List<string> pawnNames = new List<string>();
                         foreach (Pawn pawn in RimworldManager.GetAllSettlementsPawns(Faction.OfPlayer, false)) pawnNames.Add(pawn.LabelCapNoCount);
@@ -149,9 +148,9 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Event"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
+                    SessionManager.ChosenSettlement = this;
 
-                    if (SessionHandler.CurrentActionValues.EventAction.IsEnabled) PM_Events.ShowEventMenu();
+                    if (SessionManager.CurrentActionValues.EventAction.IsEnabled) PM_Events.ShowEventMenu();
                     else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
@@ -163,8 +162,8 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/View"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
-                    PM_Zoom.RequestZoom(SessionHandler.ChosenSettlement.Tile);
+                    SessionManager.ChosenSettlement = this;
+                    PM_Zoom.RequestZoom(SessionManager.ChosenSettlement.Tile);
                 }
             };
 
@@ -175,8 +174,8 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/View"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
-                    PM_Settlements.RegenSettlement(SessionHandler.ChosenSettlement);
+                    SessionManager.ChosenSettlement = this;
+                    PM_Settlements.RegenSettlement(SessionManager.ChosenSettlement);
                 }
             };
 
@@ -187,7 +186,7 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Info"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
+                    SessionManager.ChosenSettlement = this;
                     PM_Information.AskForInformation();
                 }
             };
@@ -199,7 +198,7 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Wealth"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
+                    SessionManager.ChosenSettlement = this;
                     PM_Information.AskForWealth();
                 }
             };
@@ -214,7 +213,7 @@ namespace GameClient.WorldObjects
             else gizmos.Add(command_StopZoom);
 
             if (this.Map != null) gizmos.Add(command_Caravan);
-            if (SessionHandler.HasFaction) gizmos.Add(command_FactionMenu);
+            if (SessionManager.HasFaction) gizmos.Add(command_FactionMenu);
 
             return gizmos;
         }
@@ -232,9 +231,9 @@ namespace GameClient.WorldObjects
                 {
                     if (DLG_Options.EnablePreviewFeatures)
                     {
-                        SessionHandler.ChosenSettlement = this;
-                        SessionHandler.ChosenCaravan = caravan;
-                        PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, RTNetwork.Packets.PKT_Synchronous.Type.Visit);
+                        SessionManager.ChosenSettlement = this;
+                        SessionManager.ChosenCaravan = caravan;
+                        PM_Synchronous.Ask(SessionManager.ChosenSettlement.Tile, RTNetwork.Packets.PKT_Synchronous.Type.Visit);
                     }
 
                     else
@@ -255,9 +254,9 @@ namespace GameClient.WorldObjects
                 {
                     if (DLG_Options.EnablePreviewFeatures)
                     {
-                        SessionHandler.ChosenSettlement = this;
-                        SessionHandler.ChosenCaravan = caravan;
-                        PM_Synchronous.Ask(SessionHandler.ChosenSettlement.Tile, RTNetwork.Packets.PKT_Synchronous.Type.Raid);
+                        SessionManager.ChosenSettlement = this;
+                        SessionManager.ChosenCaravan = caravan;
+                        PM_Synchronous.Ask(SessionManager.ChosenSettlement.Tile, RTNetwork.Packets.PKT_Synchronous.Type.Raid);
                     }
 
                     else
@@ -276,9 +275,9 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Raid"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
-                    SessionHandler.ChosenCaravan = caravan;
-                    PM_Raid.RequestRaid(SessionHandler.ChosenSettlement.Tile);
+                    SessionManager.ChosenSettlement = this;
+                    SessionManager.ChosenCaravan = caravan;
+                    PM_Raid.RequestRaid(SessionManager.ChosenSettlement.Tile);
                 }
             };
 
@@ -289,10 +288,10 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Transfer"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSettlement = this;
-                    SessionHandler.ChosenCaravan = caravan;
+                    SessionManager.ChosenSettlement = this;
+                    SessionManager.ChosenCaravan = caravan;
 
-                    if (!SessionHandler.CurrentActionValues.EnableTrading)
+                    if (!SessionManager.CurrentActionValues.EnableTrading)
                     {
                         DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                         return;
@@ -301,11 +300,11 @@ namespace GameClient.WorldObjects
                     else
                     {
                         Settlement settlement = Find.World.worldObjects.Settlements.First(fetch => fetch.Faction != Faction.OfPlayer);
-                        Pawn negotiator = RimworldManager.GetIfSocialPawnInCaravan(SessionHandler.ChosenCaravan);
+                        Pawn negotiator = RimworldManager.GetIfSocialPawnInCaravan(SessionManager.ChosenCaravan);
 
                         if (negotiator != null)
                         {
-                            SessionHandler.LastTradeStep = CommonEnumerators.TradeMode.Sending;
+                            SessionManager.LastTradeStep = CommonEnumerators.TradeMode.Sending;
                             Find.WindowStack.Add(new Dialog_Trade(negotiator, settlement));
                         }
 
@@ -330,7 +329,7 @@ namespace GameClient.WorldObjects
             yield return new FloatMenuOption($"Gift contents to '{this.Label}'",
             delegate
             {
-                SessionHandler.ChosenSettlement = this;
+                SessionManager.ChosenSettlement = this;
                 action(this.Tile, new RTTransportersArrivalAction_TransportPod(this));
             },
                 MenuOptionPriority.Default,
@@ -353,10 +352,10 @@ namespace GameClient.WorldObjects
 
             public override void Arrived(List<ActiveTransporterInfo> transporters, PlanetTile tile)
             {
-                if (SessionHandler.IsInTransfer) return;
+                if (SessionManager.IsInTransfer) return;
 
-                SessionHandler.IsInTransfer = true;
-                SessionHandler.ChosenSettlement = settlement;
+                SessionManager.IsInTransfer = true;
+                SessionManager.ChosenSettlement = settlement;
 
                 TakeTransferItemsFromPods(transporters.Cast<IThingHolder>());
                 PM_Transfers.SendRequest(TransferLocation.Pod);
@@ -364,7 +363,7 @@ namespace GameClient.WorldObjects
 
             private void TakeTransferItemsFromPods(IEnumerable<IThingHolder> pods)
             {
-                SessionHandler.OutgoingManifest.CurrentTransferMode = TransferMode.Pod;
+                SessionManager.OutgoingManifest.CurrentTransferMode = TransferMode.Pod;
 
                 foreach (IThingHolder pod in pods)
                 {

@@ -16,11 +16,11 @@ namespace GameClient.Patches
         {
             PM_Settlements.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
             MainThreadHandler.Instance.DoOnStartMethods();
-            SessionHandler.IsReadyToPlay = true;
+            SessionManager.IsReadyToPlay = true;
 
             DLG_Base.PushNewDialog(new DLG_Message("Save", new string[] { "Game will save now" }, PM_Saves.ForceSave));
 
-            if (SessionHandler.IsGeneratingFreshWorld)
+            if (SessionManager.IsGeneratingFreshWorld)
             {
                 PM_GameParameter.SetFirstTimeSetup();
                 PM_Mods.OpenModManagerMenu();
@@ -35,7 +35,7 @@ namespace GameClient.Patches
         public static void GetIDFromExistingGame()
         {
             PlanetManager.BuildPlanet();
-            SessionHandler.IsReadyToPlay = true;
+            SessionManager.IsReadyToPlay = true;
             MainThreadHandler.Instance.DoOnStartMethods();
         }
     }

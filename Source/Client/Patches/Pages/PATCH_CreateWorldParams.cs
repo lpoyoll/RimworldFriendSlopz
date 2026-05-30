@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using GameClient.Defs;
-using GameClient.Misc;
+using GameClient.Managers;
 using GameClient.PacketManagers;
 using HarmonyLib;
 using RimWorld;
@@ -16,7 +16,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Rect rect, Page_CreateWorldParams __instance, string ___seedString, float ___planetCoverage, OverallRainfall ___rainfall, OverallTemperature ___temperature, OverallPopulation ___population, LandmarkDensity ___landmarkDensity, List<FactionDef> ___factions, float ___pollution)
         {
-            if (!SessionHandler.IsGeneratingFreshWorld) return true;
+            if (!SessionManager.IsGeneratingFreshWorld) return true;
             else
             {
                 Vector2 buttonSize = new Vector2(150f, 38f);
@@ -47,7 +47,7 @@ namespace GameClient.Patches.Pages
         [HarmonyPrefix]
         public static bool DoPre(Page_CreateWorldParams __instance)
         {
-            if (SessionHandler.IsGeneratingFreshWorld) return true;
+            if (SessionManager.IsGeneratingFreshWorld) return true;
             else
             {
                 __instance.Close();

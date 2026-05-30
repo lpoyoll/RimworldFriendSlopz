@@ -11,6 +11,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using static RTShared.Files.Guilds.GuildMember;
 using static RTNetwork.Packets.PKT_PlayerGuild;
+using RTNetwork.Components;
 
 namespace GameServer.PacketManager
 {

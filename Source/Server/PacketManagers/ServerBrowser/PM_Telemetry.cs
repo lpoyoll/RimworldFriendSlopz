@@ -13,6 +13,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
 using static GameServer.Hooks.ServerBrowser.ServerBrowserManager;
 using static RTShared.Misc.Printer;
+using RTNetwork.Components;
 
 namespace GameServer.PacketManagers.ServerBrowser
 {

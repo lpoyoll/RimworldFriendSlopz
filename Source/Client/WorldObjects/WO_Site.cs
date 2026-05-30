@@ -1,7 +1,7 @@
 ﻿using GameClient.Defs;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Misc;
+using GameClient.Managers;
 using GameClient.PacketManagers;
 using RimWorld;
 using RimWorld.Planet;
@@ -69,8 +69,8 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Worker"),
                 action = delegate
                 {
-                    SessionHandler.ChosenCaravan = caravan;
-                    SessionHandler.ChosenSite = this;
+                    SessionManager.ChosenCaravan = caravan;
+                    SessionManager.ChosenSite = this;
 
                     DLG_Base.PushNewDialog(new DLG_Wait());
                     PM_Sites.RequestWorkerInfo();
@@ -84,13 +84,13 @@ namespace GameClient.WorldObjects
                 icon = ContentFinder<Texture2D>.Get("Commands/Site"),
                 action = delegate
                 {
-                    SessionHandler.ChosenSite = this;
+                    SessionManager.ChosenSite = this;
                     PM_Sites.RequestDestroySite();
                 }
             };
 
-            if (Faction == Find.FactionManager.OfPlayer || Faction == SessionHandler.GuildFaction) gizmoList.Add(command_Worker);
-            if (Faction == Find.FactionManager.OfPlayer || Faction == SessionHandler.GuildFaction) gizmoList.Add(command_DestroySite);
+            if (Faction == Find.FactionManager.OfPlayer || Faction == SessionManager.GuildFaction) gizmoList.Add(command_Worker);
+            if (Faction == Find.FactionManager.OfPlayer || Faction == SessionManager.GuildFaction) gizmoList.Add(command_DestroySite);
 
             return gizmoList;
         }

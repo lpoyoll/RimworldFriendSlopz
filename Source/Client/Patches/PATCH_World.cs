@@ -1,7 +1,6 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.PacketManagers;
 using GameClient.Tabs;
 using HarmonyLib;
@@ -29,9 +28,9 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Guild"),
                 action = delegate
                 {
-                    if (SessionHandler.CurrentActionValues.EnableFactions)
+                    if (SessionManager.CurrentActionValues.EnableFactions)
                     {
-                        if (SessionHandler.HasFaction) PM_Guilds.OnFactionOpen();
+                        if (SessionManager.HasFaction) PM_Guilds.OnFactionOpen();
                         else PM_Guilds.OnNoFactionOpen();
                     }
                     else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
@@ -45,7 +44,7 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Leaderboard"),
                 action = delegate
                 {
-                    if (SessionHandler.CurrentActionValues.EnableLeaderboard) PM_Leaderboard.Ask();
+                    if (SessionManager.CurrentActionValues.EnableLeaderboard) PM_Leaderboard.Ask();
                     else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
             };
@@ -76,11 +75,11 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Site"),
                     action = delegate
                     {
-                        SessionHandler.ChosenCaravan = __instance;
+                        SessionManager.ChosenCaravan = __instance;
 
-                        if (SessionHandler.CurrentActionValues.SiteAction.IsEnabled) 
+                        if (SessionManager.CurrentActionValues.SiteAction.IsEnabled) 
                         {
-                            DLG_Base.PushNewDialog(new DLG_YesNo($"Building a site costs {SessionHandler.CurrentActionValues.SiteAction.BuildingCost} " +
+                            DLG_Base.PushNewDialog(new DLG_YesNo($"Building a site costs {SessionManager.CurrentActionValues.SiteAction.BuildingCost} " +
                                 $"silver. Continue?", PM_Sites.RequestSiteBuild));
                         }
 
@@ -98,12 +97,12 @@ namespace GameClient.Patches
                     icon = ContentFinder<Texture2D>.Get("Commands/Road"),
                     action = delegate
                     {
-                        SessionHandler.ChosenCaravan = __instance;
+                        SessionManager.ChosenCaravan = __instance;
 
-                        if (SessionHandler.CurrentActionValues.RoadAction.IsEnabled)
+                        if (SessionManager.CurrentActionValues.RoadAction.IsEnabled)
                         {
                             List<PlanetTile> neighborTiles = new List<PlanetTile>();
-                            Find.WorldGrid.GetTileNeighbors(SessionHandler.ChosenCaravan.Tile, neighborTiles);
+                            Find.WorldGrid.GetTileNeighbors(SessionManager.ChosenCaravan.Tile, neighborTiles);
 
                             SurfaceTile selectedTile = (SurfaceTile)Find.WorldGrid[__instance.Tile];
                             PM_RoadsHelper.ShowRoadChooseDialog(neighborTiles.ToArray(), selectedTile.Roads != null);
@@ -125,7 +124,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void ModifyPost(ref IEnumerable<FloatMenuOption> __result, Settlement settlement)
         {
-            if (SessionHandler.PlayerFactions.Contains(settlement.Faction))
+            if (SessionManager.PlayerFactions.Contains(settlement.Faction))
             {
                 List<FloatMenuOption> floatMenuList = __result.ToList();
 
@@ -185,7 +184,7 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(Pawn pawn)
         {
-            if (!SessionHandler.PlayerFactions.Contains(pawn.Faction)) return true;
+            if (!SessionManager.PlayerFactions.Contains(pawn.Faction)) return true;
             else return false;
         }
     }

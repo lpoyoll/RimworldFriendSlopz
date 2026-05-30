@@ -8,8 +8,9 @@ using System.Reflection.Emit;
 using Verse;
 using RTNetwork.Packets;
 using RTShared.Details.Planet;
-using GameClient.Misc;
 using RTNetwork;
+using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.Patches
 {
@@ -48,7 +49,7 @@ namespace GameClient.Patches
         [HarmonyPostfix]
         public static void DoPost(float pollutionAmount)
         {
-            if (!SessionHandler.CurrentActionValues.PollutionAction.IsEnabled) return;
+            if (!SessionManager.CurrentActionValues.PollutionAction.IsEnabled) return;
             else if (addedByServer) addedByServer = false;
             else
             {
