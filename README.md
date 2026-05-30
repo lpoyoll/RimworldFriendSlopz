@@ -4,8 +4,6 @@
 [![](https://img.shields.io/badge/Steam_Workshop-Subscribe-blue?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=3005289691) 
 [![](https://img.shields.io/badge/Discord-Join-blue?logo=discord)](https://discord.gg/yUF2ec8Vt8) 
 [![](https://img.shields.io/badge/Wiki-Read-blue?logo=mdbook)](https://github.com/Byte-Nova/Rimworld-Together/wiki) 
-[![](https://img.shields.io/badge/Incompatibility_List-View-blue?logo=markdown)](https://github.com/RimWorld-Together/Incompatibilities)
-[![](https://img.shields.io/badge/Expansion_List-View-blue?logo=markdown)](https://github.com/RimWorld-Together/Expansions)
 [![](https://img.shields.io/badge/Donate-Go-blue?logo=kofi)](https://ko-fi.com/rimworldtogetherproject)
 
 > [!NOTE]
