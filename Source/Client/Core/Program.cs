@@ -9,6 +9,7 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using UnityEngine;
 using Verse;
+using GameClient.Managers;
 
 namespace GameClient.Core
 {
@@ -27,7 +28,7 @@ namespace GameClient.Core
                 PM_Base.CacheAllPackets(PM_Base.AssemblyType.Client);
 
                 CreateUnityDispatcher();
-                HarmonyHandler.EnableStartPatches();
+                HarmonyManager.EnableStartPatches();
                 PersistentSettings.SetFilePath(Path.Combine(Master.AppdataRTPath, "PersistentSettings" + CommonValues.DefaultSaveFormat));
             }
         }
@@ -56,10 +57,10 @@ namespace GameClient.Core
 
         private static void CreateUnityDispatcher()
         {
-            if (MainThreadHandler.Instance == null)
+            if (MainThreadManager.Instance == null)
             {
                 GameObject go = UnityEngine.Object.Instantiate(new GameObject());
-                go.AddComponent(typeof(MainThreadHandler));
+                go.AddComponent(typeof(MainThreadManager));
             }
         }
     }

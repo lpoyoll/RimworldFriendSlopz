@@ -164,7 +164,7 @@ namespace GameClient.PacketManagers.Synchronous
             if (side == SynchronousSide.Host)
             {
                 SessionManager.IsSynchronousHost = true;
-                MainThreadHandler.Instance.DoOnSynchronousStartMethods();
+                MainThreadManager.Instance.DoOnSynchronousStartMethods();
                 DLG_Wait.Instance.Close();
 
                 string[] description = new string[] { "Game will be unable to save while in synchronous!" };
@@ -177,7 +177,7 @@ namespace GameClient.PacketManagers.Synchronous
                 data.CurrentStepMode = PKT_Synchronous.StepMode.Start;
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, data);
 
-                MainThreadHandler.Instance.DoOnSynchronousStartMethods();
+                MainThreadManager.Instance.DoOnSynchronousStartMethods();
 
                 string[] description = new string[] { "Game will be unable to save while in synchronous!" };
                 DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", description));
@@ -186,7 +186,7 @@ namespace GameClient.PacketManagers.Synchronous
 
         private static void EndSession()
         {
-            MainThreadHandler.Instance.DoOnSynchronousEndMethods();
+            MainThreadManager.Instance.DoOnSynchronousEndMethods();
             SessionManager.IsSynchronousHost = false;
         }
 

@@ -1,7 +1,6 @@
 ﻿using GameClient.Core;
 using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Misc;
 using HarmonyLib;
 using RimWorld;
 using RTShared;
@@ -57,7 +56,7 @@ namespace GameClient.PacketManagers
             {
                 Thread.Sleep(100);
 
-                MainThreadHandler.Instance.Enqueue(delegate
+                MainThreadManager.Instance.Enqueue(delegate
                 {
                     ResetAutosaveTicks();
 

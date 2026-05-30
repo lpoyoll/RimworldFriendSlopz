@@ -83,7 +83,7 @@ namespace GameClient.Patches.Pages
             optList.Insert(0, new ListableOption("Direct Connect", delegate
             {
                 if (SessionManager.CurrentNetworkState != ClientNetworkState.Disconnected) return;
-                else if (!HarmonyHandler.CheckForModCollision()) return;
+                else if (!HarmonyManager.CheckForModCollision()) return;
                 else if (!CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
                 else DLG_Base.PushNewDialog(new DLG_Login());
             }));
@@ -111,7 +111,7 @@ namespace GameClient.Patches.Pages
                 Vector2 buttonLocation = new Vector2(rect.x - 50f, rect.y);
                 if (Widgets.ButtonText(new Rect(buttonLocation.x, buttonLocation.y, buttonSize.x, buttonSize.y), ""))
                 {
-                    if (!HarmonyHandler.CheckForModCollision()) return true;
+                    if (!HarmonyManager.CheckForModCollision()) return true;
                     else if (SessionManager.CurrentNetworkState != ClientNetworkState.Disconnected) return true;
                     else if (!MainMenuPatch.CheckIfLoginIsValid()) PM_Login.PromptCreateAccount();
                     else PM_Login.QuickConnectUser();

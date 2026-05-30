@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameClient.Misc
+namespace GameClient.Managers
 {
-    public static class DiscordHandler
+    public static class DiscordManager
     {
         private static DiscordRpcClient RPClient { get; set; } = null;
 

@@ -2,7 +2,6 @@ using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
 using GameClient.Files;
 using GameClient.Managers;
-using GameClient.Misc;
 using GameClient.PacketManagers;
 using RTShared;
 using RTShared.Misc;
@@ -31,12 +30,12 @@ namespace GameClient.Hooks.TCPNetwork
             };
 
             if (header == PacketHeader.Handshake) toDo.Invoke();
-            else MainThreadHandler.Instance.Enqueue(toDo);
+            else MainThreadManager.Instance.Enqueue(toDo);
         };
 
         private static Action<ServerClient> OnConnect { get; set; } = delegate (ServerClient client)
         {
-            MainThreadHandler.Instance.Enqueue(delegate { HarmonyHandler.EnableMainPatches(); });
+            MainThreadManager.Instance.Enqueue(delegate { HarmonyManager.EnableMainPatches(); });
             Network.ServerEndpoint = client.Listener;
             PM_Handshake.Send(client);
             PM_Version.Send(client);
@@ -44,10 +43,10 @@ namespace GameClient.Hooks.TCPNetwork
 
         private static Action<ServerClient> OnDisconnect { get; set; } = delegate 
         {
-            MainThreadHandler.Instance.Enqueue(delegate
+            MainThreadManager.Instance.Enqueue(delegate
             {
                 DisconnectionManager.HandleDisconnect();
-                MainThreadHandler.Instance.DoOnEndMethods();
+                MainThreadManager.Instance.DoOnEndMethods();
                 Printer.Warning($"Disconnecting from server", Verbosity.Verbose);
             });
         };
@@ -71,7 +70,7 @@ namespace GameClient.Hooks.TCPNetwork
 
                 else
                 {
-                    MainThreadHandler.Instance.Enqueue(delegate
+                    MainThreadManager.Instance.Enqueue(delegate
                     {
                         DLG_Wait.Instance.Close();
                         DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "The server did not respond in time" }));

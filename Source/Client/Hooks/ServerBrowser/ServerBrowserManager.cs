@@ -1,6 +1,5 @@
 ﻿using GameClient.Dialogs;
 using GameClient.Dialogs.Default;
-using GameClient.Misc;
 using RimWorld;
 using RTShared;
 using RTShared.Misc;
@@ -12,6 +11,7 @@ using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
 using RTNetwork.Components;
+using GameClient.Managers;
 
 namespace GameClient.Hooks.ServerBrowser
 {
@@ -26,7 +26,7 @@ namespace GameClient.Hooks.ServerBrowser
             };
 
             if (header == PacketHeader.Handshake) toDo.Invoke();
-            else MainThreadHandler.Instance.Enqueue(toDo);
+            else MainThreadManager.Instance.Enqueue(toDo);
         };
 
         public static void TryConnect() 
@@ -38,7 +38,7 @@ namespace GameClient.Hooks.ServerBrowser
                 if (ConnectToServer()) AskForServerListings();
                 else
                 {
-                    MainThreadHandler.Instance.Enqueue(delegate
+                    MainThreadManager.Instance.Enqueue(delegate
                     {
                         DLG_Wait.Instance.Close();
                         DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "The server did not respond in time" }));

@@ -1,7 +1,6 @@
 ﻿using GameClient.Managers;
 using HarmonyLib;
 using Verse;
-using GameClient.Misc;
 using GameClient.Dialogs;
 using GameClient.PacketManagers;
 using GameClient.Dialogs.Default;
@@ -15,7 +14,7 @@ namespace GameClient.Patches
         public static void ModifyPost(Game __instance)
         {
             PM_Settlements.SendNewPlayerSettlement(__instance.CurrentMap.Tile);
-            MainThreadHandler.Instance.DoOnStartMethods();
+            MainThreadManager.Instance.DoOnStartMethods();
             SessionManager.IsReadyToPlay = true;
 
             DLG_Base.PushNewDialog(new DLG_Message("Save", new string[] { "Game will save now" }, PM_Saves.ForceSave));
@@ -36,7 +35,7 @@ namespace GameClient.Patches
         {
             PlanetManager.BuildPlanet();
             SessionManager.IsReadyToPlay = true;
-            MainThreadHandler.Instance.DoOnStartMethods();
+            MainThreadManager.Instance.DoOnStartMethods();
         }
     }
 }

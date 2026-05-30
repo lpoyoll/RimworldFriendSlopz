@@ -10,9 +10,9 @@ using System.Linq;
 using System.Reflection;
 using static RTShared.Misc.Printer;
 
-namespace GameClient.Misc
+namespace GameClient.Managers
 {
-    public static class HarmonyHandler
+    public static class HarmonyManager
     {
         private static Harmony MainInstance { get; set; } = null;
 

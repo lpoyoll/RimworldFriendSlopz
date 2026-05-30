@@ -1,4 +1,4 @@
-﻿using GameClient.Managers;
+﻿using GameClient.Misc;
 using RTShared;
 using RTShared.Misc;
 using System;
@@ -8,15 +8,15 @@ using System.Reflection;
 using UnityEngine;
 using static GameClient.Hooks.TCPNetwork.ClientNetwork;
 
-namespace GameClient.Misc
+namespace GameClient.Managers
 {
-    public class MainThreadHandler : MonoBehaviour
+    public class MainThreadManager : MonoBehaviour
     {
-        public static MainThreadHandler Instance { get; private set; }
+        public static MainThreadManager Instance { get; private set; }
 
         private static Queue<Action> ActionQueue { get; set; } = new Queue<Action>();
 
-        public MainThreadHandler() { Instance = this; }
+        public MainThreadManager() { Instance = this; }
 
         private void Awake()
         {

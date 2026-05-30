@@ -263,7 +263,7 @@ namespace GameClient.PacketManagers
                 {
                     if (currentRewardDelay >= SessionManager.CurrentActionValues.SiteAction.TimeInterval)
                     {
-                        MainThreadHandler.Instance.Enqueue(RequestSiteRewards);
+                        MainThreadManager.Instance.Enqueue(RequestSiteRewards);
                         currentRewardDelay = 0;
                     }
 

@@ -1,5 +1,5 @@
 ﻿using GameClient.Core.Configs;
-using GameClient.Misc;
+using GameClient.Managers;
 using RTShared.Misc;
 using System;
 using UnityEngine;
@@ -16,17 +16,17 @@ namespace GameClient.Hooks.Shared
         {
             Action<object, Verbosity> onMessage = delegate (object value, Verbosity importance)
             {
-                if (CheckIfShouldPrint(importance)) MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Message, importance); });
+                if (CheckIfShouldPrint(importance)) MainThreadManager.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Message, importance); });
             };
 
             Action<object, Verbosity> onWarning = delegate (object value, Verbosity importance)
             {
-                if (CheckIfShouldPrint(importance)) MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Warning, importance); });
+                if (CheckIfShouldPrint(importance)) MainThreadManager.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Warning, importance); });
             };
 
             Action<object, Verbosity> onError = delegate (object value, Verbosity importance)
             {
-                if (CheckIfShouldPrint(importance)) MainThreadHandler.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Error, importance); });
+                if (CheckIfShouldPrint(importance)) MainThreadManager.Instance.Enqueue(() => { WriteToConsole(value.ToString(), LogMode.Error, importance); });
             };
 
             Printer printer = new Printer(onMessage, onWarning, onError, null);
