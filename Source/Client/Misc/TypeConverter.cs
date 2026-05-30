@@ -1,5 +1,5 @@
 ﻿using GameClient.Hooks.Synchronous;
-using GameClient.Misc;
+using GameClient.Managers;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
@@ -30,10 +30,10 @@ namespace Synchronous.Misc
 
         public static LocalTargetInfo StringToLocalTargetInfo(string value)
         {
-            Pawn pawn = SessionHandler.SynchronousMap.mapPawns.AllPawns.FirstOrDefault(fetch => fetch.ThingID == value);
+            Pawn pawn = SessionManager.SynchronousMap.mapPawns.AllPawns.FirstOrDefault(fetch => fetch.ThingID == value);
             if (pawn != null) return new LocalTargetInfo(pawn);
 
-            Thing thing = SessionHandler.SynchronousMap.listerThings.AllThings.FirstOrDefault(fetch => fetch.ThingID == value);
+            Thing thing = SessionManager.SynchronousMap.listerThings.AllThings.FirstOrDefault(fetch => fetch.ThingID == value);
             if (thing != null) return new LocalTargetInfo(thing);
 
             return new LocalTargetInfo(StringToIntVec3(value));
