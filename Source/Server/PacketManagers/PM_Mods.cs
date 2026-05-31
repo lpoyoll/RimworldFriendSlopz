@@ -55,50 +55,51 @@ namespace GameServer.PacketManager
 
         public static bool CheckIfModConflict(ServerClient client, PKT_Login loginData)
         {
-            List<string> conflictingModNames = new List<string>();
-
-            //Check if missing required mods
-
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
-            {
-                ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
-                if (toFind == null)
-                {
-                    conflictingModNames.Add($"[Required] > {config.FileName}");
-                    continue;
-                }
-            }
-
-            //Check if has mods that aren't required or optional
-
-            foreach (ModConfig config in loginData._runningMods.ModConfigs)
-            {
-                ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName 
-                    && (fetch.Type == FL_ModConfig.ModType.Required || fetch.Type == FL_ModConfig.ModType.Optional));
-
-                if (toFind == null)
-                {
-                    conflictingModNames.Add($"[Disallowed] > {config.FileName}");
-                    continue;
-                }
-            }
-
-            //Check for final conflicting count
-
-            if (conflictingModNames.Count == 0) return false;
+            if (Master.ModConfig.BypassMods) return false;
             else
             {
-                if (client.GetData<FL_Player>().IsAdmin)
+                List<string> conflictingModNames = new List<string>();
+
+                //Check if missing required mods
+                foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
                 {
-                    InformationDisplayer.DisplayModBypass(client.GetData<FL_Player>().Username);
-                    return false;
+                    ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
+                    if (toFind == null)
+                    {
+                        conflictingModNames.Add($"[Required] > {config.FileName}");
+                        continue;
+                    }
                 }
 
+                //Check if has mods that aren't required or optional
+                foreach (ModConfig config in loginData._runningMods.ModConfigs)
+                {
+                    ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName
+                        && (fetch.Type == FL_ModConfig.ModType.Required || fetch.Type == FL_ModConfig.ModType.Optional));
+
+                    if (toFind == null)
+                    {
+                        conflictingModNames.Add($"[Disallowed] > {config.FileName}");
+                        continue;
+                    }
+                }
+
+                //Check for final conflicting count
+                if (conflictingModNames.Count == 0) return false;
                 else
                 {
-                    InformationDisplayer.DisplayModMismatch(client.GetData<FL_Player>().Username);
-                    PM_Login.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
-                    return true;
+                    if (client.GetData<FL_Player>().IsAdmin)
+                    {
+                        InformationDisplayer.DisplayModBypass(client.GetData<FL_Player>().Username);
+                        return false;
+                    }
+
+                    else
+                    {
+                        InformationDisplayer.DisplayModMismatch(client.GetData<FL_Player>().Username);
+                        PM_Login.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
+                        return true;
+                    }
                 }
             }
         }
