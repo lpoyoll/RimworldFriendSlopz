@@ -49,7 +49,7 @@ namespace GameServer.Misc
 
         public static void DisplayResetPlayer(string value) { Printer.Message($"[Reset player] > {value}"); }
 
-        public static void DisplayModBypass(string value) { Printer.Message($"[Mod bypass] > {value}"); }
+        public static void DisplayModBypass(string value) { Printer.Warning($"[Mod bypass] > {value}"); }
 
         public static void DisplayModMismatch(string value) { Printer.Warning($"[Mod mismatch] > {value}"); }
 
