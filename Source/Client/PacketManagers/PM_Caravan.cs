@@ -156,11 +156,6 @@ namespace GameClient.PacketManagers
         {
             GuestCaravans.Clear();
             PlayerCaravans.Clear();
-
-            foreach (WorldObject worldObject in GetAllExistingOnlineCaravans())
-            {
-                Find.World.worldObjects.Remove(worldObject);
-            }
         }
 
         public static WO_Caravan[] GetAllExistingOnlineCaravans()
