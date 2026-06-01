@@ -47,6 +47,7 @@ namespace GameClient.PacketManagers
             PKT_WorldObject packet = new PKT_WorldObject();
             packet.CurrentStepMode = mode;
             packet.WorldObject.Tile = wo.Tile.tileId;
+            packet.WorldObject.Owner = SessionManager.Username;
 
             if (type == PKT_WorldObject.WorldObjectMode.Settlement)
             {
@@ -78,6 +79,7 @@ namespace GameClient.PacketManagers
                     {
                         FL_WorldObject file = new FL_WorldObject();
                         file.Tile = wo.Tile.tileId;
+                        file.Owner = SessionManager.Username;
 
                         if (wo.def == WorldObjectDefOf.Settlement)
                         {
@@ -119,7 +121,8 @@ namespace GameClient.PacketManagers
                     if (wo.MainPartDef == string.Empty)
                     {
                         Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.def.defName == wo.FactionDef);
-                        if (faction == Faction.OfPlayer || faction == null) faction = SessionManager.NeutralFaction;
+                        if (faction == null) faction = SessionManager.NeutralFaction;
+                        else if (faction == Faction.OfPlayer && wo.Owner != SessionManager.Username) faction = SessionManager.NeutralFaction;
 
                         Settlement settlement = (Settlement)WorldObjectMaker.MakeWorldObject(WorldObjectDefOf.Settlement);
                         settlement.Name = wo.Name;
@@ -132,7 +135,8 @@ namespace GameClient.PacketManagers
                     else
                     {
                         Faction faction = Find.World.factionManager.AllFactions.FirstOrDefault(fetch => fetch.def.defName == wo.FactionDef);
-                        if (faction == Faction.OfPlayer || faction == null) faction = SessionManager.NeutralFaction;
+                        if (faction == null) faction = SessionManager.NeutralFaction;
+                        else if (faction == Faction.OfPlayer && wo.Owner != SessionManager.Username) faction = SessionManager.NeutralFaction;
 
                         SitePartDef partDef = DefDatabase<SitePartDef>.AllDefs.First(fetch => fetch.defName == wo.MainPartDef);
                         Site site = SiteMaker.MakeSite(partDef, wo.Tile, faction, threatPoints: wo.Points);
