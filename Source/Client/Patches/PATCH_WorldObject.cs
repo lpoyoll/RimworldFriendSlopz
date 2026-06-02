@@ -40,6 +40,7 @@ namespace GameClient.Patches
             if (!SessionManager.IsReadyToPlay) return true;
 
             if (PM_WorldObject.IsBypass) return true;
+            else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(o.def)) return true;
             else
             {
                 if (o.def == WorldObjectDefOf.Settlement)
@@ -55,7 +56,6 @@ namespace GameClient.Patches
                 else
                 {
                     if (o.Faction == Faction.OfPlayer) return true;
-                    else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(o.def)) return true;
                     else
                     {
                         PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Site);
@@ -75,6 +75,7 @@ namespace GameClient.Patches
             if (!SessionManager.IsReadyToPlay) return true;
 
             if (PM_WorldObject.IsBypass) return true;
+            else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(o.def)) return true;
             else
             {
                 if (o.def == WorldObjectDefOf.Settlement)
@@ -90,7 +91,6 @@ namespace GameClient.Patches
                 else
                 {
                     if (o.Faction == Faction.OfPlayer) return true;
-                    else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(o.def)) return true;
                     else
                     {
                         PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Site);
