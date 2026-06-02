@@ -119,6 +119,13 @@ namespace GameClient.Managers
             catch { }
         }
 
+        [OnUpdate]
+        private static void ForceMaxSettlementCount()
+        {
+            try { Prefs.MaxNumberOfPlayerSettlements = 5; }
+            catch { }
+        }
+
         [OnSessionStart]
         private static void SetOverrideGenerators()
         {
