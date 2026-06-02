@@ -27,8 +27,20 @@ namespace GameClient.Patches
             WorldObjectDefOf.Gravship,
             WorldObjectDefOf.RoutePlannerWaypoint,
             WorldObjectDefOf.Caravan,
-            RTSitePartDefOf.RTBase
+            RTWorldObjectDefOf.RTCaravan,
+            RTWorldObjectDefOf.RTSettlement,
         };
+
+        public static bool CheckIfShouldPatch(WorldObject wo)
+        {
+            if (PM_WorldObject.IsBypass) return false;
+            else if (!wo.def.canHaveFaction) return false;
+            else if (!SessionManager.IsReadyToPlay) return false;
+            else if (wo.Faction == Faction.OfPlayer) return false;
+            else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(wo.def)) return false;
+            else if (SessionManager.PlayerFactionDefs.Contains(wo.Faction.def)) return false;
+            else return true;
+        }
     }
 
     [HarmonyPatch(typeof(WorldObjectsHolder), nameof(WorldObjectsHolder.Add))]
@@ -37,30 +49,19 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(WorldObject o)
         {
-            if (!SessionManager.IsReadyToPlay) return true;
-
-            if (PM_WorldObject.IsBypass) return true;
-            else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(o.def)) return true;
+            if (!Patch_WorldObjectsHolder.CheckIfShouldPatch(o)) return true;
             else
             {
                 if (o.def == WorldObjectDefOf.Settlement)
                 {
-                    if (o.Faction == Faction.OfPlayer) return true;
-                    else
-                    {
-                        PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Settlement);
-                        return false;
-                    }
+                    PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Settlement);
+                    return false;
                 }
 
                 else
                 {
-                    if (o.Faction == Faction.OfPlayer) return true;
-                    else
-                    {
-                        PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Site);
-                        return false;
-                    }
+                    PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Site);
+                    return false;
                 }
             }
         }
@@ -72,30 +73,19 @@ namespace GameClient.Patches
         [HarmonyPrefix]
         public static bool DoPre(WorldObject o)
         {
-            if (!SessionManager.IsReadyToPlay) return true;
-
-            if (PM_WorldObject.IsBypass) return true;
-            else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(o.def)) return true;
+            if (!Patch_WorldObjectsHolder.CheckIfShouldPatch(o)) return true;
             else
             {
                 if (o.def == WorldObjectDefOf.Settlement)
                 {
-                    if (o.Faction == Faction.OfPlayer) return true;
-                    else
-                    {
-                        PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Settlement);
-                        return false;
-                    }
+                    PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Settlement);
+                    return false;
                 }
 
                 else
                 {
-                    if (o.Faction == Faction.OfPlayer) return true;
-                    else
-                    {
-                        PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Site);
-                        return false;
-                    }
+                    PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Site);
+                    return false;
                 }
             }
         }
