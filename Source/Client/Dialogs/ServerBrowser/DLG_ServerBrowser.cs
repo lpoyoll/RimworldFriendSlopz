@@ -17,11 +17,11 @@ namespace GameClient.Dialogs.ServerBrowser
 
         private List<PKT_ServerTelemetry> Elements { get; set; } = new List<PKT_ServerTelemetry>();
 
-        public DLG_ServerBrowser(List<PKT_ServerTelemetry> elements) 
+        public DLG_ServerBrowser(PKT_ServerInformation packet) 
         {
             Instance = this;
-            this.Title = $"Server Browser [{elements.Count()}]";
-            this.Elements = elements.OrderByDescending(fetch => fetch.CurrentPopulation).ToList();
+            this.Title = $"Server Browser [{packet.Listings.Count}/{packet.TotalServerCount}]";
+            this.Elements = packet.Listings.OrderByDescending(fetch => fetch.CurrentPopulation).ToList();
         }
 
         public override void DoWindowContents(Rect rect)

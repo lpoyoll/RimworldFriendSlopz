@@ -16,8 +16,8 @@ namespace GameClient.PacketManagers.ServerBrowser
         [HandlesPacket(PacketHeader.ServerBrowserListing)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PKT_ServerInformation listing = Serializer.ConvertBytesToObject<PKT_ServerInformation>(bytes);
-            DLG_Base.PushNewDialog(new DLG_ServerBrowser(listing.Listings));
+            PKT_ServerInformation packet = Serializer.ConvertBytesToObject<PKT_ServerInformation>(bytes);
+            DLG_Base.PushNewDialog(new DLG_ServerBrowser(packet));
             DLG_Wait.Instance.Close();
         }
     }
