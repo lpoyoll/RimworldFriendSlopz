@@ -26,44 +26,44 @@ namespace GameClient.PacketManagers
             switch (data._stepMode)
             {
                 case GuildStepMode.Create:
-                    OnCreateFaction();
+                    OnCreate();
                     break;
 
                 case GuildStepMode.Delete:
-                    OnDeleteFaction();
+                    OnDelete();
                     break;
 
                 case GuildStepMode.NameInUse:
-                    OnFactionNameInUse();
+                    OnNameInUse();
                     break;
 
                 case GuildStepMode.Invite:
-                    OnFactionGetInvited(data);
+                    OnGetInvited(data);
                     break;
 
                 case GuildStepMode.RemoveMember:
-                    OnFactionGetKicked();
+                    OnGetKicked();
                     break;
 
                 case GuildStepMode.AdminProtection:
-                    OnFactionAdminProtection();
+                    OnAdminProtection();
                     break;
 
                 case GuildStepMode.MemberList:
-                    OnFactionMemberList(data);
+                    OnMemberList(data);
                     break;
 
                 case GuildStepMode.Promote:
-                    OnFactionPromote();
+                    OnPromote();
                     break;
 
                 case GuildStepMode.Demote:
-                    OnFactionDemote();
+                    OnDemote();
                     break;
             }
         }
 
-        public static void OnFactionOpen()
+        public static void OnGuildOpen()
         {
             Action r3 = delegate
             {
@@ -106,7 +106,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        public static void OnNoFactionOpen()
+        public static void OnNoGuildOpen()
         {
             Action r2 = delegate
             {
@@ -134,7 +134,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        public static void OnFactionOpenOnMember()
+        public static void OnGuildOpenMember()
         {
             Action r5 = delegate
             {
@@ -181,7 +181,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        public static void OnFactionOpenOnNonMember()
+        public static void OnGuildOpenNonMember()
         {
             Action r1 = delegate
             {
@@ -196,7 +196,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        private static void OnCreateFaction()
+        private static void OnCreate()
         {
             SessionManager.HasFaction = true;
 
@@ -211,7 +211,7 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        private static void OnDeleteFaction()
+        private static void OnDelete()
         {
             SessionManager.HasFaction = false;
 
@@ -219,13 +219,13 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "Your guild has been deleted!" }));
         }
 
-        private static void OnFactionNameInUse()
+        private static void OnNameInUse()
         {
             DLG_Wait.Instance.Close();
             DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "That guild name is already in use!" }));
         }
 
-        private static void OnFactionGetInvited(PKT_PlayerGuild factionManifest)
+        private static void OnGetInvited(PKT_PlayerGuild factionManifest)
         {
             Action r1 = delegate
             {
@@ -242,29 +242,29 @@ namespace GameClient.PacketManagers
             DLG_Base.PushNewDialog(d1);
         }
 
-        private static void OnFactionGetKicked()
+        private static void OnGetKicked()
         {
             SessionManager.HasFaction = false;
 
             DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "You have been kicked from your guild!" }));
         }
 
-        private static void OnFactionAdminProtection()
+        private static void OnAdminProtection()
         {
             DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "You can't do this action as a guild admin!" }));
         }
 
-        private static void OnFactionPromote()
+        private static void OnPromote()
         {
             DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "You have been promoted in your guild!" }));
         }
 
-        private static void OnFactionDemote()
+        private static void OnDemote()
         {
             DLG_Base.PushNewDialog(new DLG_Message("MESSAGE", new string[] { "You have been demoted in your guild!" }));
         }
 
-        private static void OnFactionMemberList(PKT_PlayerGuild factionManifest)
+        private static void OnMemberList(PKT_PlayerGuild factionManifest)
         {
             DLG_Wait.Instance.Close();
 

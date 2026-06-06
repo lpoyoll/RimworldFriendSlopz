@@ -28,8 +28,8 @@ namespace GameServer.PacketManager
             if (settlementFile != null) data._username = settlementFile.Username;
             else data._username = siteFile.Username;
 
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<FL_Player>().GuildName);
-            if (guild != null && GuildManagerH.CheckIfUserIsInFaction(guild, data._username))
+            FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
+            if (guild != null && GuildManagerH.CheckIfUserIsInGuild(guild, data._username))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
@@ -68,26 +68,26 @@ namespace GameServer.PacketManager
 
         public static Goodwill GetSettlementGoodwill(ServerClient client, FL_Settlement settlement)
         {
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<FL_Player>().GuildName);
+            FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
 
             if (client.GetData<FL_Player>().Username == settlement.Username) return Goodwill.Personal;
             else if (guild == null) return FindGoodwillFromUsername(client.GetData<FL_Player>(), settlement.Username);
             else
             {
-                if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == settlement.Username) != null) return Goodwill.Guild;
+                if (GuildManagerH.GetAllGuildMembers(guild).FirstOrDefault(fetch => fetch.Username == settlement.Username) != null) return Goodwill.Guild;
                 else return FindGoodwillFromUsername(client.GetData<FL_Player>(), settlement.Username);
             }
         }
 
         public static Goodwill GetSiteGoodwill(ServerClient client, FL_Site site)
         {
-            FL_Guild guild = GuildManagerH.GetFactionFromName(client.GetData<FL_Player>().GuildName);
+            FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
 
             if (client.GetData<FL_Player>().Username == site.Username) return Goodwill.Personal;
             else if (guild == null) return FindGoodwillFromUsername(client.GetData<FL_Player>(), site.Username);
             else
             {
-                if (GuildManagerH.GetAllFactionMembers(guild).FirstOrDefault(fetch => fetch.Username == site.Username) != null) return Goodwill.Guild;
+                if (GuildManagerH.GetAllGuildMembers(guild).FirstOrDefault(fetch => fetch.Username == site.Username) != null) return Goodwill.Guild;
                 else return FindGoodwillFromUsername(client.GetData<FL_Player>(), site.Username);
             }
         }

@@ -98,10 +98,10 @@ namespace GameClient.WorldObjects
                 {
                     SessionManager.ChosenSettlement = this;
 
-                    if (SessionManager.CurrentActionValues.EnableFactions)
+                    if (SessionManager.CurrentActionValues.EnableGuilds)
                     {
-                        if (SessionManager.ChosenSettlement.Faction == SessionManager.GuildFaction) PM_Guilds.OnFactionOpenOnMember();
-                        else PM_Guilds.OnFactionOpenOnNonMember();
+                        if (SessionManager.ChosenSettlement.Faction == SessionManager.GuildFaction) PM_Guilds.OnGuildOpenMember();
+                        else PM_Guilds.OnGuildOpenNonMember();
                     }
                     else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }

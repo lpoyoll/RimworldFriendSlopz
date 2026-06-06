@@ -28,10 +28,10 @@ namespace GameClient.Patches
                 icon = ContentFinder<Texture2D>.Get("Commands/Guild"),
                 action = delegate
                 {
-                    if (SessionManager.CurrentActionValues.EnableFactions)
+                    if (SessionManager.CurrentActionValues.EnableGuilds)
                     {
-                        if (SessionManager.HasFaction) PM_Guilds.OnFactionOpen();
-                        else PM_Guilds.OnNoFactionOpen();
+                        if (SessionManager.HasFaction) PM_Guilds.OnGuildOpen();
+                        else PM_Guilds.OnNoGuildOpen();
                     }
                     else DLG_Base.PushNewDialog(new DLG_Message("ERROR", new string[] { "This feature has been disabled in this server!" }));
                 }
