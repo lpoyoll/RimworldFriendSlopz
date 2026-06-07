@@ -25,8 +25,6 @@ namespace GameServer.Core
 
         public static string ChatLogsPath { get; set; } = Path.Combine(Master.LogsPath, "Chat");
 
-        public static string TempPath { get; set; } = Path.Combine(Master.MainPath, "Temp");
-
         public static string MapsPath { get; set; } = Path.Combine(Master.AssetsPath, "Maps");
 
         public static string WorldObjectsPath { get; set; } = Path.Combine(Master.AssetsPath, "WorldObjects");

@@ -75,7 +75,6 @@ namespace GameServer.Core
             if (!Directory.Exists(Master.BackupsPath)) Directory.CreateDirectory(Master.BackupsPath);
             if (!Directory.Exists(Master.BackupUsersPath)) Directory.CreateDirectory(Master.BackupUsersPath);
             if (!Directory.Exists(Master.BackupServerPath)) Directory.CreateDirectory(Master.BackupServerPath);
-            if (!Directory.Exists(Master.TempPath)) Directory.CreateDirectory(Master.TempPath);
             if (!Directory.Exists(Master.UsersPath)) Directory.CreateDirectory(Master.UsersPath);
             if (!Directory.Exists(Master.SavesPath)) Directory.CreateDirectory(Master.SavesPath);
             if (!Directory.Exists(Master.MapsPath)) Directory.CreateDirectory(Master.MapsPath);

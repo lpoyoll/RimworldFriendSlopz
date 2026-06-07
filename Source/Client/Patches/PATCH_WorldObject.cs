@@ -20,25 +20,15 @@ namespace GameClient.Patches
     {
         public static List<Def> RestrictedDefs = new List<Def>()
         {
-            WorldObjectDefOf.AbandonedSettlement,
-            WorldObjectDefOf.TravelingShuttle,
-            WorldObjectDefOf.TravellingTransporters,
-            WorldObjectDefOf.GravshipLaunch,
-            WorldObjectDefOf.Gravship,
-            WorldObjectDefOf.RoutePlannerWaypoint,
-            WorldObjectDefOf.Caravan,
-            RTWorldObjectDefOf.RTCaravan,
-            RTWorldObjectDefOf.RTSettlement,
+            WorldObjectDefOf.AbandonedSettlement
         };
 
         public static bool CheckIfShouldPatch(WorldObject wo)
         {
             if (PM_WorldObject.IsBypass) return false;
-            else if (!wo.def.canHaveFaction) return false;
             else if (!SessionManager.IsReadyToPlay) return false;
-            else if (wo.Faction == Faction.OfPlayer) return false;
             else if (Patch_WorldObjectsHolder.RestrictedDefs.Contains(wo.def)) return false;
-            else if (SessionManager.PlayerFactionDefs.Contains(wo.Faction.def)) return false;
+            else if (wo.Faction == Faction.OfPlayer || SessionManager.PlayerFactions.Contains(wo.Faction)) return false;
             else return true;
         }
     }
@@ -58,11 +48,13 @@ namespace GameClient.Patches
                     return false;
                 }
 
-                else
+                else if (o.def == WorldObjectDefOf.Site)
                 {
                     PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Add, PKT_WorldObject.WorldObjectMode.Site);
                     return false;
                 }
+
+                else return true;
             }
         }
     }
@@ -82,11 +74,13 @@ namespace GameClient.Patches
                     return false;
                 }
 
-                else
+                else if (o.def == WorldObjectDefOf.Site)
                 {
                     PM_WorldObject.Send(o, PKT_WorldObject.StepMode.Remove, PKT_WorldObject.WorldObjectMode.Site);
                     return false;
                 }
+
+                else return true;
             }
         }
     }
