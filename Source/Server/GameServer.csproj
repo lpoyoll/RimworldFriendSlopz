@@ -34,11 +34,7 @@
     </ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="RTNetwork">
-	    <HintPath>..\Assemblies\Shared\RTNetwork.dll</HintPath>
-	  </Reference>
-	  <Reference Include="RTShared">
-	    <HintPath>..\Assemblies\Shared\RTShared.dll</HintPath>
-	  </Reference>
+	  <ProjectReference Include="D:\Code\RTExtras\RTNetwork\RTNetwork.csproj" />
+	  <ProjectReference Include="D:\Code\RTExtras\RTShared\RTShared.csproj" />
 	</ItemGroup>
 </Project>
