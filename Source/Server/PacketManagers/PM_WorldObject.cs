@@ -55,7 +55,7 @@ namespace GameServer.PacketManagers
             else
             {
                 Serializer.SerializeToFile(path, file);
-                if (packet != null) ServerNetwork.SendPacketToAllClients(PacketHeader.WorldObject, packet);
+                if (packet != null) ServerNetwork.SendPacketToAllClients(PacketHeader.WorldObject, packet, client);
                 Printer.Warning($"WorldObject at '{file.Tile}' has been added", Printer.Verbosity.Verbose);
             }
         }
@@ -67,7 +67,7 @@ namespace GameServer.PacketManagers
             else
             {
                 File.Delete(path);
-                ServerNetwork.SendPacketToAllClients(PacketHeader.WorldObject, packet);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.WorldObject, packet, client);
                 Printer.Warning($"WorldObject at '{packet.WorldObject.Tile}' has been removed", Printer.Verbosity.Verbose);
             }
         }
