@@ -39,7 +39,7 @@ namespace GameServer.Core
 
             ServerNetwork.StartFeature();
             Task.Run(BackupManager.StartFeature);
-            Task.Run(ServerBrowserManager.StartFeature);
+            if (CommonValues.ExecutableVersion != "dev") Task.Run(ServerBrowserManager.StartFeature);
 
             while (true) CMD_Base.ListenForCommands();
         }
