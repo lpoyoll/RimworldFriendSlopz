@@ -1,7 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using RTNetwork;
 using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
@@ -10,12 +9,6 @@ using RTShared.Files;
 using RTShared.Files.Player;
 using RTShared.Files.ServerClient;
 using RTShared.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameServer.PacketManagers
 {

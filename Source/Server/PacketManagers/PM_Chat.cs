@@ -5,7 +5,6 @@ using RTShared;
 using RTShared.Commands;
 using RTShared.Misc;
 using System.Text;
-using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;

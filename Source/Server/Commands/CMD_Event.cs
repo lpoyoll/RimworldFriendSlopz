@@ -4,7 +4,6 @@ using RTShared;
 using RTShared.Commands;
 using RTShared.Files;
 using RTShared.Misc;
-using RTNetwork;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Event;
 using RTNetwork.Components;

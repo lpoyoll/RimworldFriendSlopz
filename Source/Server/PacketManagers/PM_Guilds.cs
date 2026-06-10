@@ -5,7 +5,6 @@ using GameServer.Misc;
 using RTShared;
 using RTShared.Files;
 using RTShared.Files.Guilds;
-using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;

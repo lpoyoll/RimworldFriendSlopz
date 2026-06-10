@@ -2,7 +2,6 @@
 using GameServer.Misc;
 using RTShared;
 using RTShared.Files.Configs;
-using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;

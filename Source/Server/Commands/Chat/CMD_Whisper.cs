@@ -2,7 +2,6 @@
 using GameServer.PacketManager;
 using RTShared;
 using RTShared.Commands;
-using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Chat;

@@ -7,7 +7,6 @@ using RTShared.Misc;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
-using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using static RTNetwork.Packets.PKT_Login;

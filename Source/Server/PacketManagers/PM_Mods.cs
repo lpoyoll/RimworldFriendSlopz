@@ -6,7 +6,6 @@ using RTShared;
 using RTShared.Files.Configs;
 using RTShared.Files.Mods;
 using RTShared.Misc;
-using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;

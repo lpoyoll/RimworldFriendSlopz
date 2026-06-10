@@ -2,8 +2,6 @@
 using GameServer.PacketManager;
 using GameServer.PacketManagers;
 using RTShared;
-using RTShared.Files;
-using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.Packets;
 using RTNetwork.Components;

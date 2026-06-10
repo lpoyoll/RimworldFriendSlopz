@@ -1,11 +1,8 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
 using RTShared;
 using RTShared.Details.Planet;
 using RTShared.Files.Configs;
-using RTShared.Misc;
-using RTNetwork;
 using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;

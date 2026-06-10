@@ -2,17 +2,9 @@
 using GameServer.Hooks.TCPNetwork;
 using RTShared;
 using RTShared.Files.Configs;
-using RTShared.Misc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RTNetwork;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
 using static GameServer.Hooks.ServerBrowser.ServerBrowserManager;
-using static RTShared.Misc.Printer;
 using RTNetwork.Components;
 
 namespace GameServer.PacketManagers.ServerBrowser
