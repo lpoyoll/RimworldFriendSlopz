@@ -34,9 +34,9 @@ namespace GameServer.Misc
 
         public static void DisplayRemoveSite(string value) { Printer.Message($"[Remove site] > {value}"); }
 
-        public static void DisplayAddFaction(string value) { Printer.Message($"[Add faction] > {value}"); }
+        public static void DisplayAddGuild(string value) { Printer.Message($"[Add guild] > {value}"); }
 
-        public static void DisplayRemoveFaction(string value) { Printer.Message($"[Remove faction] > {value}"); }
+        public static void DisplayRemoveGuild(string value) { Printer.Message($"[Remove guild] > {value}"); }
 
         public static void DisplayAddRoad(string value, string value2) { Printer.Message($"[Add road] > {value} - {value2}"); }
 

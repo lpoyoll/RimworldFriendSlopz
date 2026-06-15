@@ -14,27 +14,27 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.GoodWill)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PKT_FactionGoodwill data = Serializer.ConvertBytesToObject<PKT_FactionGoodwill>(bytes);
+            PKT_Goodwill packet = Serializer.ConvertBytesToObject<PKT_Goodwill>(bytes);
 
-            ChangeUserGoodwills(client, data);
+            ChangeUserGoodwills(client, packet);
         }
 
-        public static void ChangeUserGoodwills(ServerClient client, PKT_FactionGoodwill data)
+        public static void ChangeUserGoodwills(ServerClient client, PKT_Goodwill packet)
         {
-            FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(data._tile);
-            FL_Site siteFile = PM_Sites.GetSiteFileFromTile(data._tile);
+            FL_Settlement settlementFile = PM_Settlements.GetSettlementFileFromTile(packet.Tile);
+            FL_Site siteFile = PM_Sites.GetSiteFileFromTile(packet.Tile);
 
-            if (settlementFile != null) data._username = settlementFile.Username;
-            else data._username = siteFile.Username;
+            if (settlementFile != null) packet.Username = settlementFile.Username;
+            else packet.Username = siteFile.Username;
 
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
-            if (guild != null && GuildManagerH.CheckIfUserIsInGuild(guild, data._username))
+            if (guild != null && GuildManagerH.CheckIfUserIsInGuild(guild, packet.Username))
             {
                 ResponseShortcutManager.SendBreakPacket(client);
                 return;
             }
 
-            client.GetData<FL_Player>().UpdateGoodwill(data._username, data._goodwill);
+            client.GetData<FL_Player>().UpdateGoodwill(packet.Username, packet.Goodwill);
             UpdateClientGoodwills(client);
         }
 
@@ -43,14 +43,14 @@ namespace GameServer.PacketManager
             FL_Settlement[] settlements = PM_Settlements.GetAllSettlements().Where(fetch => fetch.Username != client.GetData<FL_Player>().Username).ToArray();
             FL_Site[] sites = PM_Sites.GetAllSites().Where(fetch => fetch.Username != client.GetData<FL_Player>().Username).ToArray();
 
-            PKT_FactionGoodwill factionGoodwillData = new PKT_FactionGoodwill();
+            PKT_Goodwill packet = new PKT_Goodwill();
             foreach (FL_Settlement settlement in settlements)
             {
                 PKT_SettlementGoodwill goodwill = new PKT_SettlementGoodwill();
                 goodwill.Tile = settlement.Tile;
                 goodwill.Goodwill = GetSettlementGoodwill(client, settlement);
 
-                factionGoodwillData._settlements.Add(goodwill);
+                packet.Settlements.Add(goodwill);
             }
 
             foreach (FL_Site site in sites)
@@ -59,10 +59,10 @@ namespace GameServer.PacketManager
                 goodwill.Tile = site.Tile;
                 goodwill.Goodwill = GetSiteGoodwill(client, site);
 
-                factionGoodwillData._sites.Add(goodwill);
+                packet.Sites.Add(goodwill);
             }
 
-            client.Listener.EnqueuePacket(PacketHeader.GoodWill, factionGoodwillData);
+            client.Listener.EnqueuePacket(PacketHeader.GoodWill, packet);
         }
 
         public static Goodwill GetSettlementGoodwill(ServerClient client, FL_Settlement settlement)

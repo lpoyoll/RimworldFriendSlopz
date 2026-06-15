@@ -64,65 +64,65 @@ namespace GameServer.PacketManager
             }
         }
 
-        private static void Create(ServerClient client, PKT_PlayerGuild factionManifest)
+        private static void Create(ServerClient client, PKT_PlayerGuild packet)
         {
-            if (GuildManagerH.CheckIfGuildExistsByName(factionManifest._guild.Name))
+            if (GuildManagerH.CheckIfGuildExistsByName(packet._guild.Name))
             {
-                factionManifest._stepMode = GuildStepMode.NameInUse;
-                client.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
+                packet._stepMode = GuildStepMode.NameInUse;
+                client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
             }
 
             else
             {
-                factionManifest._stepMode = GuildStepMode.Create;
+                packet._stepMode = GuildStepMode.Create;
 
                 GuildMember member = new GuildMember();
                 member.Username = client.GetData<FL_Player>().Username;
                 member.Rank = GuildMember.GuildRanks.Admin;
 
-                FL_Guild factionFile = new FL_Guild();
-                factionFile.Name = factionManifest._guild.Name;
-                factionFile.AddMember(member);
+                FL_Guild guild = new FL_Guild();
+                guild.Name = packet._guild.Name;
+                guild.AddMember(member);
 
-                client.GetData<FL_Player>().UpdateFaction(factionFile);
+                client.GetData<FL_Player>().UpdateGuild(guild);
 
-                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<FL_Player>().Username)) site.UpdateFaction(factionFile);
+                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<FL_Player>().Username)) site.UpdateGuild(guild);
 
-                client.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
+                client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
 
-                InformationDisplayer.DisplayAddFaction(factionFile.Name);
+                InformationDisplayer.DisplayAddGuild(guild.Name);
             }
         }
 
-        private static void Delete(ServerClient client, PKT_PlayerGuild factionManifest)
+        private static void Delete(ServerClient client, PKT_PlayerGuild packet)
         {
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
 
             if (GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username) != GuildRanks.Admin) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
-                foreach (FL_Player userFile in GuildManagerH.GetUsersFromGuildMembers(guild)) userFile.UpdateFaction(null);
+                foreach (FL_Player userFile in GuildManagerH.GetUsersFromGuildMembers(guild)) userFile.UpdateGuild(null);
 
-                foreach (FL_Site site in GuildManagerH.GetGuildSites(guild)) site.UpdateFaction(null);
+                foreach (FL_Site site in GuildManagerH.GetGuildSites(guild)) site.UpdateGuild(null);
 
-                factionManifest._stepMode = GuildStepMode.Delete;
+                packet._stepMode = GuildStepMode.Delete;
                 foreach (ServerClient toUpdateConnected in GuildManagerH.GetConnectedGuildMembers(guild))
                 {
-                    toUpdateConnected.GetData<FL_Player>().UpdateFaction(null);
-                    toUpdateConnected.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
+                    toUpdateConnected.GetData<FL_Player>().UpdateGuild(null);
+                    toUpdateConnected.Listener.EnqueuePacket(PacketHeader.Guild, packet);
                     PM_Goodwills.UpdateClientGoodwills(toUpdateConnected);
                 }
 
                 guild.Delete();
 
-                InformationDisplayer.DisplayRemoveFaction(guild.Name);
+                InformationDisplayer.DisplayRemoveGuild(guild.Name);
             }
         }
 
-        private static void InviteMember(ServerClient client, PKT_PlayerGuild guildManifest)
+        private static void InviteMember(ServerClient client, PKT_PlayerGuild packet)
         {
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(guildManifest._dataInt);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
             ServerClient toAdd = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
             if (GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
@@ -131,15 +131,15 @@ namespace GameServer.PacketManager
                 if (toAdd.GetData<FL_Player>().GuildName != null) return;
                 else
                 {
-                    guildManifest._guild.Name = guild.Name;
-                    toAdd.Listener.EnqueuePacket(PacketHeader.Guild, guildManifest);
+                    packet._guild.Name = guild.Name;
+                    toAdd.Listener.EnqueuePacket(PacketHeader.Guild, packet);
                 }
             }
         }
 
-        private static void AddMember(ServerClient client, PKT_PlayerGuild factionManifest)
+        private static void AddMember(ServerClient client, PKT_PlayerGuild packet)
         {
-            FL_Guild guild = GuildManagerH.GetGuildFromName(factionManifest._guild.Name);
+            FL_Guild guild = GuildManagerH.GetGuildFromName(packet._guild.Name);
 
             if (!GuildManagerH.CheckIfUserIsInGuild(guild, client.GetData<FL_Player>().Username))
             {
@@ -148,18 +148,18 @@ namespace GameServer.PacketManager
                 member.Rank = GuildRanks.Member;
                 guild.AddMember(member);
 
-                client.GetData<FL_Player>().UpdateFaction(guild);
+                client.GetData<FL_Player>().UpdateGuild(guild);
 
-                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<FL_Player>().Username)) site.UpdateFaction(guild);
+                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<FL_Player>().Username)) site.UpdateGuild(guild);
 
                 foreach (ServerClient sc in GuildManagerH.GetConnectedGuildMembers(guild)) PM_Goodwills.UpdateClientGoodwills(sc);
             }
         }
 
-        private static void RemoveMember(ServerClient client, PKT_PlayerGuild guildManifest)
+        private static void RemoveMember(ServerClient client, PKT_PlayerGuild packet)
         {
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(guildManifest._dataInt);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
             FL_Player toRemoveOffline = UserManagerH.GetUserFileFromName(settlement.Username);
             ServerClient toRemoveOnline = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
@@ -170,8 +170,8 @@ namespace GameServer.PacketManager
                 if (userRank != GuildRanks.Admin) Remove();
                 else
                 {
-                    guildManifest._stepMode = GuildStepMode.AdminProtection;
-                    client.Listener.EnqueuePacket(PacketHeader.Guild, guildManifest);
+                    packet._stepMode = GuildStepMode.AdminProtection;
+                    client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
                 }
             }
 
@@ -185,26 +185,26 @@ namespace GameServer.PacketManager
             {
                 if (toRemoveOnline != null)
                 {
-                    toRemoveOnline.GetData<FL_Player>().UpdateFaction(null);
+                    toRemoveOnline.GetData<FL_Player>().UpdateGuild(null);
 
                     PM_Goodwills.UpdateClientGoodwills(toRemoveOnline);
 
-                    toRemoveOnline.Listener.EnqueuePacket(PacketHeader.Guild, guildManifest);
+                    toRemoveOnline.Listener.EnqueuePacket(PacketHeader.Guild, packet);
                 }
 
-                toRemoveOffline.UpdateFaction(null);
+                toRemoveOffline.UpdateGuild(null);
 
                 guild.RemoveMember(guild.GuildMembers.First(fetch => fetch.Username == toRemoveOffline.Username));
 
-                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(toRemoveOffline.Username)) site.UpdateFaction(null);
+                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(toRemoveOffline.Username)) site.UpdateGuild(null);
 
                 foreach (ServerClient member in GuildManagerH.GetConnectedGuildMembers(guild)) PM_Goodwills.UpdateClientGoodwills(member);
             }
         }
 
-        private static void PromoteMember(ServerClient client, PKT_PlayerGuild factionManifest)
+        private static void PromoteMember(ServerClient client, PKT_PlayerGuild packet)
         {
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(factionManifest._dataInt);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
 
             GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username);
@@ -219,14 +219,14 @@ namespace GameServer.PacketManager
                     guild.PromoteMember(member);
 
                     ServerClient toPromoteOnline = ServerNetwork.GetConnectedClientFromUsername(toPromoteOffline.Username);
-                    if (toPromoteOnline != null) toPromoteOnline.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
+                    if (toPromoteOnline != null) toPromoteOnline.Listener.EnqueuePacket(PacketHeader.Guild, packet);
                 }
             }
         }
 
-        private static void DemoteMember(ServerClient client, PKT_PlayerGuild factionManifest)
+        private static void DemoteMember(ServerClient client, PKT_PlayerGuild packet)
         {
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(factionManifest._dataInt);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
 
             GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username);
@@ -241,15 +241,15 @@ namespace GameServer.PacketManager
                     guild.DemoteMember(member);
 
                     ServerClient toDemoteOnline = ServerNetwork.GetConnectedClientFromUsername(toDemoteOffline.Username);
-                    if (toDemoteOnline != null) toDemoteOnline.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
+                    if (toDemoteOnline != null) toDemoteOnline.Listener.EnqueuePacket(PacketHeader.Guild, packet);
                 }
             }
         }
 
-        private static void SendMemberList(ServerClient client, PKT_PlayerGuild factionManifest)
+        private static void SendMemberList(ServerClient client, PKT_PlayerGuild packet)
         {
-            factionManifest._guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
-            client.Listener.EnqueuePacket(PacketHeader.Guild, factionManifest);
+            packet._guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
+            client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
         }
     }
 
@@ -257,11 +257,11 @@ namespace GameServer.PacketManager
     {
         public static FL_Guild[] GetAllGuilds()
         {
-            List<FL_Guild> factionFiles = new List<FL_Guild>();
+            List<FL_Guild> files = new List<FL_Guild>();
 
-            foreach (string faction in Directory.GetFiles(Master.GuildsPath)) factionFiles.Add(Serializer.SerializeFromFile<FL_Guild>(faction));
+            foreach (string file in Directory.GetFiles(Master.GuildsPath)) files.Add(Serializer.SerializeFromFile<FL_Guild>(file));
 
-            return factionFiles.ToArray();
+            return files.ToArray();
         }
 
         public static FL_Guild GetGuildFromName(string name) { return GetAllGuilds().FirstOrDefault(fetch => fetch.Name == name); }
