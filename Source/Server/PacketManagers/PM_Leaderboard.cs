@@ -21,10 +21,10 @@ namespace GameServer.PacketManager
             client.Listener.EnqueuePacket(PacketHeader.Leaderboard, data);
         }
 
-        public static void UpdateLeaderboard(ServerClient client, FL_Map map)
+        public static void UpdateLeaderboard(ServerClient client, int wealth)
         {
             FL_Leaderboard file = (FL_Leaderboard)FL_Leaderboard.Load<FL_Leaderboard>(FL_Leaderboard.SavePath);
-            double scoreValue = Math.Round(map.Wealth * ScoreMultiplier) + 1;
+            double scoreValue = Math.Round(wealth * ScoreMultiplier) + 1;
             
             if (!file.Scores.Keys.Contains(client.GetData<FL_Player>().Username)) file.Scores.Add(client.GetData<FL_Player>().Username, scoreValue);
             else

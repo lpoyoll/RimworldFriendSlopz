@@ -42,7 +42,7 @@ namespace GameServer.PacketManager
             else
             {
                 data.CurrentStepMode = StepMode.Request;
-                data.Map = PM_Map.GetMapFromTile(data.TargetTile);
+                data.MapBytes = PM_Map.GetMapFromTile(data.TargetTile);
                 client.Listener.EnqueuePacket(PacketHeader.Raid, data);
             }
         }

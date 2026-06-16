@@ -39,7 +39,7 @@ namespace GameServer.Core
 
             ServerNetwork.StartFeature();
             Task.Run(BackupManager.StartFeature);
-            if (CommonValues.ExecutableVersion != "dev") Task.Run(ServerBrowserManager.StartFeature);
+            Task.Run(ServerBrowserManager.StartFeature);
 
             while (true) CMD_Base.ListenForCommands();
         }
@@ -87,6 +87,9 @@ namespace GameServer.Core
         private static void LoadFiles()
         {
             Master.ServerConfig = (FL_ServerConfig)FL_ServerConfig.Load<FL_ServerConfig>(FL_ServerConfig.SavePath);
+            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.EnableServerTelemetry = false;
+            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.EnableServerBrowser = false;
+            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.SyncLocalSave = false;
             FL_ServerConfig.Save(FL_ServerConfig.SavePath, Master.ServerConfig);
 
             Master.ActionConfigs = (FL_ActionsConfig)FL_ActionsConfig.Load<FL_ActionsConfig>(FL_ActionsConfig.SavePath);

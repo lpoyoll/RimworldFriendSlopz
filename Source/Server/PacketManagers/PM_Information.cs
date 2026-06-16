@@ -15,7 +15,7 @@ namespace GameServer.PacketManager
         {
             PKT_Information data = Serializer.ConvertBytesToObject<PKT_Information>(bytes);
 
-            switch (data._stepMode)
+            switch (data.StepMode)
             {
                 case PKT_Information.InfoStepMode.Connection:
                     SendInformation(client, data);
@@ -29,20 +29,20 @@ namespace GameServer.PacketManager
 
         private static void SendInformation(ServerClient client, PKT_Information data)
         {
-            FL_Settlement settlementToFind = PM_Settlements.GetSettlementFileFromTile(data._settlementTile);
+            FL_Settlement settlementToFind = PM_Settlements.GetSettlementFileFromTile(data.SettlementTile);
             ServerClient clientToFind = ServerNetwork.GetConnectedClientFromUsername(settlementToFind.Username);
 
-            data._isPlayerOnline = clientToFind != null ? true : false;
+            data.IsPlayerOnline = clientToFind != null ? true : false;
 
             client.Listener.EnqueuePacket(PacketHeader.Information, data);
         }
 
         private static void SendWealth(ServerClient client, PKT_Information data)
         {
-            if (!PM_Map.CheckIfMapExists(data._settlementTile)) ResponseShortcutManager.SendUnavailablePacket(client);
+            if (!PM_Map.CheckIfMapExists(data.SettlementTile)) ResponseShortcutManager.SendUnavailablePacket(client);
             else 
             {
-                data._settlementWealth = PM_Map.GetMapFromTile(data._settlementTile).Wealth;
+                data.SettlementMapBytes = PM_Map.GetMapFromTile(data.SettlementTile);
                 client.Listener.EnqueuePacket(PacketHeader.Information, data);
             }
         }

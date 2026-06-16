@@ -20,8 +20,8 @@ namespace GameServer.PacketManager
 
         public static void SaveUserMap(ServerClient client, PKT_Map data)
         {
-            Serializer.SerializeToFile(Path.Combine(Master.MapsPath, data.File.Tile + CommonValues.DefaultSaveFormat), data.File);
-            PM_Leaderboard.UpdateLeaderboard(client, data.File);
+            File.WriteAllBytes(Path.Combine(Master.MapsPath, data.Tile + CommonValues.DefaultSaveFormat), data.Bytes);
+            PM_Leaderboard.UpdateLeaderboard(client, data.Wealth);
             InformationDisplayer.DisplaySaveMap(client);
         }
 
@@ -34,10 +34,10 @@ namespace GameServer.PacketManager
             else return false;
         }
 
-        public static FL_Map GetMapFromTile(int mapTileToGet)
+        public static byte[] GetMapFromTile(int mapTileToGet)
         {
             string path = Path.Combine(Master.MapsPath, mapTileToGet + CommonValues.DefaultSaveFormat);
-            if (File.Exists(path)) return Serializer.SerializeFromFile<FL_Map>(path);
+            if (File.Exists(path)) return File.ReadAllBytes(path);
             else return null;
         }
     }
