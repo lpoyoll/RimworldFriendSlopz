@@ -7,12 +7,10 @@ set "DashLine=----------"
 title RimWorld Together - Version Updater
 
 ::Set mod folder path
-set /p ModFolder=<ModPath.txt
 echo %DashLine%
-echo - Mods folder located at "%ModFolder%"
+echo - Mods folder located at "%~1"
 echo %DashLine%
 echo.
-del ModPath.txt
 
 ::Wait for RimWorld safe close
 echo %DashLine%
@@ -24,9 +22,8 @@ timeout /t 5
 echo.
 echo %DashLine%
 echo - Installing new version...
-cd %ModFolder%
-rmdir /s /q "3005289691"
-move "3005289691-Temp" "3005289691"
+rmdir /s /q "%~1/3005289691"
+move "%~1/3005289691-Temp" "%~1/3005289691"
 echo %DashLine%
 
 ::Wait at end
@@ -34,7 +31,10 @@ echo.
 echo %DashLine%
 echo - Operation finished...
 echo %DashLine%
-timeout /t 10
+
+::End pause
+echo.
+pause
 
 ::Remove leftover files
-del VersionUpdater.bat
+del "%~dp0/VersionUpdater.bat"
