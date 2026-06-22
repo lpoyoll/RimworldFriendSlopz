@@ -15,6 +15,12 @@ namespace GameServer.PacketManagers
         [HandlesPacket(PacketHeader.Market)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
+            if (!Master.ActionConfigs.MarketAction.IsEnabled)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
+                return;
+            }
+
             PKT_Market packet = Serializer.ConvertBytesToObject<PKT_Market>(bytes);
 
             switch (packet.CurrentStepMode)
@@ -98,13 +104,13 @@ namespace GameServer.PacketManagers
 
         private static int CalculateEntryPrice(MarketEntry entry)
         {
-            if (entry.ThingCost < Master.MarketFile.MinimumPrice) return Master.MarketFile.MinimumPrice;
-            else return (int)(entry.ThingCost * (1 + Master.MarketFile.PriceMultiplier));
+            if (entry.ThingCost < Master.ActionConfigs.MarketAction.MinimumPrice) return Master.ActionConfigs.MarketAction.MinimumPrice;
+            else return (int)(entry.ThingCost * (1 + Master.ActionConfigs.MarketAction.PriceMultiplier));
         }
 
         private static void GiveMoneyToSeller(MarketEntry entry)
         {
-            int calculatedReturn = (int)(entry.ThingCost / (1 + (Master.MarketFile.PriceMultiplier * 2)));
+            int calculatedReturn = (int)(entry.ThingCost / (1 + (Master.ActionConfigs.MarketAction.PriceMultiplier * 2)));
 
             ServerClient seller = ServerNetwork.GetConnectedClientFromUsername(entry.Owner);
             if (seller != null)
