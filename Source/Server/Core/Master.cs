@@ -2,6 +2,7 @@
 using RTShared.Files;
 using RTShared.Files.Actions;
 using RTShared.Files.Configs;
+using RTShared.Files.Marketplace;
 
 namespace GameServer.Core
 {
@@ -64,5 +65,7 @@ namespace GameServer.Core
         public static FL_ChatConfig ChatConfig { get; set; } = null;
 
         public static FL_Leaderboard LeaderboardFile { get; set; } = null;
+
+        public static FL_Market MarketFile { get; set; } = null;
     }
 }

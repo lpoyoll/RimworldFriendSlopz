@@ -12,6 +12,7 @@ using RTShared.Files.Configs;
 using RTShared.Misc;
 using RTNetwork.PacketManagers;
 using static RTShared.Misc.Printer;
+using RTShared.Files.Marketplace;
 
 namespace GameServer.Core
 {
@@ -57,6 +58,7 @@ namespace GameServer.Core
             FL_BackupsConfig.SavePath = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
             FL_ChatConfig.SavePath = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
             FL_Leaderboard.SavePath = Path.Combine(Master.AssetsPath, "Leaderboard.json");
+            FL_Market.SavePath = Path.Combine(Master.AssetsPath, "Market.json");
             FL_Guild.SavePath = Path.Combine(Master.GuildsPath);
 
             //Find a way to move these two to another place or merge with the above
@@ -118,6 +120,9 @@ namespace GameServer.Core
 
             Master.LeaderboardFile = (FL_Leaderboard)FL_Leaderboard.Load<FL_Leaderboard>(FL_Leaderboard.SavePath);
             FL_Leaderboard.Save(FL_Leaderboard.SavePath, Master.LeaderboardFile);
+
+            Master.MarketFile = (FL_Market)FL_Market.Load<FL_Market>(FL_Market.SavePath);
+            FL_Market.Save(FL_Market.SavePath, Master.MarketFile);
 
             // Don't automatically save this one
             // We require this file to be saved after a client upload
