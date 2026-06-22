@@ -104,11 +104,12 @@ namespace GameServer.PacketManagers
 
         private static void GiveMoneyToSeller(MarketEntry entry)
         {
+            int calculatedReturn = (int)(entry.ThingCost / (1 + (Master.MarketFile.PriceMultiplier * 2)));
+
             ServerClient seller = ServerNetwork.GetConnectedClientFromUsername(entry.Owner);
             if (seller != null)
             {
-                seller.GetData<FL_Player>().UpdatePayment(seller.GetData<FL_Player>().PendingMarketPayment 
-                    + (int)(entry.ThingCost / (1 + (Master.MarketFile.PriceMultiplier * 2))));
+                seller.GetData<FL_Player>().UpdatePayment(seller.GetData<FL_Player>().PendingMarketPayment + calculatedReturn);
 
                 PKT_Market packet = new PKT_Market() { CurrentStepMode = PKT_Market.StepMode.Sell };
                 seller.Listener.EnqueuePacket(PacketHeader.Market, packet);
@@ -119,7 +120,7 @@ namespace GameServer.PacketManagers
             else
             {
                 FL_Player sellerFile = UserManagerH.GetUserFileFromName(entry.Owner);
-                if (sellerFile != null) sellerFile.UpdatePayment(sellerFile.PendingMarketPayment + entry.ThingCost);
+                if (sellerFile != null) sellerFile.UpdatePayment(sellerFile.PendingMarketPayment + calculatedReturn);
             }
         }
     }
