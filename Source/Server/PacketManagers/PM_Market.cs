@@ -6,6 +6,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using RTShared;
 using RTShared.Files.Marketplace;
+using RTShared.Files.Player;
 using RTShared.Files.ServerClient;
 
 namespace GameServer.PacketManagers
@@ -15,38 +16,38 @@ namespace GameServer.PacketManagers
         [HandlesPacket(PacketHeader.Market)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.MarketAction.IsEnabled)
+            if (!FL_PlayerCooldown.CheckIfCanMarket(client.GetData<FL_Player>(), Master.ActionConfigs.MarketAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
-            }
+                PKT_Market packet = Serializer.ConvertBytesToObject<PKT_Market>(bytes);
 
-            PKT_Market packet = Serializer.ConvertBytesToObject<PKT_Market>(bytes);
+                switch (packet.CurrentStepMode)
+                {
+                    case PKT_Market.StepMode.Ask:
+                        OnAsk(client, packet);
+                        break;
 
-            switch (packet.CurrentStepMode)
-            {
-                case PKT_Market.StepMode.Ask:
-                    OnAsk(client, packet);
-                    break;
+                    case PKT_Market.StepMode.Add:
+                        OnAdd(client, packet);
+                        break;
 
-                case PKT_Market.StepMode.Add:
-                    OnAdd(client, packet);
-                    break;
+                    case PKT_Market.StepMode.Remove:
+                        OnRemove(client, packet);
+                        break;
 
-                case PKT_Market.StepMode.Remove:
-                    OnRemove(client, packet);
-                    break;
+                    case PKT_Market.StepMode.Buy:
+                        OnBuy(client, packet);
+                        break;
 
-                case PKT_Market.StepMode.Buy:
-                    OnBuy(client, packet);
-                    break;
+                    case PKT_Market.StepMode.Sell:
+                        throw new NotImplementedException();
 
-                case PKT_Market.StepMode.Sell:
-                    throw new NotImplementedException();
+                    case PKT_Market.StepMode.Payment:
+                        OnPayment(client, packet);
+                        break;
+                }
 
-                case PKT_Market.StepMode.Payment:
-                    OnPayment(client, packet);
-                    break;
+                client.GetData<FL_Player>().Cooldowns.SetMarketTimer(client.GetData<FL_Player>());
             }
         }
 

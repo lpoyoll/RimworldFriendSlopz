@@ -1,13 +1,14 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
-using RTShared;
-using RTShared.Files;
-using RTShared.Files.ServerClient;
+using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
+using RTShared;
+using RTShared.Files;
+using RTShared.Files.Player;
+using RTShared.Files.ServerClient;
 using static RTNetwork.Packets.PKT_Transfer;
-using RTNetwork.Components;
 
 namespace GameServer.PacketManager
 {
@@ -16,35 +17,35 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.Transfer)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EnableTrading)
+            if (!FL_PlayerCooldown.CheckIfCanTrade(client.GetData<FL_Player>(), Master.ActionConfigs.TradingAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
-            }
+                PKT_Transfer data = Serializer.ConvertBytesToObject<PKT_Transfer>(bytes);
 
-            PKT_Transfer data = Serializer.ConvertBytesToObject<PKT_Transfer>(bytes);
+                switch (data.CurrentStepMode)
+                {
+                    case TransferStepMode.TradeRequest:
+                        TransferThings(client, data);
+                        break;
 
-            switch (data.CurrentStepMode)
-            {
-                case TransferStepMode.TradeRequest:
-                    TransferThings(client, data);
-                    break;
+                    case TransferStepMode.TradeReject:
+                        RejectTransfer(client, bytes);
+                        break;
 
-                case TransferStepMode.TradeReject:
-                    RejectTransfer(client, bytes);
-                    break;
+                    case TransferStepMode.TradeReRequest:
+                        TransferThingsRebound(client, bytes);
+                        break;
 
-                case TransferStepMode.TradeReRequest:
-                    TransferThingsRebound(client, bytes);
-                    break;
+                    case TransferStepMode.TradeReAccept:
+                        AcceptReboundTransfer(client, bytes);
+                        break;
 
-                case TransferStepMode.TradeReAccept:
-                    AcceptReboundTransfer(client, bytes);
-                    break;
+                    case TransferStepMode.TradeReReject:
+                        RejectReboundTransfer(client, bytes);
+                        break;
+                }
 
-                case TransferStepMode.TradeReReject:
-                    RejectReboundTransfer(client, bytes);
-                    break;
+                client.GetData<FL_Player>().Cooldowns.SetTradeTimer(client.GetData<FL_Player>());
             }
         }
 

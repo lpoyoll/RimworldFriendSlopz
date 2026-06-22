@@ -1,10 +1,14 @@
-﻿using GameServer.Hooks.TCPNetwork;
-using RTShared;
-using RTShared.Files;
+﻿using GameServer.Core;
+using GameServer.Hooks.TCPNetwork;
+using GameServer.Managers;
+using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
+using RTShared;
+using RTShared.Files;
+using RTShared.Files.Player;
+using RTShared.Files.ServerClient;
 using static RTNetwork.Packets.PKT_Caravan;
-using RTNetwork.Components;
 
 namespace GameServer.PacketManager
 {
@@ -13,21 +17,27 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.Caravan)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PKT_Caravan data = Serializer.ConvertBytesToObject<PKT_Caravan>(bytes);
-
-            switch (data._stepMode)
+            if (!FL_PlayerCooldown.CheckIfCanCaravan(client.GetData<FL_Player>(), Master.ActionConfigs.CaravanAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            else
             {
-                case CaravanStepMode.Add:
-                    AddCaravan(client, data._caravanFile);
-                    break;
+                PKT_Caravan data = Serializer.ConvertBytesToObject<PKT_Caravan>(bytes);
 
-                case CaravanStepMode.Remove:
-                    RemoveCaravan(client, data._caravanFile);
-                    break;
+                switch (data._stepMode)
+                {
+                    case CaravanStepMode.Add:
+                        AddCaravan(client, data._caravanFile);
+                        break;
 
-                case CaravanStepMode.Move:
-                    MoveCaravan(client, data._caravanFile);
-                    break;
+                    case CaravanStepMode.Remove:
+                        RemoveCaravan(client, data._caravanFile);
+                        break;
+
+                    case CaravanStepMode.Move:
+                        MoveCaravan(client, data._caravanFile);
+                        break;
+                }
+
+                client.GetData<FL_Player>().Cooldowns.SetCaravanTimer(client.GetData<FL_Player>());
             }
         }
 

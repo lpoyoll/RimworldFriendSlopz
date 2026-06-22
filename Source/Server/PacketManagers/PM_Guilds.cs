@@ -2,15 +2,16 @@
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.Misc;
+using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using RTShared;
 using RTShared.Files;
 using RTShared.Files.Guilds;
+using RTShared.Files.Player;
 using RTShared.Files.ServerClient;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
-using static RTShared.Files.Guilds.GuildMember;
 using static RTNetwork.Packets.PKT_PlayerGuild;
-using RTNetwork.Components;
+using static RTShared.Files.Guilds.GuildMember;
 
 namespace GameServer.PacketManager
 {
@@ -20,47 +21,47 @@ namespace GameServer.PacketManager
         [HandlesPacket(PacketHeader.Guild)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!Master.ActionConfigs.EnableGuilds)
+            if (!FL_PlayerCooldown.CheckIfCanGuild(client.GetData<FL_Player>(), Master.ActionConfigs.GuildAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            else
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to use disabled feature!");
-                return;
-            }
+                PKT_PlayerGuild data = Serializer.ConvertBytesToObject<PKT_PlayerGuild>(bytes);
 
-            PKT_PlayerGuild data = Serializer.ConvertBytesToObject<PKT_PlayerGuild>(bytes);
+                switch (data._stepMode)
+                {
+                    case GuildStepMode.Create:
+                        Create(client, data);
+                        break;
 
-            switch (data._stepMode)
-            {
-                case GuildStepMode.Create:
-                    Create(client, data);
-                    break;
+                    case GuildStepMode.Delete:
+                        Delete(client, data);
+                        break;
 
-                case GuildStepMode.Delete:
-                    Delete(client, data);
-                    break;
+                    case GuildStepMode.Invite:
+                        InviteMember(client, data);
+                        break;
 
-                case GuildStepMode.Invite:
-                    InviteMember(client, data);
-                    break;
+                    case GuildStepMode.AddMember:
+                        AddMember(client, data);
+                        break;
 
-                case GuildStepMode.AddMember:
-                    AddMember(client, data);
-                    break;
+                    case GuildStepMode.RemoveMember:
+                        RemoveMember(client, data);
+                        break;
 
-                case GuildStepMode.RemoveMember:
-                    RemoveMember(client, data);
-                    break;
+                    case GuildStepMode.Promote:
+                        PromoteMember(client, data);
+                        break;
 
-                case GuildStepMode.Promote:
-                    PromoteMember(client, data);
-                    break;
+                    case GuildStepMode.Demote:
+                        DemoteMember(client, data);
+                        break;
 
-                case GuildStepMode.Demote:
-                    DemoteMember(client, data);
-                    break;
+                    case GuildStepMode.MemberList:
+                        SendMemberList(client, data);
+                        break;
+                }
 
-                case GuildStepMode.MemberList:
-                    SendMemberList(client, data);
-                    break;
+                client.GetData<FL_Player>().Cooldowns.SetGuildTimer(client.GetData<FL_Player>());
             }
         }
 

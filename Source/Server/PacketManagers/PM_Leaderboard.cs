@@ -1,9 +1,12 @@
-﻿using RTShared;
-using RTShared.Files;
-using RTShared.Files.ServerClient;
+﻿using GameServer.Core;
+using GameServer.Managers;
+using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
-using RTNetwork.Components;
+using RTShared;
+using RTShared.Files;
+using RTShared.Files.Player;
+using RTShared.Files.ServerClient;
 
 namespace GameServer.PacketManager
 {
@@ -12,7 +15,15 @@ namespace GameServer.PacketManager
         private static float ScoreMultiplier = 0.001f;
 
         [HandlesPacket(PacketHeader.Leaderboard)]
-        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) { SendLeaderboard(client); }
+        public override void Receive(ServerClient client, byte[] bytes, PacketHeader header) 
+        {
+            if (!FL_PlayerCooldown.CheckIfCanLeaderboard(client.GetData<FL_Player>(), Master.ActionConfigs.LeaderboardAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            else
+            {
+                SendLeaderboard(client);
+                client.GetData<FL_Player>().Cooldowns.SetLeaderboardTimer(client.GetData<FL_Player>());
+            }
+        }
 
         private static void SendLeaderboard(ServerClient client)
         {
