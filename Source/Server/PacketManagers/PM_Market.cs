@@ -108,7 +108,7 @@ namespace GameServer.PacketManagers
             if (seller != null)
             {
                 seller.GetData<FL_Player>().UpdatePayment(seller.GetData<FL_Player>().PendingMarketPayment 
-                    + (int)(entry.ThingCost / (1 + Master.MarketFile.PriceMultiplier)));
+                    + (int)(entry.ThingCost / (1 + (Master.MarketFile.PriceMultiplier * 2))));
 
                 PKT_Market packet = new PKT_Market() { CurrentStepMode = PKT_Market.StepMode.Sell };
                 seller.Listener.EnqueuePacket(PacketHeader.Market, packet);
