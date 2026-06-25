@@ -126,15 +126,13 @@ namespace GameServer.PacketManager
             FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
             ServerClient toAdd = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
-            if (GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
+            if (toAdd == null) ResponseShortcutManager.SendUnavailablePacket(client);
+            else if (toAdd.GetData<FL_Player>().GuildName != null) ResponseShortcutManager.SendUnavailablePacket(client);
+            else if (GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
-                if (toAdd.GetData<FL_Player>().GuildName != null) return;
-                else
-                {
-                    packet._guild.Name = guild.Name;
-                    toAdd.Listener.EnqueuePacket(PacketHeader.Guild, packet);
-                }
+                packet._guild.Name = guild.Name;
+                toAdd.Listener.EnqueuePacket(PacketHeader.Guild, packet);
             }
         }
 
