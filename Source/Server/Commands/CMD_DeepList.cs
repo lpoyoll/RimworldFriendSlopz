@@ -1,7 +1,7 @@
 ﻿using GameServer.Managers;
 using RTShared.Commands;
 using RTShared.Misc;
-using RTShared.Files.ServerClient;
+using RTShared.Files.Player;
 
 namespace GameServer.Commands
 {

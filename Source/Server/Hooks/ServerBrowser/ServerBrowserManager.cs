@@ -1,6 +1,5 @@
 ﻿using GameServer.Core;
 using GameServer.PacketManagers.ServerBrowser;
-using RTShared;
 using RTShared.Misc;
 using System.Net.Sockets;
 using System.Reflection;

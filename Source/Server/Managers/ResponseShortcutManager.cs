@@ -1,9 +1,8 @@
-﻿using RTShared;
-using RTNetwork.Packets;
-using RTShared.Files.ServerClient;
+﻿using RTNetwork.Packets;
 using RTShared.Misc;
 using static RTNetwork.Packets.PKT_ResponseShortcut;
 using RTNetwork.Components;
+using RTShared.Files.Player;
 
 namespace GameServer.Managers
 {

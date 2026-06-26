@@ -1,6 +1,5 @@
 ﻿using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
-using RTShared;
 using RTShared.Commands;
 using RTShared.Files;
 using RTShared.Misc;

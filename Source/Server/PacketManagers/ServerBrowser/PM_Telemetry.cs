@@ -1,11 +1,11 @@
 ﻿using GameServer.Core;
 using GameServer.Hooks.TCPNetwork;
-using RTShared;
 using RTShared.Files.Configs;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
 using static GameServer.Hooks.ServerBrowser.ServerBrowserManager;
 using RTNetwork.Components;
+using RTShared.Misc;
 
 namespace GameServer.PacketManagers.ServerBrowser
 {

@@ -1,9 +1,9 @@
 ﻿using GameServer.Misc;
-using RTShared;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Login;
 using RTNetwork.Components;
+using RTShared.Misc;
 
 namespace GameServer.PacketManager
 {

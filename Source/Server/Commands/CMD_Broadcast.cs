@@ -1,9 +1,8 @@
 ﻿using GameServer.Hooks.TCPNetwork;
-using RTShared;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Packets;
-using static RTShared.CommonEnumerators;
+using static RTShared.Misc.CommonEnumerators;
 
 namespace GameServer.Commands
 {

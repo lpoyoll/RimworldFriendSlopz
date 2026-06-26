@@ -4,10 +4,8 @@ using GameServer.Managers;
 using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
-using RTShared;
 using RTShared.Files;
 using RTShared.Files.Player;
-using RTShared.Files.ServerClient;
 using RTShared.Misc;
 
 namespace GameServer.PacketManagers

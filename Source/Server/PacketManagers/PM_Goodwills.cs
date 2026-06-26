@@ -1,11 +1,11 @@
 ﻿using GameServer.Managers;
-using RTShared;
 using RTShared.Files;
-using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.Goodwills;
-using static RTShared.CommonEnumerators;
+using static RTShared.Misc.CommonEnumerators;
 using RTNetwork.Components;
+using RTShared.Misc;
+using RTShared.Files.Player;
 
 namespace GameServer.PacketManager
 {

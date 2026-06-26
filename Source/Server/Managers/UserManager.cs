@@ -1,14 +1,13 @@
 ﻿using GameServer.Core;
 using RTNetwork.Packets;
-using RTShared;
 using RTShared.Files;
-using RTShared.Files.ServerClient;
 using RTShared.Misc;
 using GameServer.Hooks.TCPNetwork;
 using GameServer.PacketManager;
 using static RTNetwork.Packets.PKT_Login;
 using RTShared.Commands;
 using RTNetwork.Components;
+using RTShared.Files.Player;
 
 namespace GameServer.Managers
 {

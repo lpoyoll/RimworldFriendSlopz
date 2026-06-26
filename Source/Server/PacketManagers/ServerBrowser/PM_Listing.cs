@@ -1,6 +1,6 @@
-﻿using RTShared;
-using RTNetwork.PacketManagers;
+﻿using RTNetwork.PacketManagers;
 using RTNetwork.Components;
+using RTShared.Misc;
 
 namespace GameServer.PacketManagers.ServerBrowser
 {

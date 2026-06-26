@@ -1,8 +1,8 @@
 ﻿using GameServer.Hooks.TCPNetwork;
 using RTShared.Commands;
 using RTShared.Misc;
-using RTShared.Files.ServerClient;
 using RTNetwork.Components;
+using RTShared.Files.Player;
 
 namespace GameServer.Commands
 {

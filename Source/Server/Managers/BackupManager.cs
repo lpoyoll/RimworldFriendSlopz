@@ -1,7 +1,6 @@
 ﻿using GameServer.Core;
 using GameServer.Misc;
 using GameServer.PacketManager;
-using RTShared;
 using RTShared.Files;
 using RTShared.Misc;
 using System.IO.Compression;

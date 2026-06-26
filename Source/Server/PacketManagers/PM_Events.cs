@@ -2,10 +2,8 @@
 using GameServer.Hooks.TCPNetwork;
 using GameServer.Managers;
 using GameServer.Misc;
-using RTShared;
 using RTShared.Files;
 using RTShared.Misc;
-using RTShared.Files.ServerClient;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Event;

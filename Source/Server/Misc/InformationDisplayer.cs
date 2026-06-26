@@ -1,6 +1,6 @@
 ﻿using RTShared.Misc;
-using RTShared.Files.ServerClient;
 using RTNetwork.Components;
+using RTShared.Files.Player;
 
 namespace GameServer.Misc
 {
