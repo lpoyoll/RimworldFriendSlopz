@@ -27,7 +27,7 @@ namespace GameServer.Core
             CreateFolders();
             LoadFiles();
 
-            Printer.Title($"Server version {CommonValues.ExecutableVersion}");
+            Printer.Title($"Server version {CommonValues.ExecutableVersion} ({CommonValues.HotfixVersion})");
             Printer.Title($"Loading all necessary resources");
             Printer.Title(Printer.SeparatorString);
 
