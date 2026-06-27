@@ -59,14 +59,23 @@ namespace GameServer.PacketManagers
 
         private static void OnAdd(ServerClient client, PKT_Market packet)
         {
-            MarketEntry entry = packet.Entries[0];
-            entry.ThingCost = CalculateEntryPrice(entry);
-            entry.Owner = client.GetData<FL_Player>().Username;
-            entry.Identifier = Hasher.GetHashFromString($"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
+            if (CheckIfEnoughEntriesLeft(client))
+            {
+                MarketEntry entry = packet.Entries[0];
+                entry.ThingCost = CalculateEntryPrice(entry);
+                entry.Owner = client.GetData<FL_Player>().Username;
+                entry.Identifier = Hasher.GetHashFromString($"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}");
 
-            Master.MarketFile.AddEntry(packet.Entries[0]);
-            client.Listener.EnqueuePacket(PacketHeader.Market, packet);
-            OnAsk(client, new PKT_Market() { CurrentStepMode = PKT_Market.StepMode.Ask });
+                Master.MarketFile.AddEntry(packet.Entries[0]);
+                client.Listener.EnqueuePacket(PacketHeader.Market, packet);
+                OnAsk(client, new PKT_Market() { CurrentStepMode = PKT_Market.StepMode.Ask });
+            }
+
+            else
+            {
+                packet.CurrentStepMode = PKT_Market.StepMode.MaxEntries;
+                client.Listener.EnqueuePacket(PacketHeader.Market, packet);
+            }
         }
 
         private static void OnRemove(ServerClient client, PKT_Market packet)
@@ -128,6 +137,12 @@ namespace GameServer.PacketManagers
                 FL_Player sellerFile = UserManagerH.GetUserFileFromName(entry.Owner);
                 if (sellerFile != null) sellerFile.UpdatePayment(sellerFile.PendingMarketPayment + calculatedReturn);
             }
+        }
+
+        private static bool CheckIfEnoughEntriesLeft(ServerClient client)
+        {
+            return Master.MarketFile.Entries.Count(fetch => fetch.Owner == client.GetData<FL_Player>().Username) 
+                < Master.ActionConfigs.MarketAction.MaxEntriesPerPlayer;
         }
     }
 }
