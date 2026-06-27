@@ -4,7 +4,7 @@
 		<defName>RTSite</defName>
 		<label>Online production site</label>
 		<description>An online production site</description>
-		<worldObjectClass>GameClient.WorldObjects.WO_Site</worldObjectClass>
+		<worldObjectClass>RTClient.WorldObjects.WO_Site</worldObjectClass>
 		<texture>World/WorldObjects/RTSite</texture>
 		<expandingIconTexture>World/WorldObjects/RTSite</expandingIconTexture>
 		<fullyExpandedInSpace>true</fullyExpandedInSpace>
