@@ -1,10 +1,10 @@
-﻿using GameServer.Hooks.TCPNetwork;
+﻿using RTServer.Hooks.TCPNetwork;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_Kick : CMD_Base
     {

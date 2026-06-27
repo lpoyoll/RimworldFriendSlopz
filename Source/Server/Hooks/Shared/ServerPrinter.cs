@@ -1,9 +1,9 @@
-﻿using GameServer.Core;
+﻿using RTServer.Core;
 using RTShared.Misc;
 using System.Text;
 using static RTShared.Misc.Printer;
 
-namespace GameServer.Hooks.Shared
+namespace RTServer.Hooks.Shared
 {
     public static class ServerPrinter
     {

@@ -1,15 +1,15 @@
-﻿using GameServer.Core;
+﻿using RTServer.Core;
 using RTNetwork.Packets;
 using RTShared.Files;
 using RTShared.Misc;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.PacketManager;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.PacketManager;
 using static RTNetwork.Packets.PKT_Login;
 using RTShared.Commands;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.Managers
+namespace RTServer.Managers
 {
 
     public static class UserManager

@@ -1,5 +1,5 @@
-﻿using GameServer.Core;
-using GameServer.PacketManagers.ServerBrowser;
+﻿using RTServer.Core;
+using RTServer.PacketManagers.ServerBrowser;
 using RTShared.Misc;
 using System.Net.Sockets;
 using System.Reflection;
@@ -7,7 +7,7 @@ using RTNetwork.PacketManagers;
 using static RTShared.Misc.Printer;
 using RTNetwork.Components;
 
-namespace GameServer.Hooks.ServerBrowser
+namespace RTServer.Hooks.ServerBrowser
 {
     public static class ServerBrowserManager
     {

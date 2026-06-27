@@ -1,11 +1,11 @@
-﻿using GameServer.Core;
-using GameServer.Misc;
+﻿using RTServer.Core;
+using RTServer.Misc;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Map : PM_Base
     {

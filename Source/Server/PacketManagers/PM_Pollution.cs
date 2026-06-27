@@ -1,5 +1,5 @@
-﻿using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
+﻿using RTServer.Core;
+using RTServer.Hooks.TCPNetwork;
 using RTShared.Details.Planet;
 using RTShared.Files.Configs;
 using RTNetwork.PacketManagers;
@@ -8,7 +8,7 @@ using RTShared.Files.Player;
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Pollution : PM_Base
     {

@@ -1,9 +1,9 @@
-﻿using GameServer.Hooks.TCPNetwork;
+﻿using RTServer.Hooks.TCPNetwork;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Components;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_List : CMD_Base
     {

@@ -1,11 +1,11 @@
-﻿using GameServer.Misc;
+﻿using RTServer.Misc;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Login;
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Version : PM_Base
     {

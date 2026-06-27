@@ -1,4 +1,4 @@
-﻿using GameServer.Managers;
+﻿using RTServer.Managers;
 using RTShared.Files;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.Goodwills;
@@ -7,7 +7,7 @@ using RTNetwork.Components;
 using RTShared.Misc;
 using RTShared.Files.Player;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Goodwills : PM_Base
     {

@@ -1,7 +1,7 @@
-﻿using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
-using GameServer.Misc;
+﻿using RTServer.Core;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
+using RTServer.Misc;
 using RTShared.Details.Planet;
 using RTShared.Files.Configs;
 using RTNetwork.PacketManagers;
@@ -11,7 +11,7 @@ using RTShared.Files.Player;
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Roads : PM_Base
     {

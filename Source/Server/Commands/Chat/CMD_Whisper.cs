@@ -1,5 +1,5 @@
-﻿using GameServer.Hooks.TCPNetwork;
-using GameServer.PacketManager;
+﻿using RTServer.Hooks.TCPNetwork;
+using RTServer.PacketManager;
 using RTShared.Commands;
 using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Chat;
@@ -7,7 +7,7 @@ using RTNetwork.Components;
 using RTShared.Misc;
 using RTShared.Files.Player;
 
-namespace GameServer.Commands.Chat
+namespace RTServer.Commands.Chat
 {
     public class CMD_Whisper : CMD_Base
     {

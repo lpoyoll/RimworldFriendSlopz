@@ -1,8 +1,8 @@
-﻿using GameServer.PacketManager;
+﻿using RTServer.PacketManager;
 using RTShared.Commands;
 using RTShared.Misc;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_ForceSiteRewards : CMD_Base
     {

@@ -1,9 +1,9 @@
-﻿using GameServer.Core;
+﻿using RTServer.Core;
 using RTShared.Commands;
 using RTShared.Files.Configs;
 using RTShared.Misc;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_ToggleModBypass : CMD_Base
     {

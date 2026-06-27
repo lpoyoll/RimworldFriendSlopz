@@ -1,12 +1,12 @@
-﻿using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
-using GameServer.PacketManager;
+﻿using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
+using RTServer.PacketManager;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_ResetPlayer : CMD_Base
     {

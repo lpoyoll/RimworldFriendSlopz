@@ -1,9 +1,9 @@
-using GameServer.Files;
-using GameServer.Hooks.ServerBrowser;
-using GameServer.Hooks.Shared;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
-using GameServer.PacketManager;
+using RTServer.Files;
+using RTServer.Hooks.ServerBrowser;
+using RTServer.Hooks.Shared;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
+using RTServer.PacketManager;
 using RTShared.Commands;
 using RTShared.Files;
 using RTShared.Files.Configs;
@@ -12,7 +12,7 @@ using RTNetwork.PacketManagers;
 using static RTShared.Misc.Printer;
 using RTShared.Files.Marketplace;
 
-namespace GameServer.Core
+namespace RTServer.Core
 {
     public static class Program
     {

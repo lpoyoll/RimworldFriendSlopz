@@ -1,9 +1,9 @@
-﻿using GameServer.Managers;
+﻿using RTServer.Managers;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTShared.Files.Player;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_BanList : CMD_Base
     {

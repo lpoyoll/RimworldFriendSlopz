@@ -1,7 +1,7 @@
-﻿using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
-using GameServer.Misc;
+﻿using RTServer.Core;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
+using RTServer.Misc;
 using RTShared.Files.Configs;
 using RTShared.Files.Mods;
 using RTShared.Misc;
@@ -12,7 +12,7 @@ using static RTNetwork.Packets.PKT_ModConfig;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Mods : PM_Base
     {

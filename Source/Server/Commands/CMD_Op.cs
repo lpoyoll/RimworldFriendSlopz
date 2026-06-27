@@ -1,5 +1,5 @@
-﻿using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
+﻿using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Packets;
@@ -7,7 +7,7 @@ using static RTShared.Misc.CommonEnumerators;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_Op : CMD_Base
     {

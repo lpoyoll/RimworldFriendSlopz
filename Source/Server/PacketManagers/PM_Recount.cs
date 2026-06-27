@@ -2,7 +2,7 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Recount : PM_Base
     {

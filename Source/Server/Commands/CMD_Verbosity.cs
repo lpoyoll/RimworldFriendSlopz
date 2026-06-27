@@ -1,5 +1,5 @@
-﻿using GameServer.Core;
-using GameServer.Files;
+﻿using RTServer.Core;
+using RTServer.Files;
 using RTShared.Commands;
 using RTShared.Misc;
 

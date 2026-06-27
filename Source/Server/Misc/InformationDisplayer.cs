@@ -2,7 +2,7 @@
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.Misc
+namespace RTServer.Misc
 {
     public static class InformationDisplayer
     {

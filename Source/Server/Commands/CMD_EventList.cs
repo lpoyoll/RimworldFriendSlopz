@@ -1,9 +1,9 @@
-﻿using GameServer.PacketManager;
+﻿using RTServer.PacketManager;
 using RTShared.Commands;
 using RTShared.Files;
 using RTShared.Misc;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_EventList : CMD_Base
     {

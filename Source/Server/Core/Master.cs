@@ -1,9 +1,9 @@
-﻿using GameServer.Files;
+﻿using RTServer.Files;
 using RTShared.Files;
 using RTShared.Files.Configs;
 using RTShared.Files.Marketplace;
 
-namespace GameServer.Core
+namespace RTServer.Core
 {
     public static class Master
     {

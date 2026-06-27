@@ -1,5 +1,5 @@
-﻿using GameServer.Core;
-using GameServer.Misc;
+﻿using RTServer.Core;
+using RTServer.Misc;
 using RTShared.Files.Configs;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
@@ -8,7 +8,7 @@ using RTNetwork.Components;
 using RTShared.Misc;
 using RTShared.Files.Player;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_World : PM_Base
     {

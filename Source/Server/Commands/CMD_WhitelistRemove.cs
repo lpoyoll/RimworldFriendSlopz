@@ -1,10 +1,10 @@
-﻿using GameServer.Core;
-using GameServer.Managers;
+﻿using RTServer.Core;
+using RTServer.Managers;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTShared.Files.Player;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_WhitelistRemove : CMD_Base
     {

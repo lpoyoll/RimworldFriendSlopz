@@ -4,7 +4,7 @@ using static RTNetwork.Packets.PKT_ResponseShortcut;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.Managers
+namespace RTServer.Managers
 {
 
     public static class ResponseShortcutManager

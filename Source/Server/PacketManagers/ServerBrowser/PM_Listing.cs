@@ -2,7 +2,7 @@
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManagers.ServerBrowser
+namespace RTServer.PacketManagers.ServerBrowser
 {
     public class PM_Listing : PM_Base
     {

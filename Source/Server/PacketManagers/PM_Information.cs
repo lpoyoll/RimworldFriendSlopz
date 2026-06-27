@@ -1,12 +1,12 @@
-﻿using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
+﻿using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
 using RTShared.Files;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Information : PM_Base
     {

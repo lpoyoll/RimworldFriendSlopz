@@ -1,12 +1,12 @@
-﻿using GameServer.Core;
-using GameServer.PacketManager;
-using GameServer.PacketManagers;
+﻿using RTServer.Core;
+using RTServer.PacketManager;
+using RTServer.PacketManagers;
 using RTNetwork.Packets;
 using RTNetwork.Components;
 using RTShared.Misc;
 using RTShared.Files.Player;
 
-namespace GameServer.Managers
+namespace RTServer.Managers
 {
     public class GlobalDataManager
     {

@@ -1,6 +1,6 @@
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
-using GameServer.Misc;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
+using RTServer.Misc;
 using RTShared.Misc;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
@@ -9,7 +9,7 @@ using static RTNetwork.Packets.PKT_Login;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Login : PM_Base
     {

@@ -1,11 +1,11 @@
-﻿using GameServer.Hooks.TCPNetwork;
+﻿using RTServer.Hooks.TCPNetwork;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Packets;
 using static RTShared.Misc.CommonEnumerators;
 using RTNetwork.Components;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_ForceSave : CMD_Base
     {

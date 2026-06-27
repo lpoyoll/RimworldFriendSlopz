@@ -1,12 +1,12 @@
-﻿using GameServer.Core;
-using GameServer.Misc;
-using GameServer.PacketManager;
+﻿using RTServer.Core;
+using RTServer.Misc;
+using RTServer.PacketManager;
 using RTShared.Files;
 using RTShared.Misc;
 using System.IO.Compression;
 using static RTShared.Misc.Printer;
 
-namespace GameServer.Managers
+namespace RTServer.Managers
 {
     public static class BackupManager
     {

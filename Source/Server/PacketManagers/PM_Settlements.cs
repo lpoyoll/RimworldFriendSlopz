@@ -1,7 +1,7 @@
-﻿using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
-using GameServer.Misc;
+﻿using RTServer.Core;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
+using RTServer.Misc;
 using RTShared.Files;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
@@ -10,7 +10,7 @@ using RTNetwork.Components;
 using RTShared.Misc;
 using RTShared.Files.Player;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Settlements : PM_Base
     {

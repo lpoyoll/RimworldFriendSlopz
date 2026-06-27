@@ -1,6 +1,6 @@
 ﻿using RTShared.Files;
 
-namespace GameServer.Files
+namespace RTServer.Files
 {
     public class FL_ServerConfig : FL_Base
     {

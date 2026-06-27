@@ -1,6 +1,6 @@
-﻿using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
+﻿using RTServer.Core;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
 using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
@@ -9,7 +9,7 @@ using RTShared.Files.Player;
 using RTShared.Misc;
 using static RTNetwork.Packets.PKT_Transfer;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Transfers : PM_Base
     {

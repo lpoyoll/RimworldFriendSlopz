@@ -1,7 +1,7 @@
-﻿using GameServer.PacketManager;
+﻿using RTServer.PacketManager;
 using RTShared.Commands;
 
-namespace GameServer.Commands.Chat
+namespace RTServer.Commands.Chat
 {
     public class CMD_Disconnect : CMD_Base
     {

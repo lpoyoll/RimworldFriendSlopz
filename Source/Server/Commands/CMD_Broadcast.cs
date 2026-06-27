@@ -1,10 +1,10 @@
-﻿using GameServer.Hooks.TCPNetwork;
+﻿using RTServer.Hooks.TCPNetwork;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Packets;
 using static RTShared.Misc.CommonEnumerators;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_Broadcast : CMD_Base
     {

@@ -1,13 +1,13 @@
-﻿using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
+﻿using RTServer.Core;
+using RTServer.Hooks.TCPNetwork;
 using RTShared.Files.Configs;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.ServerBrowser;
-using static GameServer.Hooks.ServerBrowser.ServerBrowserManager;
+using static RTServer.Hooks.ServerBrowser.ServerBrowserManager;
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManagers.ServerBrowser
+namespace RTServer.PacketManagers.ServerBrowser
 {
     public class PM_Telemetry : PM_Base
     {

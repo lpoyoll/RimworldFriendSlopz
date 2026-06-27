@@ -1,6 +1,6 @@
-﻿using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
-using GameServer.PacketManager;
+﻿using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
+using RTServer.PacketManager;
 using RTShared.Files;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
@@ -8,7 +8,7 @@ using RTNetwork.Components;
 using RTShared.Misc;
 using RTShared.Files.Player;
 
-namespace GameServer.PacketManagers
+namespace RTServer.PacketManagers
 {
     public class PM_Synchronous : PM_Base
     {

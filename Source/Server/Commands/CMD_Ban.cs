@@ -1,7 +1,7 @@
-﻿using GameServer.Managers;
+﻿using RTServer.Managers;
 using RTShared.Commands;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_Ban : CMD_Base
     {

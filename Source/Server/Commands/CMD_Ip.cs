@@ -1,8 +1,8 @@
-﻿using GameServer.Hooks.ServerBrowser;
+﻿using RTServer.Hooks.ServerBrowser;
 using RTShared.Commands;
 using RTShared.Misc;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_Ip : CMD_Base
     {

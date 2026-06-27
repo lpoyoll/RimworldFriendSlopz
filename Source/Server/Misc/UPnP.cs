@@ -2,7 +2,7 @@
 using RTShared.Misc;
 using RTNetwork.Components;
 
-namespace GameServer.Misc
+namespace RTServer.Misc
 {
     //Class that handles UPnP forwarding between the server and the router
 

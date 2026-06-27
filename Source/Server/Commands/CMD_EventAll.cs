@@ -1,5 +1,5 @@
-﻿using GameServer.Hooks.TCPNetwork;
-using GameServer.PacketManager;
+﻿using RTServer.Hooks.TCPNetwork;
+using RTServer.PacketManager;
 using RTShared.Commands;
 using RTShared.Files;
 using RTShared.Misc;
@@ -7,7 +7,7 @@ using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Event;
 using RTNetwork.Components;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_EventAll : CMD_Base
     {

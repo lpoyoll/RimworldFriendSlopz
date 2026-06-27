@@ -1,7 +1,7 @@
-﻿using GameServer.Core;
-using GameServer.Managers;
-using GameServer.Misc;
-using GameServer.PacketManager;
+﻿using RTServer.Core;
+using RTServer.Managers;
+using RTServer.Misc;
+using RTServer.PacketManager;
 using RTShared.Misc;
 using System.Net;
 using System.Net.Sockets;
@@ -11,7 +11,7 @@ using static RTNetwork.Packets.PKT_Login;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.Hooks.TCPNetwork
+namespace RTServer.Hooks.TCPNetwork
 {
     public class ServerNetwork
     {

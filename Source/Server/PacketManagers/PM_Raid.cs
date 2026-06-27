@@ -1,13 +1,13 @@
-﻿using GameServer.Core;
+﻿using RTServer.Core;
 using RTNetwork.Packets;
-using GameServer.Managers;
+using RTServer.Managers;
 using static RTNetwork.Packets.PKT_Raid;
 using RTNetwork.PacketManagers;
 using RTShared.Files.Player;
 using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Raid : PM_Base
     {

@@ -1,8 +1,8 @@
-﻿using GameServer.Core;
+﻿using RTServer.Core;
 using RTShared.Commands;
 using RTShared.Misc;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_Whitelist : CMD_Base
     {

@@ -1,8 +1,8 @@
-﻿using GameServer.Core;
-using GameServer.Managers;
+﻿using RTServer.Core;
+using RTServer.Managers;
 using RTShared.Commands;
 
-namespace GameServer.Commands
+namespace RTServer.Commands
 {
     public class CMD_ResetServer : CMD_Base
     {

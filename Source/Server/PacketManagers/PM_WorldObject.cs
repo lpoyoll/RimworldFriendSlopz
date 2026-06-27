@@ -1,6 +1,6 @@
-﻿using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Managers;
+﻿using RTServer.Core;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
 using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
@@ -8,7 +8,7 @@ using RTShared.Files;
 using RTShared.Files.Player;
 using RTShared.Misc;
 
-namespace GameServer.PacketManagers
+namespace RTServer.PacketManagers
 {
     public class PM_WorldObject : PM_Base
     {

@@ -1,6 +1,6 @@
-using GameServer.Core;
-using GameServer.Hooks.TCPNetwork;
-using GameServer.Misc;
+using RTServer.Core;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Misc;
 using RTShared.Commands;
 using RTShared.Misc;
 using System.Text;
@@ -10,7 +10,7 @@ using static RTNetwork.Packets.PKT_Chat;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
-namespace GameServer.PacketManager
+namespace RTServer.PacketManager
 {
     public class PM_Chat : PM_Base
     {
