@@ -4,7 +4,7 @@ name: Create and publish a Docker image
 # a non-prerelease GitHub Release is published.
 
 on:
-	push:
+	publish:
 		branches: ['development']
 	release:
 		types: [published]
