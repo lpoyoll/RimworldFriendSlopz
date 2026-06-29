@@ -38,4 +38,8 @@
 	  <ProjectReference Include="D:\Code\RTExtras\RTNetwork\RTNetwork.csproj" />
 	  <ProjectReference Include="D:\Code\RTExtras\RTShared\RTShared.csproj" />
 	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="call &quot;D:\Code\RTExtras\Scripts\Copier.bat&quot;" />
+	</Target>
 </Project>
