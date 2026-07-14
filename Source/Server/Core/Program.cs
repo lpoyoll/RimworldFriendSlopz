@@ -3,12 +3,12 @@ using RTServer.Hooks.ServerBrowser;
 using RTServer.Hooks.Shared;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
-using RTServer.PacketManager;
 using RTShared.Commands;
 using RTShared.Files;
 using RTShared.Files.Configs;
 using RTShared.Misc;
 using RTNetwork.PacketManagers;
+using RTServer.PacketManagers;
 using static RTShared.Misc.Printer;
 using RTShared.Files.Marketplace;
 
@@ -89,7 +89,7 @@ namespace RTServer.Core
             Master.ServerConfig = (FL_ServerConfig)FL_ServerConfig.Load<FL_ServerConfig>(FL_ServerConfig.SavePath);
             if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.EnableServerTelemetry = false;
             if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.EnableServerBrowser = false;
-            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.SyncLocalSave = false;
+            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.UseClientSave = false;
             FL_ServerConfig.Save(FL_ServerConfig.SavePath, Master.ServerConfig);
 
             Master.ActionConfigs = (FL_ActionsConfig)FL_ActionsConfig.Load<FL_ActionsConfig>(FL_ActionsConfig.SavePath);

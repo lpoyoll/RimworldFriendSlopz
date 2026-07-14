@@ -1,16 +1,16 @@
-﻿using RTServer.Core;
+﻿using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTServer.Misc;
 using RTShared.Files;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
-using static RTShared.Misc.CommonEnumerators;
-using RTNetwork.Components;
-using RTShared.Misc;
 using RTShared.Files.Player;
+using RTShared.Misc;
+using static RTShared.Misc.CommonEnumerators;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Settlements : PM_Base
     {

@@ -1,15 +1,15 @@
-﻿using RTServer.Core;
+﻿using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTShared.Files;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
-using static RTNetwork.Packets.PKT_Aid;
 using RTShared.Files.Player;
-using RTNetwork.Components;
 using RTShared.Misc;
+using static RTNetwork.Packets.PKT_Aid;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Aid : PM_Base
     {

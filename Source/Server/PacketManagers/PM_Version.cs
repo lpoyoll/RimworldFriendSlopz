@@ -1,11 +1,11 @@
-﻿using RTServer.Misc;
+﻿using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
-using static RTNetwork.Packets.PKT_Login;
-using RTNetwork.Components;
+using RTServer.Misc;
 using RTShared.Misc;
+using static RTNetwork.Packets.PKT_Login;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Version : PM_Base
     {

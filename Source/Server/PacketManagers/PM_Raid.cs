@@ -1,13 +1,13 @@
-﻿using RTServer.Core;
-using RTNetwork.Packets;
-using RTServer.Managers;
-using static RTNetwork.Packets.PKT_Raid;
+﻿using RTNetwork.Components;
 using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
+using RTServer.Managers;
 using RTShared.Files.Player;
-using RTNetwork.Components;
 using RTShared.Misc;
+using static RTNetwork.Packets.PKT_Raid;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Raid : PM_Base
     {

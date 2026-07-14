@@ -1,10 +1,10 @@
-﻿using RTServer.Core;
+﻿using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTServer.Misc;
-using RTNetwork.Components;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
 using RTShared.Files;
 using RTShared.Files.Guilds;
 using RTShared.Files.Player;
@@ -12,7 +12,7 @@ using RTShared.Misc;
 using static RTNetwork.Packets.PKT_PlayerGuild;
 using static RTShared.Files.Guilds.GuildMember;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
 
     public class PM_Guilds : PM_Base

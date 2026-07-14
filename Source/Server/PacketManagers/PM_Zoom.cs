@@ -1,13 +1,13 @@
-﻿using RTServer.Core;
-using RTNetwork.Packets;
-using RTServer.Managers;
+﻿using RTNetwork.Components;
 using RTNetwork.PacketManagers;
-using static RTNetwork.Packets.PKT_Zoom;
+using RTNetwork.Packets;
+using RTServer.Core;
+using RTServer.Managers;
 using RTShared.Files.Player;
-using RTNetwork.Components;
 using RTShared.Misc;
+using static RTNetwork.Packets.PKT_Zoom;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Zoom : PM_Base
     {

@@ -1,18 +1,18 @@
-﻿using RTServer.Core;
+﻿using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTServer.Misc;
 using RTShared.Files.Configs;
 using RTShared.Files.Mods;
+using RTShared.Files.Player;
 using RTShared.Misc;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
 using static RTNetwork.Packets.PKT_Login;
 using static RTNetwork.Packets.PKT_ModConfig;
-using RTNetwork.Components;
-using RTShared.Files.Player;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Mods : PM_Base
     {

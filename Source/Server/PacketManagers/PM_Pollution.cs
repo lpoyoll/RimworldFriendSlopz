@@ -1,14 +1,14 @@
-﻿using RTServer.Core;
+﻿using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTShared.Details.Planet;
 using RTShared.Files.Configs;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
 using RTShared.Files.Player;
-using RTNetwork.Components;
 using RTShared.Misc;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Pollution : PM_Base
     {

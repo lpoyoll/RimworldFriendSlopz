@@ -1,15 +1,15 @@
-﻿using RTServer.Core;
+﻿using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Managers;
 using RTServer.Misc;
 using RTShared.Files;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
-using static RTNetwork.Packets.PKT_Save;
-using RTNetwork.Components;
-using RTShared.Misc;
 using RTShared.Files.Player;
+using RTShared.Misc;
+using static RTNetwork.Packets.PKT_Save;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Saves : PM_Base
     {
@@ -18,7 +18,7 @@ namespace RTServer.PacketManager
         {
             PKT_Save data = Serializer.ConvertBytesToObject<PKT_Save>(bytes);
 
-            switch (data._stepMode)
+            switch (data.StepMode)
             {
                 case SaveStepMode.Receive:
                     ReceiveSaveFromClient(client, data);
@@ -41,7 +41,7 @@ namespace RTServer.PacketManager
             return false;
         }
 
-        public static void ResetClientSave(ServerClient client)
+        private static void ResetClientSave(ServerClient client)
         {
             if (!CheckIfUserHasSave(client))
             {
@@ -85,21 +85,23 @@ namespace RTServer.PacketManager
         {
             string savePath = Path.Combine(Master.SavesPath, client.GetData<FL_Player>().Username + CommonValues.DefaultSaveFormat);
 
-            PKT_Save data = new PKT_Save();
-            data._stepMode = SaveStepMode.Receive;
-            data._fileBytes = File.ReadAllBytes(savePath);
-            if (!Master.ServerConfig.SyncLocalSave) data._forceUseSave = true;
+            PKT_Save data = new PKT_Save()
+            {
+                StepMode = SaveStepMode.Receive,
+                FileBytes = File.ReadAllBytes(savePath),
+                ForceUseSave = !Master.ServerConfig.UseClientSave
+            };
 
             client.Listener.EnqueuePacket(PacketHeader.Save, data);
         }
         
-        public static void ReceiveSaveFromClient(ServerClient client, PKT_Save data)
+        private static void ReceiveSaveFromClient(ServerClient client, PKT_Save data)
         {
             string savePath = Path.Combine(Master.SavesPath, client.GetData<FL_Player>().Username + CommonValues.DefaultSaveFormat);
-            File.WriteAllBytes(savePath, data._fileBytes);
+            File.WriteAllBytes(savePath, data.FileBytes);
 
             InformationDisplayer.DisplaySaveGame(client);
-            if (data._forceDisconnect) client.Listener.MarkForDisconnect();
+            if (data.ForceDisconnect) client.Listener.MarkForDisconnect();
         }
     }
 }

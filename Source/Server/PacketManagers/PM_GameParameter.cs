@@ -1,15 +1,15 @@
-﻿using RTServer.Core;
+﻿using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Managers;
 using RTServer.Misc;
 using RTShared.Files.Configs;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
-using static RTNetwork.Packets.GameParameterData;
-using RTNetwork.Components;
-using RTShared.Misc;
 using RTShared.Files.Player;
+using RTShared.Misc;
+using static RTNetwork.Packets.GameParameterData;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_GameParameter : PM_Base
     {

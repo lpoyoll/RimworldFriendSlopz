@@ -1,11 +1,11 @@
-﻿using RTServer.Core;
-using RTServer.Misc;
+﻿using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
-using RTNetwork.Components;
+using RTServer.Core;
+using RTServer.Misc;
 using RTShared.Misc;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Map : PM_Base
     {

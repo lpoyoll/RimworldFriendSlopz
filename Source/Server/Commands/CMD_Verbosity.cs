@@ -3,7 +3,7 @@ using RTServer.Files;
 using RTShared.Commands;
 using RTShared.Misc;
 
-namespace RTServerBrowser.Commands
+namespace RTServer.Commands
 {
     public class CMD_Verbosity : CMD_Base
     {

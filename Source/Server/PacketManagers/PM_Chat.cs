@@ -1,16 +1,16 @@
+using System.Text;
+using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Misc;
 using RTShared.Commands;
-using RTShared.Misc;
-using System.Text;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
-using static RTNetwork.Packets.PKT_Chat;
-using RTNetwork.Components;
 using RTShared.Files.Player;
+using RTShared.Misc;
+using static RTNetwork.Packets.PKT_Chat;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Chat : PM_Base
     {

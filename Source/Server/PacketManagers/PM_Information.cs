@@ -1,12 +1,12 @@
-﻿using RTServer.Hooks.TCPNetwork;
-using RTServer.Managers;
-using RTShared.Files;
+﻿using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
-using RTNetwork.Components;
+using RTServer.Hooks.TCPNetwork;
+using RTServer.Managers;
+using RTShared.Files;
 using RTShared.Misc;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Information : PM_Base
     {

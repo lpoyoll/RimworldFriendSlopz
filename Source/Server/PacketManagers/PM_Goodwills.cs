@@ -1,13 +1,13 @@
-﻿using RTServer.Managers;
-using RTShared.Files;
+﻿using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets.Goodwills;
-using static RTShared.Misc.CommonEnumerators;
-using RTNetwork.Components;
-using RTShared.Misc;
+using RTServer.Managers;
+using RTShared.Files;
 using RTShared.Files.Player;
+using RTShared.Misc;
+using static RTShared.Misc.CommonEnumerators;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Goodwills : PM_Base
     {

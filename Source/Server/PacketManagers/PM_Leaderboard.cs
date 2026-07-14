@@ -1,13 +1,13 @@
-﻿using RTServer.Core;
-using RTServer.Managers;
-using RTNetwork.Components;
+﻿using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
+using RTServer.Core;
+using RTServer.Managers;
 using RTShared.Files;
 using RTShared.Files.Player;
 using RTShared.Misc;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Leaderboard : PM_Base
     {

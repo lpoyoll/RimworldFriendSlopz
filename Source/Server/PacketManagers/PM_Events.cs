@@ -1,16 +1,16 @@
-﻿using RTServer.Core;
+﻿using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTServer.Misc;
 using RTShared.Files;
-using RTShared.Misc;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
-using static RTNetwork.Packets.PKT_Event;
 using RTShared.Files.Player;
-using RTNetwork.Components;
+using RTShared.Misc;
+using static RTNetwork.Packets.PKT_Event;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Events : PM_Base
     {

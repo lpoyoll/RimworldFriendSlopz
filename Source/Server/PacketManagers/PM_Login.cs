@@ -1,15 +1,15 @@
+using RTNetwork.Components;
+using RTNetwork.PacketManagers;
+using RTNetwork.Packets;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTServer.Misc;
+using RTShared.Files.Player;
 using RTShared.Misc;
-using RTNetwork.PacketManagers;
-using RTNetwork.Packets;
 using static RTShared.Misc.CommonEnumerators;
 using static RTNetwork.Packets.PKT_Login;
-using RTNetwork.Components;
-using RTShared.Files.Player;
 
-namespace RTServer.PacketManager
+namespace RTServer.PacketManagers
 {
     public class PM_Login : PM_Base
     {

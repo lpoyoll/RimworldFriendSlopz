@@ -1,7 +1,6 @@
 ﻿using RTServer.Core;
 using RTServer.Managers;
 using RTServer.Misc;
-using RTServer.PacketManager;
 using RTShared.Misc;
 using System.Net;
 using System.Net.Sockets;
@@ -9,6 +8,7 @@ using System.Reflection;
 using RTNetwork.PacketManagers;
 using static RTNetwork.Packets.PKT_Login;
 using RTNetwork.Components;
+using RTServer.PacketManagers;
 using RTShared.Files.Player;
 
 namespace RTServer.Hooks.TCPNetwork

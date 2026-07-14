@@ -1,4 +1,4 @@
-﻿using RTServer.PacketManager;
+﻿using RTServer.PacketManagers;
 using RTShared.Commands;
 
 namespace RTServer.Commands.Chat
