@@ -30,7 +30,7 @@ namespace RTServer.PacketManagers
         
         public static void SetPassword(string password)
         {
-            Master.PasswordConfig.Password = password;
+            Master.PasswordConfig.Password = Hasher.GetHashFromString(password);
             FL_PasswordConfig.Save(FL_PasswordConfig.SavePath, Master.PasswordConfig);
         }
         
