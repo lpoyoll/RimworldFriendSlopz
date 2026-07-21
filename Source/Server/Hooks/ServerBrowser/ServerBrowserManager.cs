@@ -77,7 +77,8 @@ namespace RTServer.Hooks.ServerBrowser
         {
             try
             {
-                ServerClient client = new ServerClient(new TcpClient(Network.MultipurposeIP, Network.BrowserServerPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null, false));
+                string ip = CommonValues.ExecutableVersion == "dev" ? "127.0.0.1" : Network.MultipurposeIP;
+                ServerClient client = new ServerClient(new TcpClient(ip, Network.BrowserServerPort), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null, false));
                 Network.MultipurposeEndpoint = client.Listener;
                 PM_Handshake.Send(client);
                 PM_Telemetry.Send(mode);

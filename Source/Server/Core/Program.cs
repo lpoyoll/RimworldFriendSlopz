@@ -87,8 +87,8 @@ namespace RTServer.Core
         private static void LoadFiles()
         {
             Master.ServerConfig = (FL_ServerConfig)FL_ServerConfig.Load<FL_ServerConfig>(FL_ServerConfig.SavePath);
-            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.EnableServerTelemetry = false;
-            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.EnableServerBrowser = false;
+            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.EnableServerTelemetry = true;
+            if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.EnableServerBrowser = true;
             if (CommonValues.ExecutableVersion == "dev") Master.ServerConfig.UseClientSave = false;
             FL_ServerConfig.Save(FL_ServerConfig.SavePath, Master.ServerConfig);
 
