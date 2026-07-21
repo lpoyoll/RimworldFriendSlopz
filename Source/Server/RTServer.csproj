@@ -11,6 +11,10 @@
 		<AssemblyTitle>RTServer</AssemblyTitle>
     </PropertyGroup>
 
+	<PropertyGroup>
+		<OutputPath>/home/nova/Documents/GitHub/RTExtras/RTServer/</OutputPath>
+	</PropertyGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
 		<DefineConstants>$(DefineConstants);SERVER</DefineConstants>
@@ -35,11 +39,11 @@
     </ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="D:\Code\RTExtras\RTNetwork\RTNetwork.csproj" />
-	  <ProjectReference Include="D:\Code\RTExtras\RTShared\RTShared.csproj" />
+	  <ProjectReference Include="/home/nova/Documents/GitHub/RTExtras/RTNetwork\RTNetwork.csproj" />
+	  <ProjectReference Include="/home/nova/Documents/GitHub/RTExtras/RTShared\RTShared.csproj" />
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="call &quot;D:\Code\RTExtras\Scripts\Copier.bat&quot;" />
+      <Exec Command="sh /home/nova/Documents/GitHub/RTExtras/Scripts/Copier.sh" />
 	</Target>
 </Project>
