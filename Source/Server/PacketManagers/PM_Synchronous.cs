@@ -54,13 +54,15 @@ namespace RTServer.PacketManagers
             if (toFind == null) ResponseShortcutManager.SendUserUnavailablePacket(client);
             else
             {
-                PKT_Synchronous _ = new PKT_Synchronous();
-                _.CurrentStepMode = PKT_Synchronous.StepMode.Ask;
-                _.FromTile = PM_Settlements.GetSettlementFileFromUsername(client.GetData<FL_Player>().Username).Tile;
-                _.Username = client.GetData<FL_Player>().Username;
-                _.ToTile = data.ToTile;
-                _.Party = data.Party;
-                _.CurrentType = data.CurrentType;
+                PKT_Synchronous _ = new PKT_Synchronous()
+                {
+                    CurrentStepMode = PKT_Synchronous.StepMode.Ask,
+                    FromTile = PM_Settlements.GetSettlementFileFromUsername(client.GetData<FL_Player>().Username).Tile,
+                    Username = client.GetData<FL_Player>().Username,
+                    ToTile = data.ToTile,
+                    Party = data.Party,
+                    CurrentType = data.CurrentType
+                };
 
                 toFind.Listener.EnqueuePacket(PacketHeader.Synchronous, _);
             }

@@ -63,6 +63,7 @@ namespace RTServer.Hooks.TCPNetwork
             else if (Master.WorldValues == null && GetConnectedClients().Length > 0) PM_Login.DenyConnectionWithReason(client, LoginResponse.NoWorld);
             else
             {
+                Network.TotalConnectedClients++;
                 Network.ServerClients.TryAdd(client, -1);
                 InformationDisplayer.DisplayConnect(client);
                 client.Listener.Ruleset.OnConnect?.Invoke(client);
@@ -84,7 +85,7 @@ namespace RTServer.Hooks.TCPNetwork
             return GetConnectedClients().FirstOrDefault(fetch => fetch.GetData<FL_Player>().Username == username);
         }
 
-        public static ServerClient GetClientFromID(byte id) { return Network.ServerClients.Keys.First(fetch => fetch.ID == id); }
+        public static ServerClient GetClientFromID(int id) { return Network.ServerClients.Keys.First(fetch => fetch.ID == id); }
 
         public static void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
         {
