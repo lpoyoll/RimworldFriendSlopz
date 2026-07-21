@@ -33,6 +33,12 @@ namespace RTServer.PacketManagers
             Master.PasswordConfig.Password = Hasher.GetHashFromString(password);
             FL_PasswordConfig.Save(FL_PasswordConfig.SavePath, Master.PasswordConfig);
         }
+
+        public static void ClearPassword()
+        {
+            Master.PasswordConfig.Password = string.Empty;
+            FL_PasswordConfig.Save(FL_PasswordConfig.SavePath, Master.PasswordConfig);
+        }
         
         public static void AskForPassword(ServerClient client, PKT_Login login)
         {
