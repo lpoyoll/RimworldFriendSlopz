@@ -52,7 +52,7 @@ namespace RTServer.Core
             FL_ScenarioConfig.SavePath = Path.Combine(Master.ConfigsPath, "ScenarioConfig.json");
             FL_ModConfig.SavePath = Path.Combine(Master.ConfigsPath, "ModConfig.json");
             FL_DifficultyConfig.SavePath = Path.Combine(Master.ConfigsPath, "DifficultyConfig.json");
-            FL_WhitelistConfig.SavePath = Path.Combine(Master.ConfigsPath, "WhitelistConfig.json");
+            FL_PasswordConfig.SavePath = Path.Combine(Master.ConfigsPath, "PasswordConfig.json");
             FL_BackupsConfig.SavePath = Path.Combine(Master.ConfigsPath, "BackupConfig.json");
             FL_ChatConfig.SavePath = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
             FL_Leaderboard.SavePath = Path.Combine(Master.AssetsPath, "Leaderboard.json");
@@ -95,8 +95,8 @@ namespace RTServer.Core
             Master.ActionConfigs = (FL_ActionsConfig)FL_ActionsConfig.Load<FL_ActionsConfig>(FL_ActionsConfig.SavePath);
             FL_ActionsConfig.Save(FL_ActionsConfig.SavePath, Master.ActionConfigs);
 
-            Master.Whitelist = (FL_WhitelistConfig)FL_WhitelistConfig.Load<FL_WhitelistConfig>(FL_WhitelistConfig.SavePath);
-            FL_WhitelistConfig.Save(FL_WhitelistConfig.SavePath, Master.Whitelist);
+            Master.PasswordConfig = (FL_PasswordConfig)FL_PasswordConfig.Load<FL_PasswordConfig>(FL_PasswordConfig.SavePath);
+            FL_PasswordConfig.Save(FL_PasswordConfig.SavePath, Master.PasswordConfig);
 
             Master.DifficultyValues = (FL_DifficultyConfig)FL_DifficultyConfig.Load<FL_DifficultyConfig>(FL_DifficultyConfig.SavePath);
             FL_DifficultyConfig.Save(FL_DifficultyConfig.SavePath, Master.DifficultyValues);

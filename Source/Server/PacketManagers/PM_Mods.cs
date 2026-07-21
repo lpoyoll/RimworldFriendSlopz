@@ -61,7 +61,7 @@ namespace RTServer.PacketManagers
                 //Check if missing required mods
                 foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
                 {
-                    ModConfig toFind = loginData._runningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
+                    ModConfig toFind = loginData.RunningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
                     if (toFind == null)
                     {
                         conflictingModNames.Add($"[Required] > {config.FileName}");
@@ -70,7 +70,7 @@ namespace RTServer.PacketManagers
                 }
 
                 //Check if has mods that aren't required or optional
-                foreach (ModConfig config in loginData._runningMods.ModConfigs)
+                foreach (ModConfig config in loginData.RunningMods.ModConfigs)
                 {
                     ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName
                         && (fetch.Type == FL_ModConfig.ModType.Required || fetch.Type == FL_ModConfig.ModType.Optional));

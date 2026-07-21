@@ -1,6 +1,7 @@
 using RTNetwork.Components;
 using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
+using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTServer.Misc;
@@ -16,21 +17,25 @@ namespace RTServer.PacketManagers
         [HandlesPacket(PacketHeader.Login)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PKT_Login data = Serializer.ConvertBytesToObject<PKT_Login>(bytes);
+            PKT_Login packet = Serializer.ConvertBytesToObject<PKT_Login>(bytes);
 
-            if (UserManagerH.CheckIfUserExists(client, data)) LoginUser(client, data);
-            else RegisterUser(client, data);
+            if (PM_ServerPassword.CheckIfPasswordIsSet()) PM_ServerPassword.AskForPassword(client, packet);
+            else TryLogin(client, packet);
         }
 
-        public static bool LoginUser(ServerClient client, PKT_Login data)
+        public static void TryLogin(ServerClient client, PKT_Login packet)
+        {
+            if (UserManagerH.CheckIfUserExists(client, packet)) LoginUser(client, packet);
+            else RegisterUser(client, packet);
+        }
+
+        private static bool LoginUser(ServerClient client, PKT_Login data)
         {
             if (!UserManagerH.CheckIfUserAuthCorrect(client, data)) return false;
 
-            client.GetData<FL_Player>(FL_Player.LoadOrCreateUserFile(data._username, data._password));
+            client.GetData<FL_Player>(FL_Player.LoadOrCreateUserFile(data.Username, data.Password));
 
             if (UserManagerH.CheckIfUserBanned(client)) return false;
-
-            if (!UserManagerH.CheckWhitelist(client)) return false;
 
             if (PM_World.CheckIfWorldExists() && PM_Mods.CheckIfModConflict(client, data)) return false;
 
@@ -43,9 +48,9 @@ namespace RTServer.PacketManagers
             return true;
         }
 
-        public static void RegisterUser(ServerClient client, PKT_Login data)
+        private static void RegisterUser(ServerClient client, PKT_Login data)
         {
-            client.GetData<FL_Player>(FL_Player.LoadOrCreateUserFile(data._username, data._password));
+            client.GetData<FL_Player>(FL_Player.LoadOrCreateUserFile(data.Username, data.Password));
 
             InformationDisplayer.DisplayRegister(client);
 
@@ -78,7 +83,7 @@ namespace RTServer.PacketManagers
             }
         }
 
-        public static void RemoveOldClientSessions(ServerClient client)
+        private static void RemoveOldClientSessions(ServerClient client)
         {
             ServerClient[] oldClients = ServerNetwork.GetConnectedClients().Where(fetch => fetch.GetData<FL_Player>().Username 
                 == client.GetData<FL_Player>().Username && fetch != client).ToArray();
@@ -89,10 +94,10 @@ namespace RTServer.PacketManagers
         public static void DenyConnectionWithReason(ServerClient client, LoginResponse response, object extraDetails = null)
         {
             PKT_Login loginData = new PKT_Login();
-            loginData._tryResponse = response;
+            loginData.Response = response;
 
-            if (response == LoginResponse.Mods) loginData._extraDetails = (List<string>)extraDetails;
-            else if (response == LoginResponse.Version) loginData._extraDetails = new List<string>() { CommonValues.ExecutableVersion };
+            if (response == LoginResponse.Mods) loginData.ExtraDetails = (List<string>)extraDetails;
+            else if (response == LoginResponse.Version) loginData.ExtraDetails = new List<string>() { CommonValues.ExecutableVersion };
 
             client.Listener.EnqueuePacket(PacketHeader.Login, loginData);
             client.Listener.MarkForDisconnect();

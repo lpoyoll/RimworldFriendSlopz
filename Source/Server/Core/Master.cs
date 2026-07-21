@@ -43,7 +43,7 @@ namespace RTServer.Core
 
         //References
 
-        public static FL_WhitelistConfig Whitelist { get; set; } = null;
+        public static FL_PasswordConfig PasswordConfig { get; set; } = null;
 
         public static FL_PlanetConfig WorldValues { get; set; } = null;
 

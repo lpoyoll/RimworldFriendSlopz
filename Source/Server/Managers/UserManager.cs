@@ -100,14 +100,14 @@ namespace RTServer.Managers
 
         public static bool CheckIfUserExists(ServerClient client, PKT_Login data)
         {
-            FL_Player toFind = GetAllUserFiles().FirstOrDefault(fetch => fetch.Username.ToLower() == data._username.ToLower());
+            FL_Player toFind = GetAllUserFiles().FirstOrDefault(fetch => fetch.Username.ToLower() == data.Username.ToLower());
             if (toFind != null) return true;
             else return false;
         }
 
         public static bool CheckIfUserAuthCorrect(ServerClient client, PKT_Login data)
         {
-            FL_Player toFind = GetAllUserFiles().FirstOrDefault(fetch => fetch.Username == data._username && fetch.Password == data._password);
+            FL_Player toFind = GetAllUserFiles().FirstOrDefault(fetch => fetch.Username == data.Username && fetch.Password == data.Password);
             if (toFind != null) return true;
             else
             {
@@ -127,18 +127,7 @@ namespace RTServer.Managers
                 return true;
             }
         }
-
-        public static bool CheckWhitelist(ServerClient client)
-        {
-            if (!Master.Whitelist.UseWhitelist) return true;
-            else if (Master.Whitelist.WhitelistedUsers.ToArray().First(fetch => fetch == client.GetData<FL_Player>().Username) != null) return true;
-            else
-            {
-                PM_Login.DenyConnectionWithReason(client, LoginResponse.Whitelist);
-                return false;
-            }
-        }
-
+        
         public static int[] GetUserStructuresTilesFromUsername(string username)
         {
             FL_Settlement[] settlements = PM_Settlements.GetAllSettlements().ToList().FindAll(x => x.Username == username).ToArray();
