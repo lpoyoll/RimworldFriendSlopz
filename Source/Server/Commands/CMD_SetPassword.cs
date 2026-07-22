@@ -12,13 +12,14 @@ namespace RTServer.Commands
         public CMD_SetPassword()
         {
             Prefix = "setpassword";
-            Description = "Sets the password to join this server";
+            Description = "Sets the password to join this server. Leave empty for reset";
             ParameterCount = 1;
         }
 
         public override void Action()
         {
-            PM_ServerPassword.SetPassword(CommandParameters[0]);
+            if (string.IsNullOrWhiteSpace(CommandParameters[0])) PM_ServerPassword.ClearPassword();
+            else PM_ServerPassword.SetPassword(CommandParameters[0]);
             Printer.Title("Password has been changed");
         }
     }

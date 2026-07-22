@@ -11,7 +11,7 @@ namespace RTServer.Commands
         public CMD_Broadcast()
         {
             Prefix = "broadcast";
-            Description = "";
+            Description = "Broadcast a message to every player in letter format";
             ParameterCount = -1;
         }
 
