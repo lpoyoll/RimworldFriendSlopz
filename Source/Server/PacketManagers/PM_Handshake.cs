@@ -17,6 +17,14 @@ namespace RTServer.PacketManagers
                 case PKT_Handshake.StepMode.Check:
                     CheckHandshake(client, packet);
                     break;
+                
+                case PKT_Handshake.StepMode.Accept:
+                    OnHandshakeAccept(client, packet);
+                    break;
+
+                case PKT_Handshake.StepMode.Deny:
+                    OnHandshakeDeny(client, packet);
+                    break;
             }
         }
 
@@ -41,9 +49,9 @@ namespace RTServer.PacketManagers
 
             if (isValid)
             {
+                client.VerifyClient();
                 packet.CurrentMode = PKT_Handshake.StepMode.Accept;
                 client.Listener.EnqueuePacket(PacketHeader.Handshake, packet);
-                client.VerifyClient();
             }
 
             else
@@ -55,6 +63,10 @@ namespace RTServer.PacketManagers
                 Printer.Warning($"Handshake with '{client.IP}' was invalid, disconnecting");
             }
         }
+        
+        private static void OnHandshakeAccept(ServerClient client, PKT_Handshake packet) { client.VerifyClient(); }
+
+        private static void OnHandshakeDeny(ServerClient client, PKT_Handshake packet) { Printer.Error($"Handshake with '{client.IP}' was invalid, disconnecting"); }
 
         private static List<string> GetLocalManagers() { return PM_Base.PacketDictionary.Values.Select(obj => obj[0].GetType().Name).ToList(); }
     }
