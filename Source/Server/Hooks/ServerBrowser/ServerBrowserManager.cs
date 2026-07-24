@@ -89,6 +89,7 @@ namespace RTServer.Hooks.ServerBrowser
             catch (Exception ex) 
             { 
                 Printer.Error(ex, Verbosity.Extreme);
+                Thread.Sleep(Network.BrowserTelemetryInterval);
                 return false;
             }
         }
