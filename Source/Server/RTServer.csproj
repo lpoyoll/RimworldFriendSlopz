@@ -42,8 +42,4 @@
 	  <ProjectReference Include="/home/nova/Documents/GitHub/RTExtras/RTNetwork\RTNetwork.csproj" />
 	  <ProjectReference Include="/home/nova/Documents/GitHub/RTExtras/RTShared\RTShared.csproj" />
 	</ItemGroup>
-
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-      <Exec Command="sh /home/nova/Documents/GitHub/RTExtras/Scripts/Copier.sh" />
-	</Target>
 </Project>
