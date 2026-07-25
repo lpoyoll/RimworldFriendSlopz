@@ -5,13 +5,13 @@ WORKDIR /App
 COPY Source Source
 
 # Restore as distinct layers
-RUN dotnet publish Source/Server/GameServer.csproj -p:LangVersion=preview -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:WarningLevel=0
+RUN dotnet publish Source/Server/RTServer.csproj -p:LangVersion=preview -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:WarningLevel=0
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /App
 
-COPY --from=build-env /App/Source/Server/bin/Release/net8.0/linux-x64/publish/GameServer /App/Server/GameServer
+COPY --from=build-env /App/Source/Server/bin/Release/net8.0/linux-x64/publish/RTServer /App/Server/RTServer
 
 WORKDIR /Data
 
@@ -19,4 +19,4 @@ VOLUME /Data
 
 EXPOSE 25555/tcp
 
-ENTRYPOINT ["/App/Server/GameServer"]
+ENTRYPOINT ["/App/Server/RTServer"]
