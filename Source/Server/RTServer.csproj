@@ -39,7 +39,11 @@
     </ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="/home/nova/Documents/GitHub/RTExtras/RTNetwork\RTNetwork.csproj" />
-	  <ProjectReference Include="/home/nova/Documents/GitHub/RTExtras/RTShared\RTShared.csproj" />
+	  <Reference Include="RTNetwork">
+	    <HintPath>..\Assemblies\RTNetwork.dll</HintPath>
+	  </Reference>
+	  <Reference Include="RTShared">
+	    <HintPath>..\Assemblies\RTShared.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 </Project>
