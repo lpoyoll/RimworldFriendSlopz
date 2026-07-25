@@ -11,10 +11,6 @@
 		<AssemblyTitle>RTServer</AssemblyTitle>
     </PropertyGroup>
 
-	<PropertyGroup>
-		<OutputPath>/home/nova/Documents/GitHub/RTExtras/RTServer/</OutputPath>
-	</PropertyGroup>
-
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
 		<DefineConstants>$(DefineConstants);SERVER</DefineConstants>
