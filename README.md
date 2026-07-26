@@ -3,7 +3,7 @@
 ### Welcome to our repository! A great place for the tech savvies!
 [![](https://img.shields.io/badge/Steam_Workshop-Subscribe-blue?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=3005289691) 
 [![](https://img.shields.io/badge/Discord-Join-blue?logo=discord)](https://discord.gg/yUF2ec8Vt8) 
-[![](https://img.shields.io/badge/Wiki-Read-blue?logo=mdbook)](https://github.com/Byte-Nova/Rimworld-Together/wiki) 
+[![](https://img.shields.io/badge/Wiki-Read-blue?logo=mdbook)](https://rimworldtogether.wiki.gg/) 
 [![](https://img.shields.io/badge/Donate-Go-blue?logo=kofi)](https://ko-fi.com/rimworldtogetherproject)
 
 > [!NOTE]
