@@ -11,6 +11,10 @@
 		<AssemblyTitle>RTServer</AssemblyTitle>
     </PropertyGroup>
 
+	<PropertyGroup>
+		<OutputPath>/home/nova/Documents/GitHub/RTExtras/RTServer/</OutputPath>
+	</PropertyGroup>
+
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DebugType>full</DebugType>
 		<DefineConstants>$(DefineConstants);SERVER</DefineConstants>
@@ -35,11 +39,7 @@
     </ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="RTNetwork">
-	    <HintPath>..\Assemblies\RTNetwork.dll</HintPath>
-	  </Reference>
-	  <Reference Include="RTShared">
-	    <HintPath>..\Assemblies\RTShared.dll</HintPath>
-	  </Reference>
+	  <ProjectReference Include="/home/nova/Documents/GitHub/RTExtras/RTNetwork\RTNetwork.csproj" />
+	  <ProjectReference Include="/home/nova/Documents/GitHub/RTExtras/RTShared\RTShared.csproj" />
 	</ItemGroup>
 </Project>
