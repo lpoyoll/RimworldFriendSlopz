@@ -18,18 +18,18 @@ namespace RTServer.PacketManagers
         {
             GameParameterData data = Serializer.ConvertBytesToObject<GameParameterData>(bytes);
 
-            switch (data._stepMode)
+            switch (data.StepMode)
             {
                 case GenStepMode.Scenario:
-                    SetScenario(client, data._bytes);
+                    SetScenario(client, data.Bytes);
                     break;
 
                 case GenStepMode.Storyteller:
-                    SetStoryteller(client, data._bytes);
+                    SetStoryteller(client, data.Bytes);
                     break;
 
                 case GenStepMode.Difficulty:
-                    SetDifficulty(client, data._bytes);
+                    SetDifficulty(client, data.Bytes);
                     break;
             }
         }
