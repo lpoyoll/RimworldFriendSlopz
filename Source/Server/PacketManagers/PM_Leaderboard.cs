@@ -50,6 +50,7 @@ namespace RTServer.PacketManagers
                 }
             }
 
+            file.Scores = file.Scores.OrderByDescending(fetch => fetch.Value).ToDictionary(x => x.Key, x => x.Value);
             FL_Leaderboard.Save(FL_Leaderboard.SavePath, file);
         }
     }
