@@ -21,10 +21,10 @@ namespace RTServer.PacketManagers
         {
             PKT_ModConfig data = Serializer.ConvertBytesToObject<PKT_ModConfig>(bytes);
 
-            switch (data._stepMode)
+            switch (data.StepMode)
             {
                 case ModConfigStepMode.Send:
-                    SaveModConfig(client, data._configFile);
+                    SaveModConfig(client, data.File);
                     break;
             }
         }
@@ -44,8 +44,8 @@ namespace RTServer.PacketManagers
                 InformationDisplayer.DisplaySetMods(client);
 
                 PKT_ModConfig packet = new PKT_ModConfig();
-                packet._configFile = Master.ModConfig;
-                packet._stepMode = ModConfigStepMode.Send;
+                packet.File = Master.ModConfig;
+                packet.StepMode = ModConfigStepMode.Send;
 
                 ServerNetwork.SendPacketToAllClients(PacketHeader.Mod, packet);
             }
