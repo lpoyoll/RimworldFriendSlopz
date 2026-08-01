@@ -6,9 +6,6 @@
 [![](https://img.shields.io/badge/Wiki-Read-blue?logo=mdbook)](https://rimworldtogether.wiki.gg/) 
 [![](https://img.shields.io/badge/Donate-Go-blue?logo=kofi)](https://ko-fi.com/rimworldtogetherproject)
 
-> [!NOTE]
-> PULL REQUEST REVIEWS ARE PAUSED WHILE THE MOD UNDERGOES HEAVY CHANGES! THANK YOU FOR YOUR UNDERSTANDING
-
 ## Server Prerequisites:
 Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
 
