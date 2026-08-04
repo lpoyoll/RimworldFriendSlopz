@@ -37,6 +37,8 @@ namespace RTServer.PacketManagers
 
             client.GetData<FL_Player>(FL_Player.LoadOrCreateUserFile(data.Username, data.Password));
 
+            client.GetData<FL_Player>().UpdateIP(client.IP);
+            
             if (UserManagerH.CheckIfUserBanned(client)) return false;
 
             if (PM_World.CheckIfWorldExists() && PM_Mods.CheckIfModConflict(client, data)) return false;

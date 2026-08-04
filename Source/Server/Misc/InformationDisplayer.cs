@@ -10,7 +10,9 @@ namespace RTServer.Misc
 
         public static void DisplayDisconnect(ServerClient client) { Printer.Message($"[Disconnect] > {client.IP}"); }
 
-        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.GetData<FL_Player>().Username}"); }
+        public static void DisplayLogin(ServerClient client) { Printer.Message($"[Log in] > {client.GetData<FL_Player>().Username} | {client.GetData<FL_Player>().LatestIP}"); }
+        
+        public static void DisplayLogOut(ServerClient client) { Printer.Message($"[Log out] > {client.GetData<FL_Player>().Username} | {client.GetData<FL_Player>().LatestIP}"); }
 
         public static void DisplayRegister(ServerClient client) { Printer.Message($"[Register] > {client.GetData<FL_Player>().Username}"); }
 
