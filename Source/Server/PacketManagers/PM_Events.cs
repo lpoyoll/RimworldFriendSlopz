@@ -19,24 +19,24 @@ namespace RTServer.PacketManagers
         [HandlesPacket(PacketHeader.Event)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            PKT_Event data = Serializer.ConvertBytesToObject<PKT_Event>(bytes);
+            PKT_Event packet = Serializer.ConvertBytesToObject<PKT_Event>(bytes);
 
             if (!FL_PlayerCooldown.CheckIfCanEvent(client.GetData<FL_Player>(), Master.ActionConfigs.EventAction))
             {
-                data._stepMode = EventStepMode.Recover;
-                client.Listener.EnqueuePacket(PacketHeader.Event, data);
+                packet._stepMode = EventStepMode.Recover;
+                client.Listener.EnqueuePacket(PacketHeader.Event, packet);
             }
 
             else
             {
-                switch (data._stepMode)
+                switch (packet._stepMode)
                 {
                     case EventStepMode.Send:
-                        SendEvent(client, data);
+                        SendEvent(client, packet);
                         break;
 
                     case EventStepMode.Set:
-                        SetEvents(client, data);
+                        SetEvents(client, packet);
                         break;
                 }
 
@@ -44,16 +44,16 @@ namespace RTServer.PacketManagers
             }
         }
 
-        public static void SendEvent(ServerClient client, PKT_Event data)
+        private static void SendEvent(ServerClient client, PKT_Event packet)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(data._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to send an event to settlement at tile {data._toTile}, but it has no settlement");
+            if (!PM_Settlements.CheckIfTileIsInUse(packet._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to send an event to settlement at tile {packet._toTile}, but it has no settlement");
             else
             {
-                FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data._toTile);
+                FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._toTile);
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
                 {
-                    data._stepMode = EventStepMode.Recover;
-                    client.Listener.EnqueuePacket(PacketHeader.Event, data);
+                    packet._stepMode = EventStepMode.Recover;
+                    client.Listener.EnqueuePacket(PacketHeader.Event, packet);
                 }
 
                 else
@@ -62,13 +62,13 @@ namespace RTServer.PacketManagers
 
                     //Back to player
 
-                    client.Listener.EnqueuePacket(PacketHeader.Event, data);
+                    client.Listener.EnqueuePacket(PacketHeader.Event, packet);
 
                     //To the person that should receive it
 
-                    data._stepMode = EventStepMode.Receive;
+                    packet._stepMode = EventStepMode.Receive;
 
-                    target.Listener.EnqueuePacket(PacketHeader.Event, data);
+                    target.Listener.EnqueuePacket(PacketHeader.Event, packet);
                 }
             }
         }
