@@ -32,6 +32,7 @@ namespace RTServer.PacketManagers.ServerBrowser
             telemetry.IsPrivate = mode == BrowserMode.Private;
             telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
             telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
+            telemetry.PasswordProtected = !string.IsNullOrWhiteSpace(Master.PasswordConfig.Password);
             telemetry.Mods = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type != FL_ModConfig.ModType.Forbidden)
                 .OrderBy(fetch => fetch.FileName).ToList();
 
