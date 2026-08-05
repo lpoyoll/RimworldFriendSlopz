@@ -40,9 +40,9 @@ namespace RTServer.Misc
 
         public static void DisplayRemoveGuild(string value) { Printer.Message($"[Remove guild] > {value}"); }
 
-        public static void DisplayAddRoad(string value, string value2) { Printer.Message($"[Add road] > {value} - {value2}"); }
+        public static void DisplayAddRoad(string value) { Printer.Message($"[Add road] > {value}"); }
 
-        public static void DisplayRemoveRoad(string value, string value2) { Printer.Message($"[Remove road] > {value} - {value2}"); }
+        public static void DisplayRemoveRoad(string value) { Printer.Message($"[Remove road] > {value}"); }
 
         public static void DisplayServerBackup(string value) { Printer.Warning($"[Server backup] > {value}"); }
 

@@ -23,7 +23,7 @@ namespace RTServer.PacketManagers
             {
                 PKT_Road data = Serializer.ConvertBytesToObject<PKT_Road>(bytes);
 
-                switch (data._stepMode)
+                switch (data.StepMode)
                 {
                     case RoadStepMode.Add:
                         AddRoad(client, data);
@@ -38,82 +38,52 @@ namespace RTServer.PacketManagers
             }
         }
 
-        private static void AddRoad(ServerClient client, PKT_Road data)
+        private static void AddRoad(ServerClient client, PKT_Road packet)
         {
-            if (RoadManagerHelper.CheckIfRoadExists(data._details))
+            RoadDetail toAdd = Master.WorldValues.Roads.FirstOrDefault(fetch => fetch.Tile == packet.Roads.Tile);
+            
+            if (toAdd != null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to add a road that already existed");
-                return;
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to build already existing road");
             }
-
-            SaveRoad(data._details, client);
-            ServerNetwork.SendPacketToAllClients(PacketHeader.Road, data);
+            
+            else
+            {
+                SaveRoad(packet.Roads);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.Road, packet);
+            }
         }
 
-        private static void RemoveRoad(ServerClient client, PKT_Road data)
+        private static void RemoveRoad(ServerClient client, PKT_Road packet)
         {
-            if (!RoadManagerHelper.CheckIfRoadExists(data._details))
+            RoadDetail toRemove = Master.WorldValues.Roads.FirstOrDefault(fetch => fetch.Tile == packet.Roads.Tile);
+            
+            if (toRemove == null)
             {
-                ResponseShortcutManager.SendIllegalPacket(client, "Tried to remove a road that didn't exist");
-                return;
+                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to destroy non-existing road");
             }
-
-            foreach (RoadDetail existingRoad in Master.WorldValues.Roads)
+            
+            else
             {
-                if (existingRoad.FromTile == data._details.FromTile && existingRoad.ToTile == data._details.ToTile)
-                {
-                    DeleteRoad(existingRoad, client);
-                    PostDelete(existingRoad);
-                    return;
-                }
-
-                else if (existingRoad.FromTile == data._details.ToTile && existingRoad.ToTile == data._details.FromTile)
-                {
-                    DeleteRoad(existingRoad, client);
-                    PostDelete(existingRoad);
-                    return;
-                }
-
-                else continue;
+                DeleteRoad(toRemove);
+                ServerNetwork.SendPacketToAllClients(PacketHeader.Road, packet);
             }
-
-            void PostDelete(RoadDetail toRemove) { ServerNetwork.SendPacketToAllClients(PacketHeader.Road, data); }
         }
 
-        private static void SaveRoad(RoadDetail details, ServerClient client = null)
+        private static void SaveRoad(RoadDetail details)
         {
-            List<RoadDetail> currentRoads = Master.WorldValues.Roads.ToList();
-            currentRoads.Add(details);
-
-            Master.WorldValues.Roads = currentRoads;
+            Master.WorldValues.Roads.Add(details);
             FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
 
-            InformationDisplayer.DisplayAddRoad(details.FromTile.ToString(), details.ToTile.ToString());
+            InformationDisplayer.DisplayAddRoad(details.Tile.ToString());
         }
 
-        private static void DeleteRoad(RoadDetail details, ServerClient client = null)
+        private static void DeleteRoad(RoadDetail details)
         {
-            List<RoadDetail> currentRoads = Master.WorldValues.Roads.ToList();
-            currentRoads.Remove(details);
-
-            Master.WorldValues.Roads = currentRoads;
+            Master.WorldValues.Roads.Remove(details);
             FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
 
-            InformationDisplayer.DisplayRemoveRoad(details.FromTile.ToString(), details.ToTile.ToString());
-        }
-    }
-
-    public class RoadManagerHelper
-    {
-        public static bool CheckIfRoadExists(RoadDetail details)
-        {
-            foreach (RoadDetail existingRoad in Master.WorldValues.Roads)
-            {
-                if (existingRoad.FromTile == details.FromTile && existingRoad.ToTile == details.ToTile) return true;
-                else if (existingRoad.FromTile == details.ToTile && existingRoad.ToTile == details.FromTile) return true;
-            }
-
-            return false;
+            InformationDisplayer.DisplayRemoveRoad(details.Tile.ToString());
         }
     }
 }
