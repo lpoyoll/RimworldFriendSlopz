@@ -29,7 +29,7 @@ namespace RTServer.Hooks.TCPNetwork
                 UserManager.SendPlayerRecount();
                 
                 InformationDisplayer.DisplayDisconnect(client);
-                if (client.IsVerified) InformationDisplayer.DisplayLogOut(client);
+                if (client.GetData<FL_Player>() != null) InformationDisplayer.DisplayLogOut(client);
                 if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.GetData<FL_Player>().Username} has left the server!");
             }
             catch (Exception ex) { Printer.Error(ex); }
