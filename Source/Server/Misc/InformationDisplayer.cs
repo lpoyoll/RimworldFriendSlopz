@@ -49,10 +49,10 @@ namespace RTServer.Misc
         public static void DisplayUserBackup(string value) { Printer.Message($"[User backup] > {value}"); }
 
         public static void DisplayResetPlayer(string value) { Printer.Message($"[Reset player] > {value}"); }
-
-        public static void DisplayModBypass(string value) { Printer.Warning($"[Mod bypass] > {value}"); }
-
+        
         public static void DisplayModMismatch(string value) { Printer.Warning($"[Mod mismatch] > {value}"); }
+        
+        public static void DisplayModConfigMismatch(string value) { Printer.Warning($"[Mod config mismatch] > {value}"); }
 
         public static void DisplayVersionMismatch(ServerClient client) { Printer.Warning($"[Version mismatch] > {client.IP}"); }
 

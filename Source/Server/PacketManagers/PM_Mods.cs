@@ -51,17 +51,22 @@ namespace RTServer.PacketManagers
             }
         }
 
-        public static bool CheckIfModConflict(ServerClient client, PKT_Login loginData)
+        public static bool CheckIfModConflict(ServerClient client, FL_ModConfig file)
         {
             if (Master.ModConfig.AllowAllMods) return false;
+            
+            else if (!PM_World.CheckIfWorldExists()) return false;
+            
+            else if (client.GetData<FL_Player>().IsAdmin) return false;
+            
             else
             {
                 bool isConflicting = false;
                 
                 //Check if missing required mods
-                foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
+                foreach (FL_ModData config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
                 {
-                    ModConfig toFind = loginData.RunningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
+                    FL_ModData toFind = file.ModConfigs.Find(fetch => fetch.ModName == config.ModName);
                     if (toFind == null)
                     {
                         isConflicting = true;
@@ -70,9 +75,9 @@ namespace RTServer.PacketManagers
                 }
 
                 //Check if has mods that aren't required or optional
-                foreach (ModConfig config in loginData.RunningMods.ModConfigs)
+                foreach (FL_ModData config in file.ModConfigs)
                 {
-                    ModConfig toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.FileName == config.FileName
+                    FL_ModData toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.ModName == config.ModName
                         && (fetch.Type == FL_ModConfig.ModType.Required || fetch.Type == FL_ModConfig.ModType.Optional));
 
                     if (toFind == null)
@@ -81,24 +86,54 @@ namespace RTServer.PacketManagers
                         break;
                     }
                 }
-
-                //Check for final conflicting count
+                
                 if (!isConflicting) return false;
                 else
                 {
-                    if (client.GetData<FL_Player>().IsAdmin)
-                    {
-                        InformationDisplayer.DisplayModBypass(client.GetData<FL_Player>().Username);
-                        return false;
-                    }
+                    InformationDisplayer.DisplayModMismatch(client.GetData<FL_Player>().Username);
+                    PM_Login.DenyConnectionWithReason(client, LoginResponse.Mods);
+                    return true;
+                }
+            }
+        }
 
-                    else
+        public static bool CheckForModConfigs(ServerClient client, FL_ModConfig file)
+        {
+            if (Master.ModConfig.AllowAllMods) return false;
+            
+            else if (!PM_World.CheckIfWorldExists()) return false;
+            
+            else if (client.GetData<FL_Player>().IsAdmin) return false;
+            
+            else
+            {
+                foreach (FL_ModData config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
+                {
+                    FL_ModData toFind = file.ModConfigs.FirstOrDefault(fetch => fetch.ModName == config.ModName);
+                    
+                    if (config.Settings == null) continue;
+                    else if (toFind.Settings == null || config.Settings.Hash != toFind.Settings.Hash)
                     {
-                        InformationDisplayer.DisplayModMismatch(client.GetData<FL_Player>().Username);
-                        PM_Login.DenyConnectionWithReason(client, LoginResponse.Mods);
+                        InformationDisplayer.DisplayModConfigMismatch(client.GetData<FL_Player>().Username);
+                        PM_Login.DenyConnectionWithReason(client, LoginResponse.ModConfigs);
                         return true;
                     }
                 }
+                
+                foreach (FL_ModData config in file.ModConfigs)
+                {
+                    FL_ModData toFind = Master.ModConfig.ModConfigs.Find(fetch => fetch.ModName == config.ModName);
+                    
+                    if (toFind.Settings == null) continue;
+                    else if (config.Settings == null || config.Settings.Hash != toFind.Settings.Hash)
+                    {
+                        InformationDisplayer.DisplayModConfigMismatch(client.GetData<FL_Player>().Username);
+                        PM_Login.DenyConnectionWithReason(client, LoginResponse.ModConfigs);
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
     }

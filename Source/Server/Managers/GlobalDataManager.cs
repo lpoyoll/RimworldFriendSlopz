@@ -22,7 +22,7 @@ namespace RTServer.Managers
             globalData.ScenarioValues = Master.ScenarioValues;
             globalData.DifficultyValues = Master.DifficultyValues;
             globalData.StorytellerValues = Master.StorytellerValues;
-            globalData.ModConfigs = Master.ModConfig.ModConfigs;
+            globalData.ModConfigs = Master.ModConfig;
             globalData.EventValues = PM_Events.LoadedEvents;
             globalData.Roads = PM_Roads.GetAllRoads();
             

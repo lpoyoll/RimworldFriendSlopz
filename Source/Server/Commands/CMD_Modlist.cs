@@ -17,28 +17,20 @@ namespace RTServer.Commands
 
         public override void Action() 
         {
-            ModConfig[] required = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required).ToArray();
+            FL_ModData[] required = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required).ToArray();
             Printer.Title($"Required Mods: {required.Length}");
             Printer.Title("----------------------------------------");
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
+            foreach (FL_ModData config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
             {
-                Printer.Warning(config.FileName);
+                Printer.Warning(config.ModName);
             }
 
-            ModConfig[] optional = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Optional).ToArray();
+            FL_ModData[] optional = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Optional).ToArray();
             Printer.Title($"Optional Mods: {optional.Length}");
             Printer.Title("----------------------------------------");
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Optional))
+            foreach (FL_ModData config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Optional))
             {
-                Printer.Warning(config.FileName);
-            }
-
-            ModConfig[] forbidden = Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Forbidden).ToArray();
-            Printer.Title($"Forbidden Mods: {forbidden.Length}");
-            Printer.Title("----------------------------------------");
-            foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Forbidden))
-            {
-                Printer.Warning(config.FileName);
+                Printer.Warning(config.ModName);
             }
         }
     }
