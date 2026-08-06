@@ -6,6 +6,7 @@ using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTServer.Misc;
 using RTShared.Details.Planet;
+using RTShared.Files;
 using RTShared.Files.Configs;
 using RTShared.Files.Player;
 using RTShared.Misc;
@@ -32,6 +33,10 @@ namespace RTServer.PacketManagers
                     case RoadStepMode.Remove:
                         RemoveRoad(client, data);
                         break;
+                    
+                    case RoadStepMode.Bulk:
+                        AddRoadsBulk(client, data);
+                        break;
                 }
 
                 client.GetData<FL_Player>().Cooldowns.SetRoadTimer(client.GetData<FL_Player>());
@@ -40,7 +45,7 @@ namespace RTServer.PacketManagers
 
         private static void AddRoad(ServerClient client, PKT_Road packet)
         {
-            RoadDetail toAdd = Master.WorldValues.Roads.FirstOrDefault(fetch => fetch.Tile == packet.Roads.Tile);
+            RoadDetail toAdd = FindRoadFile(packet.Roads[0].Tile);
             
             if (toAdd != null)
             {
@@ -49,14 +54,15 @@ namespace RTServer.PacketManagers
             
             else
             {
-                SaveRoad(packet.Roads);
+                Master.RoadFile.Add(packet.Roads[0]);
                 ServerNetwork.SendPacketToAllClients(PacketHeader.Road, packet);
+                InformationDisplayer.DisplayAddRoad(toAdd.Tile.ToString());
             }
         }
 
         private static void RemoveRoad(ServerClient client, PKT_Road packet)
         {
-            RoadDetail toRemove = Master.WorldValues.Roads.FirstOrDefault(fetch => fetch.Tile == packet.Roads.Tile);
+            RoadDetail toRemove = FindRoadFile(packet.Roads[0].Tile);
             
             if (toRemove == null)
             {
@@ -65,25 +71,25 @@ namespace RTServer.PacketManagers
             
             else
             {
-                DeleteRoad(toRemove);
+                Master.RoadFile.Remove(toRemove);
                 ServerNetwork.SendPacketToAllClients(PacketHeader.Road, packet);
+                InformationDisplayer.DisplayRemoveRoad(toRemove.Tile.ToString());
             }
         }
 
-        private static void SaveRoad(RoadDetail details)
+        private static void AddRoadsBulk(ServerClient client, PKT_Road packet)
         {
-            Master.WorldValues.Roads.Add(details);
-            FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
-
-            InformationDisplayer.DisplayAddRoad(details.Tile.ToString());
+            foreach (RoadDetail road in packet.Roads)
+            {
+                Master.RoadFile.Add(road);
+            }
         }
 
-        private static void DeleteRoad(RoadDetail details)
-        {
-            Master.WorldValues.Roads.Remove(details);
-            FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
+        public static List<RoadDetail> GetAllRoads() { return Master.RoadFile.Roads; }
 
-            InformationDisplayer.DisplayRemoveRoad(details.Tile.ToString());
+        private static RoadDetail FindRoadFile(int tile)
+        {
+            return Master.RoadFile.Roads.FirstOrDefault(fetch => fetch.Tile == tile);
         }
     }
 }

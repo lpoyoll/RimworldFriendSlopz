@@ -57,6 +57,7 @@ namespace RTServer.Core
             FL_ChatConfig.SavePath = Path.Combine(Master.ConfigsPath, "ChatConfig.json");
             FL_Leaderboard.SavePath = Path.Combine(Master.AssetsPath, "Leaderboard.json");
             FL_Market.SavePath = Path.Combine(Master.AssetsPath, "Market.json");
+            FL_Road.SavePath = Path.Combine(Master.AssetsPath, "Roads.json");
             FL_Guild.SavePath = Path.Combine(Master.GuildsPath);
 
             //Find a way to move these two to another place or merge with the above
@@ -121,6 +122,9 @@ namespace RTServer.Core
 
             Master.MarketFile = (FL_Market)FL_Market.Load<FL_Market>(FL_Market.SavePath);
             FL_Market.Save(FL_Market.SavePath, Master.MarketFile);
+            
+            Master.RoadFile = (FL_Road)FL_Market.Load<FL_Road>(FL_Road.SavePath);
+            FL_Road.Save(FL_Road.SavePath, Master.RoadFile);
 
             // Don't automatically save this one
             // We require this file to be saved after a client upload

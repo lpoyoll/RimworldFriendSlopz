@@ -24,12 +24,9 @@ namespace RTServer.Managers
             globalData.StorytellerValues = Master.StorytellerValues;
             globalData.ModConfigs = Master.ModConfig.ModConfigs;
             globalData.EventValues = PM_Events.LoadedEvents;
-
-            if (Master.WorldValues != null)
-            {
-                globalData.Roads = Master.WorldValues.Roads;
-                globalData.PollutedTiles = Master.WorldValues.PollutedTiles;
-            }
+            globalData.Roads = PM_Roads.GetAllRoads();
+            
+            if (Master.WorldValues != null) globalData.PollutedTiles = Master.WorldValues.PollutedTiles;
 
             client.Listener.EnqueuePacket(PacketHeader.GlobalData, globalData);
         }
