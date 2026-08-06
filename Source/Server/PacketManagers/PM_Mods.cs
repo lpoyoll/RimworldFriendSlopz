@@ -152,7 +152,7 @@ namespace RTServer.PacketManagers
                 if (file.ModOrder.Hash == Master.ModConfig.ModOrder.Hash) return false;
                 else
                 {
-                    InformationDisplayer.DisplayModConfigMismatch(client.GetData<FL_Player>().Username);
+                    InformationDisplayer.DisplayModOrderMismatch(client.GetData<FL_Player>().Username);
                     PM_Login.DenyConnectionWithReason(client, LoginResponse.ModOrder);
                     return true;
                 }

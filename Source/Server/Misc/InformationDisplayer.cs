@@ -53,6 +53,8 @@ namespace RTServer.Misc
         public static void DisplayModMismatch(string value) { Printer.Warning($"[Mod mismatch] > {value}"); }
         
         public static void DisplayModConfigMismatch(string value) { Printer.Warning($"[Mod config mismatch] > {value}"); }
+        
+        public static void DisplayModOrderMismatch(string value) { Printer.Warning($"[Mod order mismatch] > {value}"); }
 
         public static void DisplayVersionMismatch(ServerClient client) { Printer.Warning($"[Version mismatch] > {client.IP}"); }
 
