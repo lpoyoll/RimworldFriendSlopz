@@ -56,7 +56,7 @@ namespace RTServer.PacketManagers
             {
                 Master.RoadFile.Add(packet.Roads[0]);
                 ServerNetwork.SendPacketToAllClients(PacketHeader.Road, packet);
-                InformationDisplayer.DisplayAddRoad(toAdd.Tile.ToString());
+                InformationDisplayer.DisplayAddRoad(packet.Roads[0].Tile.ToString());
             }
         }
 
@@ -73,7 +73,7 @@ namespace RTServer.PacketManagers
             {
                 Master.RoadFile.Remove(toRemove);
                 ServerNetwork.SendPacketToAllClients(PacketHeader.Road, packet);
-                InformationDisplayer.DisplayRemoveRoad(toRemove.Tile.ToString());
+                InformationDisplayer.DisplayRemoveRoad(packet.Roads[0].Tile.ToString());
             }
         }
 
