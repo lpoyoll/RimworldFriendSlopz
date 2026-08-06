@@ -210,7 +210,7 @@ namespace RTServer.PacketManagers
             else
             {
                 FL_Player toPromoteOffline = UserManagerH.GetUserFileFromName(settlement.Username);
-                if (GuildManagerH.GetMemberRank(guild, toPromoteOffline.Username) != GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
+                if (GuildManagerH.GetMemberRank(guild, toPromoteOffline.Username) != GuildRanks.Member) ResponseShortcutManager.SendUnavailablePacket(client);
                 else
                 {
                     GuildMember member = GuildManagerH.GetAllGuildMembers(guild).First(fetch => fetch.Username == toPromoteOffline.Username);
@@ -232,7 +232,7 @@ namespace RTServer.PacketManagers
             else
             {
                 FL_Player toDemoteOffline = UserManagerH.GetUserFileFromName(settlement.Username);
-                if (GuildManagerH.GetMemberRank(guild, toDemoteOffline.Username) != GuildRanks.Moderator) ResponseShortcutManager.SendNoPowerPacket(client);
+                if (GuildManagerH.GetMemberRank(guild, toDemoteOffline.Username) != GuildRanks.Moderator) ResponseShortcutManager.SendUnavailablePacket(client);
                 else
                 {
                     GuildMember member = GuildManagerH.GetAllGuildMembers(guild).First(fetch => fetch.Username == toDemoteOffline.Username);
