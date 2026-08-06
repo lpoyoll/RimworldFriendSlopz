@@ -100,8 +100,8 @@ namespace RTServer.PacketManagers
             PKT_Login loginData = new PKT_Login();
             loginData.Response = response;
 
-            if (response == LoginResponse.Mods) loginData.ExtraDetails = (List<string>)extraDetails;
-            else if (response == LoginResponse.Version) loginData.ExtraDetails = new List<string>() { CommonValues.ExecutableVersion };
+            if (response == LoginResponse.Mods) loginData.ServerMods = Master.ModConfig;
+            else if (response == LoginResponse.Version) loginData.ExtraDetails = [CommonValues.ExecutableVersion];
 
             client.Listener.EnqueuePacket(PacketHeader.Login, loginData);
             client.Listener.MarkForDisconnect();

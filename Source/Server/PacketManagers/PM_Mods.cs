@@ -56,16 +56,16 @@ namespace RTServer.PacketManagers
             if (Master.ModConfig.BypassMods) return false;
             else
             {
-                List<string> conflictingModNames = new List<string>();
-
+                bool isConflicting = false;
+                
                 //Check if missing required mods
                 foreach (ModConfig config in Master.ModConfig.ModConfigs.Where(fetch => fetch.Type == FL_ModConfig.ModType.Required))
                 {
                     ModConfig toFind = loginData.RunningMods.ModConfigs.Find(fetch => fetch.FileName == config.FileName);
                     if (toFind == null)
                     {
-                        conflictingModNames.Add($"[Required] > {config.FileName}");
-                        continue;
+                        isConflicting = true;
+                        break;
                     }
                 }
 
@@ -77,13 +77,13 @@ namespace RTServer.PacketManagers
 
                     if (toFind == null)
                     {
-                        conflictingModNames.Add($"[Disallowed] > {config.FileName}");
-                        continue;
+                        isConflicting = true;
+                        break;
                     }
                 }
 
                 //Check for final conflicting count
-                if (conflictingModNames.Count == 0) return false;
+                if (!isConflicting) return false;
                 else
                 {
                     if (client.GetData<FL_Player>().IsAdmin)
@@ -95,7 +95,7 @@ namespace RTServer.PacketManagers
                     else
                     {
                         InformationDisplayer.DisplayModMismatch(client.GetData<FL_Player>().Username);
-                        PM_Login.DenyConnectionWithReason(client, LoginResponse.Mods, conflictingModNames);
+                        PM_Login.DenyConnectionWithReason(client, LoginResponse.Mods);
                         return true;
                     }
                 }
