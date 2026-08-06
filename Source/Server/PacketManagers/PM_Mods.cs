@@ -53,7 +53,7 @@ namespace RTServer.PacketManagers
 
         public static bool CheckIfModConflict(ServerClient client, PKT_Login loginData)
         {
-            if (Master.ModConfig.BypassMods) return false;
+            if (Master.ModConfig.AllowAllMods) return false;
             else
             {
                 bool isConflicting = false;

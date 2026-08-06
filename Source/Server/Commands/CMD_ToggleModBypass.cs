@@ -15,9 +15,9 @@ namespace RTServer.Commands
 
         public override void Action()
         {
-            Master.ModConfig.BypassMods = !Master.ModConfig.BypassMods;
+            Master.ModConfig.AllowAllMods = !Master.ModConfig.AllowAllMods;
             FL_ModConfig.Save(FL_ModConfig.SavePath, Master.ModConfig);
-            Printer.Warning($"Mod bypass is now: {Master.ModConfig.BypassMods}");
+            Printer.Warning($"Mod bypass is now: {Master.ModConfig.AllowAllMods}");
         }
     }
 }

@@ -69,21 +69,11 @@ namespace RTServer.PacketManagers
 
             PM_Chat.SendLoginChatMessages(client);
 
-            if (PM_World.CheckIfWorldExists())
+            if (!PM_World.CheckIfWorldExists()) PM_World.RequireWorldFile(client);
+            else
             {
                 if (PM_Saves.CheckIfUserHasSave(client)) PM_Saves.SendSaveToClient(client);
                 else PM_World.SendWorld(client);
-            }
-
-            else
-            {
-                PM_World.RequireWorldFile(client);
-
-                client.GetData<FL_Player>().UpdateAdmin(true);
-                PKT_Command commandData = new PKT_Command();
-                commandData._commandMode = CommandMode.Op;
-                client.Listener.EnqueuePacket(PacketHeader.Console, commandData);
-                Printer.Warning($"Giving first join admin permission to {client.GetData<FL_Player>().Username}");
             }
         }
 

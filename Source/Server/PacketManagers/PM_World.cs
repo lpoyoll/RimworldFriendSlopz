@@ -43,11 +43,17 @@ namespace RTServer.PacketManagers
             client.Listener.EnqueuePacket(PacketHeader.World, data);
         }
 
-        public static void ReceiveWorld(ServerClient client, PKT_World data)
+        private static void ReceiveWorld(ServerClient client, PKT_World data)
         {
-            if (!client.GetData<FL_Player>().IsAdmin) client.Listener.MarkForDisconnect();
+            if (Master.WorldValues != null) client.Listener.MarkForDisconnect();
             else
             {
+                client.GetData<FL_Player>().UpdateAdmin(true);
+                PKT_Command commandData = new PKT_Command();
+                commandData._commandMode = CommonEnumerators.CommandMode.Op;
+                client.Listener.EnqueuePacket(PacketHeader.Console, commandData);
+                Printer.Warning($"Giving first join admin permission to {client.GetData<FL_Player>().Username}");
+                
                 Master.WorldValues = data.File;
                 FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
                 InformationDisplayer.DisplaySetWorld(client);
