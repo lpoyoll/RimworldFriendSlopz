@@ -136,5 +136,27 @@ namespace RTServer.PacketManagers
                 return false;
             }
         }
+
+        public static bool CheckForModOrder(ServerClient client, FL_ModConfig file)
+        {
+            if (Master.ModConfig.AllowAllMods) return false;
+            
+            if (Master.ModConfig.ModOrder == null) return false;
+            
+            else if (!PM_World.CheckIfWorldExists()) return false;
+            
+            else if (client.GetData<FL_Player>().IsAdmin) return false;
+
+            else
+            {
+                if (file.ModOrder.Hash == Master.ModConfig.ModOrder.Hash) return false;
+                else
+                {
+                    InformationDisplayer.DisplayModConfigMismatch(client.GetData<FL_Player>().Username);
+                    PM_Login.DenyConnectionWithReason(client, LoginResponse.ModOrder);
+                    return true;
+                }
+            }
+        }
     }
 }

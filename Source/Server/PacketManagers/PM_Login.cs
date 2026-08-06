@@ -44,6 +44,8 @@ namespace RTServer.PacketManagers
             if (PM_Mods.CheckIfModConflict(client, data.RunningMods)) return false;
             
             if (PM_Mods.CheckForModConfigs(client, data.RunningMods)) return false;
+            
+            if (PM_Mods.CheckForModOrder(client, data.RunningMods)) return false;
 
             RemoveOldClientSessions(client);
 
@@ -92,7 +94,7 @@ namespace RTServer.PacketManagers
             PKT_Login loginData = new PKT_Login();
             loginData.Response = response;
 
-            if (response == LoginResponse.Mods || response == LoginResponse.ModConfigs) loginData.ServerMods = Master.ModConfig;
+            if (response == LoginResponse.Mods || response == LoginResponse.ModConfigs || response == LoginResponse.ModOrder) loginData.ServerMods = Master.ModConfig;
             else if (response == LoginResponse.Version) loginData.ExtraDetails = [CommonValues.ExecutableVersion];
 
             client.Listener.EnqueuePacket(PacketHeader.Login, loginData);
