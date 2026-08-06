@@ -32,7 +32,7 @@ namespace RTServer.PacketManagers.ServerBrowser
             telemetry.IsPrivate = mode == BrowserMode.Private;
             telemetry.CurrentPopulation = ServerNetwork.GetConnectedClients().Length;
             telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
-            // telemetry.PasswordProtected = !string.IsNullOrWhiteSpace(Master.PasswordConfig.Password);
+            telemetry.PasswordProtected = !string.IsNullOrWhiteSpace(Master.PasswordConfig.Password);
             telemetry.Mods = Master.ModConfig.ModConfigs.OrderBy(fetch => fetch.ModName).ToList();
 
             Network.MultipurposeEndpoint?.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
