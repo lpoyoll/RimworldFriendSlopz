@@ -34,6 +34,7 @@ namespace RTServer.PacketManagers.ServerBrowser
             telemetry.MaxPopulation = Master.ServerConfig.MaxPlayers;
             telemetry.PasswordProtected = !string.IsNullOrWhiteSpace(Master.PasswordConfig.Password);
             telemetry.Mods = Master.ModConfig.ModConfigs.OrderBy(fetch => fetch.ModName).ToList();
+            telemetry.PlayerNames = ServerNetwork.GetConnectedUsernames();
 
             Network.MultipurposeEndpoint?.EnqueuePacket(PacketHeader.ServerBrowserTelemetry, telemetry);
         }

@@ -80,6 +80,20 @@ namespace RTServer.Hooks.TCPNetwork
             }
             else return Network.ServerClients.Keys.ToArray();
         }
+        
+        public static List<string> GetConnectedUsernames()
+        {
+            ServerClient[] connectedClients = GetConnectedClients(); 
+            List<string> usernames = [];
+            
+            foreach (ServerClient client in connectedClients)
+            {
+                if (client.GetData<FL_Player>() == null) usernames.Add("Unknown");
+                else usernames.Add(client.GetData<FL_Player>().Username);
+            }
+
+            return usernames;
+        }
 
         public static ServerClient GetConnectedClientFromUsername(string username)
         {

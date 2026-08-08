@@ -25,7 +25,7 @@ namespace RTServer.PacketManagers
             {
                 PKT_PlayerGuild data = Serializer.ConvertBytesToObject<PKT_PlayerGuild>(bytes);
 
-                switch (data._stepMode)
+                switch (data.StepMode)
                 {
                     case GuildStepMode.Create:
                         Create(client, data);
@@ -66,31 +66,33 @@ namespace RTServer.PacketManagers
 
         private static void Create(ServerClient client, PKT_PlayerGuild packet)
         {
-            if (GuildManagerH.CheckIfGuildExistsByName(packet._guild.Name))
+            if (GuildManagerH.CheckIfGuildExistsByName(packet.Guild.Name))
             {
-                packet._stepMode = GuildStepMode.NameInUse;
+                packet.StepMode = GuildStepMode.NameInUse;
                 client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
             }
-
+            
+            else if (!GuildManagerH.CheckIfGuildNameLegal(packet.Guild.Name))
+            {
+                packet.StepMode = GuildStepMode.IllegalName;
+                client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
+            }
+            
             else
             {
-                packet._stepMode = GuildStepMode.Create;
+                packet.Guild.AddMember(new GuildMember()
+                {
+                    Username = client.GetData<FL_Player>().Username,
+                    Rank = GuildMember.GuildRanks.Admin
+                });
 
-                GuildMember member = new GuildMember();
-                member.Username = client.GetData<FL_Player>().Username;
-                member.Rank = GuildMember.GuildRanks.Admin;
+                client.GetData<FL_Player>().UpdateGuild(packet.Guild);
 
-                FL_Guild guild = new FL_Guild();
-                guild.Name = packet._guild.Name;
-                guild.AddMember(member);
-
-                client.GetData<FL_Player>().UpdateGuild(guild);
-
-                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<FL_Player>().Username)) site.UpdateGuild(guild);
+                foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<FL_Player>().Username)) site.UpdateGuild(packet.Guild);
 
                 client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
 
-                InformationDisplayer.DisplayAddGuild(guild.Name);
+                InformationDisplayer.DisplayAddGuild(packet.Guild.Name);
             }
         }
 
@@ -105,7 +107,7 @@ namespace RTServer.PacketManagers
 
                 foreach (FL_Site site in GuildManagerH.GetGuildSites(guild)) site.UpdateGuild(null);
 
-                packet._stepMode = GuildStepMode.Delete;
+                packet.StepMode = GuildStepMode.Delete;
                 foreach (ServerClient toUpdateConnected in GuildManagerH.GetConnectedGuildMembers(guild))
                 {
                     toUpdateConnected.GetData<FL_Player>().UpdateGuild(null);
@@ -122,7 +124,7 @@ namespace RTServer.PacketManagers
         private static void InviteMember(ServerClient client, PKT_PlayerGuild packet)
         {
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet.DataInt);
             ServerClient toAdd = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
             if (toAdd == null) ResponseShortcutManager.SendUnavailablePacket(client);
@@ -130,14 +132,14 @@ namespace RTServer.PacketManagers
             else if (GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
-                packet._guild.Name = guild.Name;
+                packet.Guild.Name = guild.Name;
                 toAdd.Listener.EnqueuePacket(PacketHeader.Guild, packet);
             }
         }
 
         private static void AddMember(ServerClient client, PKT_PlayerGuild packet)
         {
-            FL_Guild guild = GuildManagerH.GetGuildFromName(packet._guild.Name);
+            FL_Guild guild = GuildManagerH.GetGuildFromName(packet.Guild.Name);
 
             if (!GuildManagerH.CheckIfUserIsInGuild(guild, client.GetData<FL_Player>().Username))
             {
@@ -157,7 +159,7 @@ namespace RTServer.PacketManagers
         private static void RemoveMember(ServerClient client, PKT_PlayerGuild packet)
         {
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet.DataInt);
             FL_Player toRemoveOffline = UserManagerH.GetUserFileFromName(settlement.Username);
             ServerClient toRemoveOnline = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
@@ -168,7 +170,7 @@ namespace RTServer.PacketManagers
                 if (userRank != GuildRanks.Admin) Remove();
                 else
                 {
-                    packet._stepMode = GuildStepMode.AdminProtection;
+                    packet.StepMode = GuildStepMode.AdminProtection;
                     client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
                 }
             }
@@ -202,7 +204,7 @@ namespace RTServer.PacketManagers
 
         private static void PromoteMember(ServerClient client, PKT_PlayerGuild packet)
         {
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet.DataInt);
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
 
             GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username);
@@ -224,7 +226,7 @@ namespace RTServer.PacketManagers
 
         private static void DemoteMember(ServerClient client, PKT_PlayerGuild packet)
         {
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._dataInt);
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet.DataInt);
             FL_Guild guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
 
             GuildRanks rank = GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username);
@@ -246,7 +248,7 @@ namespace RTServer.PacketManagers
 
         private static void SendMemberList(ServerClient client, PKT_PlayerGuild packet)
         {
-            packet._guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
+            packet.Guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
             client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
         }
     }
@@ -295,5 +297,7 @@ namespace RTServer.PacketManagers
         {
             return GetAllGuilds().FirstOrDefault(fetch => fetch.Name == nameToCheck) != null;
         }
+
+        public static bool CheckIfGuildNameLegal(string guildName) { return StringChecker.CheckIfStringValid(guildName); }
     }
 }
