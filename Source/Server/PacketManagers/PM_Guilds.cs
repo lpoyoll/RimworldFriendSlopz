@@ -55,8 +55,8 @@ namespace RTServer.PacketManagers
                         DemoteMember(client, data);
                         break;
 
-                    case GuildStepMode.MemberList:
-                        SendMemberList(client, data);
+                    case GuildStepMode.Information:
+                        SendGuildInformation(client, data);
                         break;
                 }
 
@@ -132,7 +132,7 @@ namespace RTServer.PacketManagers
             else if (GuildManagerH.GetMemberRank(guild, client.GetData<FL_Player>().Username) == GuildRanks.Member) ResponseShortcutManager.SendNoPowerPacket(client);
             else
             {
-                packet.Guild.Name = guild.Name;
+                packet.Guild = guild;
                 toAdd.Listener.EnqueuePacket(PacketHeader.Guild, packet);
             }
         }
@@ -246,7 +246,7 @@ namespace RTServer.PacketManagers
             }
         }
 
-        private static void SendMemberList(ServerClient client, PKT_PlayerGuild packet)
+        private static void SendGuildInformation(ServerClient client, PKT_PlayerGuild packet)
         {
             packet.Guild = GuildManagerH.GetGuildFromName(client.GetData<FL_Player>().GuildName);
             client.Listener.EnqueuePacket(PacketHeader.Guild, packet);
