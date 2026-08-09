@@ -8,7 +8,6 @@ using RTServer.Misc;
 using RTShared.Files;
 using RTShared.Files.Player;
 using RTShared.Misc;
-using static RTShared.Misc.CommonEnumerators;
 
 namespace RTServer.PacketManagers
 {
@@ -19,13 +18,13 @@ namespace RTServer.PacketManagers
         {
             PKT_PlayerSettlement data = Serializer.ConvertBytesToObject<PKT_PlayerSettlement>(bytes);
 
-            switch (data._stepMode)
+            switch (data.StepMode)
             {
-                case SettlementStepMode.Add:
+                case PKT_PlayerSettlement.SettlementStepMode.Add:
                     AddSettlement(client, data);
                     break;
 
-                case SettlementStepMode.Remove:
+                case PKT_PlayerSettlement.SettlementStepMode.Remove:
                     RemoveSettlement(client, data);
                     break;
             }
@@ -33,27 +32,23 @@ namespace RTServer.PacketManagers
 
         public static void AddSettlement(ServerClient client, PKT_PlayerSettlement packet)
         {
-            if (CheckIfTileIsInUse(packet._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to add a settlement at tile {packet._settlementFile.Tile}, but that tile already has a settlement");
+            if (CheckIfTileIsInUse(packet.File.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to add a settlement at tile {packet.File.Tile}, but that tile already has a settlement");
             else
             {
                 FL_Settlement settlementFile = new FL_Settlement();
-                settlementFile.Tile = packet._settlementFile.Tile;
+                settlementFile.Tile = packet.File.Tile;
                 settlementFile.Username = client.GetData<FL_Player>().Username;
                 Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat), settlementFile);
 
-                packet._stepMode = SettlementStepMode.Add;
-                packet._settlementFile = settlementFile;
-                packet._settlementFile.IconID = client.GetData<FL_Player>().Customizations.SettlementIconID;
-                packet._settlementFile.IconColor = client.GetData<FL_Player>().Customizations.SettlementIconColor;
+                packet.StepMode = PKT_PlayerSettlement.SettlementStepMode.Add;
+                packet.File = settlementFile;
+                packet.File.IconID = client.GetData<FL_Player>().Customizations.SettlementIconID;
+                packet.File.IconColor = client.GetData<FL_Player>().Customizations.SettlementIconColor;
                 
                 foreach (ServerClient cClient in ServerNetwork.GetConnectedClients())
                 {
                     if (cClient == client) continue;
-                    else
-                    {
-                        packet._settlementFile.Goodwill = PM_Goodwills.GetSettlementGoodwill(cClient, settlementFile);
-                        cClient.Listener.EnqueuePacket(PacketHeader.Settlement, packet);
-                    }
+                    else cClient.Listener.EnqueuePacket(PacketHeader.Settlement, packet);
                 }
 
                 InformationDisplayer.DisplayAddSettlement(settlementFile.Tile.ToString());
@@ -62,15 +57,15 @@ namespace RTServer.PacketManagers
 
         public static void RemoveSettlement(ServerClient client, PKT_PlayerSettlement settlementData)
         {
-            if (!CheckIfTileIsInUse(settlementData._settlementFile.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementFile.Tile} was attempted to be removed, but the tile doesn't contain a settlement");
+            if (!CheckIfTileIsInUse(settlementData.File.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.File.Tile} was attempted to be removed, but the tile doesn't contain a settlement");
 
-            FL_Settlement settlementFile = GetSettlementFileFromTile(settlementData._settlementFile.Tile);
+            FL_Settlement settlementFile = GetSettlementFileFromTile(settlementData.File.Tile);
 
             if (client != null)
             {
                 if (settlementFile.Username != client.GetData<FL_Player>().Username)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData._settlementFile.Tile} attempted to be removed by " +
+                    ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.File.Tile} attempted to be removed by " +
                         $"{client.GetData<FL_Player>().Username}, but {settlementFile.Username} owns the settlement");
                 }
 
@@ -96,7 +91,7 @@ namespace RTServer.PacketManagers
 
             void SendRemovalSignal()
             {
-                settlementData._stepMode = SettlementStepMode.Remove;
+                settlementData.StepMode = PKT_PlayerSettlement.SettlementStepMode.Remove;
 
                 ServerNetwork.SendPacketToAllClients(PacketHeader.Settlement, settlementData, client);
             }
@@ -138,7 +133,7 @@ namespace RTServer.PacketManagers
             return null;
         }
 
-        public static FL_Settlement[] GetAllSettlements()
+        public static List<FL_Settlement> GetAllSettlements()
         {
             List<FL_Settlement> settlementList = new List<FL_Settlement>();
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
@@ -153,7 +148,7 @@ namespace RTServer.PacketManagers
                 settlementList.Add(file);
             }
 
-            return settlementList.ToArray();
+            return settlementList;
         }
 
         public static FL_Settlement[] GetAllSettlementsFromUsername(string username)
@@ -166,22 +161,6 @@ namespace RTServer.PacketManagers
             }
 
             return settlementList.ToArray();
-        }
-
-        public static List<FL_Settlement> GetSettlementsFromGoodwill(ServerClient client)
-        {
-            List<FL_Settlement> tempList = new List<FL_Settlement>();
-            foreach (FL_Settlement settlement in PM_Settlements.GetAllSettlements())
-            {
-                if (settlement.Username == client.GetData<FL_Player>().Username) continue;
-                else
-                {
-                    settlement.Goodwill = PM_Goodwills.GetSettlementGoodwill(client, settlement);
-                    tempList.Add(settlement);
-                }
-            }
-
-            return tempList;
         }
     }
 }

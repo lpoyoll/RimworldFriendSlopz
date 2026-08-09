@@ -2,7 +2,6 @@
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Packets;
-using static RTShared.Misc.CommonEnumerators;
 
 namespace RTServer.Commands
 {
@@ -22,8 +21,8 @@ namespace RTServer.Commands
             fullText = fullText.Remove(fullText.Length - 1, 1);
 
             PKT_Command commandData = new PKT_Command();
-            commandData._commandMode = CommandMode.Broadcast;
-            commandData._details = fullText;
+            commandData.Mode = PKT_Command.CommandMode.Broadcast;
+            commandData.Details = fullText;
 
             ServerNetwork.SendPacketToAllClients(PacketHeader.Console, commandData);
 

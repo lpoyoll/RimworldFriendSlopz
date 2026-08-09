@@ -3,7 +3,6 @@ using RTServer.Managers;
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Packets;
-using static RTShared.Misc.CommonEnumerators;
 using RTNetwork.Components;
 using RTShared.Files.Player;
 
@@ -33,7 +32,7 @@ namespace RTServer.Commands
                     if (client != null)
                     {
                         PKT_Command commandData = new PKT_Command();
-                        commandData._commandMode = CommandMode.Op;
+                        commandData.Mode = PKT_Command.CommandMode.Op;
 
                         client.GetData<FL_Player>().UpdateAdmin(true);
                         client.Listener.EnqueuePacket(PacketHeader.Console, commandData);

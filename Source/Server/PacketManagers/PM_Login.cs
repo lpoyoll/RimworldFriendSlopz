@@ -9,7 +9,6 @@ using RTServer.Managers;
 using RTServer.Misc;
 using RTShared.Files.Player;
 using RTShared.Misc;
-using static RTShared.Misc.CommonEnumerators;
 using static RTNetwork.Packets.PKT_Login;
 
 namespace RTServer.PacketManagers

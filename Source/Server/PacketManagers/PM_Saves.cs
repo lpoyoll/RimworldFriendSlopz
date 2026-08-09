@@ -72,8 +72,8 @@ namespace RTServer.PacketManagers
             foreach (FL_Settlement settlement in playerSettlements)
             {
                 PKT_PlayerSettlement settlementData = new PKT_PlayerSettlement();
-                settlementData._settlementFile.Tile = settlement.Tile;
-                settlementData._settlementFile.Username = settlement.Username;
+                settlementData.File.Tile = settlement.Tile;
+                settlementData.File.Username = settlement.Username;
 
                 PM_Settlements.RemoveSettlement(client, settlementData);
             }

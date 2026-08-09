@@ -112,7 +112,6 @@ namespace RTServer.PacketManagers
                 {
                     toUpdateConnected.GetData<FL_Player>().UpdateGuild(null);
                     toUpdateConnected.Listener.EnqueuePacket(PacketHeader.Guild, packet);
-                    PM_Goodwills.UpdateClientGoodwills(toUpdateConnected);
                 }
 
                 guild.Delete();
@@ -151,8 +150,6 @@ namespace RTServer.PacketManagers
                 client.GetData<FL_Player>().UpdateGuild(guild);
 
                 foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(client.GetData<FL_Player>().Username)) site.UpdateGuild(guild);
-
-                foreach (ServerClient sc in GuildManagerH.GetConnectedGuildMembers(guild)) PM_Goodwills.UpdateClientGoodwills(sc);
             }
         }
 
@@ -186,9 +183,6 @@ namespace RTServer.PacketManagers
                 if (toRemoveOnline != null)
                 {
                     toRemoveOnline.GetData<FL_Player>().UpdateGuild(null);
-
-                    PM_Goodwills.UpdateClientGoodwills(toRemoveOnline);
-
                     toRemoveOnline.Listener.EnqueuePacket(PacketHeader.Guild, packet);
                 }
 
@@ -197,8 +191,6 @@ namespace RTServer.PacketManagers
                 guild.RemoveMember(guild.GuildMembers.First(fetch => fetch.Username == toRemoveOffline.Username));
 
                 foreach (FL_Site site in PM_Sites.GetAllSitesFromUsername(toRemoveOffline.Username)) site.UpdateGuild(null);
-
-                foreach (ServerClient member in GuildManagerH.GetConnectedGuildMembers(guild)) PM_Goodwills.UpdateClientGoodwills(member);
             }
         }
 

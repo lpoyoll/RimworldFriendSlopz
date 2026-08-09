@@ -2,7 +2,6 @@
 using RTShared.Commands;
 using RTShared.Misc;
 using RTNetwork.Packets;
-using static RTShared.Misc.CommonEnumerators;
 using RTNetwork.Components;
 
 namespace RTServer.Commands
@@ -23,7 +22,7 @@ namespace RTServer.Commands
             else
             {
                 PKT_Command commandData = new PKT_Command();
-                commandData._commandMode = CommandMode.ForceSave;
+                commandData.Mode = PKT_Command.CommandMode.ForceSave;
 
                 toFind.Listener.EnqueuePacket(PacketHeader.Console, commandData);
 

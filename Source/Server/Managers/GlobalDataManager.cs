@@ -17,8 +17,8 @@ namespace RTServer.Managers
             globalData.ActionValues = Master.ActionConfigs;
             globalData.RoadValues = Master.ActionConfigs.RoadAction.RoadValues;
             globalData.WorldObjects = PM_WorldObject.GetAllWorldObjects();
-            globalData.PlayerSettlements = PM_Settlements.GetSettlementsFromGoodwill(client);
-            globalData.PlayerSites = PM_Sites.GetSitesFromGoodwill(client);
+            globalData.PlayerSettlements = PM_Settlements.GetAllSettlements().Where(fetch => fetch.Username != client.GetData<FL_Player>().Username).ToList();
+            globalData.PlayerSites = PM_Sites.GetAllSites();
             globalData.ScenarioValues = Master.ScenarioValues;
             globalData.DifficultyValues = Master.DifficultyValues;
             globalData.StorytellerValues = Master.StorytellerValues;

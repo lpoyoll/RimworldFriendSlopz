@@ -49,19 +49,18 @@ namespace RTServer.PacketManagers
             }
         }
 
-        public static void ConfirmNewSite(ServerClient client, FL_Site siteFile)
+        private static void ConfirmNewSite(ServerClient client, FL_Site siteFile)
         {
             siteFile.SaveSite();
-
-            PKT_Site packet = new PKT_Site();
-            packet.StepMode = SiteStepMode.Build;
-            packet.File = siteFile;
-
-            foreach (ServerClient sc in ServerNetwork.GetConnectedClients())
+            siteFile.IconColor = client.GetData<FL_Player>().Customizations.SettlementIconColor;
+            
+            PKT_Site packet = new PKT_Site()
             {
-                packet.File.Goodwill = PM_Goodwills.GetSiteGoodwill(sc, siteFile);
-                sc.Listener.EnqueuePacket(PacketHeader.Site, packet);
-            }
+                StepMode = SiteStepMode.Build,
+                File = siteFile
+            };
+
+            foreach (ServerClient sc in ServerNetwork.GetConnectedClients()) sc.Listener.EnqueuePacket(PacketHeader.Site, packet);
 
             packet.StepMode = SiteStepMode.Accept;
             client.Listener.EnqueuePacket(PacketHeader.Site, packet);
@@ -159,64 +158,38 @@ namespace RTServer.PacketManagers
                     !string.IsNullOrEmpty(fetch.WorkerString)).ToList();
         }
 
-        public static List<FL_Site> GetSitesFromGoodwill(ServerClient client)
-        {
-            List<FL_Site> tempList = new List<FL_Site>();
-            foreach (FL_Site site in GetAllSites())
-            {
-                FL_Site file = new FL_Site();
-
-                file.Tile = site.Tile;
-                file.Username = site.Username;
-                file.Goodwill = PM_Goodwills.GetSiteGoodwill(client, site);
-                file.GuildName = site.GuildName;
-
-                tempList.Add(file);
-            }
-
-            return tempList;
-        }
-
         public static FL_Site[] GetAllSitesFromUsername(string username)
         {
             List<FL_Site> sitesList = new List<FL_Site>();
-
-            string[] sites = Directory.GetFiles(Master.SitesPath);
-            foreach (string site in sites)
+            
+            foreach (FL_Site site in GetAllSites())
             {
-                FL_Site siteFile = Serializer.SerializeFromFile<FL_Site>(site);
-                if (siteFile.Username == username) sitesList.Add(siteFile);
+                if (site.Username == username) sitesList.Add(site);
             }
 
             return sitesList.ToArray();
         }
 
-        public static FL_Site GetSiteFileFromTile(int tileToGet)
-        {
-            string[] sites = Directory.GetFiles(Master.SitesPath);
-            foreach (string site in sites)
-            {
-                FL_Site siteFile = Serializer.SerializeFromFile<FL_Site>(site);
-                if (siteFile.Tile == tileToGet) return siteFile;
-            }
+        private static FL_Site GetSiteFileFromTile(int tileToGet) { return GetAllSites().FirstOrDefault(fetch => fetch.Tile == tileToGet); }
 
-            return null;
-        }
-
-        public static FL_Site[] GetAllSites()
+        public static List<FL_Site> GetAllSites()
         {
             List<FL_Site> sitesList = new List<FL_Site>();
-            try
+            string[] sites = Directory.GetFiles(Master.SitesPath);
+            
+            foreach (string site in sites)
             {
-                string[] sites = Directory.GetFiles(Master.SitesPath);
-                foreach (string site in sites) sitesList.Add(Serializer.SerializeFromFile<FL_Site>(site));
+                FL_Site file = Serializer.SerializeFromFile<FL_Site>(site);
+                FL_Player userFile = UserManagerH.GetUserFileFromName(file.Username);
+                    
+                file.IconColor = userFile.Customizations.SettlementIconColor;
+                sitesList.Add(file);
             }
-            catch (Exception ex) { Printer.Error($"Sites could not be loaded, either your formatting is wrong in the file 'SiteConfig.json' or you have not updated your sites to the newest version ('Update' command).\n\n{ex.ToString()}"); }
 
-            return sitesList.ToArray();
+            return sitesList;
         }
 
-        public static bool CheckIfTileIsInUse(int tileToCheck)
+        private static bool CheckIfTileIsInUse(int tileToCheck)
         {
             string[] sites = Directory.GetFiles(Master.SitesPath);
             foreach (string site in sites)

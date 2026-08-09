@@ -49,14 +49,16 @@ namespace RTServer.PacketManagers
             else
             {
                 client.GetData<FL_Player>().UpdateAdmin(true);
+                
                 PKT_Command commandData = new PKT_Command();
-                commandData._commandMode = CommonEnumerators.CommandMode.Op;
+                commandData.Mode = PKT_Command.CommandMode.Op;
                 client.Listener.EnqueuePacket(PacketHeader.Console, commandData);
-                Printer.Warning($"Giving first join admin permission to {client.GetData<FL_Player>().Username}");
                 
                 Master.WorldValues = data.File;
                 FL_PlanetConfig.Save(FL_PlanetConfig.SavePath, Master.WorldValues);
+                
                 InformationDisplayer.DisplaySetWorld(client);
+                Printer.Warning($"Giving first join admin permission to {client.GetData<FL_Player>().Username}");
             }
         }
     }
