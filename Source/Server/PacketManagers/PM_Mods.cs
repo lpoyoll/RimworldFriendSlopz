@@ -101,6 +101,8 @@ namespace RTServer.PacketManagers
         {
             if (Master.ModConfig.AllowAllMods) return false;
             
+            else if (!Master.ModConfig.EnforceSettings) return false;
+            
             else if (!PM_World.CheckIfWorldExists()) return false;
             
             else if (client.GetData<FL_Player>().IsAdmin) return false;
