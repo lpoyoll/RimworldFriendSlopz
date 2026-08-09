@@ -63,5 +63,7 @@ namespace RTServer.Misc
         public static void DisplaySetStoryteller(string value) { Printer.Warning($"[Set storyteller] > {value}"); }
 
         public static void DisplaySetDifficulty(string value) { Printer.Warning($"[Set difficulty] > {value}"); }
+
+        public static void DisplayChangedCustomizations(string value) { Printer.Warning($"[Change customizations] > {value}"); }
     }
 }

@@ -127,17 +127,5 @@ namespace RTServer.Managers
                 return true;
             }
         }
-        
-        public static int[] GetUserStructuresTilesFromUsername(string username)
-        {
-            FL_Settlement[] settlements = PM_Settlements.GetAllSettlements().ToList().FindAll(x => x.Username == username).ToArray();
-            FL_Site[] sites = PM_Sites.GetAllSites().ToList().FindAll(x => x.Username == username).ToArray();
-
-            List<int> tilesToExclude = new List<int>();
-            foreach (FL_Settlement settlement in settlements) tilesToExclude.Add(settlement.Tile);
-            foreach (FL_Site site in sites) tilesToExclude.Add(site.Tile);
-
-            return tilesToExclude.ToArray();
-        }
     }
 }
