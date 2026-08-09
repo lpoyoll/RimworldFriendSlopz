@@ -47,11 +47,7 @@ namespace RTServer.PacketManagers
         {
             RoadDetail toAdd = FindRoadFile(packet.Roads[0].Tile);
             
-            if (toAdd != null)
-            {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to build already existing road");
-            }
-            
+            if (toAdd != null) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 Master.RoadFile.Add(packet.Roads[0]);
@@ -64,11 +60,7 @@ namespace RTServer.PacketManagers
         {
             RoadDetail toRemove = FindRoadFile(packet.Roads[0].Tile);
             
-            if (toRemove == null)
-            {
-                ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to destroy non-existing road");
-            }
-            
+            if (toRemove == null) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 Master.RoadFile.Remove(toRemove);
