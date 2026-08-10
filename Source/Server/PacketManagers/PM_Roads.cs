@@ -71,9 +71,15 @@ namespace RTServer.PacketManagers
 
         private static void AddRoadsBulk(ServerClient client, PKT_Road packet)
         {
-            foreach (RoadDetail road in packet.Roads)
+            if (!client.GetData<FL_Player>().IsAdmin) client.Listener.MarkForDisconnect();
+            else
             {
-                Master.RoadFile.Add(road);
+                foreach (RoadDetail road in packet.Roads)
+                {
+                    Master.RoadFile.Add(road);
+                }
+            
+                Printer.Warning($"[Set roads] > {client.GetData<FL_Player>().Username}");   
             }
         }
 

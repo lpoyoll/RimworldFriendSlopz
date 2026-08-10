@@ -75,7 +75,7 @@ namespace RTServer.PacketManagers
 
         private static void SetEvents(ServerClient client, PKT_Event data)
         {
-            if (!client.GetData<FL_Player>().IsAdmin) ResponseShortcutManager.SendIllegalPacket(client, "Tried to modify events without being admin!");
+            if (!client.GetData<FL_Player>().IsAdmin) client.Listener.MarkForDisconnect();
             else
             {
                 foreach (FL_Event file in data._eventFiles)

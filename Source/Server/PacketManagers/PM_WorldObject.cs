@@ -65,7 +65,13 @@ namespace RTServer.PacketManagers
 
         private static void AddAllWorldObjects(ServerClient client, PKT_WorldObject packet)
         {
-            foreach (FL_WorldObject file in packet.Bulk) { AddWorldObject(null, null, file); }
+            if (!client.GetData<FL_Player>().IsAdmin) client.Listener.MarkForDisconnect();
+            else
+            {
+                foreach (FL_WorldObject file in packet.Bulk) { AddWorldObject(null, null, file); }
+            
+                Printer.Warning($"[Set world objects] > {client.GetData<FL_Player>().Username}");   
+            }
         }
 
         public static List<FL_WorldObject> GetAllWorldObjects()
