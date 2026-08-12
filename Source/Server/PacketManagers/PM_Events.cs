@@ -75,7 +75,7 @@ namespace RTServer.PacketManagers
 
         private static void SetEvents(ServerClient client, PKT_Event data)
         {
-            if (!client.GetData<FL_Player>().IsAdmin) client.Listener.MarkForDisconnect();
+            if (!client.GetData<FL_Player>().IsAdmin && PM_World.CheckIfWorldExists()) client.Listener.MarkForDisconnect();
             else
             {
                 foreach (FL_Event file in data._eventFiles)
