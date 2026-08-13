@@ -29,11 +29,11 @@ namespace RTServer.Commands
                 else
                 {
                     PKT_Event eventData = new PKT_Event();
-                    eventData._stepMode = EventStepMode.Receive;
-                    eventData._eventFile = toFind;
+                    eventData.CurrentStepMode = StepMode.Receive;
+                    eventData.File = toFind;
 
                     //We set it to -1 to let the client know it will fall at any settlement
-                    eventData._toTile = -1;
+                    eventData.ToTile = -1;
 
                     client.Listener.EnqueuePacket(PacketHeader.Event, eventData);
 

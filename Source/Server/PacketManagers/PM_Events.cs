@@ -23,19 +23,19 @@ namespace RTServer.PacketManagers
 
             if (!FL_PlayerCooldown.CheckIfCanEvent(client.GetData<FL_Player>(), Master.ActionConfigs.EventAction))
             {
-                packet._stepMode = EventStepMode.Recover;
+                packet.CurrentStepMode = StepMode.Recover;
                 client.Listener.EnqueuePacket(PacketHeader.Event, packet);
             }
 
             else
             {
-                switch (packet._stepMode)
+                switch (packet.CurrentStepMode)
                 {
-                    case EventStepMode.Send:
+                    case StepMode.Send:
                         SendEvent(client, packet);
                         break;
 
-                    case EventStepMode.Set:
+                    case StepMode.Bulk:
                         SetEvents(client, packet);
                         break;
                 }
@@ -46,13 +46,13 @@ namespace RTServer.PacketManagers
 
         private static void SendEvent(ServerClient client, PKT_Event packet)
         {
-            if (!PM_Settlements.CheckIfTileIsInUse(packet._toTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to send an event to settlement at tile {packet._toTile}, but it has no settlement");
+            if (!PM_Settlements.CheckIfTileIsInUse(packet.ToTile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to send an event to settlement at tile {packet.ToTile}, but it has no settlement");
             else
             {
-                FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet._toTile);
+                FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(packet.ToTile);
                 if (!UserManagerH.CheckIfUserIsConnected(settlement.Username))
                 {
-                    packet._stepMode = EventStepMode.Recover;
+                    packet.CurrentStepMode = StepMode.Recover;
                     client.Listener.EnqueuePacket(PacketHeader.Event, packet);
                 }
 
@@ -66,7 +66,7 @@ namespace RTServer.PacketManagers
 
                     //To the person that should receive it
 
-                    packet._stepMode = EventStepMode.Receive;
+                    packet.CurrentStepMode = StepMode.Receive;
 
                     target.Listener.EnqueuePacket(PacketHeader.Event, packet);
                 }
@@ -78,7 +78,7 @@ namespace RTServer.PacketManagers
             if (!client.GetData<FL_Player>().IsAdmin && PM_World.CheckIfWorldExists()) client.Listener.MarkForDisconnect();
             else
             {
-                foreach (FL_Event file in data._eventFiles)
+                foreach (FL_Event file in data.Files)
                 {
                     Serializer.SerializeToFile(Path.Combine(Master.EventsPath, file.DefName + CommonValues.DefaultSaveFormat), file);
                 }
