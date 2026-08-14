@@ -45,7 +45,7 @@ namespace RTServer.PacketManagers
 
         private static void ReceiveWorld(ServerClient client, PKT_World data)
         {
-            if (Master.WorldValues != null) client.Listener.MarkForDisconnect();
+            if (Master.WorldValues != null || PM_WorldObject.GetAllWorldObjects().Count == 0) client.Listener.MarkForDisconnect();
             else
             {
                 client.GetData<FL_Player>().UpdateAdmin(true);
