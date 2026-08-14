@@ -26,7 +26,7 @@ namespace RTServer.Files
 
         public bool UseUPnP { get; set; } = false;
 
-        public bool UseClientSave { get; set; } = false;
+        public bool UseClientSave { get; set; } = true;
 
         public bool EnableServerBrowser { get; set; } = true;
 
