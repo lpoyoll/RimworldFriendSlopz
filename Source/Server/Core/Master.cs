@@ -18,6 +18,8 @@ namespace RTServer.Core
         public static string BackupUsersPath { get; set; } = Path.Combine(Master.BackupsPath, "Users");
 
         public static string ConfigsPath { get; set; } = Path.Combine(Master.MainPath, "Configs");
+        
+        public static string ActionsPath { get; set; } = Path.Combine(Master.ConfigsPath, "Actions");
 
         public static string LogsPath { get; set; } = Path.Combine(Master.MainPath, "Logs");
 

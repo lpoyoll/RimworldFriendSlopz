@@ -16,7 +16,7 @@ namespace RTServer.PacketManagers
         [HandlesPacket(PacketHeader.Transfer)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
-            if (!FL_PlayerCooldown.CheckIfCanTrade(client.GetData<FL_Player>(), Master.ActionConfigs.TradingAction)) ResponseShortcutManager.SendUnavailablePacket(client);
+            if (!FL_PlayerCooldown.CheckIfCanTrade(client.GetData<FL_Player>(), Master.ActionConfigs.TradeAction)) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 PKT_Transfer data = Serializer.ConvertBytesToObject<PKT_Transfer>(bytes);
