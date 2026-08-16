@@ -54,7 +54,8 @@ namespace RTServer.Hooks.ServerBrowser
 
                         Printer.Title(Printer.SeparatorString);
                         Printer.Warning("Server discovery is ENABLED");
-                        Printer.Warning("The server details are currently being transmitted to the public browser");
+                        Printer.Warning("The server is currently being transmitted to the public browser");
+                        Printer.Warning("Remember to set a password if you are playing with a private party!");
                         Printer.Title(Printer.SeparatorString);
                     }
                 }

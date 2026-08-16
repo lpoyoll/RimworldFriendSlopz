@@ -74,11 +74,9 @@ namespace RTServer.PacketManagers
             if (!client.GetData<FL_Player>().IsAdmin && PM_World.CheckIfWorldExists()) client.Listener.MarkForDisconnect();
             else
             {
-                foreach (RoadDetail road in packet.Roads)
-                {
-                    Master.RoadFile.Add(road);
-                }
-            
+                foreach (RoadDetail road in packet.Roads) Master.RoadFile.Add(road);
+                
+                client.Listener.EnqueuePacket(PacketHeader.Road, packet);
                 Printer.Warning($"[Set roads] > {client.GetData<FL_Player>().Username}");   
             }
         }
