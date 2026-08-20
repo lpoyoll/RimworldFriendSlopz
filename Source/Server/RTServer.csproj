@@ -11,10 +11,6 @@
 		<AssemblyTitle>RTServer</AssemblyTitle>
     </PropertyGroup>
 
-	<!-- <PropertyGroup>
-		<OutputPath>/home/nova/Documents/GitHub/RTExtras/RTServer/</OutputPath>
-	</PropertyGroup> -->
-
 	<ItemGroup>
 		<PackageReference Include="MessagePack" Version="3.1.8" />
 		<PackageReference Include="Mono.Nat" Version="3.0.4" />
