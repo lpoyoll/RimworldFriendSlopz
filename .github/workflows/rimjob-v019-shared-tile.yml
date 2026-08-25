@@ -1,0 +1,72 @@
+name: Rimjob v0.1.9 Shared Tile Build
+
+on:
+  push:
+    branches:
+      - rimjob-v019-shared-tile
+    paths:
+      - 'Source/SharedColonyClient/**'
+      - 'Source/Server/**'
+      - '.github/workflows/rimjob-v019-shared-tile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: rimjob-v019-shared-tile
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build Shared Colony client
+        shell: pwsh
+        run: |
+          dotnet build Source/SharedColonyClient/SharedColonyClient.csproj -c Release
+          if (!(Test-Path 'Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll')) { throw 'RWTSharedColony.dll missing' }
+
+      - name: Publish shared-colony server
+        shell: pwsh
+        run: |
+          dotnet publish Source/Server/RTServer.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=false `
+            -o artifacts/server
+          if (!(Test-Path 'artifacts/server/RTServer.exe')) { throw 'RTServer.exe missing' }
+
+      - name: Verify shared-tile source features
+        shell: pwsh
+        run: |
+          $clientSource = Get-Content 'Source/SharedColonyClient/SharedTileSettlementPatch.cs' -Raw
+          if ($clientSource -notmatch 'IsValidTileForNewSettlement') { throw 'starting-site patch not present' }
+          $serverSource = Get-Content 'Source/Server/Managers/SharedColonyManager.cs' -Raw
+          if ($serverSource -notmatch 'CanAddSettlement' -or $serverSource -notmatch 'SharedColonyTileCapacity') { throw 'shared server capacity logic not present' }
+          $settlements = Get-Content 'Source/Server/PacketManagers/PM_Settlements.cs' -Raw
+          if ($settlements -notmatch 'GetAllSettlementsAtTile' -or $settlements -notmatch 'GetSettlementPath') { throw 'multi-settlement persistence not present' }
+
+      - name: Stage artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts/client | Out-Null
+          Copy-Item 'Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll' 'artifacts/client/RWTSharedColony.dll'
+          Copy-Item 'Source/SharedColonyClient/SharedTileSettlementPatch.cs' 'artifacts/client/SharedTileSettlementPatch.cs'
+
+      - name: Upload v0.1.9 components
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.9-shared-tile-components
+          path: |
+            artifacts/client
+            artifacts/server
+          if-no-files-found: error
+          retention-days: 3
