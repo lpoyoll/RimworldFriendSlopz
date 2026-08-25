@@ -1,0 +1,155 @@
+name: Rimjob Release - ZIP and MSI
+
+on:
+  push:
+    branches:
+      - rimjob-v019-msi
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build Rimjob client companion
+        shell: pwsh
+        run: |
+          dotnet build Source/SharedColonyClient/SharedColonyClient.csproj -c Release
+          $dll = 'Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll'
+          if (!(Test-Path $dll)) { throw 'RWTSharedColony.dll was not produced' }
+
+      - name: Build Mono-compatible client dependency bundle
+        shell: pwsh
+        run: |
+          dotnet build Source/ClientRuntimeDeps/ClientRuntimeDeps.csproj -c Release
+          $deps = 'Source/ClientRuntimeDeps/bin/Release/net472'
+          foreach ($required in @('Newtonsoft.Json.dll','DiscordRPC.dll','MessagePack.dll','MessagePack.Annotations.dll')) {
+            if (!(Test-Path (Join-Path $deps $required))) { throw "Missing client dependency: $required" }
+          }
+
+      - name: Publish single-file Rimjob Server
+        shell: pwsh
+        run: |
+          dotnet publish Source/Server/RTServer.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:DebugType=None `
+            -p:DebugSymbols=false `
+            -o build/server-publish
+
+          New-Item -ItemType Directory -Force build/server | Out-Null
+          if (!(Test-Path 'build/server-publish/RTServer.exe')) { throw 'RTServer.exe was not produced' }
+          Copy-Item 'build/server-publish/RTServer.exe' 'build/server/Rimjob Server.exe'
+
+      - name: Stage Rimjob client
+        shell: pwsh
+        run: |
+          $client = 'build/client'
+          New-Item -ItemType Directory -Force "$client/1.6/Assemblies" | Out-Null
+
+          Copy-Item About "$client/About" -Recurse
+          Copy-Item 1.6/Defs "$client/1.6/Defs" -Recurse
+          Copy-Item 1.6/Languages "$client/1.6/Languages" -Recurse
+          Copy-Item 1.6/Sounds "$client/1.6/Sounds" -Recurse
+          Copy-Item 1.6/Textures "$client/1.6/Textures" -Recurse
+          Copy-Item LoadFolders.xml, LICENSE $client
+
+          Copy-Item Source/Assemblies/RTClient.dll "$client/1.6/Assemblies/RTClient.dll"
+          Copy-Item Source/Assemblies/RTNetwork.dll "$client/1.6/Assemblies/RTNetwork.dll"
+          Copy-Item Source/Assemblies/RTShared.dll "$client/1.6/Assemblies/RTShared.dll"
+          Copy-Item Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll "$client/1.6/Assemblies/RWTSharedColony.dll"
+
+          Get-ChildItem Source/ClientRuntimeDeps/bin/Release/net472 -Filter '*.dll' |
+            Where-Object { $_.Name -ne 'Rimjob.ClientRuntimeDeps.dll' } |
+            Copy-Item -Destination "$client/1.6/Assemblies"
+
+          $about = Get-Content "$client/About/About.xml" -Raw
+          if ($about -notmatch '<name>Rimjob</name>' -or $about -notmatch 'Ignis &amp; Avis') {
+            throw 'Rimjob About.xml branding is incorrect'
+          }
+
+          $patch = Get-Content 'Source/SharedColonyClient/SharedTileSettlementPatch.cs' -Raw
+          if ($patch -notmatch 'Page_SelectStartingSite' -or $patch -notmatch 'PromoteSelectedSharedTile') {
+            throw 'Occupied shared-tile selection fix is missing'
+          }
+
+      - name: Build ZIP release
+        shell: pwsh
+        run: |
+          $root = 'build/release/Rimjob-v0.1.10'
+          New-Item -ItemType Directory -Force "$root/Rimjob", "$root/Server" | Out-Null
+          Copy-Item 'build/client/*' "$root/Rimjob" -Recurse
+          Copy-Item 'build/server/Rimjob Server.exe' "$root/Server/Rimjob Server.exe"
+
+          @'
+          RIMJOB v0.1.10
+
+          CLIENT
+          Copy the Rimjob folder to <RimWorld>\Mods\Rimjob, or use the MSI installer.
+          Harmony is required. Disable the original RimWorld Together Workshop mod.
+
+          SERVER
+          The Server folder contains a self-contained Rimjob Server.exe.
+          The MSI makes this an optional host-only component and installs it to Desktop\Rimjob Server.
+          '@ | Set-Content "$root/INSTALL.txt"
+
+          Compress-Archive -Path $root -DestinationPath 'build/Rimjob-v0.1.10.zip' -CompressionLevel Optimal
+
+      - name: Install WiX Toolset
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.UI.wixext/5.0.2
+
+      - name: Build MSI installer
+        shell: pwsh
+        run: |
+          wix build Installer/Rimjob.wxs Installer/en-GB.wxl `
+            -arch x64 `
+            -culture en-GB `
+            -ext WixToolset.UI.wixext `
+            -bindpath ClientPayload=build/client `
+            -bindpath ServerPayload=build/server `
+            -bindpath InstallerAssets=Installer `
+            -out build/Rimjob-v0.1.10-x64.msi
+
+          if (!(Test-Path 'build/Rimjob-v0.1.10-x64.msi')) { throw 'MSI was not produced' }
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.10-ZIP
+          path: build/Rimjob-v0.1.10.zip
+          if-no-files-found: error
+
+      - name: Upload MSI
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.10-MSI
+          path: build/Rimjob-v0.1.10-x64.msi
+          if-no-files-found: error
+
+      - name: Attach ZIP and MSI to tagged GitHub releases
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/Rimjob-v0.1.10.zip
+            build/Rimjob-v0.1.10-x64.msi
