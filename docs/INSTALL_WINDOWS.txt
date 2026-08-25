@@ -1,0 +1,162 @@
+RIMWORLD TOGETHER — SHARED COLONY v0.1.0
+WINDOWS INSTALLATION
+========================================
+
+WHAT THIS ZIP CONTAINS
+----------------------
+
+Client-Mod\   The complete RimWorld mod, including the Shared Colony DLL.
+Server\       The modified, self-contained Windows server.
+INSTALL.txt   This guide.
+
+
+BEFORE YOU START
+----------------
+
+1. RimWorld must be on version 1.6.
+2. Subscribe to and enable the Harmony mod:
+   https://steamcommunity.com/sharedfiles/filedetails/?id=2009463077
+3. Every player must install this exact Shared Colony client build.
+4. Do not enable the normal Workshop copy of RimWorld Together at the same
+   time. This package replaces it and uses the same package ID.
+5. A fresh server/world is strongly recommended for v0.1.0 testing.
+
+
+INSTALL THE CLIENT MOD
+----------------------
+
+1. Close RimWorld.
+2. Open your RimWorld installation folder. A typical Steam location is:
+
+   D:\SteamLibrary\steamapps\common\RimWorld
+
+3. Inside it, open or create the Mods folder.
+4. Copy the entire Client-Mod folder from this ZIP into Mods.
+5. Rename the copied folder to:
+
+   RimWorld Together Shared Colony
+
+   The resulting path should contain:
+
+   RimWorld\Mods\RimWorld Together Shared Colony\About\About.xml
+   RimWorld\Mods\RimWorld Together Shared Colony\1.6\Assemblies\RTClient.dll
+   RimWorld\Mods\RimWorld Together Shared Colony\1.6\Assemblies\RWTSharedColony.dll
+
+6. Start RimWorld and open Mods.
+7. Disable the ordinary RimWorld Together Workshop entry if it is enabled.
+8. Enable mods in this order:
+
+   Harmony
+   RimWorld
+   RimWorld Together
+
+9. Restart RimWorld when prompted.
+
+
+INSTALL AND START THE SERVER
+----------------------------
+
+Only the person hosting the multiplayer server needs this section.
+
+1. Copy the Server folder somewhere writable, for example:
+
+   D:\RWT-Shared-Colony-Server
+
+   Do not run it directly inside the ZIP or inside Program Files.
+
+2. Run RTServer.exe.
+3. If Windows Firewall asks, allow private-network access.
+4. The default TCP port is 25555. Players outside your home network require
+   TCP port 25555 forwarded to the server PC, unless you use a VPN/LAN tool.
+5. On first run the server creates Assets, Configs, Backups and Logs folders.
+6. Check Configs\ServerConfig.json contains:
+
+   "EnableSharedColonyTiles": true,
+   "SharedColonyTileCapacity": 4,
+   "SharedColonyMapSize": 500,
+   "EnforceSharedColonyMapSize": true,
+   "SharedColonyHostOnlyMapSaves": true,
+   "EnforceSharedColonyDiplomacy": true
+
+7. Restart RTServer.exe after changing configuration.
+
+
+CONNECT
+-------
+
+1. The host connects to 127.0.0.1 on port 25555 when playing on the server PC.
+2. Players on the same home network use the server PC's local IPv4 address.
+3. Internet players use the host's public IP address or VPN address.
+4. Each player creates a separate RimWorld Together username and colony.
+
+
+TEST THE SHARED HEX
+-------------------
+
+1. Player A creates the first settlement. Its map should be 500 x 500 cells.
+2. Player B travels to Player A's world hex, enters the existing local map and
+   uses RimWorld's settle-in-existing-map action.
+3. Both players run this in multiplayer chat:
+
+   /colony status
+
+   It should show 2/4 settlements and Player A as map host.
+
+4. To become allies, each player runs:
+
+   /colony relation @OtherUsername ally
+
+   Alliance only becomes effective after both players choose ally.
+
+5. Other available stances are:
+
+   /colony relation @OtherUsername neutral
+   /colony relation @OtherUsername support
+   /colony relation @OtherUsername hostile
+
+6. Start an ordinary RimWorld Together online visit and accept it on the other
+   client. Remote pawns should have their own faction and should not expose
+   draft or order controls to the other player.
+
+
+IMPORTANT v0.1.0 LIMITS
+-----------------------
+
+* The server data model allows four owners on one hex, but the live synchronous
+  layer should initially be tested with two connected players.
+* The first settler is the canonical map-save host. Other clients' map uploads
+  are intentionally ignored once the hex is shared.
+* Existing 250 x 250 maps cannot accept another settler while size enforcement
+  is enabled.
+* This is a test release. Back up the Server folder before each session.
+
+
+TROUBLESHOOTING
+---------------
+
+Mod not shown:
+  Confirm About\About.xml exists directly below the copied mod folder.
+
+Duplicate package warning:
+  Disable or remove the normal RimWorld Together Workshop copy.
+
+Server cannot be reached:
+  Check Windows Firewall, TCP port 25555 and the address being used.
+
+Map upload rejected:
+  Confirm RWTSharedColony.dll is installed for every player and use a fresh
+  500 x 500 colony.
+
+Game error:
+  Keep RimWorld's Player.log and the server's Logs folder. They are needed to
+  diagnose the next build.
+
+
+UNINSTALL
+---------
+
+1. Disable RimWorld Together Shared Colony in the RimWorld mod menu.
+2. Delete RimWorld\Mods\RimWorld Together Shared Colony.
+3. Re-enable the normal Workshop version if wanted.
+4. The server can be removed by deleting its copied folder after backing up any
+   saves you want to keep.

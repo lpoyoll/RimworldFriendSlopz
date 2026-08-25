@@ -10,19 +10,38 @@ permissions:
   contents: read
 
 jobs:
-  server:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - name: Build server
-        run: dotnet build Source/Server/RTServer.csproj --configuration Release
-
-  client-source-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Check companion source is present
-        run: test -f Source/SharedColonyClient/SharedColonyBootstrap.cs
+      - name: Build client companion
+        run: dotnet build Source/SharedColonyClient/SharedColonyClient.csproj --configuration Release
+      - name: Publish Windows server
+        run: dotnet publish Source/Server/RTServer.csproj --configuration Release --runtime win-x64 --self-contained true --output build/server
+      - name: Assemble release
+        shell: bash
+        run: |
+          release_root="build/release/RimWorld-Together-Shared-Colony-v0.1.0"
+          client_root="$release_root/Client-Mod"
+          mkdir -p "$client_root/1.6/Assemblies" "$release_root/Server"
+          cp -R About "$client_root/About"
+          cp -R 1.6/Defs "$client_root/1.6/Defs"
+          cp -R 1.6/Languages "$client_root/1.6/Languages"
+          cp -R 1.6/Sounds "$client_root/1.6/Sounds"
+          cp -R 1.6/Textures "$client_root/1.6/Textures"
+          cp LoadFolders.xml LICENSE "$client_root/"
+          cp Source/Assemblies/RTClient.dll Source/Assemblies/RTNetwork.dll Source/Assemblies/RTShared.dll "$client_root/1.6/Assemblies/"
+          cp Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll "$client_root/1.6/Assemblies/"
+          cp -R build/server/. "$release_root/Server/"
+          cp docs/INSTALL_WINDOWS.txt "$release_root/INSTALL.txt"
+          cp docs/SHARED_COLONY.md "$release_root/TECHNICAL_NOTES.md"
+          cd build/release
+          zip -q -r ../RimWorld-Together-Shared-Colony-v0.1.0.zip RimWorld-Together-Shared-Colony-v0.1.0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RimWorld-Together-Shared-Colony-v0.1.0
+          path: build/RimWorld-Together-Shared-Colony-v0.1.0.zip
+          if-no-files-found: error
