@@ -1,0 +1,46 @@
+name: Rimjob v0.1.13 Live Sync Prototype
+
+on:
+  push:
+    branches:
+      - rimjob-v013-live-sync
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build shared-colony client companion
+        shell: pwsh
+        run: |
+          dotnet build Source/SharedColonyClient/SharedColonyClient.csproj -c Release
+          $dll = 'Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll'
+          if (!(Test-Path $dll)) { throw 'RWTSharedColony.dll was not produced' }
+      - name: Verify live-sync implementation
+        shell: pwsh
+        run: |
+          $source = Get-Content Source/SharedColonyClient/SharedTileLiveSync.cs -Raw
+          foreach ($required in @(
+            'host-authoritative shared map',
+            'PKT_Synchronous.StepMode.Ask',
+            'MapSaveLoader.MapToString',
+            'MapSaveLoader.StringToMap',
+            'SessionManager.SynchronousMap',
+            'DebugSetTicksGame',
+            'ClockResyncIntervalTicks',
+            'RemotePawnJobAuthorityPatch'
+          )) {
+            if ($source -notmatch [regex]::Escape($required)) { throw "Missing live-sync implementation marker: $required" }
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.13-live-sync-client
+          path: Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll
+          if-no-files-found: error
