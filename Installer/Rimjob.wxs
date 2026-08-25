@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package Name="Rimjob"
+           Manufacturer="Ignis &amp; Avis"
+           Version="0.1.10"
+           Language="2057"
+           UpgradeCode="8E92A9C2-14A7-4F45-91EF-90B6629F9C82"
+           Scope="perMachine"
+           InstallerVersion="500">
+
+    <SummaryInformation Description="Installs the Rimjob multiplayer client and, optionally, the Rimjob server."
+                        Manufacturer="Ignis &amp; Avis" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Rimjob is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- Server is optional by default. -->
+    <Property Id="INSTALLLEVEL" Value="1" />
+
+    <!-- First preference: Steam's own uninstall metadata, which normally
+         contains the real RimWorld path even when the library is on D:. -->
+    <Property Id="RIMWORLDREG64">
+      <RegistrySearch Id="FindRimWorldReg64"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100"
+                      Name="InstallLocation"
+                      Type="directory"
+                      Bitness="always64" />
+    </Property>
+    <Property Id="RIMWORLDREG32">
+      <RegistrySearch Id="FindRimWorldReg32"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100"
+                      Name="InstallLocation"
+                      Type="directory"
+                      Bitness="always32" />
+    </Property>
+    <Property Id="RIMWORLDREGUSER">
+      <RegistrySearch Id="FindRimWorldRegUser"
+                      Root="HKCU"
+                      Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100"
+                      Name="InstallLocation"
+                      Type="directory" />
+    </Property>
+
+    <!-- Fallbacks for the common manual Steam-library layouts requested for
+         Rimjob. The user can still Browse to any other RimWorld directory. -->
+    <Property Id="RIMWORLDC">
+      <DirectorySearch Id="FindRimWorldC"
+                       Path="C:\Program Files (x86)\Steam\steamapps\common\RimWorld"
+                       Depth="0" />
+    </Property>
+    <Property Id="RIMWORLDD">
+      <DirectorySearch Id="FindRimWorldD"
+                       Path="D:\SteamLibrary\steamapps\common\RimWorld"
+                       Depth="0" />
+    </Property>
+
+    <Property Id="RIMWORLDROOT" Secure="yes" />
+
+    <SetProperty Action="SetRimWorldFromReg64" Id="RIMWORLDROOT" Value="[RIMWORLDREG64]" After="AppSearch" Sequence="both">RIMWORLDREG64</SetProperty>
+    <SetProperty Action="SetRimWorldFromReg32" Id="RIMWORLDROOT" Value="[RIMWORLDREG32]" After="SetRimWorldFromReg64" Sequence="both">NOT RIMWORLDROOT AND RIMWORLDREG32</SetProperty>
+    <SetProperty Action="SetRimWorldFromRegUser" Id="RIMWORLDROOT" Value="[RIMWORLDREGUSER]" After="SetRimWorldFromReg32" Sequence="both">NOT RIMWORLDROOT AND RIMWORLDREGUSER</SetProperty>
+    <SetProperty Action="SetRimWorldFromC" Id="RIMWORLDROOT" Value="[RIMWORLDC]" After="SetRimWorldFromRegUser" Sequence="both">NOT RIMWORLDROOT AND RIMWORLDC</SetProperty>
+    <SetProperty Action="SetRimWorldFromD" Id="RIMWORLDROOT" Value="[RIMWORLDD]" After="SetRimWorldFromC" Sequence="both">NOT RIMWORLDROOT AND RIMWORLDD</SetProperty>
+
+    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT"
+              Value="Rimjob has been installed. Disable the original Workshop copy of RimWorld Together before launching RimWorld." />
+
+    <!-- The default shown when detection fails. The FeatureTree Browse button
+         lets the user point RIMWORLDROOT at another RimWorld installation. -->
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="DefaultSteamFolder" Name="Steam">
+        <Directory Id="DefaultSteamAppsFolder" Name="steamapps">
+          <Directory Id="DefaultSteamCommonFolder" Name="common">
+            <Directory Id="RIMWORLDROOT" Name="RimWorld">
+              <Directory Id="RimWorldModsFolder" Name="Mods">
+                <Directory Id="RimjobModFolder" Name="Rimjob" />
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <!-- Optional host-only server: a single self-contained EXE on the user's
+         Desktop, inside its own folder so generated Assets/Configs/Logs stay tidy. -->
+    <StandardDirectory Id="DesktopFolder">
+      <Directory Id="RimjobServerFolder" Name="Rimjob Server" />
+    </StandardDirectory>
+
+    <Feature Id="RimjobFeature"
+             Title="Rimjob"
+             Description="Rimjob multiplayer components"
+             Level="1"
+             Display="expand"
+             AllowAbsent="no">
+
+      <Feature Id="ClientFeature"
+               Title="Rimjob Client"
+               Description="Required. Installs Rimjob into the selected RimWorld Mods folder."
+               Level="1"
+               AllowAbsent="no"
+               ConfigurableDirectory="RIMWORLDROOT">
+        <Files Directory="RimjobModFolder" Include="!(bindpath.ClientPayload)\**" />
+      </Feature>
+
+      <Feature Id="ServerFeature"
+               Title="Rimjob Server (optional - host only)"
+               Description="Optional. Installs the self-contained Rimjob Server executable in a Rimjob Server folder on your Desktop."
+               Level="2"
+               AllowAbsent="yes">
+        <Files Directory="RimjobServerFolder" Include="!(bindpath.ServerPayload)\**" />
+      </Feature>
+    </Feature>
+
+    <ui:WixUI Id="WixUI_FeatureTree" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+    <WixVariable Id="WixUILicenseRtf" Value="!(bindpath.InstallerAssets)\License.rtf" />
+  </Package>
+</Wix>
