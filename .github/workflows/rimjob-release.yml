@@ -12,8 +12,11 @@ permissions:
   contents: write
 
 env:
-  RELEASE_VERSION: 0.1.11
-  RELEASE_TAG: v0.1.11
+  RELEASE_VERSION: 0.1.12
+  RELEASE_TAG: v0.1.12
+  KNOWN_GOOD_RTCLIENT_COMMIT: a65ef0fea5911ac710a50f53b9fcad8a2f32051f
+  KNOWN_GOOD_RTCLIENT_SHA256: 91710157b6acc2205a7e75a6a1f01c62de54879519d0a8918cb72e55db5ba57c
+  KNOWN_GOOD_RTCLIENT_SIZE: 312832
 
 jobs:
   release:
@@ -75,7 +78,15 @@ jobs:
           Copy-Item 1.6/Textures "$client/1.6/Textures" -Recurse
           Copy-Item LoadFolders.xml, LICENSE $client
 
-          Copy-Item Source/Assemblies/RTClient.dll "$client/1.6/Assemblies/RTClient.dll"
+          # IMPORTANT: RTClient is pinned to the known-working Rimjob multiplayer
+          # build. A later inherited binary still contained the menu strings but
+          # did not initialise the multiplayer menu when installed, causing the
+          # v0.1.11 regression. Do not replace this with the branch copy unless
+          # the new binary has been explicitly validated in-game.
+          $rtClient = "$client/1.6/Assemblies/RTClient.dll"
+          $rtClientUrl = "https://raw.githubusercontent.com/lpoyoll/RimworldFriendSlopz/$env:KNOWN_GOOD_RTCLIENT_COMMIT/Source/Assemblies/RTClient.dll"
+          Invoke-WebRequest -Uri $rtClientUrl -OutFile $rtClient
+
           Copy-Item Source/Assemblies/RTNetwork.dll "$client/1.6/Assemblies/RTNetwork.dll"
           Copy-Item Source/Assemblies/RTShared.dll "$client/1.6/Assemblies/RTShared.dll"
           Copy-Item Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll "$client/1.6/Assemblies/RWTSharedColony.dll"
@@ -83,6 +94,18 @@ jobs:
           Get-ChildItem Source/ClientRuntimeDeps/bin/Release/net472 -Filter '*.dll' |
             Where-Object { $_.Name -ne 'Rimjob.ClientRuntimeDeps.dll' } |
             Copy-Item -Destination "$client/1.6/Assemblies"
+
+          # Exact binary identity is now a release gate. String scanning alone
+          # was not sufficient because both the broken and working clients contain
+          # the words 'Direct Connect' and 'Server Browser'.
+          $rtInfo = Get-Item $rtClient
+          if ($rtInfo.Length -ne [int64]$env:KNOWN_GOOD_RTCLIENT_SIZE) {
+            throw "Wrong RTClient.dll size: $($rtInfo.Length); expected $env:KNOWN_GOOD_RTCLIENT_SIZE"
+          }
+          $rtHash = (Get-FileHash $rtClient -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($rtHash -ne $env:KNOWN_GOOD_RTCLIENT_SHA256.ToLowerInvariant()) {
+            throw "Wrong RTClient.dll SHA256: $rtHash"
+          }
 
           $about = Get-Content "$client/About/About.xml" -Raw
           if ($about -notmatch '<name>Rimjob</name>' -or $about -notmatch 'Ignis &amp; Avis') {
@@ -99,13 +122,15 @@ jobs:
             throw 'Regression: shared starting-site validation must not require ProgramState.Playing'
           }
 
-          $rtClient = "$client/1.6/Assemblies/RTClient.dll"
+          # Supplementary sanity check for the expected menu implementation.
           $unicodeText = [System.Text.Encoding]::Unicode.GetString([System.IO.File]::ReadAllBytes($rtClient))
           foreach ($requiredText in @('Direct Connect','Server Browser')) {
             if (-not $unicodeText.Contains($requiredText)) {
-              throw "RTClient.dll does not contain required multiplayer menu text: $requiredText"
+              throw "Pinned RTClient.dll does not contain required multiplayer menu text: $requiredText"
             }
           }
+
+          Write-Host "Pinned multiplayer RTClient verified: $($rtInfo.Length) bytes / $rtHash"
 
       - name: Build and verify flat ZIP release
         shell: pwsh
@@ -122,6 +147,8 @@ jobs:
           CLIENT
           Copy the top-level Rimjob folder directly to <RimWorld>\Mods\Rimjob, or use the MSI installer.
           Harmony is required. Disable the original RimWorld Together Workshop mod.
+
+          This release pins the known-working Rimjob RTClient used for Direct Connect and Server Browser.
 
           SERVER
           The Server folder contains a self-contained Rimjob Server.exe.
@@ -146,16 +173,17 @@ jobs:
           }
 
           $zipClient = "$verify/Rimjob/1.6/Assemblies/RTClient.dll"
-          $zipText = [System.Text.Encoding]::Unicode.GetString([System.IO.File]::ReadAllBytes($zipClient))
-          foreach ($requiredText in @('Direct Connect','Server Browser')) {
-            if (-not $zipText.Contains($requiredText)) {
-              throw "ZIP RTClient.dll is missing required multiplayer menu text: $requiredText"
-            }
+          $zipInfo = Get-Item $zipClient
+          if ($zipInfo.Length -ne [int64]$env:KNOWN_GOOD_RTCLIENT_SIZE) {
+            throw "ZIP contains wrong RTClient.dll size: $($zipInfo.Length)"
+          }
+          $zipHash = (Get-FileHash $zipClient -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($zipHash -ne $env:KNOWN_GOOD_RTCLIENT_SHA256.ToLowerInvariant()) {
+            throw "ZIP contains wrong RTClient.dll SHA256: $zipHash"
           }
 
-          $sourceHash = (Get-FileHash 'build/client/1.6/Assemblies/RTClient.dll' -Algorithm SHA256).Hash
-          $zipHash = (Get-FileHash $zipClient -Algorithm SHA256).Hash
-          if ($sourceHash -ne $zipHash) { throw 'ZIP RTClient.dll does not match the MSI client payload source' }
+          $stagedHash = (Get-FileHash 'build/client/1.6/Assemblies/RTClient.dll' -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($stagedHash -ne $zipHash) { throw 'ZIP RTClient.dll does not match the MSI client payload source' }
 
       - name: Install WiX Toolset
         shell: pwsh
@@ -185,37 +213,37 @@ jobs:
       - name: Upload ZIP build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.11-ZIP
-          path: build/Rimjob-v0.1.11.zip
+          name: Rimjob-v0.1.12-ZIP
+          path: build/Rimjob-v0.1.12.zip
           if-no-files-found: error
 
       - name: Upload MSI build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.11-MSI
-          path: build/Rimjob-v0.1.11-x64.msi
+          name: Rimjob-v0.1.12-MSI
+          path: build/Rimjob-v0.1.12-x64.msi
           if-no-files-found: error
 
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'Release v')
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.11
+          tag_name: v0.1.12
           target_commitish: ${{ github.sha }}
-          name: Rimjob v0.1.11
+          name: Rimjob v0.1.12
           body: |
-            Rimjob v0.1.11
+            Rimjob v0.1.12
 
-            - Fixes the remaining first-settlement shared-tile blocker that returned "This tile is occupied".
-            - Removes the incorrect ProgramState.Playing requirement from pre-game starting-site validation.
-            - Uses a final Harmony postfix override so vanilla occupancy rejection cannot win for a legitimate selected RTSettlement tile.
-            - The exception remains tightly scoped to an explicitly selected Rimjob settlement tile, with capacity and terrain checks preserved.
-            - Includes Direct Connect and Server Browser; release verification checks both are present in RTClient.dll.
-            - ZIP and MSI are built from the same staged client payload. The ZIP has a flat top-level Rimjob folder.
-            - MSI installs the client into RimWorld and offers the server as an optional host-only component.
+            - Restores the known-working patched RTClient used by the successful Direct Connect / Server Browser builds.
+            - Fixes the v0.1.11 regression where a different inherited RTClient binary was accidentally packaged and the multiplayer main-menu buttons did not initialise.
+            - The release pipeline now pins RTClient.dll to an exact 312,832-byte binary and SHA256, rather than merely checking that menu strings exist inside it.
+            - Carries forward the v0.1.11 shared first-settlement tile fix, including the final occupied-tile postfix override.
+            - Carries forward the Mono-compatible Newtonsoft, DiscordRPC and MessagePack client dependencies.
+            - ZIP and MSI use the exact same staged client payload.
+            - MSI installs the client into RimWorld and offers Rimjob Server as an optional host-only component.
 
-            Rimjob is developed independently by Ignis & Avis. It originated from the RimWorld Together codebase; credit remains with that project's maintainers and contributors for the inherited work.
+            Rimjob is developed independently by Ignis & Avis. It originated from the RimWorld Together codebase; credit remains with that project's maintainers and contributors for inherited work.
           files: |
-            build/Rimjob-v0.1.11.zip
-            build/Rimjob-v0.1.11-x64.msi
+            build/Rimjob-v0.1.12.zip
+            build/Rimjob-v0.1.12-x64.msi
           overwrite_files: true
