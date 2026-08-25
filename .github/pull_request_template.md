@@ -1,13 +1,29 @@
-### Short and concise description about my pull request:
+## Rimjob pull request
 
-- *(Your short description goes here)*.
+### What does this change?
 
-### TODOs:
+Describe the problem and the behaviour this PR changes.
 
-- [ ] - I confirm this PR is at its final form and will not receive more pushes to it unless modifications are required.
-- [ ] - I confirm this PR has been previously tested by me and has no apparent issues.
-- [ ] - I confirm this PR is complying with this project's [Contribution Guidelines](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md).
+### Multiplayer impact
 
-### Longer / More informative description about what my pull request does:
+- [ ] Client only
+- [ ] Server only
+- [ ] Client and server
+- [ ] Protocol / persistence change
+- [ ] No multiplayer behaviour change
 
-- *(Your longer description goes here)*.
+### Testing
+
+Describe how you tested the change, including host/joining-player testing where relevant.
+
+### Checklist
+
+- [ ] I have read the local [Rimjob contribution guidelines](CONTRIBUTING.md).
+- [ ] I have built and tested the change.
+- [ ] I have considered pawn ownership and remote-control boundaries.
+- [ ] I have documented breaking protocol or persistence changes.
+- [ ] I have preserved inherited attribution where applicable.
+
+### Notes
+
+Add screenshots, logs, migration notes or follow-up work here.
