@@ -121,13 +121,17 @@ jobs:
       - name: Build MSI installer
         shell: pwsh
         run: |
-          wix build Installer/Rimjob.wxs Installer/en-GB.wxl `
+          $clientPath = (Resolve-Path 'build/client').Path
+          $serverPath = (Resolve-Path 'build/server').Path
+          $installerPath = (Resolve-Path 'Installer').Path
+
+          wix build Installer/Rimjob.wxs `
             -arch x64 `
-            -culture en-GB `
+            -culture en-US `
             -ext WixToolset.UI.wixext `
-            -bindpath ClientPayload=build/client `
-            -bindpath ServerPayload=build/server `
-            -bindpath InstallerAssets=Installer `
+            -bindpath "ClientPayload=$clientPath" `
+            -bindpath "ServerPayload=$serverPath" `
+            -bindpath "InstallerAssets=$installerPath" `
             -out build/Rimjob-v0.1.10-x64.msi
 
           if (!(Test-Path 'build/Rimjob-v0.1.10-x64.msi')) { throw 'MSI was not produced' }
