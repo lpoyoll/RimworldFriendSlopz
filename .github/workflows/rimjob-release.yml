@@ -15,7 +15,7 @@ env:
   RELEASE_VERSION: 0.1.12
   RELEASE_TAG: v0.1.12
   KNOWN_GOOD_RTCLIENT_COMMIT: a65ef0fea5911ac710a50f53b9fcad8a2f32051f
-  KNOWN_GOOD_RTCLIENT_SHA256: 91710157b6acc2205a7e75a6a1f01c62de54879519d0a8918cb72e55db5ba57c
+  KNOWN_GOOD_RTCLIENT_SHA256: 71ca7388932621254ab8f7300b7d6ff182a218e7ba4cad052ea8f8fb9328b541
   KNOWN_GOOD_RTCLIENT_SIZE: 312832
 
 jobs:
@@ -78,11 +78,9 @@ jobs:
           Copy-Item 1.6/Textures "$client/1.6/Textures" -Recurse
           Copy-Item LoadFolders.xml, LICENSE $client
 
-          # IMPORTANT: RTClient is pinned to the known-working Rimjob multiplayer
-          # build. A later inherited binary still contained the menu strings but
-          # did not initialise the multiplayer menu when installed, causing the
-          # v0.1.11 regression. Do not replace this with the branch copy unless
-          # the new binary has been explicitly validated in-game.
+          # IMPORTANT: pin the RTClient binary from the release that specifically
+          # restored Direct Connect and Server Browser. Do not silently replace it
+          # with the inherited branch copy without a new in-game validation pass.
           $rtClient = "$client/1.6/Assemblies/RTClient.dll"
           $rtClientUrl = "https://raw.githubusercontent.com/lpoyoll/RimworldFriendSlopz/$env:KNOWN_GOOD_RTCLIENT_COMMIT/Source/Assemblies/RTClient.dll"
           Invoke-WebRequest -Uri $rtClientUrl -OutFile $rtClient
@@ -95,9 +93,8 @@ jobs:
             Where-Object { $_.Name -ne 'Rimjob.ClientRuntimeDeps.dll' } |
             Copy-Item -Destination "$client/1.6/Assemblies"
 
-          # Exact binary identity is now a release gate. String scanning alone
-          # was not sufficient because both the broken and working clients contain
-          # the words 'Direct Connect' and 'Server Browser'.
+          # Exact binary identity is a release gate. String scanning alone was not
+          # sufficient because both working and non-working clients carried the menu text.
           $rtInfo = Get-Item $rtClient
           if ($rtInfo.Length -ne [int64]$env:KNOWN_GOOD_RTCLIENT_SIZE) {
             throw "Wrong RTClient.dll size: $($rtInfo.Length); expected $env:KNOWN_GOOD_RTCLIENT_SIZE"
@@ -130,7 +127,7 @@ jobs:
             }
           }
 
-          Write-Host "Pinned multiplayer RTClient verified: $($rtInfo.Length) bytes / $rtHash"
+          Write-Host "Pinned Direct Connect RTClient verified: $($rtInfo.Length) bytes / $rtHash"
 
       - name: Build and verify flat ZIP release
         shell: pwsh
@@ -234,9 +231,9 @@ jobs:
           body: |
             Rimjob v0.1.12
 
-            - Restores the known-working patched RTClient used by the successful Direct Connect / Server Browser builds.
-            - Fixes the v0.1.11 regression where a different inherited RTClient binary was accidentally packaged and the multiplayer main-menu buttons did not initialise.
-            - The release pipeline now pins RTClient.dll to an exact 312,832-byte binary and SHA256, rather than merely checking that menu strings exist inside it.
+            - Restores the exact RTClient binary from the Direct Connect fix build.
+            - Fixes the v0.1.11 regression where a different inherited RTClient binary was packaged and the multiplayer main-menu buttons did not initialise.
+            - The release pipeline now pins RTClient.dll by exact size and SHA256. A string-only menu check is no longer accepted as proof of a working client.
             - Carries forward the v0.1.11 shared first-settlement tile fix, including the final occupied-tile postfix override.
             - Carries forward the Mono-compatible Newtonsoft, DiscordRPC and MessagePack client dependencies.
             - ZIP and MSI use the exact same staged client payload.
