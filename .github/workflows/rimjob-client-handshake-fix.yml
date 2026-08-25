@@ -1,0 +1,100 @@
+name: Rimjob Client Handshake Fix
+
+on:
+  push:
+    branches:
+      - rimjob-json-runtime-fix
+    paths:
+      - '.github/workflows/rimjob-client-handshake-fix.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-client-fix:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: rimjob-json-runtime-fix
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore MessagePack runtime closure for .NET Framework 4.7.2
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path temp/mp | Out-Null
+          @'
+          <Project Sdk="Microsoft.NET.Sdk">
+            <PropertyGroup>
+              <TargetFramework>net472</TargetFramework>
+              <OutputType>Exe</OutputType>
+              <ImplicitUsings>disable</ImplicitUsings>
+            </PropertyGroup>
+            <ItemGroup>
+              <PackageReference Include="MessagePack" Version="3.1.8" />
+            </ItemGroup>
+          </Project>
+          '@ | Set-Content temp/mp/mp.csproj
+          'internal static class Program { static void Main() { } }' | Set-Content temp/mp/Program.cs
+          dotnet build temp/mp/mp.csproj -c Release
+          New-Item -ItemType Directory -Force -Path artifacts/client-deps | Out-Null
+          Copy-Item temp/mp/bin/Release/net472/*.dll artifacts/client-deps/
+          Get-ChildItem artifacts/client-deps | Select-Object Name,Length
+
+      - name: Patch RTClient TryConnect to log swallowed exceptions
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path temp/patcher | Out-Null
+          Push-Location temp/patcher
+          dotnet new console --framework net8.0 --force
+          dotnet add package dnlib --version 4.5.0
+          @'
+          using System;
+          using System.Linq;
+          using dnlib.DotNet;
+          using dnlib.DotNet.Emit;
+          using dnlib.DotNet.Writer;
+
+          if (args.Length != 2) throw new ArgumentException("patcher <input> <output>");
+          using var module = ModuleDefMD.Load(args[0]);
+          var type = module.Types.First(t => t.FullName == "RTClient.Hooks.TCPNetwork.ClientNetwork");
+          var method = type.Methods.First(m => m.Name == "TryConnect");
+          var eh = method.Body.ExceptionHandlers.First(h => h.HandlerType == ExceptionHandlerType.Catch);
+          var printerError = module.GetMemberRefs().First(m => m.Name == "Error" && m.DeclaringType.FullName == "RTShared.Misc.Printer");
+          var first = eh.HandlerStart;
+          if (first.OpCode != OpCodes.Pop) throw new Exception($"Unexpected TryConnect catch start: {first}");
+          first.OpCode = OpCodes.Ldc_I4_0;
+          first.Operand = null;
+          method.Body.Instructions.Insert(method.Body.Instructions.IndexOf(first) + 1, Instruction.Create(OpCodes.Call, printerError));
+          var opts = new ModuleWriterOptions(module);
+          module.Write(args[1], opts);
+          Console.WriteLine("Patched TryConnect catch to log the exception via RTShared.Misc.Printer.Error.");
+          '@ | Set-Content Program.cs
+          dotnet build -c Release
+          Pop-Location
+          dotnet temp/patcher/bin/Release/net8.0/patcher.dll Source/Assemblies/RTClient.dll artifacts/RTClient.dll
+
+      - name: Verify dependency targets and patch
+        shell: pwsh
+        run: |
+          dotnet tool install --global ilspycmd
+          ilspycmd -t RTClient.Hooks.TCPNetwork.ClientNetwork artifacts/RTClient.dll | Out-File artifacts/ClientNetwork.cs
+          Select-String -Path artifacts/ClientNetwork.cs -Pattern 'catch \(Exception' -Context 0,5
+          if (!(Test-Path artifacts/client-deps/MessagePack.dll)) { throw 'MessagePack.dll missing' }
+          if (!(Test-Path artifacts/client-deps/MessagePack.Annotations.dll)) { throw 'MessagePack.Annotations.dll missing' }
+
+      - name: Upload client handshake fix
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.8-client-handshake-fix
+          path: |
+            artifacts/RTClient.dll
+            artifacts/ClientNetwork.cs
+            artifacts/client-deps/*.dll
+          if-no-files-found: error
+          retention-days: 3
