@@ -1,0 +1,39 @@
+name: Rimjob JSON Runtime Fix
+
+on:
+  push:
+    branches:
+      - rimjob-json-runtime-fix
+    paths:
+      - '.github/workflows/rimjob-json-runtime-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-net45-newtonsoft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: rimjob-json-runtime-fix
+
+      - name: Download official Newtonsoft.Json 13.0.3 package
+        run: |
+          set -euxo pipefail
+          curl -fL --retry 3 -o /tmp/newtonsoft.nupkg 'https://api.nuget.org/v3-flatcontainer/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg'
+          mkdir -p /tmp/newtonsoft
+          unzip -q /tmp/newtonsoft.nupkg 'lib/net45/Newtonsoft.Json.dll' -d /tmp/newtonsoft
+          test "$(stat -c%s /tmp/newtonsoft/lib/net45/Newtonsoft.Json.dll)" = "711952"
+          base64 -w0 /tmp/newtonsoft/lib/net45/Newtonsoft.Json.dll > Newtonsoft.Json.net45.b64
+          sha256sum /tmp/newtonsoft/lib/net45/Newtonsoft.Json.dll > Newtonsoft.Json.net45.sha256
+
+      - name: Commit verified net45 binary as base64
+        run: |
+          set -euxo pipefail
+          git config user.name 'Rimjob Build Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add Newtonsoft.Json.net45.b64 Newtonsoft.Json.net45.sha256
+          git commit -m 'Add verified Newtonsoft.Json 13.0.3 net45 payload'
+          git push origin HEAD:rimjob-json-runtime-fix
