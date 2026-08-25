@@ -90,7 +90,7 @@ jobs:
           }
 
           $patch = Get-Content 'Source/SharedColonyClient/SharedTileSettlementPatch.cs' -Raw
-          foreach ($requiredPatchText in @('Page_SelectStartingSite','PromoteSelectedSharedTile','Find.GameInitData','IsExplicitlySelectedTile')) {
+          foreach ($requiredPatchText in @('Page_SelectStartingSite','PromoteSelectedSharedTile','Find.GameInitData','IsExplicitlySelectedTile','public static void Postfix','HarmonyPriority(Priority.Last)')) {
             if ($patch -notmatch [regex]::Escape($requiredPatchText)) {
               throw "Shared first-settlement patch is missing: $requiredPatchText"
             }
@@ -206,11 +206,12 @@ jobs:
           body: |
             Rimjob v0.1.11
 
-            - Fixes the remaining first-settlement shared-tile blocker that incorrectly returned "This tile is occupied".
-            - The shared-tile validator now runs during the pre-game Select Starting Site flow instead of requiring ProgramState.Playing.
-            - The bypass is limited to an explicitly selected RTSettlement tile and still enforces shared-tile capacity and vanilla terrain restrictions.
-            - Includes Direct Connect and Server Browser; the release build verifies both strings are present in RTClient.dll.
-            - ZIP and MSI are built from the same staged client payload. The ZIP is flat and starts with the top-level Rimjob folder.
+            - Fixes the remaining first-settlement shared-tile blocker that returned "This tile is occupied".
+            - Removes the incorrect ProgramState.Playing requirement from pre-game starting-site validation.
+            - Uses a final Harmony postfix override so vanilla occupancy rejection cannot win for a legitimate selected RTSettlement tile.
+            - The exception remains tightly scoped to an explicitly selected Rimjob settlement tile, with capacity and terrain checks preserved.
+            - Includes Direct Connect and Server Browser; release verification checks both are present in RTClient.dll.
+            - ZIP and MSI are built from the same staged client payload. The ZIP has a flat top-level Rimjob folder.
             - MSI installs the client into RimWorld and offers the server as an optional host-only component.
 
             Rimjob is developed independently by Ignis & Avis. It originated from the RimWorld Together codebase; credit remains with that project's maintainers and contributors for the inherited work.
