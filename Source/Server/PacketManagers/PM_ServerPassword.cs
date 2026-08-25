@@ -21,7 +21,11 @@ namespace RTServer.PacketManagers
         private void OnPasswordSend(ServerClient client, PKT_ServerPassword packet)
         {
             if (CheckForPassword(packet.ServerPassword)) PM_Login.TryLogin(client, packet.LoginPacket);
-            else PM_Login.DenyConnectionWithReason(client, PKT_Login.LoginResponse.Password);
+            else PM_Login.DenyConnectionWithReason(
+                client,
+                PKT_Login.LoginResponse.Password,
+                username: packet.LoginPacket?.Username,
+                diagnosticDetails: "Server password did not match");
         }
 
         public static bool CheckIfPasswordIsSet() { return !string.IsNullOrEmpty(Master.PasswordConfig.Password); }
@@ -42,6 +46,7 @@ namespace RTServer.PacketManagers
         
         public static void AskForPassword(ServerClient client, PKT_Login login)
         {
+            Printer.Message($"[AUTH] Requesting server password | IP={client.IP} | User={(string.IsNullOrWhiteSpace(login?.Username) ? "<unknown>" : login.Username)}", Printer.Verbosity.Verbose);
             PKT_ServerPassword packet = new PKT_ServerPassword() { LoginPacket = login };
             client.Listener.EnqueuePacket(PacketHeader.ServerPassword, packet);
         }
