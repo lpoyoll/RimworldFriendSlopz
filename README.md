@@ -1,50 +1,81 @@
-# RimWorld Together
-### A Community Driven Multiplayer Mod for Rimworld!
+<p align="center">
+  <img src=".github/assets/rimjob-banner.svg" alt="Rimjob - Shared world, separate colonies" width="100%" />
+</p>
 
-> This fork contains an experimental **Shared Colony** mode: up to four
-> separately owned player settlements on one 500x500 map, explicit player
-> diplomacy, and strict remote-pawn control boundaries. See
-> [Shared Colony prototype](docs/SHARED_COLONY.md) for build and test steps.
-### Welcome to our repository! A great place for the tech savvies!
-[![](https://img.shields.io/badge/Steam_Workshop-Subscribe-blue?logo=steam)](https://steamcommunity.com/sharedfiles/filedetails/?id=3005289691) 
-[![](https://img.shields.io/badge/Discord-Join-blue?logo=discord)](https://discord.gg/yUF2ec8Vt8) 
-[![](https://img.shields.io/badge/Wiki-Read-blue?logo=mdbook)](https://rimworldtogether.wiki.gg/) 
-[![](https://img.shields.io/badge/Donate-Go-blue?logo=kofi)](https://ko-fi.com/rimworldtogetherproject)
+<p align="center">
+  <strong>An independent multiplayer project for RimWorld, developed by Ignis &amp; Avis.</strong>
+</p>
 
-## Server Prerequisites:
-Thanks to the way the server is built, there aren't any heavy hardware related dependencies, meaning that your hosting machine will only need to have an excellent network bandwith and a bit of everything else. Really, modern e-toasters could run it.
+<p align="center">
+  <img alt="RimWorld 1.6" src="https://img.shields.io/badge/RimWorld-1.6-8b6f47" />
+  <img alt="Status" src="https://img.shields.io/badge/status-active%20development-d97738" />
+  <img alt="Multiplayer" src="https://img.shields.io/badge/focus-multiplayer-40566b" />
+</p>
 
-## Server Installation:
-Download the latest server files at [here](https://github.com/Byte-Nova/Rimworld-Together/releases/latest). Then extract somewhere in your system and execute the executable file.
->[!WARNING]
-> When extracting the server files somewhere, be mindful on where this location might be, avoid installing it at privileged locations (where admin permissions are needed) to prevent your antivirus/system kicking off.
+# Rimjob
 
-## Container-based Deployment:
-We provide an official container image hosted on the Github Container Repository and an example docker-compose file to run the server.
+Rimjob is an independent multiplayer project with its own releases, branding and development direction.
 
-The following commands allow you to runs the server after creating a `RWTData` directory that will contain all the server's user files.
+The aim is simple: **play in the same RimWorld world without turning every player into one shared omniscient colony controller.**
 
-Make sure you have [Docker](https://www.docker.com/) (or [Podman](https://github.com/containers/podman)) installed.
+## What Rimjob is building
 
-### 1 - Create a Data directory
-```sh
-mkdir -p RWTData
-```
+- **Separate player colonies and ownership** - your pawns are yours, another player's pawns are theirs.
+- **Shared world tiles** - multiple player settlements can occupy the same wider multiplayer area.
+- **Larger shared colony spaces** - expanded maps suitable for several independently controlled settlements.
+- **Player-specific diplomacy** - players can be allies, neutral or hostile independently.
+- **Cooperation without shared control** - trade, support, defence and joint activity without direct control of another player's colony.
+- **Dedicated hosting** - a standalone server build for persistent worlds.
+- **Installer-first releases** - Windows builds are packaged as both ZIP and MSI, with the server as an optional host component.
 
-### 2 - Run the server
+## Current release work
 
-**Run with Docker on Linux:**
-```sh
-docker run -it --rm -v './RWTData:/Data' -p 25555:25555 ghcr.io/rimworld-together/rimworld-together:latest
-```
-**Run with Docker on Windows:**
-```sh
-docker run -it --rm -v '.\RWTData:/Data' -p 25555:25555 ghcr.io/rimworld-together/rimworld-together:latest
-```
+The current v0.1.10 line focuses on **shared-tile starting settlements**. A joining player should be able to select an already occupied multiplayer tile, create their own settlement there and retain separate colony ownership.
 
+That includes work around:
 
-## Contributing
-Interested? Please read our [contribution guide](https://github.com/RimworldTogether/Rimworld-Together/blob/development/.github/CONTRIBUTING.md) before contributing!
+- occupied starting-tile selection;
+- multiple settlements persisted on one tile;
+- strict pawn ownership boundaries;
+- player diplomacy;
+- client/server packaging;
+- self-contained dedicated server builds.
 
-## Other Questions?
-Don't hesitate to create an issue on Github if you have any issues with the mod. We are here for you! You can also contact us via our [Discord server](https://discord.gg/yUF2ec8Vt8).
+## Installation
+
+Rimjob requires **Harmony**.
+
+For Windows, use the Rimjob MSI where available. It installs the client under the selected RimWorld installation at `Mods/Rimjob`. The dedicated server is offered separately as an optional host-only component.
+
+Manual ZIP builds contain the same client payload plus the standalone server executable.
+
+> [!IMPORTANT]
+> Disable the original RimWorld Together Workshop mod while testing Rimjob. Rimjob still retains some inherited internal identifiers for compatibility while the project is separated cleanly.
+
+## Origins & credits
+
+Rimjob began from the **RimWorld Together** codebase and credits the maintainers and contributors whose work formed that foundation.
+
+Original project: [RimWorld Together](https://github.com/RimworldTogether/Rimworld-Together)
+
+Rimjob is **not** an official RimWorld Together release or support channel. It is developed independently by **Ignis & Avis** with a different multiplayer direction.
+
+Inherited copyright, licence information and contributor attribution are retained where applicable.
+
+RimWorld is developed by Ludeon Studios. Rimjob is an unofficial community mod and is not affiliated with or endorsed by Ludeon Studios.
+
+## Development direction
+
+1. Reliable shared-tile starting settlement creation.
+2. Multiple independently persisted settlements on one tile.
+3. Strict pawn ownership and remote-control boundaries.
+4. Player-to-player diplomacy and relationship state.
+5. Larger maps for practical multi-colony settlement.
+6. Better joining, reconnecting and world-state synchronisation.
+7. Cleaner client/server installation and release packaging.
+
+## A note on the name
+
+Yes, it's called **Rimjob**.
+
+We're keeping it.
