@@ -1,11 +1,11 @@
 services:
-  rimworld-together:
-    image: ghcr.io/rimworld-together/rimworld-together:latest
+  rimjob:
+    image: ghcr.io/lpoyoll/rimjob:latest
     ports:
       - 25555:25555
     volumes:
       - ./Data:/Data
-    container_name: rimworld-together
+    container_name: rimjob-server
     restart: always
     stdin_open: true
     tty: true
