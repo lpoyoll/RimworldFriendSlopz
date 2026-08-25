@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 jobs:
-  fetch-net45-newtonsoft:
+  diagnostics:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,6 +28,17 @@ jobs:
           test "$(stat -c%s /tmp/newtonsoft/lib/net45/Newtonsoft.Json.dll)" = "711952"
           sha256sum /tmp/newtonsoft/lib/net45/Newtonsoft.Json.dll > /tmp/newtonsoft/Newtonsoft.Json.net45.sha256
 
+      - name: Install ILSpy command line
+        run: dotnet tool install --global ilspycmd
+
+      - name: Decompile RTClient
+        run: |
+          set -euxo pipefail
+          mkdir -p /tmp/rtclient
+          ilspycmd -p -o /tmp/rtclient Source/Assemblies/RTClient.dll
+          grep -RniE 'direct|connect|server|join|login|browser' /tmp/rtclient > /tmp/rtclient-search.txt || true
+          find /tmp/rtclient -type f | sort > /tmp/rtclient-files.txt
+
       - name: Upload compatible DLL
         uses: actions/upload-artifact@v4
         with:
@@ -35,5 +46,16 @@ jobs:
           path: |
             /tmp/newtonsoft/lib/net45/Newtonsoft.Json.dll
             /tmp/newtonsoft/Newtonsoft.Json.net45.sha256
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Upload decompiled RTClient
+        uses: actions/upload-artifact@v4
+        with:
+          name: RTClient-decompiled
+          path: |
+            /tmp/rtclient
+            /tmp/rtclient-search.txt
+            /tmp/rtclient-files.txt
           if-no-files-found: error
           retention-days: 1
