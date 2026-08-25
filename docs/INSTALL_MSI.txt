@@ -1,0 +1,50 @@
+RIMWORLD TOGETHER — SHARED COLONY v0.1.0
+MSI INSTALLATION
+========================================
+
+1. Close RimWorld.
+2. Install and enable Harmony from the Steam Workshop.
+3. Run RimWorld-Together-Shared-Colony-v0.1.0-x64.msi.
+4. Approve the Windows administrator prompt.
+5. Select the folder containing RimWorldWin64.exe. Steam installs are normally:
+
+   C:\Program Files (x86)\Steam\steamapps\common\RimWorld
+
+   or, for another Steam library:
+
+   D:\SteamLibrary\steamapps\common\RimWorld
+
+6. Finish the installer. It installs the mod at:
+
+   <RimWorld>\Mods\RimWorld Together Shared Colony
+
+7. It installs the writable server and Start menu shortcuts at:
+
+   C:\ProgramData\RimWorld Together Shared Colony Server
+
+8. In RimWorld's mod manager, disable the normal Workshop copy of RimWorld
+   Together. Enable Harmony and then RimWorld Together. Every player needs this
+   exact MSI build.
+9. The host starts "Start Shared Colony Server" from the Windows Start menu.
+10. Use TCP port 25555. Internet hosts must allow it through Windows Firewall
+    and forward the port to the server PC.
+
+UNATTENDED INSTALL
+------------------
+
+msiexec /i RimWorld-Together-Shared-Colony-v0.1.0-x64.msi ^
+  RIMWORLDROOT="D:\SteamLibrary\steamapps\common\RimWorld" /qn
+
+UNINSTALL OR UPGRADE
+--------------------
+
+Use Windows Settings > Apps > Installed apps. MSI upgrades replace packaged
+files cleanly. Server-generated saves, configuration and logs are deliberately
+left in ProgramData when uninstalling so they are not accidentally destroyed.
+
+IMPORTANT
+---------
+
+This is an unsigned community test build, so Windows may display "Unknown
+publisher". A fresh world is strongly recommended. Back up the server folder
+and game saves before testing.

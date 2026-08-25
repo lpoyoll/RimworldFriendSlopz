@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WixLocalization xmlns="http://wixtoolset.org/schemas/v4/wxl" Culture="en-GB">
+  <String Id="InstallDirDlgTitle" Value="{\WixUI_Font_Title}Select your RimWorld folder" />
+  <String Id="InstallDirDlgDescription" Value="Choose the folder containing RimWorldWin64.exe. The mod will be placed in its Mods folder." />
+  <String Id="InstallDirDlgFolderLabel" Value="RimWorld installation folder:" />
+  <String Id="WelcomeDlgDescription" Value="This wizard installs the Shared Colony client mod and packaged Windows server. Close RimWorld before continuing." />
+</WixLocalization>

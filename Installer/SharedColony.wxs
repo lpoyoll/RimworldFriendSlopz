@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+  <Package Name="RimWorld Together Shared Colony"
+           Manufacturer="RimWorld Together Community"
+           Version="0.1.0"
+           Language="1033"
+           UpgradeCode="A8D31C69-472A-4FC6-9C3D-019C5CF8B870"
+           Scope="perMachine"
+           InstallerVersion="500">
+
+    <SummaryInformation Description="Installs the Shared Colony client mod and self-contained multiplayer server."
+                        Manufacturer="RimWorld Together Community" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of RimWorld Together Shared Colony is already installed." />
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <!-- Steam records RimWorld's actual library location here, including non-C: libraries. -->
+    <Property Id="RIMWORLDROOT" Secure="yes">
+      <RegistrySearch Id="FindSteamRimWorld64"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100"
+                      Name="InstallLocation"
+                      Type="directory"
+                      Bitness="always64" />
+      <RegistrySearch Id="FindSteamRimWorld32"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100"
+                      Name="InstallLocation"
+                      Type="directory"
+                      Bitness="always32" />
+    </Property>
+
+    <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT"
+              Value="The client mod and server are installed. Disable the normal Workshop copy before starting RimWorld." />
+
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="DefaultSteamFolder" Name="Steam">
+        <Directory Id="DefaultSteamAppsFolder" Name="steamapps">
+          <Directory Id="DefaultSteamCommonFolder" Name="common">
+            <Directory Id="RIMWORLDROOT" Name="RimWorld">
+              <Directory Id="RimWorldModsFolder" Name="Mods">
+                <Directory Id="SharedColonyModFolder" Name="RimWorld Together Shared Colony" />
+              </Directory>
+            </Directory>
+          </Directory>
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="CommonAppDataFolder">
+      <Directory Id="SharedColonyServerFolder" Name="RimWorld Together Shared Colony Server" />
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="SharedColonyProgramMenuFolder" Name="RimWorld Together Shared Colony" />
+    </StandardDirectory>
+
+    <Feature Id="CompleteFeature" Title="Shared Colony" Level="1">
+      <Feature Id="ClientFeature" Title="RimWorld client mod" Description="The complete Shared Colony client mod." Level="1">
+        <Files Directory="SharedColonyModFolder" Include="!(bindpath.ClientPayload)\**" />
+      </Feature>
+      <Feature Id="ServerFeature" Title="Multiplayer server" Description="The self-contained Windows multiplayer server." Level="1">
+        <Files Directory="SharedColonyServerFolder" Include="!(bindpath.ServerPayload)\**" />
+        <ComponentRef Id="ServerWritableFolderComponent" />
+        <ComponentRef Id="ServerShortcutComponent" />
+      </Feature>
+    </Feature>
+
+    <Component Id="ServerWritableFolderComponent" Directory="SharedColonyServerFolder" Guid="*">
+      <CreateFolder>
+        <Permission User="Users" GenericAll="yes" />
+      </CreateFolder>
+      <RegistryValue Root="HKLM"
+                     Key="Software\RimWorld Together\Shared Colony"
+                     Name="ServerFolder"
+                     Type="string"
+                     Value="[SharedColonyServerFolder]"
+                     KeyPath="yes" />
+    </Component>
+
+    <Component Id="ServerShortcutComponent" Directory="SharedColonyProgramMenuFolder" Guid="*">
+      <Shortcut Id="StartSharedColonyServerShortcut"
+                Name="Start Shared Colony Server"
+                Description="Starts the RimWorld Together Shared Colony server"
+                Target="[SharedColonyServerFolder]RTServer.exe"
+                WorkingDirectory="SharedColonyServerFolder" />
+      <Shortcut Id="OpenSharedColonyServerFolderShortcut"
+                Name="Open Shared Colony Server Folder"
+                Description="Opens the server data and configuration folder"
+                Target="[SystemFolder]explorer.exe"
+                Arguments="&quot;[SharedColonyServerFolder]&quot;" />
+      <RemoveFolder Id="RemoveSharedColonyProgramMenuFolder" On="uninstall" />
+      <RegistryValue Root="HKLM"
+                     Key="Software\RimWorld Together\Shared Colony"
+                     Name="StartMenuShortcuts"
+                     Type="integer"
+                     Value="1"
+                     KeyPath="yes" />
+    </Component>
+
+    <ui:WixUI Id="WixUI_InstallDir" InstallDirectory="RIMWORLDROOT" />
+    <UIRef Id="WixUI_ErrorProgressText" />
+    <WixVariable Id="WixUILicenseRtf" Value="!(bindpath.InstallerAssets)\License.rtf" />
+  </Package>
+</Wix>

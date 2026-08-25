@@ -45,3 +45,53 @@ jobs:
           name: RimWorld-Together-Shared-Colony-v0.1.0
           path: build/RimWorld-Together-Shared-Colony-v0.1.0.zip
           if-no-files-found: error
+
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build client companion
+        run: dotnet build Source/SharedColonyClient/SharedColonyClient.csproj --configuration Release
+      - name: Publish Windows server
+        run: dotnet publish Source/Server/RTServer.csproj --configuration Release --runtime win-x64 --self-contained true --output build/server
+      - name: Assemble installer payload
+        shell: pwsh
+        run: |
+          $client = "build/installer-payload/client"
+          $server = "build/installer-payload/server"
+          New-Item -ItemType Directory -Force "$client/1.6/Assemblies", $server | Out-Null
+          Copy-Item About "$client/About" -Recurse
+          Copy-Item 1.6/Defs "$client/1.6/Defs" -Recurse
+          Copy-Item 1.6/Languages "$client/1.6/Languages" -Recurse
+          Copy-Item 1.6/Sounds "$client/1.6/Sounds" -Recurse
+          Copy-Item 1.6/Textures "$client/1.6/Textures" -Recurse
+          Copy-Item LoadFolders.xml, LICENSE $client
+          Copy-Item Source/Assemblies/RTClient.dll, Source/Assemblies/RTNetwork.dll, Source/Assemblies/RTShared.dll "$client/1.6/Assemblies/"
+          Copy-Item Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll "$client/1.6/Assemblies/"
+          Copy-Item build/server/* $server -Recurse
+          Copy-Item docs/INSTALL_WINDOWS.txt "$server/INSTALL.txt"
+          Copy-Item docs/SHARED_COLONY.md "$server/TECHNICAL_NOTES.md"
+      - name: Install WiX Toolset
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.UI.wixext/5.0.2
+      - name: Build embedded MSI
+        shell: pwsh
+        run: |
+          wix build Installer/SharedColony.wxs Installer/en-GB.wxl `
+            -arch x64 `
+            -culture en-GB `
+            -ext WixToolset.UI.wixext `
+            -bindpath ClientPayload=build/installer-payload/client `
+            -bindpath ServerPayload=build/installer-payload/server `
+            -bindpath InstallerAssets=Installer `
+            -out build/RimWorld-Together-Shared-Colony-v0.1.0-x64.msi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RimWorld-Together-Shared-Colony-v0.1.0-x64-msi
+          path: build/RimWorld-Together-Shared-Colony-v0.1.0-x64.msi
+          if-no-files-found: error
