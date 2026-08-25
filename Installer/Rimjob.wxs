@@ -5,6 +5,7 @@
            Manufacturer="Ignis &amp; Avis"
            Version="0.1.10"
            Language="1033"
+           Codepage="65001"
            UpgradeCode="8E92A9C2-14A7-4F45-91EF-90B6629F9C82"
            Scope="perMachine"
            InstallerVersion="500">
