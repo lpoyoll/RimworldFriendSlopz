@@ -1,66 +1,99 @@
-name: "🐛 Bug Report"
-description: Create a new ticket for a bug.
+name: "🐛 Rimjob Bug Report"
+description: Report a reproducible Rimjob client, server or multiplayer issue.
 title: "🐛 [BUG] - <title>"
-labels: [
-  "bug"
-]
+labels:
+  - bug
 body:
+  - type: dropdown
+    id: affected
+    attributes:
+      label: "Affected component"
+      description: Which part of Rimjob is affected?
+      multiple: true
+      options:
+        - Host client
+        - Joining client
+        - Dedicated server
+        - Shared-tile settlement
+        - Player ownership / pawn control
+        - Player diplomacy
+        - Installer / packaging
+        - Other
+    validations:
+      required: true
+
   - type: textarea
     id: description
     attributes:
-      label: "Description"
-      description: Please enter an explicit description of your issue
-      placeholder: Short and explicit description of your incident...
+      label: "What happened?"
+      description: Describe the actual behaviour and what you expected Rimjob to do instead.
+      placeholder: A joining player selected the host settlement tile, but...
     validations:
       required: true
+
   - type: dropdown
     id: os
     attributes:
-      label: "OS"
-      description: What is the impacted environment ?
+      label: "Operating system"
       multiple: true
       options:
         - Windows
         - Linux
-        - Mac
+        - macOS
     validations:
       required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: "Rimjob version / commit"
+      placeholder: v0.1.10 or commit SHA
+    validations:
+      required: true
+
   - type: textarea
-    id: reprod
+    id: reproduction
     attributes:
       label: "Reproduction steps"
-      description: Please enter an explicit description of your issue
       value: |
-        1. Go to '...'
-        2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
-      render: bash
+        1. Start the Rimjob server.
+        2. Host joins the world.
+        3. Joining player connects.
+        4. ...
+      render: text
     validations:
       required: true
-  - type: textarea
-    id: screenshot
-    attributes:
-      label: "Screenshots"
-      description: If applicable, add screenshots to help explain your problem.
-      value: |
-        ![DESCRIPTION](LINK.png)
-      render: bash
-    validations:
-      required: false
+
   - type: textarea
     id: clientLogs
     attributes:
       label: "Client logs"
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: bash
+      description: Paste relevant logs from every affected client. Say which log belongs to the host and which belongs to the joining player.
+      render: text
     validations:
-      required: true
+      required: false
+
   - type: textarea
     id: serverLogs
     attributes:
       label: "Server logs"
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: bash
+      description: Paste the matching server log section if available.
+      render: text
     validations:
-      required: true
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: "Screenshots / video"
+      description: Add screenshots or a short recording if the problem is visual or interaction-related.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: originalMod
+    attributes:
+      label: "Compatibility check"
+      options:
+        - label: "I have disabled the original RimWorld Together Workshop mod while testing Rimjob."
+          required: true
