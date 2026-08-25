@@ -1,0 +1,35 @@
+name: Rimjob RTClient Decompile
+
+on:
+  push:
+    branches:
+      - rimjob-json-runtime-fix
+    paths:
+      - '.github/workflows/rimjob-decompile.yml'
+
+jobs:
+  decompile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: rimjob-json-runtime-fix
+
+      - name: Install ILSpy command line
+        run: dotnet tool install --global ilspycmd
+
+      - name: Decompile RTClient
+        run: |
+          mkdir -p /tmp/rtclient
+          ilspycmd -p -o /tmp/rtclient Source/Assemblies/RTClient.dll
+          grep -RniE 'direct|connect|server|join|login|browser' /tmp/rtclient > /tmp/rtclient-search.txt || true
+
+      - name: Upload decompiled source
+        uses: actions/upload-artifact@v4
+        with:
+          name: RTClient-decompiled
+          path: |
+            /tmp/rtclient
+            /tmp/rtclient-search.txt
+          retention-days: 1
