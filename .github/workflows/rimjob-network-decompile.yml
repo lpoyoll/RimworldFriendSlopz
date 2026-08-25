@@ -48,7 +48,7 @@ jobs:
                   Console.WriteLine($"{r.Name} {r.Version}");
           }
           CS
-          dotnet run -c Release -- ../../github/workspace/Source/Assemblies/RTShared.dll ../../github/workspace/Source/Assemblies/RTNetwork.dll ../../github/workspace/Source/Assemblies/RTClient.dll > $GITHUB_WORKSPACE/artifacts/assembly-refs.txt
+          dotnet run -c Release -- "$GITHUB_WORKSPACE/Source/Assemblies/RTShared.dll" "$GITHUB_WORKSPACE/Source/Assemblies/RTNetwork.dll" "$GITHUB_WORKSPACE/Source/Assemblies/RTClient.dll" > "$GITHUB_WORKSPACE/artifacts/assembly-refs.txt"
 
       - name: Upload decompile
         uses: actions/upload-artifact@v4
