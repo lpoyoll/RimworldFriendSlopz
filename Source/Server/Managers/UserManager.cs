@@ -111,9 +111,12 @@ namespace RTServer.Managers
             if (toFind != null) return true;
             else
             {
-                PM_Login.DenyConnectionWithReason(client, LoginResponse.Invalid);
+                PM_Login.DenyConnectionWithReason(
+                    client,
+                    LoginResponse.Invalid,
+                    username: data.Username,
+                    diagnosticDetails: "Existing account credentials did not match");
                 return false;
-
             }
         }
 
@@ -123,7 +126,11 @@ namespace RTServer.Managers
             else
             {
                 Printer.Message($"Banned user '{client.GetData<FL_Player>().Username}' tried to join the server");
-                PM_Login.DenyConnectionWithReason(client, LoginResponse.Ban);
+                PM_Login.DenyConnectionWithReason(
+                    client,
+                    LoginResponse.Ban,
+                    username: client.GetData<FL_Player>().Username,
+                    diagnosticDetails: "Account is banned");
                 return true;
             }
         }
