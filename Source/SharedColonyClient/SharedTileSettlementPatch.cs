@@ -13,24 +13,26 @@ namespace RWTSharedColony
     /// as their first settlement, while leaving ordinary RimWorld occupancy
     /// rules unchanged everywhere else.
     ///
-    /// v0.1.9 patched TileFinder but did not promote a clicked world object into
-    /// WorldInterface.SelectedTile.
-    /// v0.1.10 added that promotion, but incorrectly required ProgramState.Playing.
-    /// The starting-site page runs before ProgramState.Playing, so the special
-    /// validation never executed and vanilla returned "This tile is occupied".
-    /// v0.1.11 scopes the bypass to the new-colony setup state and an explicitly
-    /// selected RTSettlement tile instead.
+    /// v0.1.10 incorrectly required ProgramState.Playing. The starting-site page
+    /// runs before the game enters Playing, so vanilla returned "This tile is occupied".
+    /// v0.1.11 uses a final postfix override scoped to new-colony setup and an
+    /// explicitly selected RTSettlement tile. This remains effective even if the
+    /// original method, or another Harmony prefix, rejects the tile first.
     /// </summary>
     [HarmonyPatch(typeof(TileFinder), nameof(TileFinder.IsValidTileForNewSettlement))]
     public static class SharedTileSettlementPatch
     {
-        public static bool Prefix(ref bool __result, PlanetTile tile, StringBuilder reason, bool forGravship)
+        [HarmonyPriority(Priority.Last)]
+        public static void Postfix(ref bool __result, PlanetTile tile, StringBuilder reason, bool forGravship)
         {
             try
             {
-                // Shared-colony starting sites are only relevant while a new game
-                // is being configured. Do NOT require ProgramState.Playing here:
-                // Page_SelectStartingSite is shown before the game enters Playing.
+                // If vanilla already accepts it, there is nothing for Rimjob to do.
+                if (__result) return;
+
+                // The shared-colony special case is for a joining player's new
+                // colony. Do NOT require ProgramState.Playing: this page is shown
+                // before the game enters the Playing state.
                 if (forGravship ||
                     Scribe.mode != LoadSaveMode.Inactive ||
                     Find.GameInitData == null ||
@@ -39,20 +41,20 @@ namespace RWTSharedColony
                     Find.WorldObjects == null ||
                     Find.WorldInterface == null)
                 {
-                    return true;
+                    return;
                 }
 
                 int tileId = tile.tileId;
                 if (tileId < 0 || tileId >= Find.WorldGrid.TilesCount)
                 {
-                    return true;
+                    return;
                 }
 
                 // Never globally legalise occupied tiles. The joining player must
-                // have explicitly selected this tile or the RTSettlement on it.
+                // have explicitly selected this exact tile or the RTSettlement on it.
                 if (!SharedTileSelectionUtility.IsExplicitlySelectedTile(tile))
                 {
-                    return true;
+                    return;
                 }
 
                 var objectsAtTile = Find.WorldObjects.AllWorldObjects
@@ -63,17 +65,16 @@ namespace RWTSharedColony
                     .Where(SharedTileSelectionUtility.IsRemotePlayerSettlement)
                     .ToList();
 
-                // Not a Rimjob player-settlement tile: preserve vanilla rules.
+                // Not a Rimjob player settlement tile: preserve vanilla rejection.
                 if (sharedSettlements.Count == 0)
                 {
-                    return true;
+                    return;
                 }
 
-                // Do not make arbitrary occupied content legal. A shared starting
-                // tile may contain RTSettlement objects only.
+                // Do not make quest sites, NPC settlements, camps, etc. shareable.
                 if (objectsAtTile.Any(worldObject => !SharedTileSelectionUtility.IsRemotePlayerSettlement(worldObject)))
                 {
-                    return true;
+                    return;
                 }
 
                 int capacity = Math.Max(1, SharedColonyState.TileCapacity);
@@ -81,10 +82,11 @@ namespace RWTSharedColony
                 {
                     SetReason(reason, $"Rimjob shared tile is full ({sharedSettlements.Count}/{capacity} settlements)." );
                     __result = false;
-                    return false;
+                    return;
                 }
 
-                // Preserve the core terrain restrictions from vanilla.
+                // Preserve the important vanilla terrain restrictions while only
+                // overriding the occupancy/adjacency restriction for this shared tile.
                 var worldTile = Find.WorldGrid[tileId];
                 var biome = worldTile.PrimaryBiome;
                 if (worldTile.WaterCovered ||
@@ -93,20 +95,18 @@ namespace RWTSharedColony
                     !biome.implemented ||
                     worldTile.hilliness == Hilliness.Impassable)
                 {
-                    return true;
+                    return;
                 }
 
-                SetReason(reason, $"Rimjob shared tile ({sharedSettlements.Count}/{capacity} occupied)." );
                 __result = true;
-                Log.Message($"[Rimjob] Allowing first settlement on occupied shared tile {tileId} ({sharedSettlements.Count}/{capacity}).");
-                return false;
+                SetReason(reason, $"Rimjob shared tile ({sharedSettlements.Count}/{capacity} occupied)." );
+                Log.Message($"[Rimjob] Overrode vanilla occupied-tile rejection for shared first settlement on tile {tileId} ({sharedSettlements.Count}/{capacity}).");
             }
             catch (Exception exception)
             {
-                // Fail closed. If the special-case logic cannot prove this is an
-                // eligible Rimjob shared tile, let RimWorld use its normal rules.
+                // Fail closed: leave vanilla's rejection intact if our special-case
+                // validation cannot prove this is a legitimate Rimjob shared tile.
                 Log.Warning($"[Rimjob] Shared starting-tile validation failed: {exception}");
-                return true;
             }
         }
 
@@ -179,6 +179,7 @@ namespace RWTSharedColony
     [HarmonyPatch(typeof(Page_SelectStartingSite), "CanDoNext")]
     public static class SharedTileStartingSiteCanNextPatch
     {
+        [HarmonyPriority(Priority.First)]
         public static void Prefix()
         {
             SharedTileSelectionUtility.PromoteSelectedSharedTile();
@@ -188,6 +189,7 @@ namespace RWTSharedColony
     [HarmonyPatch(typeof(Page_SelectStartingSite), "DoNext")]
     public static class SharedTileStartingSiteDoNextPatch
     {
+        [HarmonyPriority(Priority.First)]
         public static void Prefix()
         {
             SharedTileSelectionUtility.PromoteSelectedSharedTile();
