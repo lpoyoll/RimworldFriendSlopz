@@ -30,7 +30,7 @@ namespace RTServer.Hooks.TCPNetwork
                 
                 InformationDisplayer.DisplayDisconnect(client);
                 if (client.GetData<FL_Player>() != null) InformationDisplayer.DisplayLogOut(client);
-                if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.GetData<FL_Player>().Username} has left the server!");
+                if (Master.ChatConfig.DisconnectNotifications && client.GetData<FL_Player>() != null) PM_Chat.BroadcastServerNotification($"{client.GetData<FL_Player>().Username} has left the server!");
             }
             catch (Exception ex) { Printer.Error(ex); }
         };
@@ -59,9 +59,24 @@ namespace RTServer.Hooks.TCPNetwork
         private static void ListenForNewClients()
         {
             ServerClient client = new ServerClient(Network.ServerListener.AcceptTcpClient(), new NetworkRuleset(null, OnDisconnect, OnReadPacket, null));
+            int connectedClients = GetConnectedClients().Length;
 
-            if (GetConnectedClients().Length >= Master.ServerConfig.MaxPlayers) PM_Login.DenyConnectionWithReason(client, LoginResponse.Full);
-            else if (Master.WorldValues == null && GetConnectedClients().Length > 0) PM_Login.DenyConnectionWithReason(client, LoginResponse.NoWorld);
+            Printer.Message($"[CONNECT] TCP accepted | IP={client.IP} | ConnectedBefore={connectedClients}/{Master.ServerConfig.MaxPlayers} | WorldLoaded={Master.WorldValues != null} | WorldFile={PM_World.CheckIfWorldExists()}", Printer.Verbosity.Verbose);
+
+            if (connectedClients >= Master.ServerConfig.MaxPlayers)
+            {
+                PM_Login.DenyConnectionWithReason(
+                    client,
+                    LoginResponse.Full,
+                    diagnosticDetails: $"Server full ({connectedClients}/{Master.ServerConfig.MaxPlayers})");
+            }
+            else if (Master.WorldValues == null && connectedClients > 0)
+            {
+                PM_Login.DenyConnectionWithReason(
+                    client,
+                    LoginResponse.NoWorld,
+                    diagnosticDetails: $"No world is loaded and {connectedClients} other connection(s) already occupy the first-client slot");
+            }
             else
             {
                 Network.TotalConnectedClients++;
@@ -75,8 +90,8 @@ namespace RTServer.Hooks.TCPNetwork
         {
             if (toExclude != null)
             {
-                return Network.ServerClients.Keys.Where(fetch => fetch.GetData<FL_Player>().Username !=
-                    toExclude.GetData<FL_Player>().Username).ToArray();
+                return Network.ServerClients.Keys.Where(fetch => fetch.GetData<FL_Player>() == null || fetch.GetData<FL_Player>().Username !=
+                    toExclude.GetData<FL_Player>()?.Username).ToArray();
             }
             else return Network.ServerClients.Keys.ToArray();
         }
@@ -97,7 +112,7 @@ namespace RTServer.Hooks.TCPNetwork
 
         public static ServerClient GetConnectedClientFromUsername(string username)
         {
-            return GetConnectedClients().FirstOrDefault(fetch => fetch.GetData<FL_Player>().Username == username);
+            return GetConnectedClients().FirstOrDefault(fetch => fetch.GetData<FL_Player>() != null && fetch.GetData<FL_Player>().Username == username);
         }
 
         public static ServerClient GetClientFromID(int id) { return Network.ServerClients.Keys.First(fetch => fetch.ID == id); }
