@@ -4,7 +4,7 @@
   <Package Name="Rimjob"
            Manufacturer="Ignis &amp; Avis"
            Version="0.1.10"
-           Language="2057"
+           Language="1033"
            UpgradeCode="8E92A9C2-14A7-4F45-91EF-90B6629F9C82"
            Scope="perMachine"
            InstallerVersion="500">
@@ -85,7 +85,6 @@
              Level="1"
              Display="expand"
              AllowAbsent="no">
-
       <Feature Id="ClientFeature"
                Title="Rimjob Client"
                Description="Required. Installs Rimjob into the selected RimWorld Mods folder."
@@ -94,7 +93,6 @@
                ConfigurableDirectory="RIMWORLDROOT">
         <Files Directory="RimjobModFolder" Include="!(bindpath.ClientPayload)\**" />
       </Feature>
-
       <Feature Id="ServerFeature"
                Title="Rimjob Server (optional - host only)"
                Description="Optional. Installs the self-contained Rimjob Server executable in a Rimjob Server folder on your Desktop."
@@ -105,7 +103,6 @@
     </Feature>
 
     <ui:WixUI Id="WixUI_FeatureTree" />
-    <UIRef Id="WixUI_ErrorProgressText" />
     <WixVariable Id="WixUILicenseRtf" Value="!(bindpath.InstallerAssets)\License.rtf" />
   </Package>
 </Wix>
