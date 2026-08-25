@@ -1,4 +1,4 @@
-name: Rimjob JSON Runtime Fix
+name: Rimjob Dependency Diagnostics
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - '.github/workflows/rimjob-json-runtime-fix.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   diagnostics:
@@ -19,7 +19,10 @@ jobs:
         with:
           ref: rimjob-json-runtime-fix
 
-      - name: Download official Newtonsoft.Json 13.0.3 package
+      - name: Install ILSpy command line
+        run: dotnet tool install --global ilspycmd
+
+      - name: Download official Newtonsoft.Json 13.0.3 net45
         run: |
           set -euxo pipefail
           curl -fL --retry 3 -o /tmp/newtonsoft.nupkg 'https://api.nuget.org/v3-flatcontainer/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg'
@@ -28,18 +31,26 @@ jobs:
           test "$(stat -c%s /tmp/newtonsoft/lib/net45/Newtonsoft.Json.dll)" = "711952"
           sha256sum /tmp/newtonsoft/lib/net45/Newtonsoft.Json.dll > /tmp/newtonsoft/Newtonsoft.Json.net45.sha256
 
-      - name: Install ILSpy command line
-        run: dotnet tool install --global ilspycmd
+      - name: Download official DiscordRichPresence 1.6.1.70 net45
+        run: |
+          set -euxo pipefail
+          curl -fL --retry 3 -o /tmp/discord.nupkg 'https://api.nuget.org/v3-flatcontainer/discordrichpresence/1.6.1.70/discordrichpresence.1.6.1.70.nupkg'
+          mkdir -p /tmp/discord
+          unzip -q /tmp/discord.nupkg 'lib/net45/DiscordRPC.dll' -d /tmp/discord
+          sha256sum /tmp/discord/lib/net45/DiscordRPC.dll > /tmp/discord/DiscordRPC.net45.sha256
+          ilspycmd -t DiscordRPC.DiscordRpcClient /tmp/discord/lib/net45/DiscordRPC.dll > /tmp/discord/DiscordRpcClient.cs
+          grep -q 'class DiscordRpcClient' /tmp/discord/DiscordRpcClient.cs
+          strings /tmp/discord/lib/net45/DiscordRPC.dll | grep -F '1.6.1.70' > /tmp/discord/version-check.txt || true
 
-      - name: Decompile RTClient
+      - name: Decompile RTClient and inspect dependencies/menu
         run: |
           set -euxo pipefail
           mkdir -p /tmp/rtclient
           ilspycmd -p -o /tmp/rtclient Source/Assemblies/RTClient.dll
-          grep -RniE 'direct|connect|server|join|login|browser' /tmp/rtclient > /tmp/rtclient-search.txt || true
-          find /tmp/rtclient -type f | sort > /tmp/rtclient-files.txt
+          grep -RniE 'Direct Connect|Server Browser|DiscordRPC|System.Memory|Reference Include' /tmp/rtclient > /tmp/rtclient-search.txt || true
+          cat /tmp/rtclient/RTClient.csproj > /tmp/rtclient-csproj.txt
 
-      - name: Upload compatible DLL
+      - name: Upload Newtonsoft
         uses: actions/upload-artifact@v4
         with:
           name: Newtonsoft.Json-13.0.3-net45
@@ -49,13 +60,24 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
-      - name: Upload decompiled RTClient
+      - name: Upload DiscordRPC
         uses: actions/upload-artifact@v4
         with:
-          name: RTClient-decompiled
+          name: DiscordRPC-1.6.1.70-net45
           path: |
-            /tmp/rtclient
+            /tmp/discord/lib/net45/DiscordRPC.dll
+            /tmp/discord/DiscordRPC.net45.sha256
+            /tmp/discord/DiscordRpcClient.cs
+            /tmp/discord/version-check.txt
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Upload RTClient diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: RTClient-dependency-diagnostics
+          path: |
             /tmp/rtclient-search.txt
-            /tmp/rtclient-files.txt
+            /tmp/rtclient-csproj.txt
           if-no-files-found: error
           retention-days: 1
