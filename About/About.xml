@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModMetaData>
-	<name>RimWorld Together</name>
-	<author>Nova and Company</author>
+	<name>Rimjob</name>
+	<author>Ignis &amp; Avis</author>
 	<packageId>nova.rimworldtogether</packageId>
 	<supportedVersions>
 		<li>1.5</li>
@@ -25,10 +25,5 @@
 	<incompatibleWith>
 		<li>jikulopo.prepatcher</li>
 	</incompatibleWith>
-	<description>Ever wondered how would it be to be able to play with other players online in the same RimWorld world?\n
-"RimWorld Together" is an early access community project founded by people who want to push the idea further!\n
-Join a playstyle in which other players will actually be able to affect you!\n
-Chat with them, trade with them, spy on them, raid them, build sites with them or even visit them in real time!\n
-The list only gets bigger, what are you waiting for? Play, Together!
-	</description>
+	<description>Rimjob is an independent multiplayer mod for RimWorld maintained by Ignis &amp; Avis. Players remain separate colony owners while sharing the same multiplayer world, with development focused on shared world tiles, independently controlled settlements, player-specific diplomacy and strict pawn ownership boundaries. Rimjob began from the RimWorld Together codebase and retains credit to its original contributors, but is developed independently with its own direction.</description>
 </ModMetaData>
