@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using HarmonyLib;
+using RimWorld;
 using RimWorld.Planet;
 using Verse;
 
@@ -13,11 +14,13 @@ namespace RWTSharedColony
     /// several independently owned player settlements may occupy the same
     /// server tile up to the configured Shared Colony capacity.
     ///
-    /// This patch is intentionally narrow. It only bypasses vanilla starting
-    /// site validation when the exact tile contains RTSettlement objects and
-    /// no other world object type, the biome is buildable, and capacity is
-    /// still available. NPC settlements, quest sites and other occupied tiles
-    /// remain under vanilla rules.
+    /// There are two separate vanilla gates here:
+    /// 1. TileFinder validates whether a tile is legal.
+    /// 2. Page_SelectStartingSite requires WorldInterface.SelectedTile to be
+    ///    valid, even when clicking a world object only selects the object.
+    ///
+    /// v0.1.9 handled gate 1 only. v0.1.10 also promotes a clicked RTSettlement
+    /// object's tile into SelectedTile before CanDoNext/DoNext run.
     /// </summary>
     [HarmonyPatch(typeof(TileFinder), nameof(TileFinder.IsValidTileForNewSettlement))]
     public static class SharedTileSettlementPatch
@@ -49,7 +52,7 @@ namespace RWTSharedColony
                     .ToList();
 
                 var sharedSettlements = objectsAtTile
-                    .Where(IsRemotePlayerSettlement)
+                    .Where(SharedTileSelectionUtility.IsRemotePlayerSettlement)
                     .ToList();
 
                 // Not a Rimjob shared-colony tile: use ordinary RimWorld rules.
@@ -60,7 +63,7 @@ namespace RWTSharedColony
 
                 // Do not make arbitrary occupied tiles legal. If anything other
                 // than RTSettlement exists on this exact tile, vanilla decides.
-                if (objectsAtTile.Any(worldObject => !IsRemotePlayerSettlement(worldObject)))
+                if (objectsAtTile.Any(worldObject => !SharedTileSelectionUtility.IsRemotePlayerSettlement(worldObject)))
                 {
                     return true;
                 }
@@ -95,16 +98,69 @@ namespace RWTSharedColony
             }
         }
 
-        private static bool IsRemotePlayerSettlement(WorldObject worldObject)
-        {
-            return worldObject?.def?.defName == "RTSettlement";
-        }
-
         private static void SetReason(StringBuilder reason, string value)
         {
             if (reason == null) return;
             reason.Clear();
             reason.Append(value);
+        }
+    }
+
+    internal static class SharedTileSelectionUtility
+    {
+        public static bool IsRemotePlayerSettlement(WorldObject worldObject)
+        {
+            return worldObject?.def?.defName == "RTSettlement";
+        }
+
+        /// <summary>
+        /// Clicking an occupied RTSettlement selects the WorldObject, not the
+        /// underlying tile. Vanilla Page_SelectStartingSite.CanDoNext checks
+        /// only WorldInterface.SelectedTile and therefore reports
+        /// "Please select a site". Promote the selected RTSettlement's tile so
+        /// the ordinary next-page flow can continue through our TileFinder rule.
+        /// </summary>
+        public static void PromoteSelectedSharedTile()
+        {
+            try
+            {
+                if (Find.WorldInterface == null || Find.WorldSelector == null) return;
+                if (Find.WorldInterface.SelectedTile.Valid) return;
+
+                WorldObject selectedObject = Find.WorldSelector.FirstSelectedObject;
+                if (!IsRemotePlayerSettlement(selectedObject)) return;
+                if (!selectedObject.Tile.Valid) return;
+
+                Find.WorldInterface.SelectedTile = selectedObject.Tile;
+                if (Find.GameInitData != null)
+                {
+                    Find.GameInitData.startingTile = selectedObject.Tile;
+                }
+
+                Log.Message($"[RWT Shared Colony] selected occupied player tile {selectedObject.Tile.tileId} for shared settlement");
+            }
+            catch (Exception exception)
+            {
+                Log.Warning($"[RWT Shared Colony] could not promote selected shared tile: {exception.Message}");
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Page_SelectStartingSite), "CanDoNext")]
+    public static class SharedTileStartingSiteCanNextPatch
+    {
+        public static void Prefix()
+        {
+            SharedTileSelectionUtility.PromoteSelectedSharedTile();
+        }
+    }
+
+    [HarmonyPatch(typeof(Page_SelectStartingSite), "DoNext")]
+    public static class SharedTileStartingSiteDoNextPatch
+    {
+        public static void Prefix()
+        {
+            SharedTileSelectionUtility.PromoteSelectedSharedTile();
         }
     }
 }
