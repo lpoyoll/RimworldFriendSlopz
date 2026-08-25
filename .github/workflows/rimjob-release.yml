@@ -11,6 +11,10 @@ on:
 permissions:
   contents: write
 
+env:
+  RELEASE_VERSION: 0.1.10
+  RELEASE_TAG: v0.1.10
+
 jobs:
   release:
     runs-on: windows-latest
@@ -90,27 +94,63 @@ jobs:
             throw 'Occupied shared-tile selection fix is missing'
           }
 
-      - name: Build ZIP release
+          $rtClient = "$client/1.6/Assemblies/RTClient.dll"
+          $unicodeText = [System.Text.Encoding]::Unicode.GetString([System.IO.File]::ReadAllBytes($rtClient))
+          foreach ($requiredText in @('Direct Connect','Server Browser')) {
+            if (-not $unicodeText.Contains($requiredText)) {
+              throw "RTClient.dll does not contain required multiplayer menu text: $requiredText"
+            }
+          }
+
+      - name: Build flat ZIP release
         shell: pwsh
         run: |
-          $root = 'build/release/Rimjob-v0.1.10'
+          $root = 'build/release'
+          Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue
           New-Item -ItemType Directory -Force "$root/Rimjob", "$root/Server" | Out-Null
           Copy-Item 'build/client/*' "$root/Rimjob" -Recurse
           Copy-Item 'build/server/Rimjob Server.exe' "$root/Server/Rimjob Server.exe"
 
-          @'
-          RIMJOB v0.1.10
+          @"
+          RIMJOB v$env:RELEASE_VERSION
 
           CLIENT
-          Copy the Rimjob folder to <RimWorld>\Mods\Rimjob, or use the MSI installer.
+          Copy the Rimjob folder directly to <RimWorld>\Mods\Rimjob, or use the MSI installer.
           Harmony is required. Disable the original RimWorld Together Workshop mod.
 
           SERVER
           The Server folder contains a self-contained Rimjob Server.exe.
           The MSI makes this an optional host-only component and installs it to Desktop\Rimjob Server.
-          '@ | Set-Content "$root/INSTALL.txt"
+          "@ | Set-Content "$root/INSTALL.txt"
 
-          Compress-Archive -Path $root -DestinationPath 'build/Rimjob-v0.1.10.zip' -CompressionLevel Optimal
+          $zip = "build/Rimjob-v$env:RELEASE_VERSION.zip"
+          Compress-Archive -Path "$root/*" -DestinationPath $zip -CompressionLevel Optimal
+
+          $verify = 'build/verify-zip'
+          Remove-Item $verify -Recurse -Force -ErrorAction SilentlyContinue
+          Expand-Archive $zip $verify
+
+          foreach ($requiredPath in @(
+            "$verify/Rimjob/About/About.xml",
+            "$verify/Rimjob/LoadFolders.xml",
+            "$verify/Rimjob/1.6/Assemblies/RTClient.dll",
+            "$verify/Rimjob/1.6/Assemblies/RWTSharedColony.dll",
+            "$verify/Server/Rimjob Server.exe"
+          )) {
+            if (!(Test-Path $requiredPath)) { throw "ZIP verification failed. Missing: $requiredPath" }
+          }
+
+          $zipClient = "$verify/Rimjob/1.6/Assemblies/RTClient.dll"
+          $zipText = [System.Text.Encoding]::Unicode.GetString([System.IO.File]::ReadAllBytes($zipClient))
+          foreach ($requiredText in @('Direct Connect','Server Browser')) {
+            if (-not $zipText.Contains($requiredText)) {
+              throw "ZIP RTClient.dll is missing required multiplayer menu text: $requiredText"
+            }
+          }
+
+          $sourceHash = (Get-FileHash 'build/client/1.6/Assemblies/RTClient.dll' -Algorithm SHA256).Hash
+          $zipHash = (Get-FileHash $zipClient -Algorithm SHA256).Hash
+          if ($sourceHash -ne $zipHash) { throw 'ZIP RTClient.dll does not match the MSI client payload source' }
 
       - name: Install WiX Toolset
         shell: pwsh
@@ -124,6 +164,7 @@ jobs:
           $clientPath = (Resolve-Path 'build/client').Path
           $serverPath = (Resolve-Path 'build/server').Path
           $installerPath = (Resolve-Path 'Installer').Path
+          $msi = "build/Rimjob-v$env:RELEASE_VERSION-x64.msi"
 
           wix build Installer/Rimjob.wxs `
             -arch x64 `
@@ -132,28 +173,41 @@ jobs:
             -bindpath "ClientPayload=$clientPath" `
             -bindpath "ServerPayload=$serverPath" `
             -bindpath "InstallerAssets=$installerPath" `
-            -out build/Rimjob-v0.1.10-x64.msi
+            -out $msi
 
-          if (!(Test-Path 'build/Rimjob-v0.1.10-x64.msi')) { throw 'MSI was not produced' }
+          if (!(Test-Path $msi)) { throw 'MSI was not produced' }
 
-      - name: Upload ZIP
+      - name: Upload ZIP build artifact
         uses: actions/upload-artifact@v4
         with:
           name: Rimjob-v0.1.10-ZIP
           path: build/Rimjob-v0.1.10.zip
           if-no-files-found: error
 
-      - name: Upload MSI
+      - name: Upload MSI build artifact
         uses: actions/upload-artifact@v4
         with:
           name: Rimjob-v0.1.10-MSI
           path: build/Rimjob-v0.1.10-x64.msi
           if-no-files-found: error
 
-      - name: Attach ZIP and MSI to tagged GitHub releases
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v0.1.10
+          target_commitish: ${{ github.sha }}
+          name: Rimjob v0.1.10
+          body: |
+            Rimjob v0.1.10
+
+            - Fixes shared-tile starting-site selection so an occupied Rimjob settlement tile can become the selected starting tile.
+            - Includes the multiplayer Direct Connect and Server Browser client.
+            - Includes the single-file Rimjob Server.
+            - ZIP layout is now flat: extract it and copy the top-level Rimjob folder directly into RimWorld/Mods.
+            - MSI installs the client into RimWorld and offers the server as an optional host-only component.
+
+            Rimjob is developed independently by Ignis & Avis. It originated from the RimWorld Together codebase; credit remains with that project's maintainers and contributors for the inherited work.
           files: |
             build/Rimjob-v0.1.10.zip
             build/Rimjob-v0.1.10-x64.msi
+          overwrite_files: true
