@@ -14,10 +14,15 @@ namespace RTServer.PacketManagers
         {
             PKT_Version packet = Serializer.ConvertBytesToObject<PKT_Version>(bytes);
 
+            Printer.Message($"[VERSION] Client={packet.Version} | Server={CommonValues.ExecutableVersion} | IP={client.IP}", Printer.Verbosity.Verbose);
+
             if (packet.Version == CommonValues.ExecutableVersion) client.Listener.EnqueuePacket(PacketHeader.Version, packet);
             else
             {
-                PM_Login.DenyConnectionWithReason(client, LoginResponse.Version);
+                PM_Login.DenyConnectionWithReason(
+                    client,
+                    LoginResponse.Version,
+                    diagnosticDetails: $"Client version '{packet.Version}' does not match server version '{CommonValues.ExecutableVersion}'");
                 InformationDisplayer.DisplayVersionMismatch(client);
             }
         }
