@@ -22,42 +22,43 @@ jobs:
       - name: Install ILSpy command line
         run: dotnet tool install --global ilspycmd
 
-      - name: Create Mono.Cecil patcher
+      - name: Create dnlib patcher
         run: |
           set -euxo pipefail
           mkdir -p /tmp/patcher
           cd /tmp/patcher
           dotnet new console --framework net8.0 --force
-          dotnet add package Mono.Cecil --version 0.11.6
+          dotnet add package dnlib --version 4.5.0
           cat > Program.cs <<'CS'
           using System;
           using System.Linq;
-          using Mono.Cecil;
-          using Mono.Cecil.Cil;
+          using dnlib.DotNet;
+          using dnlib.DotNet.Emit;
+          using dnlib.DotNet.Writer;
 
           if (args.Length != 2)
               throw new ArgumentException("Usage: patcher <input> <output>");
 
           var input = args[0];
           var output = args[1];
-          var asm = AssemblyDefinition.ReadAssembly(input);
-          var type = asm.MainModule.Types.First(t => t.FullName == "RTClient.Core.Program");
-          var method = type.Methods.First(m => m.Name == "CheckStructure" && !m.HasParameters);
+          using var module = ModuleDefMD.Load(input);
+          var type = module.Types.First(t => t.FullName == "RTClient.Core.Program");
+          var method = type.Methods.First(m => m.Name == "CheckStructure" && m.Parameters.Count == 0);
 
           method.Body.Instructions.Clear();
           method.Body.ExceptionHandlers.Clear();
           method.Body.Variables.Clear();
           method.Body.InitLocals = false;
-          var il = method.Body.GetILProcessor();
-          il.Append(il.Create(OpCodes.Ldc_I4_1));
-          il.Append(il.Create(OpCodes.Ret));
+          method.Body.Instructions.Add(OpCodes.Ldc_I4_1.ToInstruction());
+          method.Body.Instructions.Add(OpCodes.Ret.ToInstruction());
 
-          asm.Write(output);
+          var options = new ModuleWriterOptions(module);
+          module.Write(output, options);
           Console.WriteLine("Patched RTClient.Core.Program.CheckStructure() to allow local installs.");
           CS
           dotnet build -c Release
 
-      - name: Patch RTClient
+      - name: Patch and verify RTClient
         run: |
           set -euxo pipefail
           dotnet /tmp/patcher/bin/Release/net8.0/patcher.dll Source/Assemblies/RTClient.dll /tmp/RTClient.dll
