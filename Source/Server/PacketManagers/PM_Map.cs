@@ -3,7 +3,9 @@ using RTNetwork.PacketManagers;
 using RTNetwork.Packets;
 using RTServer.Core;
 using RTServer.Misc;
+using RTServer.Managers;
 using RTShared.Misc;
+using RTShared.Files.Player;
 
 namespace RTServer.PacketManagers
 {
@@ -19,6 +21,22 @@ namespace RTServer.PacketManagers
 
         public static void SaveUserMap(ServerClient client, PKT_Map data)
         {
+            string username = client.GetData<FL_Player>().Username;
+            if (!SharedColonyManager.MapBytesHaveConfiguredSize(data.Bytes))
+            {
+                PM_Chat.SendServerMessage(client,
+                    $"Map upload rejected: shared colony maps must be {Master.ServerConfig.SharedColonyMapSize}x{Master.ServerConfig.SharedColonyMapSize}.");
+                return;
+            }
+
+            if (!SharedColonyManager.CanSaveCanonicalMap(username, data.Tile))
+            {
+                PM_Chat.SendServerMessage(client,
+                    $"Map upload ignored: {SharedColonyManager.GetMapHostUsername(data.Tile)} is the save authority for shared tile {data.Tile}.");
+                PM_Leaderboard.UpdateLeaderboard(client, data.Wealth);
+                return;
+            }
+
             File.WriteAllBytes(Path.Combine(Master.MapsPath, data.Tile + CommonValues.DefaultSaveFormat), data.Bytes);
             PM_Leaderboard.UpdateLeaderboard(client, data.Wealth);
             InformationDisplayer.DisplaySaveMap(client);

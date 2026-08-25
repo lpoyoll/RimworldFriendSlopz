@@ -78,7 +78,14 @@ namespace RTServer.Managers
                 foreach (FL_Site site in playerSites) toArchive.Add(Path.Combine(Master.SitesPath, site.Tile + CommonValues.DefaultSaveFormat));
 
                 FL_Settlement[] playerSettlements = PM_Settlements.GetAllSettlementsFromUsername(username);
-                foreach (FL_Settlement settlementFile in playerSettlements) toArchive.Add(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));
+                foreach (FL_Settlement settlementFile in playerSettlements)
+                {
+                    string settlementPath = SharedColonyManager.FindSettlementPath(settlementFile.Tile, settlementFile.Username);
+                    if (settlementPath != null) toArchive.Add(settlementPath);
+
+                    string sharedTilePath = Path.Combine(Master.SharedColoniesPath, settlementFile.Tile + CommonValues.DefaultSaveFormat);
+                    if (File.Exists(sharedTilePath)) toArchive.Add(sharedTilePath);
+                }
 
                 CreateArchive(toArchive, playerArchivedSavePath);
 

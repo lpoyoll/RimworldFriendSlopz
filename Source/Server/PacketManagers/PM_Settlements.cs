@@ -32,13 +32,23 @@ namespace RTServer.PacketManagers
 
         public static void AddSettlement(ServerClient client, PKT_PlayerSettlement packet)
         {
-            if (CheckIfTileIsInUse(packet.File.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to add a settlement at tile {packet.File.Tile}, but that tile already has a settlement");
+            string username = client.GetData<FL_Player>().Username;
+            if (!SharedColonyManager.CanAddSettlement(packet.File.Tile, username, out string reason))
+            {
+                PM_Chat.SendServerMessage(client, reason);
+                ResponseShortcutManager.SendUnavailablePacket(client);
+            }
             else
             {
                 FL_Settlement settlementFile = new FL_Settlement();
                 settlementFile.Tile = packet.File.Tile;
-                settlementFile.Username = client.GetData<FL_Player>().Username;
-                Serializer.SerializeToFile(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat), settlementFile);
+                settlementFile.Username = username;
+
+                string path = SharedColonyManager.Enabled
+                    ? SharedColonyManager.GetSettlementPath(settlementFile.Tile, username)
+                    : Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat);
+                Serializer.SerializeToFile(path, settlementFile);
+                SharedColonyManager.RegisterSettlement(settlementFile);
 
                 packet.StepMode = PKT_PlayerSettlement.SettlementStepMode.Add;
                 packet.File = settlementFile;
@@ -57,9 +67,21 @@ namespace RTServer.PacketManagers
 
         public static void RemoveSettlement(ServerClient client, PKT_PlayerSettlement settlementData)
         {
-            if (!CheckIfTileIsInUse(settlementData.File.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.File.Tile} was attempted to be removed, but the tile doesn't contain a settlement");
+            if (!CheckIfTileIsInUse(settlementData.File.Tile))
+            {
+                if (client != null) ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.File.Tile} was attempted to be removed, but the tile doesn't contain a settlement");
+                return;
+            }
 
-            FL_Settlement settlementFile = GetSettlementFileFromTile(settlementData.File.Tile);
+            FL_Settlement settlementFile = client == null
+                ? GetSettlementFileFromTile(settlementData.File.Tile)
+                : GetSettlementFileFromTileAndUsername(settlementData.File.Tile, client.GetData<FL_Player>().Username);
+
+            if (settlementFile == null)
+            {
+                if (client != null) ResponseShortcutManager.SendIllegalPacket(client, $"Player does not own a settlement at tile {settlementData.File.Tile}");
+                return;
+            }
 
             if (client != null)
             {
@@ -84,7 +106,9 @@ namespace RTServer.PacketManagers
 
             void Delete()
             {
-                File.Delete(Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat));
+                string path = SharedColonyManager.FindSettlementPath(settlementFile.Tile, settlementFile.Username);
+                if (path != null) File.Delete(path);
+                SharedColonyManager.UnregisterSettlement(settlementFile);
 
                 InformationDisplayer.DisplayRemoveSettlement(settlementFile.Tile.ToString());
             }
@@ -111,14 +135,18 @@ namespace RTServer.PacketManagers
 
         public static FL_Settlement GetSettlementFileFromTile(int tileToGet)
         {
-            string[] settlements = Directory.GetFiles(Master.SettlementsPath);
-            foreach (string settlement in settlements)
-            {
-                FL_Settlement settlementFile = Serializer.SerializeFromFile<FL_Settlement>(settlement);
-                if (settlementFile.Tile == tileToGet) return settlementFile;
-            }
+            List<FL_Settlement> settlements = GetAllSettlementsAtTile(tileToGet);
+            if (settlements.Count == 0) return null;
 
-            return null;
+            if (!SharedColonyManager.Enabled) return settlements[0];
+
+            string host = SharedColonyManager.GetMapHostUsername(tileToGet);
+            return settlements.FirstOrDefault(fetch => fetch.Username == host) ?? settlements[0];
+        }
+
+        public static FL_Settlement GetSettlementFileFromTileAndUsername(int tileToGet, string username)
+        {
+            return GetAllSettlementsAtTile(tileToGet).FirstOrDefault(fetch => fetch.Username == username);
         }
 
         public static FL_Settlement GetSettlementFileFromUsername(string usernameToGet)
@@ -146,6 +174,25 @@ namespace RTServer.PacketManagers
                 file.IconID = userFile.Customizations.SettlementIconID;
                 file.IconColor = userFile.Customizations.SettlementIconColor;
                 settlementList.Add(file);
+            }
+
+            return settlementList;
+        }
+
+        public static List<FL_Settlement> GetAllSettlementsAtTile(int tile)
+        {
+            List<FL_Settlement> settlementList = new List<FL_Settlement>();
+            foreach (string path in Directory.GetFiles(Master.SettlementsPath))
+            {
+                try
+                {
+                    FL_Settlement settlement = Serializer.SerializeFromFile<FL_Settlement>(path);
+                    if (settlement.Tile == tile) settlementList.Add(settlement);
+                }
+                catch (Exception ex)
+                {
+                    Printer.Warning($"Unable to inspect settlement file '{path}': {ex.Message}");
+                }
             }
 
             return settlementList;

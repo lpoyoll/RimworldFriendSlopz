@@ -31,5 +31,19 @@ namespace RTServer.Files
         public bool EnableServerBrowser { get; set; } = true;
 
         public bool EnableServerTelemetry { get; set; } = true;
+
+        // Shared-colony prototype. A 500x500 local map has four times the
+        // playable area of RimWorld's usual 250x250 map.
+        public bool EnableSharedColonyTiles { get; set; } = true;
+
+        public int SharedColonyTileCapacity { get; set; } = 4;
+
+        public int SharedColonyMapSize { get; set; } = 500;
+
+        public bool EnforceSharedColonyMapSize { get; set; } = true;
+
+        public bool SharedColonyHostOnlyMapSaves { get; set; } = true;
+
+        public bool EnforceSharedColonyDiplomacy { get; set; } = true;
     }
 }

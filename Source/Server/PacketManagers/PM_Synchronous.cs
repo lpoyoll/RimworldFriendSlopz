@@ -1,4 +1,5 @@
 ﻿using RTServer.Hooks.TCPNetwork;
+using RTServer.Core;
 using RTServer.Managers;
 using RTShared.Files;
 using RTNetwork.PacketManagers;
@@ -42,16 +43,42 @@ namespace RTServer.PacketManagers
 
         private static void RouteToManager(ServerClient client, PKT_Synchronous data, PacketHeader header)
         {
+            ServerClient peer = ServerNetwork.GetClientFromID(client.GetData<FL_Player>().SynchronousClientID);
+            if (peer == null || peer.GetData<FL_Player>().SynchronousClientID != client.ID)
+            {
+                ResponseShortcutManager.SendIllegalPacket(client, "Synchronous action was sent without a valid paired session");
+                return;
+            }
+
             client.Listener.EnqueuePacket(header, data);
-            ServerNetwork.GetClientFromID(client.GetData<FL_Player>().SynchronousClientID).Listener.EnqueuePacket(header, data);
+            peer.Listener.EnqueuePacket(header, data);
         }
 
         private static void TryStartSynchronousSession(ServerClient client, PKT_Synchronous data)
         {
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
+            string explicitTarget = string.IsNullOrWhiteSpace(data.Username)
+                ? SharedSessionManager.ConsumeNextTarget(client)
+                : data.Username;
+            FL_Settlement settlement = string.IsNullOrWhiteSpace(explicitTarget)
+                ? PM_Settlements.GetSettlementFileFromTile(data.ToTile)
+                : PM_Settlements.GetSettlementFileFromTileAndUsername(data.ToTile, explicitTarget);
+
+            if (settlement == null)
+            {
+                ResponseShortcutManager.SendUserUnavailablePacket(client);
+                return;
+            }
+
             ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
 
             if (toFind == null) ResponseShortcutManager.SendUserUnavailablePacket(client);
+            else if (toFind == client) ResponseShortcutManager.SendUnavailablePacket(client);
+            else if (!InteractionMatchesDiplomacy(client, toFind, data))
+            {
+                PM_Chat.SendServerMessage(client, "That interaction conflicts with the current player-faction relationship.");
+                ResponseShortcutManager.SendUnavailablePacket(client);
+            }
+            else if (!SharedSessionManager.TryRegister(client, toFind)) ResponseShortcutManager.SendUnavailablePacket(client);
             else
             {
                 PKT_Synchronous _ = new PKT_Synchronous()
@@ -70,8 +97,12 @@ namespace RTServer.PacketManagers
 
         private static void AcceptSynchronousSession(ServerClient client, PKT_Synchronous data)
         {
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
-            ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
+            ServerClient toFind = SharedSessionManager.ConsumeRequester(client);
+            if (toFind == null)
+            {
+                ResponseShortcutManager.SendUserUnavailablePacket(client);
+                return;
+            }
 
             client.GetData<FL_Player>().SynchronousClientID = toFind.ID;
             toFind.GetData<FL_Player>().SynchronousClientID = client.ID;
@@ -82,8 +113,8 @@ namespace RTServer.PacketManagers
 
         private static void RejectSynchronousSession(ServerClient client, PKT_Synchronous data)
         {
-            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromTile(data.ToTile);
-            ServerClient toFind = ServerNetwork.GetConnectedClientFromUsername(settlement.Username);
+            ServerClient toFind = SharedSessionManager.ConsumeRequester(client);
+            if (toFind == null) return;
 
             PKT_Synchronous _ = new PKT_Synchronous();
             _.CurrentStepMode = PKT_Synchronous.StepMode.Reject;
@@ -91,6 +122,20 @@ namespace RTServer.PacketManagers
             _.ToTile = data.ToTile;
 
             toFind.Listener.EnqueuePacket(PacketHeader.Synchronous, _);
+        }
+
+        private static bool InteractionMatchesDiplomacy(ServerClient source, ServerClient target, PKT_Synchronous data)
+        {
+            if (!SharedColonyManager.Enabled || !Master.ServerConfig.EnforceSharedColonyDiplomacy) return true;
+
+            string sourceUsername = source.GetData<FL_Player>().Username;
+            string targetUsername = target.GetData<FL_Player>().Username;
+            SharedColonyStance stance = SharedColonyManager.GetEffectiveStance(sourceUsername, targetUsername);
+            bool isFriendlyInteraction = Convert.ToInt32(data.CurrentType) == 0;
+
+            if (stance == SharedColonyStance.Hostile) return !isFriendlyInteraction;
+            if (stance == SharedColonyStance.Ally) return isFriendlyInteraction;
+            return true;
         }
 
         private static void StartSynchronousSession(ServerClient client, PKT_Synchronous data)

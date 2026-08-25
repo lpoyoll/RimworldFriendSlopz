@@ -1,0 +1,28 @@
+name: Shared Colony build
+
+on:
+  push:
+    branches:
+      - feature/shared-colony-tiles
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Build server
+        run: dotnet build Source/Server/RTServer.csproj --configuration Release
+
+  client-source-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check companion source is present
+        run: test -f Source/SharedColonyClient/SharedColonyBootstrap.cs

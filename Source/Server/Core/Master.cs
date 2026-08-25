@@ -41,6 +41,8 @@ namespace RTServer.Core
 
         public static string SettlementsPath { get; set; } = Path.Combine(Master.AssetsPath, "Settlements");
 
+        public static string SharedColoniesPath { get; set; } = Path.Combine(Master.AssetsPath, "SharedColonies");
+
         public static string EventsPath { get; set; } = Path.Combine(Master.AssetsPath, "Events");
 
         //References

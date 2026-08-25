@@ -100,6 +100,7 @@ namespace RTServer.Core
             if (!Directory.Exists(Master.SitesPath)) Directory.CreateDirectory(Master.SitesPath);
             if (!Directory.Exists(Master.GuildsPath)) Directory.CreateDirectory(Master.GuildsPath);
             if (!Directory.Exists(Master.SettlementsPath)) Directory.CreateDirectory(Master.SettlementsPath);
+            if (!Directory.Exists(Master.SharedColoniesPath)) Directory.CreateDirectory(Master.SharedColoniesPath);
             if (!Directory.Exists(Master.EventsPath)) Directory.CreateDirectory(Master.EventsPath);
             if (!Directory.Exists(Master.WorldObjectsPath)) Directory.CreateDirectory(Master.WorldObjectsPath);
         }

@@ -5,6 +5,7 @@ using RTNetwork.Packets;
 using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Misc;
+using RTServer.Managers;
 using RTShared.Commands;
 using RTShared.Files.Player;
 using RTShared.Misc;
@@ -52,6 +53,17 @@ namespace RTServer.PacketManagers
         {
             PKT_Chat chatData = new PKT_Chat();
             chatData.Username = NotificationName;
+            chatData.Message = message;
+            chatData.UsernameColor = ChatColor.Server;
+            chatData.MessageColor = ChatColor.Server;
+
+            client.Listener.EnqueuePacket(PacketHeader.Chat, chatData);
+        }
+
+        public static void SendProtocolMessage(ServerClient client, string message)
+        {
+            PKT_Chat chatData = new PKT_Chat();
+            chatData.Username = SharedColonyManager.ProtocolUsername;
             chatData.Message = message;
             chatData.UsernameColor = ChatColor.Server;
             chatData.MessageColor = ChatColor.Server;
@@ -165,4 +177,3 @@ namespace RTServer.PacketManagers
         }
     }
 }
-

@@ -72,6 +72,8 @@ namespace RTServer.PacketManagers
 
             PM_Chat.SendLoginChatMessages(client);
 
+            SharedColonyManager.SendSnapshot(client);
+
             if (!PM_World.CheckIfWorldExists()) PM_World.RequireWorldFile(client);
             else
             {
