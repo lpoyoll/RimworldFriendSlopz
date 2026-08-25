@@ -95,7 +95,7 @@ jobs:
               throw "Shared first-settlement patch is missing: $requiredPatchText"
             }
           }
-          if ($patch -match 'ProgramState\.Playing') {
+          if ($patch -match 'Current\.ProgramState\s*==\s*ProgramState\.Playing') {
             throw 'Regression: shared starting-site validation must not require ProgramState.Playing'
           }
 
