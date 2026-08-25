@@ -22,19 +22,43 @@ jobs:
       - name: Install ILSpy command line
         run: dotnet tool install --global ilspycmd
 
-      - name: Decompile RTNetwork
+      - name: Decompile RTNetwork and RTShared
         run: |
           set -euxo pipefail
-          mkdir -p artifacts/rt-network
+          mkdir -p artifacts/rt-network artifacts/rt-shared
           ilspycmd -p -o artifacts/rt-network Source/Assemblies/RTNetwork.dll
+          ilspycmd -p -o artifacts/rt-shared Source/Assemblies/RTShared.dll
           grep -RniE 'class Listener|class ServerClient|EnqueuePacket|RunAllListenerTasks|OnConnect|Task.Run|Thread' artifacts/rt-network > artifacts/rt-network-search.txt || true
+          grep -RniE 'class Serializer|MessagePack|ConvertObjectToBytes|Encryptor|Encrypt\(' artifacts/rt-shared > artifacts/rt-shared-search.txt || true
+
+      - name: Dump assembly references
+        run: |
+          set -euxo pipefail
+          mkdir -p /tmp/refdump
+          cd /tmp/refdump
+          dotnet new console --framework net8.0 --force
+          dotnet add package dnlib --version 4.5.0
+          cat > Program.cs <<'CS'
+          using dnlib.DotNet;
+          foreach (var path in args)
+          {
+              using var m = ModuleDefMD.Load(path);
+              Console.WriteLine($"== {System.IO.Path.GetFileName(path)} ==");
+              foreach (var r in m.GetAssemblyRefs().OrderBy(x => x.Name.String))
+                  Console.WriteLine($"{r.Name} {r.Version}");
+          }
+          CS
+          dotnet run -c Release -- ../../github/workspace/Source/Assemblies/RTShared.dll ../../github/workspace/Source/Assemblies/RTNetwork.dll ../../github/workspace/Source/Assemblies/RTClient.dll > $GITHUB_WORKSPACE/artifacts/assembly-refs.txt
 
       - name: Upload decompile
         uses: actions/upload-artifact@v4
         with:
-          name: RTNetwork-decompiled
+          name: RTNetwork-RTShared-decompiled
           path: |
             artifacts/rt-network
+            artifacts/rt-shared
             artifacts/rt-network-search.txt
+            artifacts/rt-shared-search.txt
+            artifacts/assembly-refs.txt
           if-no-files-found: error
           retention-days: 1
