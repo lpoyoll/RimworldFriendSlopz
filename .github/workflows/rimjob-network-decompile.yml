@@ -1,0 +1,40 @@
+name: Rimjob RTNetwork Decompile
+
+on:
+  push:
+    branches:
+      - rimjob-json-runtime-fix
+    paths:
+      - '.github/workflows/rimjob-network-decompile.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  decompile-network:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: rimjob-json-runtime-fix
+
+      - name: Install ILSpy command line
+        run: dotnet tool install --global ilspycmd
+
+      - name: Decompile RTNetwork
+        run: |
+          set -euxo pipefail
+          mkdir -p artifacts/rt-network
+          ilspycmd -p -o artifacts/rt-network Source/Assemblies/RTNetwork.dll
+          grep -RniE 'class Listener|class ServerClient|EnqueuePacket|RunAllListenerTasks|OnConnect|Task.Run|Thread' artifacts/rt-network > artifacts/rt-network-search.txt || true
+
+      - name: Upload decompile
+        uses: actions/upload-artifact@v4
+        with:
+          name: RTNetwork-decompiled
+          path: |
+            artifacts/rt-network
+            artifacts/rt-network-search.txt
+          if-no-files-found: error
+          retention-days: 1
