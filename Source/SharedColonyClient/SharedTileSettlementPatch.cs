@@ -9,18 +9,17 @@ using Verse;
 namespace RWTSharedColony
 {
     /// <summary>
-    /// RimWorld normally refuses to use a world tile that already contains a
-    /// world object. For Rimjob, an RTSettlement is deliberately shareable:
-    /// several independently owned player settlements may occupy the same
-    /// server tile up to the configured Shared Colony capacity.
+    /// Allows a joining Rimjob player to choose an existing RTSettlement tile
+    /// as their first settlement, while leaving ordinary RimWorld occupancy
+    /// rules unchanged everywhere else.
     ///
-    /// There are two separate vanilla gates here:
-    /// 1. TileFinder validates whether a tile is legal.
-    /// 2. Page_SelectStartingSite requires WorldInterface.SelectedTile to be
-    ///    valid, even when clicking a world object only selects the object.
-    ///
-    /// v0.1.9 handled gate 1 only. v0.1.10 also promotes a clicked RTSettlement
-    /// object's tile into SelectedTile before CanDoNext/DoNext run.
+    /// v0.1.9 patched TileFinder but did not promote a clicked world object into
+    /// WorldInterface.SelectedTile.
+    /// v0.1.10 added that promotion, but incorrectly required ProgramState.Playing.
+    /// The starting-site page runs before ProgramState.Playing, so the special
+    /// validation never executed and vanilla returned "This tile is occupied".
+    /// v0.1.11 scopes the bypass to the new-colony setup state and an explicitly
+    /// selected RTSettlement tile instead.
     /// </summary>
     [HarmonyPatch(typeof(TileFinder), nameof(TileFinder.IsValidTileForNewSettlement))]
     public static class SharedTileSettlementPatch
@@ -29,20 +28,29 @@ namespace RWTSharedColony
         {
             try
             {
-                // Never interfere with gravship landing checks or game/load caches.
+                // Shared-colony starting sites are only relevant while a new game
+                // is being configured. Do NOT require ProgramState.Playing here:
+                // Page_SelectStartingSite is shown before the game enters Playing.
                 if (forGravship ||
                     Scribe.mode != LoadSaveMode.Inactive ||
-                    Current.ProgramState != ProgramState.Playing ||
-                    Current.Game == null ||
+                    Find.GameInitData == null ||
                     Find.World == null ||
                     Find.WorldGrid == null ||
-                    Find.WorldObjects == null)
+                    Find.WorldObjects == null ||
+                    Find.WorldInterface == null)
                 {
                     return true;
                 }
 
                 int tileId = tile.tileId;
                 if (tileId < 0 || tileId >= Find.WorldGrid.TilesCount)
+                {
+                    return true;
+                }
+
+                // Never globally legalise occupied tiles. The joining player must
+                // have explicitly selected this tile or the RTSettlement on it.
+                if (!SharedTileSelectionUtility.IsExplicitlySelectedTile(tile))
                 {
                     return true;
                 }
@@ -55,14 +63,14 @@ namespace RWTSharedColony
                     .Where(SharedTileSelectionUtility.IsRemotePlayerSettlement)
                     .ToList();
 
-                // Not a Rimjob shared-colony tile: use ordinary RimWorld rules.
+                // Not a Rimjob player-settlement tile: preserve vanilla rules.
                 if (sharedSettlements.Count == 0)
                 {
                     return true;
                 }
 
-                // Do not make arbitrary occupied tiles legal. If anything other
-                // than RTSettlement exists on this exact tile, vanilla decides.
+                // Do not make arbitrary occupied content legal. A shared starting
+                // tile may contain RTSettlement objects only.
                 if (objectsAtTile.Any(worldObject => !SharedTileSelectionUtility.IsRemotePlayerSettlement(worldObject)))
                 {
                     return true;
@@ -76,24 +84,28 @@ namespace RWTSharedColony
                     return false;
                 }
 
-                // Keep the important vanilla terrain rule even though we are
-                // deliberately bypassing the occupied-world-object rule.
+                // Preserve the core terrain restrictions from vanilla.
                 var worldTile = Find.WorldGrid[tileId];
                 var biome = worldTile.PrimaryBiome;
-                if (worldTile.WaterCovered || biome == null || !biome.canBuildBase)
+                if (worldTile.WaterCovered ||
+                    biome == null ||
+                    !biome.canBuildBase ||
+                    !biome.implemented ||
+                    worldTile.hilliness == Hilliness.Impassable)
                 {
                     return true;
                 }
 
                 SetReason(reason, $"Rimjob shared tile ({sharedSettlements.Count}/{capacity} occupied)." );
                 __result = true;
+                Log.Message($"[Rimjob] Allowing first settlement on occupied shared tile {tileId} ({sharedSettlements.Count}/{capacity}).");
                 return false;
             }
             catch (Exception exception)
             {
-                // Fail closed: if our special-case logic cannot prove this is a
-                // safe shared tile, fall back to RimWorld's original validator.
-                Log.Warning($"[RWT Shared Colony] shared starting-tile check failed: {exception.Message}");
+                // Fail closed. If the special-case logic cannot prove this is an
+                // eligible Rimjob shared tile, let RimWorld use its normal rules.
+                Log.Warning($"[Rimjob] Shared starting-tile validation failed: {exception}");
                 return true;
             }
         }
@@ -113,35 +125,53 @@ namespace RWTSharedColony
             return worldObject?.def?.defName == "RTSettlement";
         }
 
+        public static bool IsExplicitlySelectedTile(PlanetTile tile)
+        {
+            if (!tile.Valid || Find.WorldInterface == null) return false;
+
+            PlanetTile selectedTile = Find.WorldInterface.SelectedTile;
+            if (selectedTile.Valid && selectedTile == tile)
+            {
+                return true;
+            }
+
+            WorldObject selectedObject = Find.WorldSelector?.FirstSelectedObject;
+            return IsRemotePlayerSettlement(selectedObject) &&
+                   selectedObject.Tile.Valid &&
+                   selectedObject.Tile == tile;
+        }
+
         /// <summary>
-        /// Clicking an occupied RTSettlement selects the WorldObject, not the
-        /// underlying tile. Vanilla Page_SelectStartingSite.CanDoNext checks
-        /// only WorldInterface.SelectedTile and therefore reports
-        /// "Please select a site". Promote the selected RTSettlement's tile so
-        /// the ordinary next-page flow can continue through our TileFinder rule.
+        /// Clicking an occupied RTSettlement selects the WorldObject rather than
+        /// necessarily setting WorldInterface.SelectedTile. Page_SelectStartingSite
+        /// validates SelectedTile, so promote the selected settlement's tile first.
         /// </summary>
         public static void PromoteSelectedSharedTile()
         {
             try
             {
                 if (Find.WorldInterface == null || Find.WorldSelector == null) return;
-                if (Find.WorldInterface.SelectedTile.Valid) return;
 
                 WorldObject selectedObject = Find.WorldSelector.FirstSelectedObject;
                 if (!IsRemotePlayerSettlement(selectedObject)) return;
                 if (!selectedObject.Tile.Valid) return;
 
-                Find.WorldInterface.SelectedTile = selectedObject.Tile;
+                if (!Find.WorldInterface.SelectedTile.Valid ||
+                    Find.WorldInterface.SelectedTile != selectedObject.Tile)
+                {
+                    Find.WorldInterface.SelectedTile = selectedObject.Tile;
+                }
+
                 if (Find.GameInitData != null)
                 {
                     Find.GameInitData.startingTile = selectedObject.Tile;
                 }
 
-                Log.Message($"[RWT Shared Colony] selected occupied player tile {selectedObject.Tile.tileId} for shared settlement");
+                Log.Message($"[Rimjob] Selected occupied player tile {selectedObject.Tile.tileId} for shared first settlement.");
             }
             catch (Exception exception)
             {
-                Log.Warning($"[RWT Shared Colony] could not promote selected shared tile: {exception.Message}");
+                Log.Warning($"[Rimjob] Could not promote selected shared tile: {exception}");
             }
         }
     }
