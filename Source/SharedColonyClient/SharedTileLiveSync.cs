@@ -311,12 +311,18 @@ namespace RWTSharedColony
         {
             if (request == null || request.CurrentStepMode != PKT_Synchronous.StepMode.Ask) return false;
             if (request.FromTile < 0 || request.ToTile < 0 || request.FromTile != request.ToTile) return false;
-            if (string.IsNullOrWhiteSpace(request.Username) || Find.WorldObjects == null) return false;
+            if (string.IsNullOrWhiteSpace(request.Username)) return false;
+            if (string.Equals(request.Username, SessionManager.Username, StringComparison.OrdinalIgnoreCase)) return false;
 
-            return Find.WorldObjects.AllWorldObjects.Any(worldObject =>
-                SharedTileSelectionUtility.IsRemotePlayerSettlement(worldObject) &&
-                worldObject.Tile.Valid &&
-                worldObject.Tile.tileId == request.ToTile);
+            // PM_Synchronous replaces Username and FromTile with values resolved
+            // from the authenticated requester before this packet reaches the
+            // host. That server-verified envelope is the authority for a shared
+            // tile join. Do not also require the guest's RTSettlement world marker:
+            // settlement broadcasts and synchronous packets travel independently,
+            // so the marker can legitimately be missing or late on the host. In
+            // v0.1.14 that timing window sent the request into RWT's stock visit
+            // handler and left both players on separate local maps.
+            return true;
         }
 
         private static List<IntVec3> SpawnGuestParty(Map hostMap, SyncronousParty party, Faction guestFaction)
