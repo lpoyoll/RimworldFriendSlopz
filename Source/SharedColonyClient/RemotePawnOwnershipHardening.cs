@@ -12,7 +12,7 @@ using Verse.AI;
 namespace RWTSharedColony
 {
     /// <summary>
-    /// v0.1.19: remote pawns are visible/inspectable mirrors, never locally controllable.
+    /// v0.1.19+: remote pawns are visible/inspectable mirrors, never locally controllable.
     /// Server-admin status is deliberately irrelevant to pawn ownership.
     ///
     /// RWT's synchronous code uses PatchHandler.BypassFlag both while applying network
@@ -42,9 +42,6 @@ namespace RWTSharedColony
                     string typeName = method?.DeclaringType?.FullName;
                     if (string.IsNullOrWhiteSpace(typeName)) continue;
 
-                    // Only packet-receive/application code is trusted. Do not trust
-                    // generic synchronous hooks because local host/admin UI can pass
-                    // through those hooks as well.
                     if (typeName.StartsWith("RTClient.PacketManagers.Synchronous.", StringComparison.Ordinal) ||
                         string.Equals(typeName, "RTClient.PacketManagers.Synchronous.PM_Synchronous", StringComparison.Ordinal))
                         return true;
@@ -80,10 +77,6 @@ namespace RWTSharedColony
         }
     }
 
-    /// <summary>
-    /// Broad RimWorld-level guard used by vanilla and many mods to decide whether a
-    /// colonist is directly player controllable. Remote-player mirrors are always false.
-    /// </summary>
     [HarmonyPatch]
     public static class RemotePawnPlayerControlledPropertyPatch
     {
@@ -100,8 +93,10 @@ namespace RWTSharedColony
     }
 
     /// <summary>
-    /// Remove right-click orders for a remote pawn. Selection remains allowed so the
-    /// other player's pawn can still be inspected (health, gear, needs, etc.).
+    /// Remove right-click orders for a remote pawn. RimWorld 1.6 ChoicesAtFor
+    /// returns List&lt;FloatMenuOption&gt;; the Harmony __result type must match exactly.
+    /// v0.1.19 used IEnumerable here, which could abort PatchAll and indirectly
+    /// disable the shared starting-tile patches.
     /// </summary>
     [HarmonyPatch]
     public static class RemotePawnFloatMenuPatch
@@ -110,25 +105,22 @@ namespace RWTSharedColony
         {
             return typeof(FloatMenuMakerMap).GetMethods(AccessTools.all)
                 .Where(method => method.Name == "ChoicesAtFor" &&
+                                 method.ReturnType == typeof(List<FloatMenuOption>) &&
                                  method.GetParameters().Any(parameter => parameter.ParameterType == typeof(Pawn)));
         }
 
         [HarmonyPrefix]
         [HarmonyPriority(Priority.First)]
-        public static bool Prefix(object[] __args, ref IEnumerable<FloatMenuOption> __result)
+        public static bool Prefix(object[] __args, ref List<FloatMenuOption> __result)
         {
             Pawn pawn = __args?.OfType<Pawn>().FirstOrDefault();
             if (!RemotePawnControlGuard.IsRemotePawn(pawn)) return true;
 
-            __result = Enumerable.Empty<FloatMenuOption>();
+            __result = new List<FloatMenuOption>();
             return false;
         }
     }
 
-    /// <summary>
-    /// Stronger draft guard than the original v0.1.x patch: being an admin does not
-    /// grant pawn control, and BypassFlag is accepted only for a received network action.
-    /// </summary>
     [HarmonyPatch]
     public static class RemotePawnDraftOwnershipPatch
     {
@@ -149,11 +141,6 @@ namespace RWTSharedColony
         }
     }
 
-    /// <summary>
-    /// Last line of defence: even if another UI or an admin-only synchronous hook exposes
-    /// an order, a local StartJob cannot mutate a remote pawn. Jobs received from the
-    /// owning client through PM_Synchronous remain allowed.
-    /// </summary>
     [HarmonyPatch(typeof(Pawn_JobTracker), "StartJob")]
     public static class RemotePawnStartJobOwnershipPatch
     {
