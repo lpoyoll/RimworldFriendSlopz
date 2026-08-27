@@ -3,7 +3,7 @@
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <Package Name="Rimjob"
            Manufacturer="Ignis &amp; Avis"
-           Version="0.1.12"
+           Version="0.1.17"
            Language="1033"
            Codepage="65001"
            UpgradeCode="8E92A9C2-14A7-4F45-91EF-90B6629F9C82"
@@ -18,37 +18,19 @@
     <Property Id="INSTALLLEVEL" Value="1" />
 
     <Property Id="RIMWORLDREG64">
-      <RegistrySearch Id="FindRimWorldReg64"
-                      Root="HKLM"
-                      Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100"
-                      Name="InstallLocation"
-                      Type="directory"
-                      Bitness="always64" />
+      <RegistrySearch Id="FindRimWorldReg64" Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100" Name="InstallLocation" Type="directory" Bitness="always64" />
     </Property>
     <Property Id="RIMWORLDREG32">
-      <RegistrySearch Id="FindRimWorldReg32"
-                      Root="HKLM"
-                      Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100"
-                      Name="InstallLocation"
-                      Type="directory"
-                      Bitness="always32" />
+      <RegistrySearch Id="FindRimWorldReg32" Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100" Name="InstallLocation" Type="directory" Bitness="always32" />
     </Property>
     <Property Id="RIMWORLDREGUSER">
-      <RegistrySearch Id="FindRimWorldRegUser"
-                      Root="HKCU"
-                      Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100"
-                      Name="InstallLocation"
-                      Type="directory" />
+      <RegistrySearch Id="FindRimWorldRegUser" Root="HKCU" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 294100" Name="InstallLocation" Type="directory" />
     </Property>
     <Property Id="RIMWORLDC">
-      <DirectorySearch Id="FindRimWorldC"
-                       Path="C:\Program Files (x86)\Steam\steamapps\common\RimWorld"
-                       Depth="0" />
+      <DirectorySearch Id="FindRimWorldC" Path="C:\Program Files (x86)\Steam\steamapps\common\RimWorld" Depth="0" />
     </Property>
     <Property Id="RIMWORLDD">
-      <DirectorySearch Id="FindRimWorldD"
-                       Path="D:\SteamLibrary\steamapps\common\RimWorld"
-                       Depth="0" />
+      <DirectorySearch Id="FindRimWorldD" Path="D:\SteamLibrary\steamapps\common\RimWorld" Depth="0" />
     </Property>
 
     <Property Id="RIMWORLDROOT" Secure="yes" />
@@ -80,15 +62,10 @@
       <Directory Id="RimjobServerFolder" Name="Rimjob Server" />
     </StandardDirectory>
 
-    <Feature Id="RimjobFeature"
-             Title="Rimjob"
-             Description="Rimjob multiplayer components"
-             Level="1"
-             Display="expand"
-             AllowAbsent="no">
+    <Feature Id="RimjobFeature" Title="Rimjob" Description="Rimjob multiplayer components" Level="1" Display="expand" AllowAbsent="no">
       <Feature Id="ClientFeature"
                Title="Rimjob Client"
-               Description="Required. Installs Rimjob into the selected RimWorld Mods folder."
+               Description="Required. Installs Rimjob into the selected RimWorld Mods folder, including Update.exe and diagnostics."
                Level="1"
                AllowAbsent="no"
                ConfigurableDirectory="RIMWORLDROOT">
