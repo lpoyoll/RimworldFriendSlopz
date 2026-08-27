@@ -42,7 +42,12 @@ namespace RTServer.PacketManagers
                 return;
             }
 
-            Printer.Message($"[SYNC] Routing action | From={username} | To={peer.GetData<FL_Player>().Username} | Action={data.CurrentActionType}", Printer.Verbosity.Verbose);
+            // Never trust a client-provided Username on an Action packet. Stamp
+            // the authenticated connection identity before forwarding so Rimjob's
+            // owner-authority channels can validate who actually sent the state.
+            data.Username = username;
+
+            Printer.Message($"[SYNC] Routing action | From={username} | To={peer.GetData<FL_Player>().Username} | Action={data.CurrentActionType} | Bytes={(data.Data?.Length ?? 0)}", Printer.Verbosity.Verbose);
             client.Listener.EnqueuePacket(header, data);
             peer.Listener.EnqueuePacket(header, data);
         }
