@@ -29,6 +29,8 @@ namespace RWTSharedColony
         private static int RegisteredOwnTile = -1;
         private static bool AllowOriginalBegin;
         private static bool JoinStarted;
+        private static int KnownSharedTile = -1;
+        private static string KnownHostUsername;
 
         public static bool DelayBegin(Game game)
         {
@@ -53,17 +55,58 @@ namespace RWTSharedColony
         {
             if (string.IsNullOrWhiteSpace(message)) return false;
             string[] parts = message.Split('|');
-            if (parts.Length < 4 || parts[0] != SharedColonyState.ProtocolPrefix || parts[1] != "SETTLED")
+            if (parts.Length < 2 || parts[0] != SharedColonyState.ProtocolPrefix)
                 return false;
 
-            if (!int.TryParse(parts[2], out int tile)) return true;
-            string username = parts[3];
-            if (!string.Equals(username, SessionManager.Username, StringComparison.OrdinalIgnoreCase)) return true;
+            if (parts[1] == "SETTLED" && parts.Length >= 4)
+            {
+                if (!int.TryParse(parts[2], out int settledTile)) return true;
+                string username = parts[3];
+                if (!string.Equals(username, SessionManager.Username, StringComparison.OrdinalIgnoreCase)) return true;
 
-            RegisteredOwnTile = tile;
-            Log.Message($"[Rimjob] Server confirmed local settlement registration on tile {tile}.");
+                RegisteredOwnTile = settledTile;
+                Log.Message($"[Rimjob] Server confirmed local settlement registration on tile {settledTile}.");
+                TryStartAfterRegistration();
+                return true;
+            }
+
+            if (parts[1] != "TILE" || parts.Length < 5) return false;
+            if (!int.TryParse(parts[2], out int sharedTile)) return true;
+            if (!int.TryParse(parts[4], out int memberCount) || memberCount < 2) return true;
+
+            string hostUsername = parts[3];
+            if (string.IsNullOrWhiteSpace(hostUsername)) return true;
+
+            KnownSharedTile = sharedTile;
+            KnownHostUsername = hostUsername;
+
+            // The canonical host already owns the live map. Every other member
+            // should request that map after a save load or reconnect.
+            if (string.Equals(hostUsername, SessionManager.Username, StringComparison.OrdinalIgnoreCase))
+            {
+                Log.Message($"[Rimjob] Local player is canonical host for shared tile {sharedTile} ({memberCount} members).");
+                return true;
+            }
+
+            RegisteredOwnTile = sharedTile;
+            SetPendingTarget(sharedTile, hostUsername);
+            Log.Message($"[Rimjob] Server identified {hostUsername} as canonical host for shared tile {sharedTile} ({memberCount} members).");
+            ArmExistingSharedTile(Current.Game);
             TryStartAfterRegistration();
             return true;
+        }
+
+        public static void ArmExistingSharedTile(Game game)
+        {
+            if (game?.CurrentMap == null || KnownSharedTile < 0 || string.IsNullOrWhiteSpace(KnownHostUsername)) return;
+            if (game.CurrentMap.Tile.tileId != KnownSharedTile) return;
+            if (string.Equals(KnownHostUsername, SessionManager.Username, StringComparison.OrdinalIgnoreCase)) return;
+
+            SetPendingTarget(KnownSharedTile, KnownHostUsername);
+            PendingGame = game;
+            Find.TickManager.CurTimeSpeed = TimeSpeed.Paused;
+            Log.Message($"[Rimjob] Existing shared-tile save armed for host map rejoin on tile {KnownSharedTile}.");
+            TryStartAfterRegistration();
         }
 
         public static void RecoverTargetFromSelection()
@@ -114,10 +157,15 @@ namespace RWTSharedColony
             if (string.IsNullOrWhiteSpace(username) || string.Equals(username, SessionManager.Username, StringComparison.OrdinalIgnoreCase))
                 return;
 
+            SetPendingTarget(tile, username);
+            Log.Message($"[Rimjob] Recovered shared live-map target: {username} on tile {tile}.");
+        }
+
+        private static void SetPendingTarget(int tile, string username)
+        {
             SetPrivateAutoProperty(nameof(SharedTileLiveSync.PendingTile), tile);
             SetPrivateAutoProperty(nameof(SharedTileLiveSync.PendingHostUsername), username);
             SharedColonyState.PendingRemoteUsername = username;
-            Log.Message($"[Rimjob] Recovered shared live-map target: {username} on tile {tile}.");
         }
 
         private static void TryStartAfterRegistration()
@@ -166,5 +214,13 @@ namespace RWTSharedColony
     {
         [HarmonyPriority(Priority.First)]
         public static bool Prefix(string message) => !SharedTileLiveSyncHandshake.HandleProtocol(message);
+    }
+
+    [HarmonyPatch(typeof(Game), "FinalizeInit")]
+    public static class ResumeExistingSharedTilePatch
+    {
+        [HarmonyPostfix]
+        [HarmonyPriority(Priority.Last)]
+        public static void Postfix(Game __instance) => SharedTileLiveSyncHandshake.ArmExistingSharedTile(__instance);
     }
 }
