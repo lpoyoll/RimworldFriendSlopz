@@ -20,6 +20,23 @@ jobs:
         run: dotnet test Source/Server.Tests/RTServer.Tests.csproj --configuration Release
       - name: Build server
         run: dotnet build Source/Server/RTServer.csproj --configuration Release
+      - name: Publish Windows server
+        run: >-
+          dotnet publish Source/Server/RTServer.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output artifacts/server-win-x64
+          -p:PublishSingleFile=true
+          -p:PublishReadyToRun=true
+          -p:DebugType=None
+          -p:DebugSymbols=false
+      - name: Upload Windows server
+        uses: actions/upload-artifact@v4
+        with:
+          name: rimjob-server-win-x64
+          path: artifacts/server-win-x64
+          if-no-files-found: error
       - name: Build shared-colony client patch
         run: dotnet build Source/SharedColony/SharedColony.csproj --configuration Release
       - name: Upload shared-colony client patch
