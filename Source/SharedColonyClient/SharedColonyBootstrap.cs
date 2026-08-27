@@ -17,8 +17,36 @@ namespace RWTSharedColony
     {
         static SharedColonyBootstrap()
         {
-            new Harmony("rwt.shared-colony").PatchAll(Assembly.GetExecutingAssembly());
-            Log.Message("[RWT Shared Colony] client ownership and faction patches loaded");
+            Harmony harmony = new Harmony("rwt.shared-colony");
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            int patchedClasses = 0;
+            int failedClasses = 0;
+
+            foreach (Type type in assembly.GetTypes()
+                         .Where(type => type.GetCustomAttributes(typeof(HarmonyPatch), true).Length > 0)
+                         .OrderBy(type => type.FullName, StringComparer.Ordinal))
+            {
+                try
+                {
+                    harmony.CreateClassProcessor(type).Patch();
+                    patchedClasses++;
+                }
+                catch (Exception exception)
+                {
+                    failedClasses++;
+                    Log.Error($"[Rimjob] Harmony patch class failed but remaining patches will continue: {type.FullName} | {exception}");
+                    try
+                    {
+                        RimjobClientDiagnostics.Important($"Harmony patch class failed: {type.FullName} | {exception}");
+                    }
+                    catch
+                    {
+                        // Diagnostics must not block patch isolation.
+                    }
+                }
+            }
+
+            Log.Message($"[Rimjob] Isolated Harmony bootstrap complete. PatchedClasses={patchedClasses}; FailedClasses={failedClasses}; MapSize={SharedColonyState.MapSize}.");
         }
     }
 
@@ -401,7 +429,17 @@ namespace RWTSharedColony
                 if (!(__args[index] is IntVec3 size)) continue;
                 if (size.x >= SharedColonyState.MapSize && size.z >= SharedColonyState.MapSize) return;
 
-                __args[index] = new IntVec3(SharedColonyState.MapSize, size.y, SharedColonyState.MapSize);
+                IntVec3 forcedSize = new IntVec3(SharedColonyState.MapSize, size.y, SharedColonyState.MapSize);
+                __args[index] = forcedSize;
+                Log.Message($"[Rimjob] Forcing player settlement map from {size.x}x{size.z} to {forcedSize.x}x{forcedSize.z}.");
+                try
+                {
+                    RimjobClientDiagnostics.Important($"Map generation forced to {forcedSize.x}x{forcedSize.z}; previous={size.x}x{size.z}; tile={(parent?.Tile.tileId ?? -1)}.");
+                }
+                catch
+                {
+                    // Map generation must not depend on diagnostics.
+                }
                 return;
             }
         }
