@@ -13,7 +13,7 @@ using Verse;
 namespace RWTSharedColony
 {
     /// <summary>
-    /// Rimjob v0.1.22 pawn mirror transport.
+    /// Rimjob pawn mirror transport.
     ///
     /// The normal RWT synchronous protocol forwards jobs/draft/etc, but two
     /// separate RimWorld simulations can still disagree about a pawn's exact
@@ -29,12 +29,14 @@ namespace RWTSharedColony
         private const int StateMagic = 0x52505332;    // RPS2
         private const int ManifestMagic = 0x52504D32; // RPM2
         private const long StateIntervalTicks = TimeSpan.TicksPerMillisecond * 100;
-        private const long ManifestIntervalTicks = TimeSpan.TicksPerSecond * 10;
+        private const long ManifestIntervalTicks = TimeSpan.TicksPerSecond * 2;
 
         private static long _lastStateUtcTicks;
         private static long _lastManifestUtcTicks;
         private static bool _wasActive;
         private static readonly HashSet<string> MissingMirrorWarnings = new HashSet<string>(StringComparer.Ordinal);
+        private static readonly Dictionary<string, Pawn> RemotePawnAliases =
+            new Dictionary<string, Pawn>(StringComparer.OrdinalIgnoreCase);
 
         public static void Update()
         {
@@ -50,6 +52,7 @@ namespace RWTSharedColony
                     _lastStateUtcTicks = 0;
                     _lastManifestUtcTicks = 0;
                     MissingMirrorWarnings.Clear();
+                    RemotePawnAliases.Clear();
                     return;
                 }
 
@@ -208,7 +211,7 @@ namespace RWTSharedColony
                     {
                         string thingId = reader.ReadString();
                         IntVec3 position = new IntVec3(reader.ReadInt32(), 0, reader.ReadInt32());
-                        Pawn pawn = FindPawn(map, thingId);
+                        Pawn pawn = FindRemotePawn(map, owner, thingId, remoteFaction);
                         if (pawn == null)
                         {
                             if (MissingMirrorWarnings.Add(owner + "|" + thingId))
@@ -248,6 +251,7 @@ namespace RWTSharedColony
                     if (!ValidateRemoteEnvelope(map, owner, tile, count)) return;
 
                     Faction remoteFaction = PlayerFactionRegistry.GetOrCreate(owner);
+                    HashSet<string> seenAliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                     int created = 0;
                     int existing = 0;
                     for (int index = 0; index < count; index++)
@@ -255,14 +259,16 @@ namespace RWTSharedColony
                         string thingId = reader.ReadString();
                         IntVec3 position = new IntVec3(reader.ReadInt32(), 0, reader.ReadInt32());
                         string serialized = reader.ReadString();
+                        string alias = PawnAlias(owner, thingId);
+                        seenAliases.Add(alias);
 
-                        Pawn pawn = FindPawn(map, thingId);
+                        Pawn pawn = FindRemotePawn(map, owner, thingId, remoteFaction);
                         if (pawn == null)
                         {
                             pawn = ScribeManager.SerializeFromString<Pawn>(
                                 serialized,
                                 ScribeManager.SerializableType.Pawn,
-                                enforceID: true);
+                                enforceID: false);
                             if (pawn == null)
                             {
                                 RimjobClientDiagnostics.Error(
@@ -283,7 +289,19 @@ namespace RWTSharedColony
                             existing++;
                         }
 
+                        RemotePawnAliases[alias] = pawn;
                         MissingMirrorWarnings.Remove(owner + "|" + thingId);
+                    }
+
+                    foreach (string staleAlias in RemotePawnAliases.Keys
+                                 .Where(key => AliasBelongsTo(key, owner) && !seenAliases.Contains(key))
+                                 .ToArray())
+                    {
+                        Pawn stale = RemotePawnAliases[staleAlias];
+                        if (stale != null && !stale.Destroyed &&
+                            stale.Faction != Faction.OfPlayer)
+                            stale.Destroy(DestroyMode.Vanish);
+                        RemotePawnAliases.Remove(staleAlias);
                     }
 
                     RimjobClientDiagnostics.Important(
@@ -310,21 +328,51 @@ namespace RWTSharedColony
             return SharedTileLiveSync.IsSharedSessionActive && map != null && map.mapPawns != null;
         }
 
-        private static Pawn FindPawn(Map map, string thingId)
+        private static Pawn FindRemotePawn(Map map, string owner, string thingId, Faction remoteFaction)
         {
             if (string.IsNullOrWhiteSpace(thingId) || map?.mapPawns == null) return null;
-            return map.mapPawns.AllPawns.FirstOrDefault(pawn =>
-                pawn != null && string.Equals(pawn.ThingID, thingId, StringComparison.Ordinal));
+            string alias = PawnAlias(owner, thingId);
+            if (RemotePawnAliases.TryGetValue(alias, out Pawn mapped))
+            {
+                if (mapped != null && !mapped.Destroyed && mapped.MapHeld == map)
+                    return mapped;
+                RemotePawnAliases.Remove(alias);
+            }
+
+            Pawn fallback = map.mapPawns.AllPawns.FirstOrDefault(pawn =>
+                pawn != null &&
+                !pawn.Destroyed &&
+                string.Equals(pawn.ThingID, thingId, StringComparison.Ordinal) &&
+                (remoteFaction == null ? pawn.Faction != Faction.OfPlayer : pawn.Faction == remoteFaction));
+            if (fallback != null) RemotePawnAliases[alias] = fallback;
+            return fallback;
         }
+
+        private static string PawnAlias(string owner, string thingId) =>
+            (owner ?? string.Empty) + "|P|" + (thingId ?? string.Empty);
+
+        private static bool AliasBelongsTo(string alias, string owner) =>
+            !string.IsNullOrWhiteSpace(alias) &&
+            !string.IsNullOrWhiteSpace(owner) &&
+            alias.StartsWith(owner + "|P|", StringComparison.OrdinalIgnoreCase);
 
         private static bool MoveMirrorPawn(Pawn pawn, Map map, IntVec3 requested)
         {
             if (pawn == null || map == null || pawn.Destroyed) return false;
             IntVec3 position = ClampToMap(map, requested);
-            if (pawn.Spawned && pawn.Position == position) return true;
 
             try
             {
+                object pather = AccessTools.Field(typeof(Pawn), "pather")?.GetValue(pawn) ??
+                                AccessTools.Property(typeof(Pawn), "pather")?.GetValue(pawn, null);
+                InvokeNoArgMethod(pather, "StopDead");
+
+                if (pawn.Spawned && pawn.Position == position)
+                {
+                    InvokeNoArgMethod(pather, "Notify_Teleported");
+                    return true;
+                }
+
                 if (!pawn.Spawned)
                 {
                     RimworldManager.SetDirectThingIntoMap(pawn, map, position);
@@ -337,8 +385,6 @@ namespace RWTSharedColony
                 pawn.Position = position;
                 InvokeSingleThingMethod(thingGrid, "Register", pawn);
 
-                object pather = AccessTools.Field(typeof(Pawn), "pather")?.GetValue(pawn) ??
-                                AccessTools.Property(typeof(Pawn), "pather")?.GetValue(pawn, null);
                 InvokeNoArgMethod(pather, "Notify_Teleported");
                 return true;
             }
