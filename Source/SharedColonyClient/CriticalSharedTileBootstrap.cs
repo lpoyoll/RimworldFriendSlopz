@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using Verse;
 
 namespace RWTSharedColony
