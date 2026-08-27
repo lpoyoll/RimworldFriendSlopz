@@ -167,6 +167,7 @@ jobs:
           New-Item -ItemType Directory -Force "$root/Rimjob", "$root/Server" | Out-Null
           Copy-Item 'build/client/*' "$root/Rimjob" -Recurse
           Copy-Item 'build/server/Rimjob Server.exe' "$root/Server/Rimjob Server.exe"
+          Copy-Item 'build/server/SERVER_VERSION.txt' "$root/Server/SERVER_VERSION.txt"
           @"
           RIMJOB v$env:RELEASE_VERSION
 
