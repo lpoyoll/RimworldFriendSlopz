@@ -74,7 +74,7 @@ jobs:
           }
 
           $installer = Get-Content 'Installer/Rimjob.wxs' -Raw
-          if ($installer -notmatch 'Version="0\.1\.23"') { throw 'MSI version is not 0.1.24' }
+          if ($installer -notmatch 'Version="0\.1\.24"') { throw 'MSI version is not 0.1.24' }
 
       - name: Build Rimjob client companion
         shell: pwsh
