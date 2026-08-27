@@ -1,17 +1,17 @@
-name: Rimjob v0.1.14 - ZIP and MSI
+name: Rimjob v0.1.15 - ZIP and MSI
 
 on:
   push:
     branches:
-      - rimjob-v014-live-sync-handshake
+      - rimjob-v015-player-visibility
   workflow_dispatch:
 
 permissions:
   contents: write
 
 env:
-  RELEASE_VERSION: 0.1.14
-  RELEASE_TAG: v0.1.14
+  RELEASE_VERSION: 0.1.15
+  RELEASE_TAG: v0.1.15
   KNOWN_GOOD_RTCLIENT_COMMIT: a65ef0fea5911ac710a50f53b9fcad8a2f32051f
   KNOWN_GOOD_RTCLIENT_SHA256: 71ca7388932621254ab8f7300b7d6ff182a218e7ba4cad052ea8f8fb9328b541
   KNOWN_GOOD_RTCLIENT_SIZE: 312832
@@ -37,7 +37,7 @@ jobs:
             throw 'RWTSharedColony.dll was not produced'
           }
 
-      - name: Verify v0.1.14 handshake source
+      - name: Verify same-tile handshake and visibility source
         shell: pwsh
         run: |
           $fix = Get-Content 'Source/SharedColonyClient/SharedTileLiveSyncHandshakeFix.cs' -Raw
@@ -54,6 +54,18 @@ jobs:
           $server = Get-Content 'Source/Server/PacketManagers/PM_Settlements.cs' -Raw
           foreach ($required in @('SendProtocolMessage','|SETTLED|','SharedColonyManager.RegisterSettlement')) {
             if ($server -notmatch [regex]::Escape($required)) { throw "Missing v0.1.14 server acknowledgement element: $required" }
+          }
+
+          $liveSync = Get-Content 'Source/SharedColonyClient/SharedTileLiveSync.cs' -Raw
+          foreach ($required in @(
+            'request.FromTile != request.ToTile',
+            'server-verified envelope is the authority',
+            'string.Equals(request.Username, SessionManager.Username'
+          )) {
+            if ($liveSync -notmatch [regex]::Escape($required)) { throw "Missing v0.1.15 visibility element: $required" }
+          }
+          if ($liveSync -match 'Find.WorldObjects.AllWorldObjects.Any\(worldObject =>\s*SharedTileSelectionUtility.IsRemotePlayerSettlement') {
+            throw 'Regression: host acceptance must not depend on an asynchronously broadcast RTSettlement marker'
           }
 
       - name: Build Mono-compatible client dependencies
@@ -121,15 +133,14 @@ jobs:
           @"
           RIMJOB v$env:RELEASE_VERSION
 
-          v0.1.14 fixes the shared-map handover race found in v0.1.13.
-          The joining client now waits for an explicit server acknowledgement that
-          its settlement exists before it asks the existing tile owner for the live map.
-          It also recovers the host settlement owner from the selected/starting tile
-          if RimWorld has already cleared FirstSelectedObject.
+          v0.1.15 fixes the remaining shared-map visibility race in v0.1.14.
+          Host acceptance now trusts the server-authenticated same-tile request and
+          no longer waits for the joining player's asynchronous world-map marker.
+          The host map transfer therefore starts even when that marker is late or absent.
 
           Install the Rimjob folder into <RimWorld>\Mods\Rimjob and disable the
           original RimWorld Together Workshop mod. Both players and the server
-          must use this release for the shared-map handshake test.
+          must use this release for the shared-map visibility test.
           "@ | Set-Content "$root/INSTALL.txt"
 
           $zip = "build/Rimjob-v$env:RELEASE_VERSION.zip"
@@ -159,35 +170,34 @@ jobs:
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.14-ZIP
-          path: build/Rimjob-v0.1.14.zip
+          name: Rimjob-v0.1.15-ZIP
+          path: build/Rimjob-v0.1.15.zip
           if-no-files-found: error
 
       - name: Upload MSI
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.14-MSI
-          path: build/Rimjob-v0.1.14-x64.msi
+          name: Rimjob-v0.1.15-MSI
+          path: build/Rimjob-v0.1.15-x64.msi
           if-no-files-found: error
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.14
+          tag_name: v0.1.15
           target_commitish: ${{ github.sha }}
-          name: Rimjob v0.1.14
+          name: Rimjob v0.1.15
           body: |
-            Rimjob v0.1.14
+            Rimjob v0.1.15
 
-            - Fixes the v0.1.13 same-tile live-map handshake race.
-            - The server now acknowledges the joining player's settlement only after it has been registered.
-            - The client waits for that acknowledgement before sending the synchronous same-tile map request.
-            - Adds a fallback resolver for the existing RTSettlement owner when the world selector no longer exposes FirstSelectedObject.
-            - Carries forward host-authoritative map transfer, guest pawn insertion, remote pawn ownership, synchronous action routing and host-authoritative time from v0.1.13.
+            - Fixes the remaining v0.1.14 race that could leave same-tile players on separate local maps.
+            - Host acceptance now uses the server-authenticated username and same-tile request envelope.
+            - The live-map transfer no longer depends on the joining player's asynchronously broadcast RTSettlement marker being visible on the host.
+            - Carries forward the acknowledged settlement registration, target recovery, host-authoritative map transfer, guest pawn insertion, remote pawn ownership, synchronous action routing and host-authoritative time from v0.1.14.
             - Carries forward the known-good Direct Connect / Server Browser RTClient binary.
 
-            Test with two players first. Both clients and the server must be v0.1.14.
+            Test with two players first. Both clients and the server must be v0.1.15.
           files: |
-            build/Rimjob-v0.1.14.zip
-            build/Rimjob-v0.1.14-x64.msi
+            build/Rimjob-v0.1.15.zip
+            build/Rimjob-v0.1.15-x64.msi
           overwrite_files: true
