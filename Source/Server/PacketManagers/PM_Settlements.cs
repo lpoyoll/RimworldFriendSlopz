@@ -33,47 +33,101 @@ namespace RTServer.PacketManagers
         public static void AddSettlement(ServerClient client, PKT_PlayerSettlement packet)
         {
             string username = client.GetData<FL_Player>().Username;
-            if (!SharedColonyManager.CanAddSettlement(packet.File.Tile, username, out string reason))
+            if (packet?.File == null)
             {
+                ResponseShortcutManager.SendIllegalPacket(client,
+                    "Settlement creation packet did not contain settlement data.",
+                    context: "SettlementAdd; File=<null>");
+                return;
+            }
+
+            int tile = packet.File.Tile;
+            List<FL_Settlement> occupants = GetAllSettlementsAtTile(tile);
+            bool canonicalMapValid = occupants.Count == 0 || SharedColonyManager.MapHasConfiguredSize(tile);
+            string mapHostUsername = occupants.Count > 0 ? SharedColonyManager.GetMapHostUsername(tile) : null;
+            ServerClient mapHostClient = string.IsNullOrWhiteSpace(mapHostUsername)
+                ? null
+                : ServerNetwork.GetConnectedClientFromUsername(mapHostUsername);
+
+            Printer.Message(
+                $"[SHARED-REGISTER] Settlement add request | User={username} | Tile={tile} | Occupants={occupants.Count} | " +
+                $"CanonicalHost={mapHostUsername ?? "<none>"} | HostOnline={mapHostClient != null} | CanonicalMapValid={canonicalMapValid}",
+                Printer.Verbosity.Verbose);
+
+            bool canAdd = SharedColonyManager.CanAddSettlement(tile, username, out string reason);
+
+            // v0.1.18: a second player must be allowed to register before the
+            // live-map synchronous handshake can begin. v0.1.17 rejected that
+            // registration whenever the server did not already have a valid
+            // 500x500 map snapshot, even if the canonical host was online and
+            // holding the authoritative live map. That prevented SETTLED from
+            // ever being sent, so SyncPeerId remained int.MinValue and both
+            // clients stayed on independent maps.
+            //
+            // If the only rejection is the missing/stale server snapshot and the
+            // canonical host is online, defer map validation to the live host and
+            // allow registration. Capacity/duplicate ownership checks still apply.
+            if (!canAdd &&
+                SharedColonyManager.Enabled &&
+                occupants.Count > 0 &&
+                mapHostClient != null &&
+                !canonicalMapValid &&
+                !string.IsNullOrWhiteSpace(reason) &&
+                reason.StartsWith("The existing map is not", StringComparison.OrdinalIgnoreCase))
+            {
+                Printer.Message(
+                    $"[SHARED-REGISTER] Deferring server map snapshot validation to online canonical host | " +
+                    $"User={username} | Tile={tile} | Host={mapHostUsername}",
+                    Printer.Verbosity.Verbose);
+                canAdd = true;
+                reason = null;
+            }
+
+            if (!canAdd)
+            {
+                string context =
+                    $"SettlementAdd; Tile={tile}; Occupants={occupants.Count}; " +
+                    $"CanonicalHost={mapHostUsername ?? "<none>"}; HostOnline={mapHostClient != null}; CanonicalMapValid={canonicalMapValid}";
                 PM_Chat.SendServerMessage(client, reason);
-                ResponseShortcutManager.SendUnavailablePacket(client);
+                ResponseShortcutManager.SendUnavailablePacket(client, reason, context);
+                return;
             }
-            else
+
+            FL_Settlement settlementFile = new FL_Settlement();
+            settlementFile.Tile = tile;
+            settlementFile.Username = username;
+
+            string path = SharedColonyManager.Enabled
+                ? SharedColonyManager.GetSettlementPath(settlementFile.Tile, username)
+                : Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat);
+            Serializer.SerializeToFile(path, settlementFile);
+            SharedColonyManager.RegisterSettlement(settlementFile);
+
+            // Acknowledge the requester's own settlement only after it is durably
+            // registered. The shared-map client waits for SETTLED before sending
+            // its synchronous Ask.
+            if (SharedColonyManager.Enabled)
             {
-                FL_Settlement settlementFile = new FL_Settlement();
-                settlementFile.Tile = packet.File.Tile;
-                settlementFile.Username = username;
-
-                string path = SharedColonyManager.Enabled
-                    ? SharedColonyManager.GetSettlementPath(settlementFile.Tile, username)
-                    : Path.Combine(Master.SettlementsPath, settlementFile.Tile + CommonValues.DefaultSaveFormat);
-                Serializer.SerializeToFile(path, settlementFile);
-                SharedColonyManager.RegisterSettlement(settlementFile);
-
-                // v0.1.14: acknowledge the requester's own settlement only after
-                // it is durably registered. The shared-map client waits for this
-                // before sending its synchronous Ask, removing a race in v0.1.13
-                // where PM_Synchronous could run before the requester's settlement
-                // existed and therefore could not resolve FromTile.
-                if (SharedColonyManager.Enabled)
-                {
-                    PM_Chat.SendProtocolMessage(client,
-                        $"{SharedColonyManager.ProtocolPrefix}|SETTLED|{settlementFile.Tile}|{username}");
-                }
-
-                packet.StepMode = PKT_PlayerSettlement.SettlementStepMode.Add;
-                packet.File = settlementFile;
-                packet.File.IconID = client.GetData<FL_Player>().Customizations.SettlementIconID;
-                packet.File.IconColor = client.GetData<FL_Player>().Customizations.SettlementIconColor;
-                
-                foreach (ServerClient cClient in ServerNetwork.GetConnectedClients())
-                {
-                    if (cClient == client) continue;
-                    else cClient.Listener.EnqueuePacket(PacketHeader.Settlement, packet);
-                }
-
-                InformationDisplayer.DisplayAddSettlement(settlementFile.Tile.ToString());
+                PM_Chat.SendProtocolMessage(client,
+                    $"{SharedColonyManager.ProtocolPrefix}|SETTLED|{settlementFile.Tile}|{username}");
             }
+
+            packet.StepMode = PKT_PlayerSettlement.SettlementStepMode.Add;
+            packet.File = settlementFile;
+            packet.File.IconID = client.GetData<FL_Player>().Customizations.SettlementIconID;
+            packet.File.IconColor = client.GetData<FL_Player>().Customizations.SettlementIconColor;
+
+            foreach (ServerClient cClient in ServerNetwork.GetConnectedClients())
+            {
+                if (cClient == client) continue;
+                cClient.Listener.EnqueuePacket(PacketHeader.Settlement, packet);
+            }
+
+            Printer.Message(
+                $"[SHARED-REGISTER] Settlement registered | User={username} | Tile={tile} | " +
+                $"MembersNow={GetAllSettlementsAtTile(tile).Count} | SETTLED acknowledgement sent={SharedColonyManager.Enabled}",
+                Printer.Verbosity.Verbose);
+            InformationDisplayer.DisplayAddSettlement(settlementFile.Tile.ToString());
         }
 
         public static void RemoveSettlement(ServerClient client, PKT_PlayerSettlement settlementData)
@@ -176,12 +230,12 @@ namespace RTServer.PacketManagers
         {
             List<FL_Settlement> settlementList = new List<FL_Settlement>();
             string[] settlements = Directory.GetFiles(Master.SettlementsPath);
-            
+
             foreach (string settlement in settlements)
             {
                 FL_Settlement file = Serializer.SerializeFromFile<FL_Settlement>(settlement);
                 FL_Player userFile = UserManagerH.GetUserFileFromName(file.Username);
-                
+
                 file.IconID = userFile.Customizations.SettlementIconID;
                 file.IconColor = userFile.Customizations.SettlementIconColor;
                 settlementList.Add(file);
