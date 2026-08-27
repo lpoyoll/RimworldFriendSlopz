@@ -4,6 +4,6 @@ namespace RWTSharedColony
     // layout while exposing the same endpoint used by the existing live-sync code.
     internal static class Network
     {
-        public static RTNetwork.Components.ServerClient ServerEndpoint => RTNetwork.Components.Network.ServerEndpoint;
+        public static RTNetwork.Components.Listener ServerEndpoint => RTNetwork.Components.Network.ServerEndpoint;
     }
 }
