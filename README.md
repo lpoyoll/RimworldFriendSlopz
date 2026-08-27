@@ -8,7 +8,7 @@
 
 <p align="center">
   <img alt="RimWorld 1.6" src="https://img.shields.io/badge/RimWorld-1.6-8b6f47" />
-  <img alt="Status" src="https://img.shields.io/badge/status-active%20development-d97738" />
+  <img alt="Release" src="https://img.shields.io/badge/release-v0.1.23-d97738" />
   <img alt="Multiplayer" src="https://img.shields.io/badge/focus-multiplayer-40566b" />
 </p>
 
@@ -28,26 +28,28 @@ The aim is simple: **play in the same RimWorld world without turning every playe
 - **Dedicated hosting** - a standalone server build for persistent worlds.
 - **Installer-first releases** - Windows builds are packaged as both ZIP and MSI, with the server as an optional host component.
 
-## Current release work
+## Current release: v0.1.23
 
-The current v0.1.10 line focuses on **shared-tile starting settlements**. A joining player should be able to select an already occupied multiplayer tile, create their own settlement there and retain separate colony ownership.
+v0.1.23 is the matched client/server release for live shared-tile play.
 
-That includes work around:
+- Routes Rimjob private action IDs before the inherited action-manager lookup, preventing the action 9022 exception/log storm.
+- Requires the matching `RJ23` server protocol before private pawn or world-state replication begins.
+- Keeps each player authoritative for their own pawns and mirrors remote pawn state without granting control.
+- Mirrors host-authoritative building state to the joining player.
+- Includes 500x500 settlement maps, same-tile joining, host time, Direct Connect, F9 diagnostics and `Update.exe`.
+- Ships as an MSI and ZIP with an optional self-contained Windows server.
 
-- occupied starting-tile selection;
-- multiple settlements persisted on one tile;
-- strict pawn ownership boundaries;
-- player diplomacy;
-- client/server packaging;
-- self-contained dedicated server builds.
+[Download Rimjob v0.1.23](https://github.com/lpoyoll/RimworldFriendSlopz/releases/tag/v0.1.23)
 
 ## Installation
 
 Rimjob requires **Harmony**.
 
-For Windows, use the Rimjob MSI where available. It installs the client under the selected RimWorld installation at `Mods/Rimjob`. The dedicated server is offered separately as an optional host-only component.
+For Windows, use the [v0.1.23 MSI](https://github.com/lpoyoll/RimworldFriendSlopz/releases/download/v0.1.23/Rimjob-v0.1.23-x64.msi). It installs the client under the selected RimWorld installation at `Mods/Rimjob`; select the optional server component on the hosting PC.
 
-Manual ZIP builds contain the same client payload plus the standalone server executable.
+Both clients and the server must use v0.1.23. `Update.exe` updates the client only, so the host must also replace or reinstall the server when moving between releases.
+
+The manual ZIP contains the same client payload and standalone server executable.
 
 > [!IMPORTANT]
 > Disable the original RimWorld Together Workshop mod while testing Rimjob. Rimjob still retains some inherited internal identifiers for compatibility while the project is separated cleanly.
