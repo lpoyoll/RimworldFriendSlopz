@@ -12,11 +12,33 @@ namespace RTServer.PacketManagers
 {
     public class PM_Synchronous : PM_Base
     {
+        private const int RimjobPawnStateAction = 9022;
+        private const int RimjobPawnManifestAction = 9023;
+        private const int RimjobHostBuildingAction = 9030;
+        private const string RimjobBuildVersion = "0.1.23";
+        private const string RimjobPrivateProtocol = "RJ23";
+
+        private static readonly object PrivateRateLock = new object();
+        private static readonly Dictionary<string, long> LastPrivatePacketTicks = new Dictionary<string, long>();
+
         [HandlesPacket(PacketHeader.Synchronous)]
         public override void Receive(ServerClient client, byte[] bytes, PacketHeader header)
         {
             PKT_Synchronous data = Serializer.ConvertBytesToObject<PKT_Synchronous>(bytes);
             string username = client.GetData<FL_Player>()?.Username ?? "<unknown>";
+            int actionCode = Convert.ToInt32(data.CurrentActionType);
+
+            // Private Rimjob state packets are deliberately excluded from the
+            // stock RWT action-manager path. Older builds used First(...) to find
+            // a registered action handler, which throws for our private values.
+            // v0.1.23 consumes them before that can ever happen.
+            if (data.CurrentStepMode == PKT_Synchronous.StepMode.Action &&
+                IsRimjobPrivateAction(actionCode))
+            {
+                RouteRimjobPrivateAction(client, data, header, actionCode);
+                return;
+            }
+
             Printer.Message($"[SYNC] RX | User={username} | Step={data.CurrentStepMode} | Type={data.CurrentType} | Action={data.CurrentActionType} | From={data.FromTile} | To={data.ToTile} | Target={data.Username ?? "<none>"} | Bytes={(data.Data?.Length ?? 0)}", Printer.Verbosity.Verbose);
 
             switch (data.CurrentStepMode)
@@ -26,6 +48,71 @@ namespace RTServer.PacketManagers
                 case PKT_Synchronous.StepMode.Reject: RejectSynchronousSession(client, data); break;
                 case PKT_Synchronous.StepMode.Start: StartSynchronousSession(client, data); break;
                 case PKT_Synchronous.StepMode.Action: RouteToManager(client, data, header); break;
+            }
+        }
+
+        private static bool IsRimjobPrivateAction(int actionCode) =>
+            actionCode == RimjobPawnStateAction ||
+            actionCode == RimjobPawnManifestAction ||
+            actionCode == RimjobHostBuildingAction;
+
+        private static void RouteRimjobPrivateAction(ServerClient client, PKT_Synchronous data, PacketHeader header, int actionCode)
+        {
+            FL_Player player = client.GetData<FL_Player>();
+            string username = player?.Username ?? "<unknown>";
+            int peerId = player?.SynchronousClientID ?? int.MinValue;
+            ServerClient peer = ServerNetwork.GetClientFromID(peerId);
+
+            if (peer == null || peer.GetData<FL_Player>()?.SynchronousClientID != client.ID)
+            {
+                // Do not throw and do not bounce a high-frequency error packet.
+                // One concise server line is enough; the client diagnostics will
+                // also show that no paired session exists.
+                Printer.Message($"[RIMJOB-RELAY] Dropped private action {actionCode}: no valid pair | User={username} | PeerId={peerId}", Printer.Verbosity.Verbose);
+                return;
+            }
+
+            FL_Settlement sourceSettlement = PM_Settlements.GetSettlementFileFromUsername(username);
+            FL_Settlement peerSettlement = PM_Settlements.GetSettlementFileFromUsername(peer.GetData<FL_Player>().Username);
+            if (sourceSettlement == null || peerSettlement == null || sourceSettlement.Tile != peerSettlement.Tile)
+            {
+                Printer.Message($"[RIMJOB-RELAY] Dropped private action {actionCode}: paired players are not registered on the same tile | User={username}", Printer.Verbosity.Verbose);
+                return;
+            }
+
+            int payloadLength = data.Data?.Length ?? 0;
+            int maximumPayload = actionCode == RimjobPawnStateAction
+                ? 1024 * 1024
+                : actionCode == RimjobPawnManifestAction
+                    ? 24 * 1024 * 1024
+                    : 8 * 1024 * 1024;
+            if (payloadLength <= 0 || payloadLength > maximumPayload)
+            {
+                Printer.Message($"[RIMJOB-RELAY] Dropped private action {actionCode}: invalid payload size {payloadLength}", Printer.Verbosity.Verbose);
+                return;
+            }
+
+            long now = DateTime.UtcNow.Ticks;
+            long minimumInterval = actionCode == RimjobPawnStateAction
+                ? TimeSpan.TicksPerMillisecond * 100
+                : actionCode == RimjobPawnManifestAction
+                    ? TimeSpan.TicksPerSecond * 5
+                    : TimeSpan.TicksPerMillisecond * 500;
+            string rateKey = client.ID + ":" + actionCode;
+            lock (PrivateRateLock)
+            {
+                if (LastPrivatePacketTicks.TryGetValue(rateKey, out long last) && now - last < minimumInterval)
+                    return;
+                LastPrivatePacketTicks[rateKey] = now;
+            }
+
+            // Private state is peer-only. Echoing it back to its authoritative
+            // sender doubles traffic for no useful purpose.
+            peer.Listener.EnqueuePacket(header, data);
+
+            if (actionCode != RimjobPawnStateAction)
+            {
+                Printer.Message($"[RIMJOB-RELAY] Private action relayed | From={username} | To={peer.GetData<FL_Player>().Username} | Action={actionCode} | Bytes={payloadLength}", Printer.Verbosity.Verbose);
             }
         }
 
@@ -140,7 +227,15 @@ namespace RTServer.PacketManagers
 
             client.GetData<FL_Player>().SynchronousClientID = requester.ID;
             requester.GetData<FL_Player>().SynchronousClientID = client.ID;
-            Printer.Message($"[SYNC] Pair established | Requester={requester.GetData<FL_Player>().Username}#{requester.ID} | Host={targetUsername}#{client.ID}", Printer.Verbosity.Verbose);
+
+            // Private sync is opt-in and versioned. This announcement is queued
+            // before Accept reaches the requester, so the client never starts its
+            // private state publisher against an incompatible server.
+            string buildProtocol = $"{SharedColonyManager.ProtocolPrefix}|BUILD|{RimjobBuildVersion}|{RimjobPrivateProtocol}";
+            PM_Chat.SendProtocolMessage(client, buildProtocol);
+            PM_Chat.SendProtocolMessage(requester, buildProtocol);
+
+            Printer.Message($"[SYNC] Pair established | Requester={requester.GetData<FL_Player>().Username}#{requester.ID} | Host={targetUsername}#{client.ID} | PrivateProtocol={RimjobPrivateProtocol}", Printer.Verbosity.Verbose);
 
             data.CurrentStepMode = PKT_Synchronous.StepMode.Accept;
             requester.Listener.EnqueuePacket(PacketHeader.Synchronous, data);
