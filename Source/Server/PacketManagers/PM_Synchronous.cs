@@ -15,7 +15,7 @@ namespace RTServer.PacketManagers
         private const int RimjobPawnStateAction = 9022;
         private const int RimjobPawnManifestAction = 9023;
         private const int RimjobHostBuildingAction = 9030;
-        private const string RimjobBuildVersion = "0.1.24";
+        private const string RimjobBuildVersion = "0.1.25";
         private const string RimjobPrivateProtocol = "RJ23";
 
         private static readonly object PrivateRateLock = new object();
@@ -72,13 +72,13 @@ namespace RTServer.PacketManagers
                 return;
             }
 
-            FL_Settlement sourceSettlement = PM_Settlements.GetSettlementFileFromUsername(username);
-            FL_Settlement peerSettlement = PM_Settlements.GetSettlementFileFromUsername(peer.GetData<FL_Player>().Username);
-            if (sourceSettlement == null || peerSettlement == null || sourceSettlement.Tile != peerSettlement.Tile)
-            {
-                Printer.Message($"[RIMJOB-RELAY] Dropped private action {actionCode}: paired players are not registered on the same tile | User={username}", Printer.Verbosity.Verbose);
-                return;
-            }
+            // The mutual pair was established only after the server validated the
+            // requested settlements and target. Repeating a username-to-settlement
+            // lookup for every private packet is both redundant and incorrect when
+            // a player has historical/multiple settlement records: one direction
+            // can resolve a different record and silently lose its pawn stream.
+            // The live mutual client-ID pair is the authority for this session.
+            data.Username = username;
 
             int payloadLength = data.Data?.Length ?? 0;
             int maximumPayload = actionCode == RimjobPawnStateAction
