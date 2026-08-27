@@ -15,7 +15,7 @@ namespace RTServer.PacketManagers
         private const int RimjobPawnStateAction = 9022;
         private const int RimjobPawnManifestAction = 9023;
         private const int RimjobHostBuildingAction = 9030;
-        private const string RimjobBuildVersion = "0.1.23";
+        private const string RimjobBuildVersion = "0.1.24";
         private const string RimjobPrivateProtocol = "RJ23";
 
         private static readonly object PrivateRateLock = new object();
