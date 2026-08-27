@@ -1,30 +1,22 @@
 using RTNetwork.Components;
 using RTServer.Hooks.TCPNetwork;
 using RTShared.Files.Player;
+using RTShared.Misc;
 
 namespace RTServer.Managers
 {
     public sealed class PendingSharedSession
     {
         public string RequesterUsername { get; set; }
-
         public string TargetUsername { get; set; }
-
         public DateTime CreatedUtc { get; set; }
     }
 
-    /// <summary>
-    /// The stock synchronous protocol routes by world tile. That becomes
-    /// ambiguous when up to four players occupy the same tile, so pending
-    /// requests are keyed by explicit usernames until both clients are linked.
-    /// </summary>
     public static class SharedSessionManager
     {
         private static readonly object SessionLock = new object();
-
         private static readonly Dictionary<string, PendingSharedSession> PendingByTarget =
             new Dictionary<string, PendingSharedSession>(StringComparer.OrdinalIgnoreCase);
-
         private static readonly Dictionary<string, PendingSharedSession> NextTargetByRequester =
             new Dictionary<string, PendingSharedSession>(StringComparer.OrdinalIgnoreCase);
 
@@ -40,6 +32,7 @@ namespace RTServer.Managers
                     TargetUsername = targetUsername,
                     CreatedUtc = DateTime.UtcNow
                 };
+                Printer.Message($"[SHARED-SESSION] Explicit target queued | Requester={requesterUsername} | Target={targetUsername}", Printer.Verbosity.Verbose);
             }
         }
 
@@ -49,7 +42,12 @@ namespace RTServer.Managers
             {
                 RemoveExpired();
                 string requesterUsername = requester.GetData<FL_Player>().Username;
-                if (!NextTargetByRequester.Remove(requesterUsername, out PendingSharedSession pending)) return null;
+                if (!NextTargetByRequester.Remove(requesterUsername, out PendingSharedSession pending))
+                {
+                    Printer.Message($"[SHARED-SESSION] No queued target | Requester={requesterUsername}", Printer.Verbosity.Verbose);
+                    return null;
+                }
+                Printer.Message($"[SHARED-SESSION] Queued target consumed | Requester={requesterUsername} | Target={pending.TargetUsername}", Printer.Verbosity.Verbose);
                 return pending.TargetUsername;
             }
         }
@@ -59,15 +57,21 @@ namespace RTServer.Managers
             lock (SessionLock)
             {
                 RemoveExpired();
+                string requesterUsername = requester.GetData<FL_Player>().Username;
                 string targetUsername = target.GetData<FL_Player>().Username;
-                if (PendingByTarget.ContainsKey(targetUsername)) return false;
+                if (PendingByTarget.ContainsKey(targetUsername))
+                {
+                    Printer.Message($"[SHARED-SESSION] Pair registration refused | Requester={requesterUsername} | Target={targetUsername} | Reason=Target already has a pending request", Printer.Verbosity.Verbose);
+                    return false;
+                }
 
                 PendingByTarget[targetUsername] = new PendingSharedSession
                 {
-                    RequesterUsername = requester.GetData<FL_Player>().Username,
+                    RequesterUsername = requesterUsername,
                     TargetUsername = targetUsername,
                     CreatedUtc = DateTime.UtcNow
                 };
+                Printer.Message($"[SHARED-SESSION] Pair registered | Requester={requesterUsername} | Target={targetUsername}", Printer.Verbosity.Verbose);
                 return true;
             }
         }
@@ -78,26 +82,33 @@ namespace RTServer.Managers
             {
                 RemoveExpired();
                 string targetUsername = target.GetData<FL_Player>().Username;
-                if (!PendingByTarget.Remove(targetUsername, out PendingSharedSession pending)) return null;
-                return ServerNetwork.GetConnectedClientFromUsername(pending.RequesterUsername);
+                if (!PendingByTarget.Remove(targetUsername, out PendingSharedSession pending))
+                {
+                    Printer.Message($"[SHARED-SESSION] Accept had no pending requester | Target={targetUsername}", Printer.Verbosity.Verbose);
+                    return null;
+                }
+
+                ServerClient requester = ServerNetwork.GetConnectedClientFromUsername(pending.RequesterUsername);
+                Printer.Message($"[SHARED-SESSION] Pending requester consumed | Target={targetUsername} | Requester={pending.RequesterUsername} | RequesterOnline={requester != null}", Printer.Verbosity.Verbose);
+                return requester;
             }
         }
 
         private static void RemoveExpired()
         {
             DateTime cutoff = DateTime.UtcNow.Subtract(TimeSpan.FromMinutes(2));
-            foreach (string key in PendingByTarget.Where(fetch => fetch.Value.CreatedUtc < cutoff)
-                         .Select(fetch => fetch.Key)
-                         .ToArray())
+            foreach (string key in PendingByTarget.Where(fetch => fetch.Value.CreatedUtc < cutoff).Select(fetch => fetch.Key).ToArray())
             {
+                PendingSharedSession expired = PendingByTarget[key];
                 PendingByTarget.Remove(key);
+                Printer.Message($"[SHARED-SESSION] Pending pair expired | Requester={expired.RequesterUsername} | Target={expired.TargetUsername}", Printer.Verbosity.Verbose);
             }
 
-            foreach (string key in NextTargetByRequester.Where(fetch => fetch.Value.CreatedUtc < cutoff)
-                         .Select(fetch => fetch.Key)
-                         .ToArray())
+            foreach (string key in NextTargetByRequester.Where(fetch => fetch.Value.CreatedUtc < cutoff).Select(fetch => fetch.Key).ToArray())
             {
+                PendingSharedSession expired = NextTargetByRequester[key];
                 NextTargetByRequester.Remove(key);
+                Printer.Message($"[SHARED-SESSION] Queued target expired | Requester={expired.RequesterUsername} | Target={expired.TargetUsername}", Printer.Verbosity.Verbose);
             }
         }
     }
