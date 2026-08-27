@@ -1,17 +1,17 @@
-name: Rimjob v0.1.27 - ZIP and MSI
+name: Rimjob v0.1.28 - ZIP and MSI
 
 on:
   push:
     branches:
-      - release/v0.1.27
+      - release/v0.1.28
   workflow_dispatch:
 
 permissions:
   contents: write
 
 env:
-  RELEASE_VERSION: 0.1.27
-  RELEASE_TAG: v0.1.27
+  RELEASE_VERSION: 0.1.28
+  RELEASE_TAG: v0.1.28
   KNOWN_GOOD_RTCLIENT_COMMIT: a65ef0fea5911ac710a50f53b9fcad8a2f32051f
   KNOWN_GOOD_RTCLIENT_SHA256: 71ca7388932621254ab8f7300b7d6ff182a218e7ba4cad052ea8f8fb9328b541
   KNOWN_GOOD_RTCLIENT_SIZE: 312832
@@ -28,12 +28,12 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Verify v0.1.27 resilient shared-map transport
+      - name: Verify v0.1.28 resilient shared-map transport
         shell: pwsh
         run: |
           $protocol = Get-Content 'Source/SharedColonyClient/RimjobProtocolState.cs' -Raw
-          foreach ($required in @('ExpectedBuild = "0.1.27"','ExpectedPrivateProtocol = "RJ25"','string.Equals(ServerBuild, ExpectedBuild','PrivateSyncReady','SESSION_END','SharedTileLiveSync.EndSession','Shared session exists but private pawn/world sync is waiting','TimeSpan.TicksPerMillisecond * 200','if (!SharedTileLiveSync.AwaitingAccept)')) {
-            if ($protocol -notmatch [regex]::Escape($required)) { throw "Missing v0.1.27 protocol guard element: $required" }
+          foreach ($required in @('ExpectedBuild = "0.1.28"','ExpectedPrivateProtocol = "RJ26"','string.Equals(ServerBuild, ExpectedBuild','PrivateSyncReady','SESSION_END','SharedTileLiveSync.EndSession','Shared session exists but private pawn/world sync is waiting','TimeSpan.TicksPerMillisecond * 200','if (!SharedTileLiveSync.AwaitingAccept)')) {
+            if ($protocol -notmatch [regex]::Escape($required)) { throw "Missing v0.1.28 protocol guard element: $required" }
           }
 
           $pawnSync = Get-Content 'Source/SharedColonyClient/SharedPawnStateSync.cs' -Raw
@@ -47,10 +47,17 @@ jobs:
           }
 
           $serverSync = Get-Content 'Source/Server/PacketManagers/PM_Synchronous.cs' -Raw
-          foreach ($required in @('RimjobBuildVersion = "0.1.27"','RimjobPawnStateAction = 9022','RimjobPawnManifestAction = 9023','RimjobHostBuildingAction = 9030','RimjobPrivateProtocol = "RJ25"','RouteRimjobPrivateAction','peer.Listener.EnqueuePacket(header, data)','data.Username = username','live mutual client-ID pair is the authority','BUILD|','PrivateProtocol={RimjobPrivateProtocol} re-advertised')) {
+          foreach ($required in @('RimjobBuildVersion = "0.1.28"','RimjobPawnStateAction = 9022','RimjobPawnManifestAction = 9023','RimjobHostBuildingAction = 9030','RimjobPrivateProtocol = "RJ26"','RouteRimjobPrivateAction','peer.Listener.EnqueuePacket(header, data)','data.Username = username','live mutual client-ID pair is the authority','BUILD|','PrivateProtocol={RimjobPrivateProtocol} re-advertised')) {
             if ($serverSync -notmatch [regex]::Escape($required)) { throw "Missing private relay element: $required" }
           }
           if ($serverSync -match 'First\(.*CurrentActionType') { throw 'Private action path still contains a throwing First(...) lookup' }
+
+          $serverProgram = Get-Content 'Source/Server/Core/Program.cs' -Raw
+          $createFoldersIndex = $serverProgram.IndexOf('CreateFolders();')
+          $bannerIndex = $serverProgram.IndexOf('Printer.Title($"RIMJOB SERVER')
+          if ($createFoldersIndex -lt 0 -or $bannerIndex -lt 0 -or $bannerIndex -lt $createFoldersIndex) {
+            throw 'Server banner writes before log directories are created'
+          }
 
           $network = Get-Content 'Source/Server/Hooks/TCPNetwork/ServerNetwork.cs' -Raw
           foreach ($required in @('FirstOrDefault(fetch => fetch.ID == id)','Pair cleared after disconnect','SharedSessionManager.RemoveClient','SESSION_END')) {
@@ -84,7 +91,7 @@ jobs:
           }
 
           $installer = Get-Content 'Installer/Rimjob.wxs' -Raw
-          if ($installer -notmatch 'Version="0\.1\.27"') { throw 'MSI version is not 0.1.27' }
+          if ($installer -notmatch 'Version="0\.1\.28"') { throw 'MSI version is not 0.1.28' }
           foreach ($required in @('Title="Rimjob Server (matched build)"','Level="1"','AllowAbsent="no"')) {
             if ($installer -notmatch [regex]::Escape($required)) { throw "Installer does not guarantee matched server: $required" }
           }
@@ -171,9 +178,10 @@ jobs:
           @"
           RIMJOB v$env:RELEASE_VERSION
 
-          v0.1.27 resets and retries shared-map joining, safely clears stale peer IDs
-          on disconnect, and only sends large building manifests when state changes.
-          The server advertises protocol RJ25 and clients require the exact matching
+          v0.1.28 creates log directories before the first logged startup banner.
+          It also retains resettable shared-map joining, safe peer-ID cleanup and
+          change-only building manifests. The server advertises protocol RJ26 and
+          clients require the exact matching
           build before private sync can start.
 
           Pawn state is owner-authoritative. The canonical host additionally sends
@@ -225,30 +233,31 @@ jobs:
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.27-ZIP
-          path: build/Rimjob-v0.1.27.zip
+          name: Rimjob-v0.1.28-ZIP
+          path: build/Rimjob-v0.1.28.zip
           if-no-files-found: error
 
       - name: Upload MSI
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.27-MSI
-          path: build/Rimjob-v0.1.27-x64.msi
+          name: Rimjob-v0.1.28-MSI
+          path: build/Rimjob-v0.1.28-x64.msi
           if-no-files-found: error
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.27
+          tag_name: v0.1.28
           target_commitish: ${{ github.sha }}
-          name: Rimjob v0.1.27
+          name: Rimjob v0.1.28
           body: |
-            Rimjob v0.1.27
+            Rimjob v0.1.28
 
+            - Creates every server log directory before the first logged build banner, fixing the v0.1.27 first-start `DirectoryNotFoundException`.
             - Replaces the one-shot shared-map join flag with a clean reset on new/reconnected sessions and up to six idempotent retries after settlement acknowledgement.
             - Makes connection-ID lookup non-throwing and clears both sides of a synchronous pair on disconnect, fixing the `Sequence contains no matching element` listener crash.
             - Sends the ~500 KB building manifest only after a change, plus a 30-second recovery refresh, instead of every second.
-            - Requires the exact v0.1.27 / `RJ25` client-server pair before private synchronisation starts.
+            - Requires the exact v0.1.28 / `RJ26` client-server pair before private synchronisation starts.
             - Makes the MSI install the matched server with every client and teaches Update.exe to update an installed Desktop server too.
             - Uses owner-scoped pawn mirror aliases and fresh local ThingIDs so manifests and later position packets always resolve the same remote pawn.
             - Stops remote mirror pathing before applying authoritative positions and republishes manifests every two seconds for rapid recovery.
@@ -260,6 +269,6 @@ jobs:
 
             IMPORTANT: Close RimWorld and the Rimjob Server before installing or running Update.exe.
           files: |
-            build/Rimjob-v0.1.27.zip
-            build/Rimjob-v0.1.27-x64.msi
+            build/Rimjob-v0.1.28.zip
+            build/Rimjob-v0.1.28-x64.msi
           overwrite_files: true

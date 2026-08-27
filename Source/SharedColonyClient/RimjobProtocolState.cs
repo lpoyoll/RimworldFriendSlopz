@@ -5,8 +5,8 @@ namespace RWTSharedColony
 {
     public static class RimjobProtocolState
     {
-        public const string ExpectedBuild = "0.1.27";
-        public const string ExpectedPrivateProtocol = "RJ25";
+        public const string ExpectedBuild = "0.1.28";
+        public const string ExpectedPrivateProtocol = "RJ26";
 
         private static bool _waitingLogged;
 

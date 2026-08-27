@@ -23,10 +23,11 @@ namespace RTServer.Core
             CultureHandler.SetCulture();
 
             Console.Title = $"Rimjob Server v{PM_Synchronous.RimjobBuildVersion} ({PM_Synchronous.RimjobPrivateProtocol})";
-            Printer.Title($"RIMJOB SERVER v{PM_Synchronous.RimjobBuildVersion} | Protocol {PM_Synchronous.RimjobPrivateProtocol}");
 
             SetPaths();
             CreateFolders();
+            // Printer.Title writes to Logs/System, so no logged output may precede folder creation.
+            Printer.Title($"RIMJOB SERVER v{PM_Synchronous.RimjobBuildVersion} | Protocol {PM_Synchronous.RimjobPrivateProtocol}");
             LoadFiles();
             LoadActions();
 
