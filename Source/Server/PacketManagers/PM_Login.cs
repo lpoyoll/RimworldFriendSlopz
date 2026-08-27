@@ -7,6 +7,7 @@ using RTServer.Core;
 using RTServer.Hooks.TCPNetwork;
 using RTServer.Managers;
 using RTServer.Misc;
+using RTShared.Files;
 using RTShared.Files.Player;
 using RTShared.Misc;
 using static RTNetwork.Packets.PKT_Login;
@@ -65,6 +66,8 @@ namespace RTServer.PacketManagers
             UserManager.SendPlayerRecount();
             GlobalDataManager.SendServerGlobalData(client);
             PM_Chat.SendLoginChatMessages(client);
+
+            LogSharedTileSessionCheck(client);
             SharedColonyManager.SendSnapshot(client);
 
             if (!PM_World.CheckIfWorldExists())
@@ -77,6 +80,45 @@ namespace RTServer.PacketManagers
                 if (PM_Saves.CheckIfUserHasSave(client)) PM_Saves.SendSaveToClient(client);
                 else PM_World.SendWorld(client);
             }
+        }
+
+        private static void LogSharedTileSessionCheck(ServerClient client)
+        {
+            string username = client.GetData<FL_Player>().Username;
+            Printer.Message($"[SHARED-CHECK] Existing tile/session check started | User={username} | IP={client.IP} | SharedEnabled={SharedColonyManager.Enabled}", Printer.Verbosity.Verbose);
+
+            if (!SharedColonyManager.Enabled)
+            {
+                Printer.Message($"[SHARED-CHECK] Skipped | User={username} | Reason=Shared colony tiles are disabled", Printer.Verbosity.Verbose);
+                return;
+            }
+
+            FL_Settlement settlement = PM_Settlements.GetSettlementFileFromUsername(username);
+            if (settlement == null)
+            {
+                Printer.Message($"[SHARED-CHECK] No registered settlement | User={username} | Result=No existing tile session to resume", Printer.Verbosity.Verbose);
+                return;
+            }
+
+            List<FL_Settlement> occupants = PM_Settlements.GetAllSettlementsAtTile(settlement.Tile);
+            string members = occupants.Count == 0
+                ? "<none>"
+                : string.Join(",", occupants.Select(fetch => fetch.Username));
+            Printer.Message($"[SHARED-CHECK] Registered settlement found | User={username} | Tile={settlement.Tile} | Occupants={occupants.Count} | Members={members}", Printer.Verbosity.Verbose);
+
+            if (occupants.Count < 2)
+            {
+                Printer.Message($"[SHARED-CHECK] Tile is not shared yet | User={username} | Tile={settlement.Tile} | Occupants={occupants.Count}", Printer.Verbosity.Verbose);
+                return;
+            }
+
+            string hostUsername = SharedColonyManager.GetMapHostUsername(settlement.Tile);
+            ServerClient hostClient = string.IsNullOrWhiteSpace(hostUsername)
+                ? null
+                : ServerNetwork.GetConnectedClientFromUsername(hostUsername);
+            bool isHost = string.Equals(username, hostUsername, System.StringComparison.OrdinalIgnoreCase);
+            Printer.Message($"[SHARED-CHECK] Shared tile detected | User={username} | Tile={settlement.Tile} | CanonicalHost={hostUsername ?? "<none>"} | LocalIsHost={isHost} | HostOnline={hostClient != null}", Printer.Verbosity.Verbose);
+            Printer.Message($"[SHARED-CHECK] Sending TILE session advertisement | User={username} | Tile={settlement.Tile} | Host={hostUsername ?? "<none>"} | Members={occupants.Count}", Printer.Verbosity.Verbose);
         }
 
         private static void RemoveOldClientSessions(ServerClient client)
