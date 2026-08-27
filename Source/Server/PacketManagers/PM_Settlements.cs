@@ -50,6 +50,17 @@ namespace RTServer.PacketManagers
                 Serializer.SerializeToFile(path, settlementFile);
                 SharedColonyManager.RegisterSettlement(settlementFile);
 
+                // v0.1.14: acknowledge the requester's own settlement only after
+                // it is durably registered. The shared-map client waits for this
+                // before sending its synchronous Ask, removing a race in v0.1.13
+                // where PM_Synchronous could run before the requester's settlement
+                // existed and therefore could not resolve FromTile.
+                if (SharedColonyManager.Enabled)
+                {
+                    PM_Chat.SendProtocolMessage(client,
+                        $"{SharedColonyManager.ProtocolPrefix}|SETTLED|{settlementFile.Tile}|{username}");
+                }
+
                 packet.StepMode = PKT_PlayerSettlement.SettlementStepMode.Add;
                 packet.File = settlementFile;
                 packet.File.IconID = client.GetData<FL_Player>().Customizations.SettlementIconID;
