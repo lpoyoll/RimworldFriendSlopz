@@ -39,7 +39,7 @@ jobs:
         shell: pwsh
         run: |
           $diag = Get-Content 'Source/SharedColonyClient/ClientDiagnostics.cs' -Raw
-          foreach ($required in @('KeyCode.F9','Verbose Log','Action rejected','|ERROR|','Client diagnostics initialised','RimjobVerboseResponseShortcutPatch')) {
+          foreach ($required in @('KeyCode.F9','Verbose Log','Action rejected','kind == "ERROR"','Client diagnostics initialised','RimjobVerboseResponseShortcutPatch')) {
             if ($diag -notmatch [regex]::Escape($required)) { throw "Missing v0.1.17 client diagnostics element: $required" }
           }
           $trace = Get-Content 'Source/SharedColonyClient/SharedTileDiagnosticTracing.cs' -Raw
