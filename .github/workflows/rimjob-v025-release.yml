@@ -1,0 +1,241 @@
+name: Rimjob v0.1.25 - ZIP and MSI
+
+on:
+  push:
+    branches:
+      - release/v0.1.25
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_VERSION: 0.1.25
+  RELEASE_TAG: v0.1.25
+  KNOWN_GOOD_RTCLIENT_COMMIT: a65ef0fea5911ac710a50f53b9fcad8a2f32051f
+  KNOWN_GOOD_RTCLIENT_SHA256: 71ca7388932621254ab8f7300b7d6ff182a218e7ba4cad052ea8f8fb9328b541
+  KNOWN_GOOD_RTCLIENT_SIZE: 312832
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Verify v0.1.25 host authority transport
+        shell: pwsh
+        run: |
+          $protocol = Get-Content 'Source/SharedColonyClient/RimjobProtocolState.cs' -Raw
+          foreach ($required in @('ExpectedBuild = "0.1.25"','ExpectedPrivateProtocol = "RJ23"','PrivateSyncReady','Shared session exists but private pawn/world sync is waiting','TimeSpan.TicksPerMillisecond * 200')) {
+            if ($protocol -notmatch [regex]::Escape($required)) { throw "Missing v0.1.25 protocol guard element: $required" }
+          }
+
+          $pawnSync = Get-Content 'Source/SharedColonyClient/SharedPawnStateSync.cs' -Raw
+          foreach ($required in @('PawnStateActionCode = 9022','PawnManifestActionCode = 9023','Pawn manifest applied','Pawn state applied','RemotePawnAliases','PawnAlias(owner, thingId)','enforceID: false','ManifestIntervalTicks = TimeSpan.TicksPerSecond * 2','StopDead')) {
+            if ($pawnSync -notmatch [regex]::Escape($required)) { throw "Missing pawn sync element: $required" }
+          }
+
+          $buildingSync = Get-Content 'Source/SharedColonyClient/SharedHostBuildingSync.cs' -Raw
+          foreach ($required in @('HostBuildingActionCode = 9030','Host building manifest sent','Host building manifest applied','SessionManager.IsSynchronousHost','SharedGuestActive')) {
+            if ($buildingSync -notmatch [regex]::Escape($required)) { throw "Missing host building authority element: $required" }
+          }
+
+          $serverSync = Get-Content 'Source/Server/PacketManagers/PM_Synchronous.cs' -Raw
+          foreach ($required in @('RimjobBuildVersion = "0.1.25"','RimjobPawnStateAction = 9022','RimjobPawnManifestAction = 9023','RimjobHostBuildingAction = 9030','RimjobPrivateProtocol = "RJ23"','RouteRimjobPrivateAction','peer.Listener.EnqueuePacket(header, data)','data.Username = username','live mutual client-ID pair is the authority','BUILD|')) {
+            if ($serverSync -notmatch [regex]::Escape($required)) { throw "Missing private relay element: $required" }
+          }
+          if ($serverSync -match 'First\(.*CurrentActionType') { throw 'Private action path still contains a throwing First(...) lookup' }
+
+          $bootstrap = Get-Content 'Source/SharedColonyClient/SharedColonyBootstrap.cs' -Raw
+          foreach ($required in @('CreateClassProcessor(type).Patch()','Harmony patch class failed but remaining patches will continue','Forcing player settlement map from','MapSize { get; private set; } = 500')) {
+            if ($bootstrap -notmatch [regex]::Escape($required)) { throw "Missing isolated bootstrap/map-size element: $required" }
+          }
+          if ($bootstrap -match 'PatchAll\(Assembly.GetExecutingAssembly\(\)\)') { throw 'Assembly-wide PatchAll regression is present' }
+
+          $live = Get-Content 'Source/SharedColonyClient/SharedTileLiveSync.cs' -Raw
+          foreach ($required in @('AutoAcceptSharedTileLiveJoinPatch','ApplySharedTileLiveAcceptPatch','SharedTileHostClockPatch')) {
+            if ($live -notmatch [regex]::Escape($required)) { throw "Missing shared live-map hook: $required" }
+          }
+
+          $ownership = Get-Content 'Source/SharedColonyClient/RemotePawnOwnershipHardening.cs' -Raw
+          foreach ($required in @('ref List<FloatMenuOption> __result','Only that player can control this pawn','RemotePawnStartJobOwnershipPatch')) {
+            if ($ownership -notmatch [regex]::Escape($required)) { throw "Missing strict ownership element: $required" }
+          }
+
+          $settlements = Get-Content 'Source/Server/PacketManagers/PM_Settlements.cs' -Raw
+          foreach ($required in @('[SHARED-REGISTER] Settlement add request','Deferring server map snapshot validation to online canonical host','SETTLED acknowledgement sent=')) {
+            if ($settlements -notmatch [regex]::Escape($required)) { throw "Missing shared registration fix: $required" }
+          }
+
+          $installer = Get-Content 'Installer/Rimjob.wxs' -Raw
+          if ($installer -notmatch 'Version="0\.1\.25"') { throw 'MSI version is not 0.1.25' }
+
+      - name: Build Rimjob client companion
+        shell: pwsh
+        run: |
+          dotnet build Source/SharedColonyClient/SharedColonyClient.csproj -c Release
+          if (!(Test-Path 'Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll')) { throw 'RWTSharedColony.dll was not produced' }
+
+      - name: Build one-click client updater
+        shell: pwsh
+        run: |
+          dotnet build Source/Updater/Rimjob.Updater.csproj -c Release
+          if (!(Test-Path 'Source/Updater/bin/Release/net472/Update.exe')) { throw 'Update.exe was not produced' }
+
+      - name: Build Mono-compatible client dependencies
+        shell: pwsh
+        run: |
+          dotnet build Source/ClientRuntimeDeps/ClientRuntimeDeps.csproj -c Release
+          $deps = 'Source/ClientRuntimeDeps/bin/Release/net472'
+          foreach ($required in @('Newtonsoft.Json.dll','DiscordRPC.dll','MessagePack.dll','MessagePack.Annotations.dll')) {
+            if (!(Test-Path (Join-Path $deps $required))) { throw "Missing client dependency: $required" }
+          }
+
+      - name: Publish single-file Rimjob Server
+        shell: pwsh
+        run: |
+          dotnet publish Source/Server/RTServer.csproj `
+            -c Release -r win-x64 --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:DebugType=None -p:DebugSymbols=false `
+            -o build/server-publish
+          New-Item -ItemType Directory -Force build/server | Out-Null
+          if (!(Test-Path 'build/server-publish/RTServer.exe')) { throw 'RTServer.exe was not produced' }
+          Copy-Item 'build/server-publish/RTServer.exe' 'build/server/Rimjob Server.exe'
+
+      - name: Stage client
+        shell: pwsh
+        run: |
+          $client = 'build/client'
+          New-Item -ItemType Directory -Force "$client/1.6/Assemblies" | Out-Null
+          Copy-Item About "$client/About" -Recurse
+          Copy-Item 1.6/Defs "$client/1.6/Defs" -Recurse
+          Copy-Item 1.6/Languages "$client/1.6/Languages" -Recurse
+          Copy-Item 1.6/Sounds "$client/1.6/Sounds" -Recurse
+          Copy-Item 1.6/Textures "$client/1.6/Textures" -Recurse
+          Copy-Item LoadFolders.xml, LICENSE $client
+
+          $rtClient = "$client/1.6/Assemblies/RTClient.dll"
+          $rtClientUrl = "https://raw.githubusercontent.com/lpoyoll/RimworldFriendSlopz/$env:KNOWN_GOOD_RTCLIENT_COMMIT/Source/Assemblies/RTClient.dll"
+          Invoke-WebRequest -Uri $rtClientUrl -OutFile $rtClient
+          Copy-Item Source/Assemblies/RTNetwork.dll "$client/1.6/Assemblies/RTNetwork.dll"
+          Copy-Item Source/Assemblies/RTShared.dll "$client/1.6/Assemblies/RTShared.dll"
+          Copy-Item Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll "$client/1.6/Assemblies/RWTSharedColony.dll"
+          Get-ChildItem Source/ClientRuntimeDeps/bin/Release/net472 -Filter '*.dll' |
+            Where-Object { $_.Name -ne 'Rimjob.ClientRuntimeDeps.dll' } |
+            Copy-Item -Destination "$client/1.6/Assemblies"
+          Copy-Item 'Source/Updater/bin/Release/net472/Update.exe' "$client/Update.exe"
+          Set-Content "$client/VERSION.txt" $env:RELEASE_VERSION -NoNewline
+
+          $rtInfo = Get-Item $rtClient
+          if ($rtInfo.Length -ne [int64]$env:KNOWN_GOOD_RTCLIENT_SIZE) { throw "Wrong RTClient.dll size: $($rtInfo.Length)" }
+          $rtHash = (Get-FileHash $rtClient -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($rtHash -ne $env:KNOWN_GOOD_RTCLIENT_SHA256.ToLowerInvariant()) { throw "Wrong RTClient.dll SHA256: $rtHash" }
+
+      - name: Build and verify ZIP
+        shell: pwsh
+        run: |
+          $root = 'build/release'
+          Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force "$root/Rimjob", "$root/Server" | Out-Null
+          Copy-Item 'build/client/*' "$root/Rimjob" -Recurse
+          Copy-Item 'build/server/Rimjob Server.exe' "$root/Server/Rimjob Server.exe"
+          @"
+          RIMJOB v$env:RELEASE_VERSION
+
+          v0.1.25 prevents private pawn-state packets from ever entering the stock
+          RWT action-manager path. The server advertises protocol RJ23 and clients
+          do not publish private state until a matching server confirms support.
+          This prevents mixed client/server versions from creating exception storms.
+
+          Pawn state is owner-authoritative. The canonical host additionally sends
+          a compact building manifest so host buildings are created, updated and
+          removed on the guest as host-world truth.
+
+          IMPORTANT: Update.exe updates the client only. Replace the server executable
+          with the v0.1.25 server from this package before testing RJ23 sync.
+
+          500x500 maps, same-tile settlement, host clock, strict pawn ownership,
+          isolated Harmony loading, F9 diagnostics and Direct Connect remain included.
+          "@ | Set-Content "$root/INSTALL.txt"
+
+          $zip = "build/Rimjob-v$env:RELEASE_VERSION.zip"
+          Compress-Archive -Path "$root/*" -DestinationPath $zip -CompressionLevel Optimal
+          $verify = 'build/verify-zip'
+          Expand-Archive $zip $verify
+          foreach ($required in @(
+            "$verify/Rimjob/About/About.xml",
+            "$verify/Rimjob/1.6/Assemblies/RTClient.dll",
+            "$verify/Rimjob/1.6/Assemblies/RWTSharedColony.dll",
+            "$verify/Rimjob/Update.exe",
+            "$verify/Rimjob/VERSION.txt",
+            "$verify/Server/Rimjob Server.exe"
+          )) { if (!(Test-Path $required)) { throw "ZIP missing $required" } }
+          if ((Get-Content "$verify/Rimjob/VERSION.txt" -Raw).Trim() -ne $env:RELEASE_VERSION) { throw 'ZIP VERSION.txt is wrong' }
+
+      - name: Install WiX Toolset
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.UI.wixext/5.0.2
+
+      - name: Build MSI
+        shell: pwsh
+        run: |
+          $clientPath = (Resolve-Path 'build/client').Path
+          $serverPath = (Resolve-Path 'build/server').Path
+          $installerPath = (Resolve-Path 'Installer').Path
+          wix build Installer/Rimjob.wxs `
+            -arch x64 -culture en-US -ext WixToolset.UI.wixext `
+            -bindpath "ClientPayload=$clientPath" `
+            -bindpath "ServerPayload=$serverPath" `
+            -bindpath "InstallerAssets=$installerPath" `
+            -out "build/Rimjob-v$env:RELEASE_VERSION-x64.msi"
+          if (!(Test-Path "build/Rimjob-v$env:RELEASE_VERSION-x64.msi")) { throw 'MSI was not produced' }
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.25-ZIP
+          path: build/Rimjob-v0.1.25.zip
+          if-no-files-found: error
+
+      - name: Upload MSI
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.25-MSI
+          path: build/Rimjob-v0.1.25-x64.msi
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.25
+          target_commitish: ${{ github.sha }}
+          name: Rimjob v0.1.25
+          body: |
+            Rimjob v0.1.25
+
+            - Fixes one-way pawn visibility by routing private state through the validated mutual client-ID pair instead of repeating ambiguous settlement lookups.
+            - Uses owner-scoped pawn mirror aliases and fresh local ThingIDs so manifests and later position packets always resolve the same remote pawn.
+            - Stops remote mirror pathing before applying authoritative positions and republishes manifests every two seconds for rapid recovery.
+            - Retains the verified RJ23 guard that fixes the v0.1.22 private-action exception/log storm by routing Rimjob action IDs before stock RWT action handling.
+            - Adds matching server protocol advertisement `RJ23`; clients will not emit private sync packets until a compatible server confirms support.
+            - Private pawn/building packets are peer-only and rate limited instead of echoed back to the authoritative sender.
+            - Keeps owner-authoritative pawn manifests/positions so each player sees the other player's pawns at their actual authoritative locations.
+            - Adds host-authoritative building manifests: host buildings are created/updated/removed on the guest from canonical host state.
+            - Keeps same-tile settlement, 500x500 maps, host-authoritative time, separate pawn control, F9 diagnostics, Direct Connect and Update.exe.
+
+            IMPORTANT: Update.exe updates the client only. Replace the server executable with v0.1.25 as well.
+          files: |
+            build/Rimjob-v0.1.25.zip
+            build/Rimjob-v0.1.25-x64.msi
+          overwrite_files: true
