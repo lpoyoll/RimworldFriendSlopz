@@ -1,0 +1,227 @@
+name: Rimjob v0.1.20 - ZIP and MSI
+
+on:
+  push:
+    branches:
+      - rimjob-v020-shared-tile-regression
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_VERSION: 0.1.20
+  RELEASE_TAG: v0.1.20
+  KNOWN_GOOD_RTCLIENT_COMMIT: a65ef0fea5911ac710a50f53b9fcad8a2f32051f
+  KNOWN_GOOD_RTCLIENT_SHA256: 71ca7388932621254ab8f7300b7d6ff182a218e7ba4cad052ea8f8fb9328b541
+  KNOWN_GOOD_RTCLIENT_SIZE: 312832
+
+jobs:
+  release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Verify v0.1.20 shared-site regression fix
+        shell: pwsh
+        run: |
+          $ownership = Get-Content 'Source/SharedColonyClient/RemotePawnOwnershipHardening.cs' -Raw
+          foreach ($required in @(
+            'method.ReturnType == typeof(List<FloatMenuOption>)',
+            'ref List<FloatMenuOption> __result',
+            'Only that player can control this pawn',
+            'RemotePawnStartJobOwnershipPatch'
+          )) {
+            if ($ownership -notmatch [regex]::Escape($required)) { throw "Missing v0.1.20 ownership fix: $required" }
+          }
+          if ($ownership -match 'ref IEnumerable<FloatMenuOption> __result') { throw 'Old invalid FloatMenu __result signature is still present' }
+
+          $critical = Get-Content 'Source/SharedColonyClient/CriticalSharedTileBootstrap.cs' -Raw
+          foreach ($required in @(
+            'rimjob.shared-tile-critical',
+            'IsValidTileForNewSettlement',
+            'Page_SelectStartingSite',
+            'Critical shared-tile starting-site patches verified'
+          )) {
+            if ($critical -notmatch [regex]::Escape($required)) { throw "Missing critical shared-tile recovery element: $required" }
+          }
+
+          $settle = Get-Content 'Source/SharedColonyClient/SharedTileSettlementPatch.cs' -Raw
+          foreach ($required in @(
+            'Overrode vanilla occupied-tile rejection',
+            'PromoteSelectedSharedTile',
+            'RTSettlement',
+            'Find.GameInitData == null'
+          )) {
+            if ($settle -notmatch [regex]::Escape($required)) { throw "Missing shared-site patch element: $required" }
+          }
+
+          $settlements = Get-Content 'Source/Server/PacketManagers/PM_Settlements.cs' -Raw
+          foreach ($required in @('[SHARED-REGISTER] Settlement add request','Deferring server map snapshot validation to online canonical host','SETTLED acknowledgement sent=')) {
+            if ($settlements -notmatch [regex]::Escape($required)) { throw "Missing v0.1.18 registration fix: $required" }
+          }
+
+          $installer = Get-Content 'Installer/Rimjob.wxs' -Raw
+          if ($installer -notmatch 'Version="0\.1\.20"') { throw 'MSI version is not 0.1.20' }
+
+      - name: Build Rimjob client companion
+        shell: pwsh
+        run: |
+          dotnet build Source/SharedColonyClient/SharedColonyClient.csproj -c Release
+          if (!(Test-Path 'Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll')) { throw 'RWTSharedColony.dll was not produced' }
+
+      - name: Build one-click client updater
+        shell: pwsh
+        run: |
+          dotnet build Source/Updater/Rimjob.Updater.csproj -c Release
+          if (!(Test-Path 'Source/Updater/bin/Release/net472/Update.exe')) { throw 'Update.exe was not produced' }
+
+      - name: Build Mono-compatible client dependencies
+        shell: pwsh
+        run: |
+          dotnet build Source/ClientRuntimeDeps/ClientRuntimeDeps.csproj -c Release
+          $deps = 'Source/ClientRuntimeDeps/bin/Release/net472'
+          foreach ($required in @('Newtonsoft.Json.dll','DiscordRPC.dll','MessagePack.dll','MessagePack.Annotations.dll')) {
+            if (!(Test-Path (Join-Path $deps $required))) { throw "Missing client dependency: $required" }
+          }
+
+      - name: Publish single-file Rimjob Server
+        shell: pwsh
+        run: |
+          dotnet publish Source/Server/RTServer.csproj `
+            -c Release -r win-x64 --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:IncludeNativeLibrariesForSelfExtract=true `
+            -p:EnableCompressionInSingleFile=true `
+            -p:DebugType=None -p:DebugSymbols=false `
+            -o build/server-publish
+          New-Item -ItemType Directory -Force build/server | Out-Null
+          if (!(Test-Path 'build/server-publish/RTServer.exe')) { throw 'RTServer.exe was not produced' }
+          Copy-Item 'build/server-publish/RTServer.exe' 'build/server/Rimjob Server.exe'
+
+      - name: Stage client
+        shell: pwsh
+        run: |
+          $client = 'build/client'
+          New-Item -ItemType Directory -Force "$client/1.6/Assemblies" | Out-Null
+          Copy-Item About "$client/About" -Recurse
+          Copy-Item 1.6/Defs "$client/1.6/Defs" -Recurse
+          Copy-Item 1.6/Languages "$client/1.6/Languages" -Recurse
+          Copy-Item 1.6/Sounds "$client/1.6/Sounds" -Recurse
+          Copy-Item 1.6/Textures "$client/1.6/Textures" -Recurse
+          Copy-Item LoadFolders.xml, LICENSE $client
+
+          $rtClient = "$client/1.6/Assemblies/RTClient.dll"
+          $rtClientUrl = "https://raw.githubusercontent.com/lpoyoll/RimworldFriendSlopz/$env:KNOWN_GOOD_RTCLIENT_COMMIT/Source/Assemblies/RTClient.dll"
+          Invoke-WebRequest -Uri $rtClientUrl -OutFile $rtClient
+          Copy-Item Source/Assemblies/RTNetwork.dll "$client/1.6/Assemblies/RTNetwork.dll"
+          Copy-Item Source/Assemblies/RTShared.dll "$client/1.6/Assemblies/RTShared.dll"
+          Copy-Item Source/SharedColonyClient/bin/Release/net472/RWTSharedColony.dll "$client/1.6/Assemblies/RWTSharedColony.dll"
+          Get-ChildItem Source/ClientRuntimeDeps/bin/Release/net472 -Filter '*.dll' |
+            Where-Object { $_.Name -ne 'Rimjob.ClientRuntimeDeps.dll' } |
+            Copy-Item -Destination "$client/1.6/Assemblies"
+          Copy-Item 'Source/Updater/bin/Release/net472/Update.exe' "$client/Update.exe"
+          Set-Content "$client/VERSION.txt" $env:RELEASE_VERSION -NoNewline
+
+          $rtInfo = Get-Item $rtClient
+          if ($rtInfo.Length -ne [int64]$env:KNOWN_GOOD_RTCLIENT_SIZE) { throw "Wrong RTClient.dll size: $($rtInfo.Length)" }
+          $rtHash = (Get-FileHash $rtClient -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($rtHash -ne $env:KNOWN_GOOD_RTCLIENT_SHA256.ToLowerInvariant()) { throw "Wrong RTClient.dll SHA256: $rtHash" }
+
+      - name: Build and verify ZIP
+        shell: pwsh
+        run: |
+          $root = 'build/release'
+          Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force "$root/Rimjob", "$root/Server" | Out-Null
+          Copy-Item 'build/client/*' "$root/Rimjob" -Recurse
+          Copy-Item 'build/server/Rimjob Server.exe' "$root/Server/Rimjob Server.exe"
+          @"
+          RIMJOB v$env:RELEASE_VERSION
+
+          v0.1.20 fixes the v0.1.19 occupied-tile regression. The remote-pawn
+          right-click Harmony patch now uses RimWorld 1.6's exact List return type,
+          and critical same-tile starting-site hooks have their own recovery bootstrap.
+
+          Strict separate pawn ownership remains enabled. The v0.1.18 shared-session
+          registration fix, F9 diagnostics, crash breadcrumbs, Update.exe and Direct
+          Connect are also included.
+
+          Both clients and the server should use v0.1.20.
+          "@ | Set-Content "$root/INSTALL.txt"
+
+          $zip = "build/Rimjob-v$env:RELEASE_VERSION.zip"
+          Compress-Archive -Path "$root/*" -DestinationPath $zip -CompressionLevel Optimal
+          $verify = 'build/verify-zip'
+          Expand-Archive $zip $verify
+          foreach ($required in @(
+            "$verify/Rimjob/About/About.xml",
+            "$verify/Rimjob/1.6/Assemblies/RTClient.dll",
+            "$verify/Rimjob/1.6/Assemblies/RWTSharedColony.dll",
+            "$verify/Rimjob/Update.exe",
+            "$verify/Rimjob/VERSION.txt",
+            "$verify/Server/Rimjob Server.exe"
+          )) { if (!(Test-Path $required)) { throw "ZIP missing $required" } }
+          if ((Get-Content "$verify/Rimjob/VERSION.txt" -Raw).Trim() -ne $env:RELEASE_VERSION) { throw 'ZIP VERSION.txt is wrong' }
+
+      - name: Install WiX Toolset
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          wix extension add -g WixToolset.UI.wixext/5.0.2
+
+      - name: Build MSI
+        shell: pwsh
+        run: |
+          $clientPath = (Resolve-Path 'build/client').Path
+          $serverPath = (Resolve-Path 'build/server').Path
+          $installerPath = (Resolve-Path 'Installer').Path
+          wix build Installer/Rimjob.wxs `
+            -arch x64 -culture en-US -ext WixToolset.UI.wixext `
+            -bindpath "ClientPayload=$clientPath" `
+            -bindpath "ServerPayload=$serverPath" `
+            -bindpath "InstallerAssets=$installerPath" `
+            -out "build/Rimjob-v$env:RELEASE_VERSION-x64.msi"
+          if (!(Test-Path "build/Rimjob-v$env:RELEASE_VERSION-x64.msi")) { throw 'MSI was not produced' }
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.20-ZIP
+          path: build/Rimjob-v0.1.20.zip
+          if-no-files-found: error
+
+      - name: Upload MSI
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rimjob-v0.1.20-MSI
+          path: build/Rimjob-v0.1.20-x64.msi
+          if-no-files-found: error
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.1.20
+          target_commitish: ${{ github.sha }}
+          name: Rimjob v0.1.20
+          body: |
+            Rimjob v0.1.20
+
+            - Fixes v0.1.19 returning "This tile is occupied" during shared first-settlement selection.
+            - Corrects the RimWorld 1.6 FloatMenuMakerMap.ChoicesAtFor Harmony result type from IEnumerable to List.
+            - Adds an independent critical bootstrap for the shared starting-site validator/selection hooks.
+            - Keeps strict per-player pawn ownership: admin/host status does not grant control over another player's pawns.
+            - Carries forward the working v0.1.18 shared registration/session fix, F9 Diagnostics, crash breadcrumbs, Update.exe and Direct Connect.
+
+            Both clients and the server should use v0.1.20.
+          files: |
+            build/Rimjob-v0.1.20.zip
+            build/Rimjob-v0.1.20-x64.msi
+          overwrite_files: true
