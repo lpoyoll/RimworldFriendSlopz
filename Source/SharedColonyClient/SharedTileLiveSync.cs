@@ -52,8 +52,14 @@ namespace RWTSharedColony
 
         public static bool SharedHostActiveOrPending { get; private set; }
 
+        // SharedHostActiveOrPending is set only after this client has accepted a
+        // validated same-tile request and installed the synchronous map.  Do not
+        // make private pawn receive/send depend on RTClient's host flag as well:
+        // our auto-accept prefix deliberately replaces the stock OnAsk path that
+        // normally initialises that flag.  v0.1.25 did so and left the host deaf
+        // to guest manifests while the guest displayed a frozen host snapshot.
         public static bool IsSharedSessionActive =>
-            SharedGuestActive || (SharedHostActiveOrPending && SessionManager.IsSynchronousHost);
+            SharedGuestActive || SharedHostActiveOrPending;
 
         public static void CaptureSelectedTarget()
         {
@@ -149,7 +155,16 @@ namespace RWTSharedColony
 
                 SharedColonyState.PendingRemoteUsername = guestUsername;
                 SessionManager.SynchronousMap = hostMap;
+                // AutoAcceptSharedTileLiveJoinPatch skips RTClient's stock OnAsk
+                // handler.  That handler normally marks this side as the
+                // synchronous host.  Set it explicitly before private BUILD and
+                // pawn packets can arrive, otherwise only the guest considers
+                // the live session active.
+                SessionManager.IsSynchronousHost = true;
                 SharedHostActiveOrPending = true;
+
+                if (!SessionManager.IsSynchronousHost || SessionManager.SynchronousMap != hostMap)
+                    throw new InvalidOperationException("The local client could not enter synchronous-host mode.");
 
                 // Snapshot first. The guest's local pawns are added to both copies
                 // afterwards at the exact positions selected on the host.
@@ -177,7 +192,7 @@ namespace RWTSharedColony
                 };
 
                 Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, accept);
-                Log.Message($"[Rimjob] Auto-accepted shared live-map join from {guestUsername}; host map is authoritative.");
+                Log.Message($"[Rimjob] Auto-accepted shared live-map join from {guestUsername}; host transport active={IsSharedSessionActive}; synchronous host={SessionManager.IsSynchronousHost}; host map is authoritative.");
                 return true;
             }
             catch (Exception exception)

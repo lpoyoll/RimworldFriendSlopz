@@ -5,8 +5,8 @@ namespace RWTSharedColony
 {
     public static class RimjobProtocolState
     {
-        public const string ExpectedBuild = "0.1.25";
-        public const string ExpectedPrivateProtocol = "RJ23";
+        public const string ExpectedBuild = "0.1.26";
+        public const string ExpectedPrivateProtocol = "RJ24";
 
         private static bool _waitingLogged;
 
@@ -81,7 +81,12 @@ namespace RWTSharedColony
         {
             if (!SharedTileLiveSync.IsSharedSessionActive)
             {
-                RimjobProtocolState.Reset();
+                // BUILD is deliberately sent immediately before the Accept
+                // packet.  The guest may therefore receive it while it is still
+                // awaiting the host map.  Do not erase that valid negotiation
+                // state in the frame between the two packets.
+                if (!SharedTileLiveSync.AwaitingAccept)
+                    RimjobProtocolState.Reset();
                 _lastAllowedUtcTicks = 0;
                 return true;
             }

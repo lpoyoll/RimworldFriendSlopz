@@ -8,7 +8,7 @@
 
 <p align="center">
   <img alt="RimWorld 1.6" src="https://img.shields.io/badge/RimWorld-1.6-8b6f47" />
-  <img alt="Release" src="https://img.shields.io/badge/release-v0.1.25-d97738" />
+  <img alt="Release" src="https://img.shields.io/badge/release-v0.1.26-d97738" />
   <img alt="Multiplayer" src="https://img.shields.io/badge/focus-multiplayer-40566b" />
 </p>
 
@@ -28,26 +28,27 @@ The aim is simple: **play in the same RimWorld world without turning every playe
 - **Dedicated hosting** - a standalone server build for persistent worlds.
 - **Installer-first releases** - Windows builds are packaged as both ZIP and MSI, with the server as an optional host component.
 
-## Current release: v0.1.25
+## Current release: v0.1.26
 
-v0.1.25 is the matched client/server release for live shared-tile play.
+v0.1.26 is the matched client/server release for live shared-tile play.
 
+- Explicitly activates the auto-accepting client as the synchronous host, fixing the guest-to-host visibility path and restoring the host's live pawn stream to the guest.
 - Routes Rimjob private action IDs before the inherited action-manager lookup, preventing the action 9022 exception/log storm.
-- Requires the matching `RJ23` server protocol before private pawn or world-state replication begins.
+- Requires the matching `RJ24` server protocol before private pawn or world-state replication begins.
 - Keeps each player authoritative for their own pawns and uses owner-scoped mirror aliases so both players see the same pawns at their current positions.
 - Mirrors host-authoritative building state to the joining player.
 - Includes 500x500 settlement maps, same-tile joining, host time, Direct Connect, F9 diagnostics and `Update.exe`.
 - Ships as an MSI and ZIP with an optional self-contained Windows server.
 
-[Download Rimjob v0.1.25](https://github.com/lpoyoll/RimworldFriendSlopz/releases/tag/v0.1.25)
+[Download Rimjob v0.1.26](https://github.com/lpoyoll/RimworldFriendSlopz/releases/tag/v0.1.26)
 
 ## Installation
 
 Rimjob requires **Harmony**.
 
-For Windows, use the [v0.1.25 MSI](https://github.com/lpoyoll/RimworldFriendSlopz/releases/download/v0.1.25/Rimjob-v0.1.25-x64.msi). It installs the client under the selected RimWorld installation at `Mods/Rimjob`; select the optional server component on the hosting PC.
+For Windows, use the [v0.1.26 MSI](https://github.com/lpoyoll/RimworldFriendSlopz/releases/download/v0.1.26/Rimjob-v0.1.26-x64.msi). It installs the client under the selected RimWorld installation at `Mods/Rimjob`; select the optional server component on the hosting PC.
 
-Both clients and the server must use v0.1.25. `Update.exe` updates the client only, so the host must also replace or reinstall the server when moving between releases.
+Both clients and the server must use v0.1.26. `Update.exe` updates the client only, so the host must also replace or reinstall the server when moving between releases.
 
 The manual ZIP contains the same client payload and standalone server executable.
 

@@ -1,17 +1,17 @@
-name: Rimjob v0.1.25 - ZIP and MSI
+name: Rimjob v0.1.26 - ZIP and MSI
 
 on:
   push:
     branches:
-      - release/v0.1.25
+      - release/v0.1.26
   workflow_dispatch:
 
 permissions:
   contents: write
 
 env:
-  RELEASE_VERSION: 0.1.25
-  RELEASE_TAG: v0.1.25
+  RELEASE_VERSION: 0.1.26
+  RELEASE_TAG: v0.1.26
   KNOWN_GOOD_RTCLIENT_COMMIT: a65ef0fea5911ac710a50f53b9fcad8a2f32051f
   KNOWN_GOOD_RTCLIENT_SHA256: 71ca7388932621254ab8f7300b7d6ff182a218e7ba4cad052ea8f8fb9328b541
   KNOWN_GOOD_RTCLIENT_SIZE: 312832
@@ -28,12 +28,12 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Verify v0.1.25 host authority transport
+      - name: Verify v0.1.26 bidirectional host authority transport
         shell: pwsh
         run: |
           $protocol = Get-Content 'Source/SharedColonyClient/RimjobProtocolState.cs' -Raw
-          foreach ($required in @('ExpectedBuild = "0.1.25"','ExpectedPrivateProtocol = "RJ23"','PrivateSyncReady','Shared session exists but private pawn/world sync is waiting','TimeSpan.TicksPerMillisecond * 200')) {
-            if ($protocol -notmatch [regex]::Escape($required)) { throw "Missing v0.1.25 protocol guard element: $required" }
+          foreach ($required in @('ExpectedBuild = "0.1.26"','ExpectedPrivateProtocol = "RJ24"','PrivateSyncReady','Shared session exists but private pawn/world sync is waiting','TimeSpan.TicksPerMillisecond * 200','if (!SharedTileLiveSync.AwaitingAccept)')) {
+            if ($protocol -notmatch [regex]::Escape($required)) { throw "Missing v0.1.26 protocol guard element: $required" }
           }
 
           $pawnSync = Get-Content 'Source/SharedColonyClient/SharedPawnStateSync.cs' -Raw
@@ -47,7 +47,7 @@ jobs:
           }
 
           $serverSync = Get-Content 'Source/Server/PacketManagers/PM_Synchronous.cs' -Raw
-          foreach ($required in @('RimjobBuildVersion = "0.1.25"','RimjobPawnStateAction = 9022','RimjobPawnManifestAction = 9023','RimjobHostBuildingAction = 9030','RimjobPrivateProtocol = "RJ23"','RouteRimjobPrivateAction','peer.Listener.EnqueuePacket(header, data)','data.Username = username','live mutual client-ID pair is the authority','BUILD|')) {
+          foreach ($required in @('RimjobBuildVersion = "0.1.26"','RimjobPawnStateAction = 9022','RimjobPawnManifestAction = 9023','RimjobHostBuildingAction = 9030','RimjobPrivateProtocol = "RJ24"','RouteRimjobPrivateAction','peer.Listener.EnqueuePacket(header, data)','data.Username = username','live mutual client-ID pair is the authority','BUILD|','PrivateProtocol={RimjobPrivateProtocol} re-advertised')) {
             if ($serverSync -notmatch [regex]::Escape($required)) { throw "Missing private relay element: $required" }
           }
           if ($serverSync -match 'First\(.*CurrentActionType') { throw 'Private action path still contains a throwing First(...) lookup' }
@@ -59,7 +59,7 @@ jobs:
           if ($bootstrap -match 'PatchAll\(Assembly.GetExecutingAssembly\(\)\)') { throw 'Assembly-wide PatchAll regression is present' }
 
           $live = Get-Content 'Source/SharedColonyClient/SharedTileLiveSync.cs' -Raw
-          foreach ($required in @('AutoAcceptSharedTileLiveJoinPatch','ApplySharedTileLiveAcceptPatch','SharedTileHostClockPatch')) {
+          foreach ($required in @('AutoAcceptSharedTileLiveJoinPatch','ApplySharedTileLiveAcceptPatch','SharedTileHostClockPatch','SessionManager.IsSynchronousHost = true','SharedGuestActive || SharedHostActiveOrPending','host transport active=')) {
             if ($live -notmatch [regex]::Escape($required)) { throw "Missing shared live-map hook: $required" }
           }
 
@@ -74,7 +74,7 @@ jobs:
           }
 
           $installer = Get-Content 'Installer/Rimjob.wxs' -Raw
-          if ($installer -notmatch 'Version="0\.1\.25"') { throw 'MSI version is not 0.1.25' }
+          if ($installer -notmatch 'Version="0\.1\.26"') { throw 'MSI version is not 0.1.26' }
 
       - name: Build Rimjob client companion
         shell: pwsh
@@ -151,17 +151,18 @@ jobs:
           @"
           RIMJOB v$env:RELEASE_VERSION
 
-          v0.1.25 prevents private pawn-state packets from ever entering the stock
-          RWT action-manager path. The server advertises protocol RJ23 and clients
+          v0.1.26 explicitly activates the auto-accepting client as the synchronous
+          host. This restores guest manifests on the host and the host's live pawn
+          position stream on the guest. The server advertises protocol RJ24 and clients
           do not publish private state until a matching server confirms support.
-          This prevents mixed client/server versions from creating exception storms.
+          This prevents mixed client/server versions from silently desynchronising.
 
           Pawn state is owner-authoritative. The canonical host additionally sends
           a compact building manifest so host buildings are created, updated and
           removed on the guest as host-world truth.
 
           IMPORTANT: Update.exe updates the client only. Replace the server executable
-          with the v0.1.25 server from this package before testing RJ23 sync.
+          with the v0.1.26 server from this package before testing RJ24 sync.
 
           500x500 maps, same-tile settlement, host clock, strict pawn ownership,
           isolated Harmony loading, F9 diagnostics and Direct Connect remain included.
@@ -204,38 +205,39 @@ jobs:
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.25-ZIP
-          path: build/Rimjob-v0.1.25.zip
+          name: Rimjob-v0.1.26-ZIP
+          path: build/Rimjob-v0.1.26.zip
           if-no-files-found: error
 
       - name: Upload MSI
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.25-MSI
-          path: build/Rimjob-v0.1.25-x64.msi
+          name: Rimjob-v0.1.26-MSI
+          path: build/Rimjob-v0.1.26-x64.msi
           if-no-files-found: error
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.25
+          tag_name: v0.1.26
           target_commitish: ${{ github.sha }}
-          name: Rimjob v0.1.25
+          name: Rimjob v0.1.26
           body: |
-            Rimjob v0.1.25
+            Rimjob v0.1.26
 
-            - Fixes one-way pawn visibility by routing private state through the validated mutual client-ID pair instead of repeating ambiguous settlement lookups.
+            - Fixes the remaining one-way pawn visibility fault: the custom same-tile auto-accept now explicitly enters synchronous-host mode instead of bypassing that part of RWT's stock OnAsk setup.
+            - Makes the validated Rimjob host-active state sufficient for private pawn transport, so the host cannot silently ignore guest manifests if an inherited host flag is late or cleared.
+            - Restores the host's continuous authoritative position stream, so the guest no longer sees a frozen initial host-map snapshot.
             - Uses owner-scoped pawn mirror aliases and fresh local ThingIDs so manifests and later position packets always resolve the same remote pawn.
             - Stops remote mirror pathing before applying authoritative positions and republishes manifests every two seconds for rapid recovery.
-            - Retains the verified RJ23 guard that fixes the v0.1.22 private-action exception/log storm by routing Rimjob action IDs before stock RWT action handling.
-            - Adds matching server protocol advertisement `RJ23`; clients will not emit private sync packets until a compatible server confirms support.
+            - Uses the new `RJ24` compatibility guard; both clients and the server must be v0.1.26.
             - Private pawn/building packets are peer-only and rate limited instead of echoed back to the authoritative sender.
             - Keeps owner-authoritative pawn manifests/positions so each player sees the other player's pawns at their actual authoritative locations.
             - Adds host-authoritative building manifests: host buildings are created/updated/removed on the guest from canonical host state.
             - Keeps same-tile settlement, 500x500 maps, host-authoritative time, separate pawn control, F9 diagnostics, Direct Connect and Update.exe.
 
-            IMPORTANT: Update.exe updates the client only. Replace the server executable with v0.1.25 as well.
+            IMPORTANT: Update.exe updates the client only. Replace the server executable with v0.1.26 as well.
           files: |
-            build/Rimjob-v0.1.25.zip
-            build/Rimjob-v0.1.25-x64.msi
+            build/Rimjob-v0.1.26.zip
+            build/Rimjob-v0.1.26-x64.msi
           overwrite_files: true

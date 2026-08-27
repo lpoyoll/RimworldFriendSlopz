@@ -15,8 +15,8 @@ namespace RTServer.PacketManagers
         private const int RimjobPawnStateAction = 9022;
         private const int RimjobPawnManifestAction = 9023;
         private const int RimjobHostBuildingAction = 9030;
-        private const string RimjobBuildVersion = "0.1.25";
-        private const string RimjobPrivateProtocol = "RJ23";
+        private const string RimjobBuildVersion = "0.1.26";
+        private const string RimjobPrivateProtocol = "RJ24";
 
         private static readonly object PrivateRateLock = new object();
         private static readonly Dictionary<string, long> LastPrivatePacketTicks = new Dictionary<string, long>();
@@ -276,17 +276,25 @@ namespace RTServer.PacketManagers
         {
             int peerId = client.GetData<FL_Player>().SynchronousClientID;
             ServerClient peer = ServerNetwork.GetClientFromID(peerId);
-            if (peer == null)
+            if (peer == null || peer.GetData<FL_Player>()?.SynchronousClientID != client.ID)
             {
                 ResponseShortcutManager.SendUnavailablePacket(client,
-                    "The shared session start packet has no connected paired client.",
+                    "The shared session start packet has no valid mutually paired client.",
                     $"SyncStart; PeerId={peerId}");
                 return;
             }
 
+            // Re-advertise after the guest has installed the host map.  The first
+            // BUILD announcement is intentionally queued before Accept; without
+            // this post-join copy a client that changed state between those
+            // packets could remain private-sync-disabled for the whole session.
+            string buildProtocol = $"{SharedColonyManager.ProtocolPrefix}|BUILD|{RimjobBuildVersion}|{RimjobPrivateProtocol}";
+            PM_Chat.SendProtocolMessage(client, buildProtocol);
+            PM_Chat.SendProtocolMessage(peer, buildProtocol);
+
             PKT_Synchronous packet = new PKT_Synchronous() { CurrentStepMode = PKT_Synchronous.StepMode.Start };
             peer.Listener.EnqueuePacket(PacketHeader.Synchronous, packet);
-            Printer.Message($"[SYNC] Session start forwarded | From={client.GetData<FL_Player>().Username} | To={peer.GetData<FL_Player>().Username}", Printer.Verbosity.Verbose);
+            Printer.Message($"[SYNC] Session start forwarded | From={client.GetData<FL_Player>().Username} | To={peer.GetData<FL_Player>().Username} | PrivateProtocol={RimjobPrivateProtocol} re-advertised", Printer.Verbosity.Verbose);
         }
     }
 }
