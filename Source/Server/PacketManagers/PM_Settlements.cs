@@ -32,7 +32,18 @@ namespace RTServer.PacketManagers
 
         public static void AddSettlement(ServerClient client, PKT_PlayerSettlement packet)
         {
-            if (CheckIfTileIsInUse(packet.File.Tile)) ResponseShortcutManager.SendIllegalPacket(client, $"Player {client.GetData<FL_Player>().Username} attempted to add a settlement at tile {packet.File.Tile}, but that tile already has a settlement");
+            if (CheckIfTileIsInUse(packet.File.Tile))
+            {
+                FL_Settlement existingSettlement = GetSettlementFileFromTile(packet.File.Tile);
+
+                if (existingSettlement.Username == client.GetData<FL_Player>().Username) return;
+
+                // The first settlement remains the canonical map owner. Later
+                // players on the same tile are live shared-colony guests and are
+                // paired through PM_Synchronous by client ID.
+                Printer.Message($"[Shared colony] > {client.GetData<FL_Player>().Username} joined {existingSettlement.Username} at tile {packet.File.Tile}");
+                return;
+            }
             else
             {
                 FL_Settlement settlementFile = new FL_Settlement();
@@ -65,8 +76,10 @@ namespace RTServer.PacketManagers
             {
                 if (settlementFile.Username != client.GetData<FL_Player>().Username)
                 {
-                    ResponseShortcutManager.SendIllegalPacket(client, $"Settlement at tile {settlementData.File.Tile} attempted to be removed by " +
-                        $"{client.GetData<FL_Player>().Username}, but {settlementFile.Username} owns the settlement");
+                    // A guest leaving a shared colony must not delete the host's
+                    // canonical settlement or be treated as a malicious client.
+                    Printer.Message($"[Shared colony] > {client.GetData<FL_Player>().Username} left tile {settlementData.File.Tile}");
+                    return;
                 }
 
                 else

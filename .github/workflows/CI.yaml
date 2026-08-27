@@ -1,0 +1,24 @@
+name: Validate Rimjob
+
+on:
+  push:
+    branches: [development, "fix/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Test same-tile session routing
+        run: dotnet test Source/Server.Tests/RTServer.Tests.csproj --configuration Release
+      - name: Build server
+        run: dotnet build Source/Server/RTServer.csproj --configuration Release
+      - name: Build shared-colony client patch
+        run: dotnet build Source/SharedColony/SharedColony.csproj --configuration Release

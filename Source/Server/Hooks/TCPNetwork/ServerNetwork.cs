@@ -25,6 +25,7 @@ namespace RTServer.Hooks.TCPNetwork
         {
             try
             {
+                PM_Synchronous.HandleDisconnect(client);
                 Network.ServerClients.Remove(client, out _);
                 UserManager.SendPlayerRecount();
                 
@@ -101,6 +102,11 @@ namespace RTServer.Hooks.TCPNetwork
         }
 
         public static ServerClient GetClientFromID(int id) { return Network.ServerClients.Keys.First(fetch => fetch.ID == id); }
+
+        public static ServerClient GetClientFromIDOrDefault(int id)
+        {
+            return Network.ServerClients.Keys.FirstOrDefault(fetch => fetch.ID == id);
+        }
 
         public static void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
         {
