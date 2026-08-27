@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/assets/rimjob-banner.svg" alt="Rimjob - Shared world, separate colonies" width="100%" />
+  <img src=".github/assets/rimjob-banner.jpg" alt="Rimjob - multiplayer with strict pawn ownership and loose boundaries" width="100%" />
 </p>
 
 <p align="center">
