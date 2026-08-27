@@ -1,4 +1,5 @@
 using RTServer.Managers;
+using Xunit;
 
 namespace RTServer.Tests
 {
