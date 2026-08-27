@@ -5,8 +5,8 @@ namespace RWTSharedColony
 {
     public static class RimjobProtocolState
     {
-        public const string ExpectedBuild = "0.1.26";
-        public const string ExpectedPrivateProtocol = "RJ24";
+        public const string ExpectedBuild = "0.1.27";
+        public const string ExpectedPrivateProtocol = "RJ25";
 
         private static bool _waitingLogged;
 
@@ -18,12 +18,24 @@ namespace RWTSharedColony
         {
             if (string.IsNullOrWhiteSpace(message)) return false;
             string[] parts = message.Split('|');
-            if (parts.Length < 4 || parts[0] != SharedColonyState.ProtocolPrefix || parts[1] != "BUILD")
+            if (parts.Length < 2 || parts[0] != SharedColonyState.ProtocolPrefix)
                 return false;
+
+            if (parts[1] == "SESSION_END")
+            {
+                string reason = parts.Length >= 3 ? parts[2] : "The paired player disconnected.";
+                SharedTileLiveSync.EndSession(reason);
+                Reset();
+                return true;
+            }
+
+            if (parts.Length < 4 || parts[1] != "BUILD") return false;
 
             ServerBuild = parts[2];
             ServerPrivateProtocol = parts[3];
-            PrivateSyncReady = string.Equals(ServerPrivateProtocol, ExpectedPrivateProtocol, StringComparison.OrdinalIgnoreCase);
+            PrivateSyncReady =
+                string.Equals(ServerBuild, ExpectedBuild, StringComparison.OrdinalIgnoreCase) &&
+                string.Equals(ServerPrivateProtocol, ExpectedPrivateProtocol, StringComparison.OrdinalIgnoreCase);
             _waitingLogged = false;
 
             if (PrivateSyncReady)

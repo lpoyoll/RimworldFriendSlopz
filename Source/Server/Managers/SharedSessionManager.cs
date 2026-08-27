@@ -59,8 +59,15 @@ namespace RTServer.Managers
                 RemoveExpired();
                 string requesterUsername = requester.GetData<FL_Player>().Username;
                 string targetUsername = target.GetData<FL_Player>().Username;
-                if (PendingByTarget.ContainsKey(targetUsername))
+                if (PendingByTarget.TryGetValue(targetUsername, out PendingSharedSession existing))
                 {
+                    if (string.Equals(existing.RequesterUsername, requesterUsername, StringComparison.OrdinalIgnoreCase))
+                    {
+                        existing.CreatedUtc = DateTime.UtcNow;
+                        Printer.Message($"[SHARED-SESSION] Duplicate pair request refreshed | Requester={requesterUsername} | Target={targetUsername}", Printer.Verbosity.Verbose);
+                        return true;
+                    }
+
                     Printer.Message($"[SHARED-SESSION] Pair registration refused | Requester={requesterUsername} | Target={targetUsername} | Reason=Target already has a pending request", Printer.Verbosity.Verbose);
                     return false;
                 }
@@ -91,6 +98,31 @@ namespace RTServer.Managers
                 ServerClient requester = ServerNetwork.GetConnectedClientFromUsername(pending.RequesterUsername);
                 Printer.Message($"[SHARED-SESSION] Pending requester consumed | Target={targetUsername} | Requester={pending.RequesterUsername} | RequesterOnline={requester != null}", Printer.Verbosity.Verbose);
                 return requester;
+            }
+        }
+
+        public static void RemoveClient(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username)) return;
+
+            lock (SessionLock)
+            {
+                NextTargetByRequester.Remove(username);
+                PendingByTarget.Remove(username);
+
+                foreach (string target in PendingByTarget
+                             .Where(fetch => string.Equals(fetch.Value.RequesterUsername, username, StringComparison.OrdinalIgnoreCase))
+                             .Select(fetch => fetch.Key)
+                             .ToArray())
+                    PendingByTarget.Remove(target);
+
+                foreach (string requester in NextTargetByRequester
+                             .Where(fetch => string.Equals(fetch.Value.TargetUsername, username, StringComparison.OrdinalIgnoreCase))
+                             .Select(fetch => fetch.Key)
+                             .ToArray())
+                    NextTargetByRequester.Remove(requester);
+
+                Printer.Message($"[SHARED-SESSION] Cleared pending state for disconnected user {username}", Printer.Verbosity.Verbose);
             }
         }
 

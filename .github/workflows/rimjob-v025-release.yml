@@ -1,17 +1,17 @@
-name: Rimjob v0.1.26 - ZIP and MSI
+name: Rimjob v0.1.27 - ZIP and MSI
 
 on:
   push:
     branches:
-      - release/v0.1.26
+      - release/v0.1.27
   workflow_dispatch:
 
 permissions:
   contents: write
 
 env:
-  RELEASE_VERSION: 0.1.26
-  RELEASE_TAG: v0.1.26
+  RELEASE_VERSION: 0.1.27
+  RELEASE_TAG: v0.1.27
   KNOWN_GOOD_RTCLIENT_COMMIT: a65ef0fea5911ac710a50f53b9fcad8a2f32051f
   KNOWN_GOOD_RTCLIENT_SHA256: 71ca7388932621254ab8f7300b7d6ff182a218e7ba4cad052ea8f8fb9328b541
   KNOWN_GOOD_RTCLIENT_SIZE: 312832
@@ -28,12 +28,12 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Verify v0.1.26 bidirectional host authority transport
+      - name: Verify v0.1.27 resilient shared-map transport
         shell: pwsh
         run: |
           $protocol = Get-Content 'Source/SharedColonyClient/RimjobProtocolState.cs' -Raw
-          foreach ($required in @('ExpectedBuild = "0.1.26"','ExpectedPrivateProtocol = "RJ24"','PrivateSyncReady','Shared session exists but private pawn/world sync is waiting','TimeSpan.TicksPerMillisecond * 200','if (!SharedTileLiveSync.AwaitingAccept)')) {
-            if ($protocol -notmatch [regex]::Escape($required)) { throw "Missing v0.1.26 protocol guard element: $required" }
+          foreach ($required in @('ExpectedBuild = "0.1.27"','ExpectedPrivateProtocol = "RJ25"','string.Equals(ServerBuild, ExpectedBuild','PrivateSyncReady','SESSION_END','SharedTileLiveSync.EndSession','Shared session exists but private pawn/world sync is waiting','TimeSpan.TicksPerMillisecond * 200','if (!SharedTileLiveSync.AwaitingAccept)')) {
+            if ($protocol -notmatch [regex]::Escape($required)) { throw "Missing v0.1.27 protocol guard element: $required" }
           }
 
           $pawnSync = Get-Content 'Source/SharedColonyClient/SharedPawnStateSync.cs' -Raw
@@ -42,15 +42,25 @@ jobs:
           }
 
           $buildingSync = Get-Content 'Source/SharedColonyClient/SharedHostBuildingSync.cs' -Raw
-          foreach ($required in @('HostBuildingActionCode = 9030','Host building manifest sent','Host building manifest applied','SessionManager.IsSynchronousHost','SharedGuestActive')) {
+          foreach ($required in @('HostBuildingActionCode = 9030','Host building manifest sent','Host building manifest applied','SessionManager.IsSynchronousHost','SharedGuestActive','FullRepublishIntervalTicks = TimeSpan.TicksPerSecond * 30','ComputeManifestHash','Changed={!unchanged}')) {
             if ($buildingSync -notmatch [regex]::Escape($required)) { throw "Missing host building authority element: $required" }
           }
 
           $serverSync = Get-Content 'Source/Server/PacketManagers/PM_Synchronous.cs' -Raw
-          foreach ($required in @('RimjobBuildVersion = "0.1.26"','RimjobPawnStateAction = 9022','RimjobPawnManifestAction = 9023','RimjobHostBuildingAction = 9030','RimjobPrivateProtocol = "RJ24"','RouteRimjobPrivateAction','peer.Listener.EnqueuePacket(header, data)','data.Username = username','live mutual client-ID pair is the authority','BUILD|','PrivateProtocol={RimjobPrivateProtocol} re-advertised')) {
+          foreach ($required in @('RimjobBuildVersion = "0.1.27"','RimjobPawnStateAction = 9022','RimjobPawnManifestAction = 9023','RimjobHostBuildingAction = 9030','RimjobPrivateProtocol = "RJ25"','RouteRimjobPrivateAction','peer.Listener.EnqueuePacket(header, data)','data.Username = username','live mutual client-ID pair is the authority','BUILD|','PrivateProtocol={RimjobPrivateProtocol} re-advertised')) {
             if ($serverSync -notmatch [regex]::Escape($required)) { throw "Missing private relay element: $required" }
           }
           if ($serverSync -match 'First\(.*CurrentActionType') { throw 'Private action path still contains a throwing First(...) lookup' }
+
+          $network = Get-Content 'Source/Server/Hooks/TCPNetwork/ServerNetwork.cs' -Raw
+          foreach ($required in @('FirstOrDefault(fetch => fetch.ID == id)','Pair cleared after disconnect','SharedSessionManager.RemoveClient','SESSION_END')) {
+            if ($network -notmatch [regex]::Escape($required)) { throw "Missing disconnect-safe peer lookup element: $required" }
+          }
+
+          $handshake = Get-Content 'Source/SharedColonyClient/SharedTileLiveSyncHandshakeFix.cs' -Raw
+          foreach ($required in @('MaximumJoinAttempts = 6','RetryIntervalTicks = TimeSpan.TicksPerSecond * 10','Host-map request timed out','SharedTileJoinRetryPatch','ResetForNewJoin')) {
+            if ($handshake -notmatch [regex]::Escape($required)) { throw "Missing retryable join state element: $required" }
+          }
 
           $bootstrap = Get-Content 'Source/SharedColonyClient/SharedColonyBootstrap.cs' -Raw
           foreach ($required in @('CreateClassProcessor(type).Patch()','Harmony patch class failed but remaining patches will continue','Forcing player settlement map from','MapSize { get; private set; } = 500')) {
@@ -59,7 +69,7 @@ jobs:
           if ($bootstrap -match 'PatchAll\(Assembly.GetExecutingAssembly\(\)\)') { throw 'Assembly-wide PatchAll regression is present' }
 
           $live = Get-Content 'Source/SharedColonyClient/SharedTileLiveSync.cs' -Raw
-          foreach ($required in @('AutoAcceptSharedTileLiveJoinPatch','ApplySharedTileLiveAcceptPatch','SharedTileHostClockPatch','SessionManager.IsSynchronousHost = true','SharedGuestActive || SharedHostActiveOrPending','host transport active=')) {
+          foreach ($required in @('AutoAcceptSharedTileLiveJoinPatch','ApplySharedTileLiveAcceptPatch','SharedTileHostClockPatch','SessionManager.IsSynchronousHost = true','SharedGuestActive || SharedHostActiveOrPending','host transport active=','Join requests are retryable','EndSession')) {
             if ($live -notmatch [regex]::Escape($required)) { throw "Missing shared live-map hook: $required" }
           }
 
@@ -74,7 +84,15 @@ jobs:
           }
 
           $installer = Get-Content 'Installer/Rimjob.wxs' -Raw
-          if ($installer -notmatch 'Version="0\.1\.26"') { throw 'MSI version is not 0.1.26' }
+          if ($installer -notmatch 'Version="0\.1\.27"') { throw 'MSI version is not 0.1.27' }
+          foreach ($required in @('Title="Rimjob Server (matched build)"','Level="1"','AllowAbsent="no"')) {
+            if ($installer -notmatch [regex]::Escape($required)) { throw "Installer does not guarantee matched server: $required" }
+          }
+
+          $updater = Get-Content 'Source/Updater/Program.cs' -Raw
+          foreach ($required in @('FindInstalledServerFolder','SERVER_VERSION.txt','Updating installed Rimjob Server','Rimjob Server is currently running')) {
+            if ($updater -notmatch [regex]::Escape($required)) { throw "Updater does not maintain matched server: $required" }
+          }
 
       - name: Build Rimjob client companion
         shell: pwsh
@@ -110,6 +128,7 @@ jobs:
           New-Item -ItemType Directory -Force build/server | Out-Null
           if (!(Test-Path 'build/server-publish/RTServer.exe')) { throw 'RTServer.exe was not produced' }
           Copy-Item 'build/server-publish/RTServer.exe' 'build/server/Rimjob Server.exe'
+          Set-Content 'build/server/SERVER_VERSION.txt' $env:RELEASE_VERSION -NoNewline
 
       - name: Stage client
         shell: pwsh
@@ -151,18 +170,17 @@ jobs:
           @"
           RIMJOB v$env:RELEASE_VERSION
 
-          v0.1.26 explicitly activates the auto-accepting client as the synchronous
-          host. This restores guest manifests on the host and the host's live pawn
-          position stream on the guest. The server advertises protocol RJ24 and clients
-          do not publish private state until a matching server confirms support.
-          This prevents mixed client/server versions from silently desynchronising.
+          v0.1.27 resets and retries shared-map joining, safely clears stale peer IDs
+          on disconnect, and only sends large building manifests when state changes.
+          The server advertises protocol RJ25 and clients require the exact matching
+          build before private sync can start.
 
           Pawn state is owner-authoritative. The canonical host additionally sends
           a compact building manifest so host buildings are created, updated and
           removed on the guest as host-world truth.
 
-          IMPORTANT: Update.exe updates the client only. Replace the server executable
-          with the v0.1.26 server from this package before testing RJ24 sync.
+          The MSI installs the matched client and server together. Update.exe also
+          updates an installed Desktop server when RimWorld and the server are closed.
 
           500x500 maps, same-tile settlement, host clock, strict pawn ownership,
           isolated Harmony loading, F9 diagnostics and Direct Connect remain included.
@@ -178,7 +196,8 @@ jobs:
             "$verify/Rimjob/1.6/Assemblies/RWTSharedColony.dll",
             "$verify/Rimjob/Update.exe",
             "$verify/Rimjob/VERSION.txt",
-            "$verify/Server/Rimjob Server.exe"
+            "$verify/Server/Rimjob Server.exe",
+            "$verify/Server/SERVER_VERSION.txt"
           )) { if (!(Test-Path $required)) { throw "ZIP missing $required" } }
           if ((Get-Content "$verify/Rimjob/VERSION.txt" -Raw).Trim() -ne $env:RELEASE_VERSION) { throw 'ZIP VERSION.txt is wrong' }
 
@@ -205,39 +224,41 @@ jobs:
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.26-ZIP
-          path: build/Rimjob-v0.1.26.zip
+          name: Rimjob-v0.1.27-ZIP
+          path: build/Rimjob-v0.1.27.zip
           if-no-files-found: error
 
       - name: Upload MSI
         uses: actions/upload-artifact@v4
         with:
-          name: Rimjob-v0.1.26-MSI
-          path: build/Rimjob-v0.1.26-x64.msi
+          name: Rimjob-v0.1.27-MSI
+          path: build/Rimjob-v0.1.27-x64.msi
           if-no-files-found: error
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v0.1.26
+          tag_name: v0.1.27
           target_commitish: ${{ github.sha }}
-          name: Rimjob v0.1.26
+          name: Rimjob v0.1.27
           body: |
-            Rimjob v0.1.26
+            Rimjob v0.1.27
 
-            - Fixes the remaining one-way pawn visibility fault: the custom same-tile auto-accept now explicitly enters synchronous-host mode instead of bypassing that part of RWT's stock OnAsk setup.
-            - Makes the validated Rimjob host-active state sufficient for private pawn transport, so the host cannot silently ignore guest manifests if an inherited host flag is late or cleared.
-            - Restores the host's continuous authoritative position stream, so the guest no longer sees a frozen initial host-map snapshot.
+            - Replaces the one-shot shared-map join flag with a clean reset on new/reconnected sessions and up to six idempotent retries after settlement acknowledgement.
+            - Makes connection-ID lookup non-throwing and clears both sides of a synchronous pair on disconnect, fixing the `Sequence contains no matching element` listener crash.
+            - Sends the ~500 KB building manifest only after a change, plus a 30-second recovery refresh, instead of every second.
+            - Requires the exact v0.1.27 / `RJ25` client-server pair before private synchronisation starts.
+            - Makes the MSI install the matched server with every client and teaches Update.exe to update an installed Desktop server too.
             - Uses owner-scoped pawn mirror aliases and fresh local ThingIDs so manifests and later position packets always resolve the same remote pawn.
             - Stops remote mirror pathing before applying authoritative positions and republishes manifests every two seconds for rapid recovery.
-            - Uses the new `RJ24` compatibility guard; both clients and the server must be v0.1.26.
+            - Retains explicit synchronous-host activation, owner-scoped pawn aliases and authoritative position correction.
             - Private pawn/building packets are peer-only and rate limited instead of echoed back to the authoritative sender.
             - Keeps owner-authoritative pawn manifests/positions so each player sees the other player's pawns at their actual authoritative locations.
             - Adds host-authoritative building manifests: host buildings are created/updated/removed on the guest from canonical host state.
             - Keeps same-tile settlement, 500x500 maps, host-authoritative time, separate pawn control, F9 diagnostics, Direct Connect and Update.exe.
 
-            IMPORTANT: Update.exe updates the client only. Replace the server executable with v0.1.26 as well.
+            IMPORTANT: Close RimWorld and the Rimjob Server before installing or running Update.exe.
           files: |
-            build/Rimjob-v0.1.26.zip
-            build/Rimjob-v0.1.26-x64.msi
+            build/Rimjob-v0.1.27.zip
+            build/Rimjob-v0.1.27-x64.msi
           overwrite_files: true

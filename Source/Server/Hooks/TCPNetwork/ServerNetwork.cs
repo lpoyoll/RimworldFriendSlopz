@@ -25,12 +25,35 @@ namespace RTServer.Hooks.TCPNetwork
         {
             try
             {
+                FL_Player disconnectedPlayer = client.GetData<FL_Player>();
+                string disconnectedUsername = disconnectedPlayer?.Username;
+                int peerId = disconnectedPlayer?.SynchronousClientID ?? -1;
+
                 Network.ServerClients.Remove(client, out _);
+                SharedSessionManager.RemoveClient(disconnectedUsername);
+
+                // A synchronous peer ID is a connection-local handle.  Leaving
+                // it on the surviving player after the other socket disappears
+                // made the next private packet call First(...) for a client that
+                // no longer existed, throwing out of the listener and dropping
+                // the remaining player too.
+                ServerClient peer = GetClientFromID(peerId);
+                FL_Player peerPlayer = peer?.GetData<FL_Player>();
+                if (peerPlayer?.SynchronousClientID == client.ID)
+                {
+                    peerPlayer.SynchronousClientID = -1;
+                    PM_Chat.SendProtocolMessage(peer,
+                        $"{SharedColonyManager.ProtocolPrefix}|SESSION_END|Paired player {disconnectedUsername ?? "<unknown>"} disconnected.");
+                    Printer.Warning($"[SYNC] Pair cleared after disconnect | Remaining={peerPlayer.Username} | Departed={disconnectedUsername ?? "<unknown>"}");
+                }
+                if (disconnectedPlayer != null) disconnectedPlayer.SynchronousClientID = -1;
+
                 UserManager.SendPlayerRecount();
                 
                 InformationDisplayer.DisplayDisconnect(client);
-                if (client.GetData<FL_Player>() != null) InformationDisplayer.DisplayLogOut(client);
-                if (Master.ChatConfig.DisconnectNotifications) PM_Chat.BroadcastServerNotification($"{client.GetData<FL_Player>().Username} has left the server!");
+                if (disconnectedPlayer != null) InformationDisplayer.DisplayLogOut(client);
+                if (Master.ChatConfig.DisconnectNotifications && !string.IsNullOrWhiteSpace(disconnectedUsername))
+                    PM_Chat.BroadcastServerNotification($"{disconnectedUsername} has left the server!");
             }
             catch (Exception ex) { Printer.Error(ex); }
         };
@@ -100,7 +123,10 @@ namespace RTServer.Hooks.TCPNetwork
             return GetConnectedClients().FirstOrDefault(fetch => fetch.GetData<FL_Player>().Username == username);
         }
 
-        public static ServerClient GetClientFromID(int id) { return Network.ServerClients.Keys.First(fetch => fetch.ID == id); }
+        // Connection IDs are inherently staleable across disconnects.  Callers
+        // already model a missing peer as null, so this lookup must never throw.
+        public static ServerClient GetClientFromID(int id) =>
+            Network.ServerClients.Keys.FirstOrDefault(fetch => fetch.ID == id);
 
         public static void SendPacketToAllClients(PacketHeader header, object obj, ServerClient toExclude = null)
         {

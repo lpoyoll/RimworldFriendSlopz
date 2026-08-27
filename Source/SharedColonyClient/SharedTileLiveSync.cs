@@ -61,6 +61,29 @@ namespace RWTSharedColony
         public static bool IsSharedSessionActive =>
             SharedGuestActive || SharedHostActiveOrPending;
 
+        public static void ResetForNewJoin()
+        {
+            LocalJoiningPawns.Clear();
+            PendingTile = -1;
+            PendingHostUsername = null;
+            AwaitingAccept = false;
+            SharedGuestActive = false;
+            SharedHostActiveOrPending = false;
+            SessionManager.SynchronousMap = null;
+            SessionManager.IsSynchronousHost = false;
+            SharedColonyState.PendingRemoteUsername = null;
+        }
+
+        public static void EndSession(string reason)
+        {
+            AwaitingAccept = false;
+            SharedGuestActive = false;
+            SharedHostActiveOrPending = false;
+            SessionManager.SynchronousMap = null;
+            SessionManager.IsSynchronousHost = false;
+            RimjobClientDiagnostics.Important("Shared-map session ended: " + (reason ?? "peer disconnected"));
+        }
+
         public static void CaptureSelectedTarget()
         {
             try
@@ -345,8 +368,20 @@ namespace RWTSharedColony
             List<IntVec3> positions = new List<IntVec3>();
             if (party?.Pawns == null) return positions;
 
-            foreach (string pawnData in party.Pawns)
+            // Join requests are retryable.  If the host already accepted an
+            // earlier attempt whose response was lost, reuse those mirrors
+            // instead of spawning a duplicate copy of the guest colony.
+            if (guestFaction != null)
             {
+                positions.AddRange(hostMap.mapPawns.AllPawns
+                    .Where(pawn => pawn != null && !pawn.Destroyed && pawn.Spawned && pawn.Faction == guestFaction)
+                    .Take(party.Pawns.Count)
+                    .Select(pawn => pawn.PositionHeld));
+            }
+
+            for (int index = positions.Count; index < party.Pawns.Count; index++)
+            {
+                string pawnData = party.Pawns[index];
                 Pawn pawn = ScribeManager.SerializeFromString<Pawn>(
                     pawnData,
                     ScribeManager.SerializableType.Pawn,

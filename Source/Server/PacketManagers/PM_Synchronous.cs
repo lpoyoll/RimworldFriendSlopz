@@ -15,8 +15,8 @@ namespace RTServer.PacketManagers
         private const int RimjobPawnStateAction = 9022;
         private const int RimjobPawnManifestAction = 9023;
         private const int RimjobHostBuildingAction = 9030;
-        private const string RimjobBuildVersion = "0.1.26";
-        private const string RimjobPrivateProtocol = "RJ24";
+        public const string RimjobBuildVersion = "0.1.27";
+        public const string RimjobPrivateProtocol = "RJ25";
 
         private static readonly object PrivateRateLock = new object();
         private static readonly Dictionary<string, long> LastPrivatePacketTicks = new Dictionary<string, long>();
@@ -65,6 +65,7 @@ namespace RTServer.PacketManagers
 
             if (peer == null || peer.GetData<FL_Player>()?.SynchronousClientID != client.ID)
             {
+                if (player != null) player.SynchronousClientID = -1;
                 // Do not throw and do not bounce a high-frequency error packet.
                 // One concise server line is enough; the client diagnostics will
                 // also show that no paired session exists.

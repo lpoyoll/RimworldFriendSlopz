@@ -46,7 +46,9 @@ namespace Rimjob.Updater
                     UseShellExecute = true
                 };
 
-                if (!CanWriteTo(target)) start.Verb = "runas";
+                string serverTarget = FindInstalledServerFolder();
+                if (!CanWriteTo(target) || (serverTarget != null && !CanWriteTo(serverTarget)))
+                    start.Verb = "runas";
                 Process.Start(start);
                 return 0;
             }
@@ -78,6 +80,17 @@ namespace Rimjob.Updater
                 return 3;
             }
 
+            string serverTarget = FindInstalledServerFolder();
+            Process server = Process.GetProcesses().FirstOrDefault(p =>
+                string.Equals(p.ProcessName, "Rimjob Server", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(p.ProcessName, "RTServer", StringComparison.OrdinalIgnoreCase));
+            if (server != null)
+            {
+                Console.Error.WriteLine("Rimjob Server is currently running. Close its console window, then run Update.exe again.");
+                Wait();
+                return 3;
+            }
+
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             string work = Path.Combine(Path.GetTempPath(), "RimjobUpdater", "work-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(work);
@@ -98,13 +111,24 @@ namespace Rimjob.Updater
                     throw new InvalidOperationException("The latest release does not contain a Rimjob client ZIP asset.");
 
                 string currentVersion = ReadCurrentVersion(target);
+                string serverVersion = serverTarget == null
+                    ? null
+                    : ReadVersionFile(Path.Combine(serverTarget, "SERVER_VERSION.txt"));
+                bool clientCurrent = !string.IsNullOrWhiteSpace(currentVersion) &&
+                    string.Equals(NormalizeVersion(currentVersion), NormalizeVersion(release.TagName), StringComparison.OrdinalIgnoreCase);
+                bool serverNeedsUpdate = serverTarget != null &&
+                    (string.IsNullOrWhiteSpace(serverVersion) ||
+                     !string.Equals(NormalizeVersion(serverVersion), NormalizeVersion(release.TagName), StringComparison.OrdinalIgnoreCase));
+
                 Console.WriteLine("Installed: " + (string.IsNullOrWhiteSpace(currentVersion) ? "unknown" : currentVersion));
                 Console.WriteLine("Latest:    " + release.TagName);
-                if (!string.IsNullOrWhiteSpace(currentVersion) &&
-                    string.Equals(NormalizeVersion(currentVersion), NormalizeVersion(release.TagName), StringComparison.OrdinalIgnoreCase))
+                if (serverTarget != null)
+                    Console.WriteLine("Server:    " + (string.IsNullOrWhiteSpace(serverVersion) ? "unknown/stale" : serverVersion));
+
+                if (clientCurrent && !serverNeedsUpdate)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Rimjob is already up to date.");
+                    Console.WriteLine("Rimjob client and installed server are already up to date.");
                     Wait();
                     return 0;
                 }
@@ -132,33 +156,53 @@ namespace Rimjob.Updater
                 if (!File.Exists(Path.Combine(source, "1.6", "Assemblies", "RTClient.dll")))
                     throw new InvalidDataException("The downloaded release is missing RTClient.dll.");
 
-                string parent = Directory.GetParent(target).FullName;
-                string staging = Path.Combine(parent, Path.GetFileName(target) + ".update-new");
-                string backup = Path.Combine(parent, Path.GetFileName(target) + ".update-backup");
-                DeleteDirectoryIfExists(staging);
-                DeleteDirectoryIfExists(backup);
+                string serverSource = Path.Combine(extract, "Server");
+                if (serverNeedsUpdate &&
+                    (!File.Exists(Path.Combine(serverSource, "Rimjob Server.exe")) ||
+                     !File.Exists(Path.Combine(serverSource, "SERVER_VERSION.txt"))))
+                    throw new InvalidDataException("The downloaded release is missing the matched Rimjob server payload.");
 
-                Console.WriteLine("Staging new client files...");
-                CopyDirectory(source, staging);
-
-                bool oldMoved = false;
-                try
+                if (!clientCurrent)
                 {
-                    Directory.Move(target, backup);
-                    oldMoved = true;
-                    Directory.Move(staging, target);
+                    string parent = Directory.GetParent(target).FullName;
+                    string staging = Path.Combine(parent, Path.GetFileName(target) + ".update-new");
+                    string backup = Path.Combine(parent, Path.GetFileName(target) + ".update-backup");
+                    DeleteDirectoryIfExists(staging);
                     DeleteDirectoryIfExists(backup);
+
+                    Console.WriteLine("Staging new client files...");
+                    CopyDirectory(source, staging);
+
+                    bool oldMoved = false;
+                    try
+                    {
+                        Directory.Move(target, backup);
+                        oldMoved = true;
+                        Directory.Move(staging, target);
+                        DeleteDirectoryIfExists(backup);
+                    }
+                    catch
+                    {
+                        if (Directory.Exists(target)) DeleteDirectoryIfExists(target);
+                        if (oldMoved && Directory.Exists(backup)) Directory.Move(backup, target);
+                        throw;
+                    }
                 }
-                catch
+
+                if (serverNeedsUpdate)
                 {
-                    if (Directory.Exists(target)) DeleteDirectoryIfExists(target);
-                    if (oldMoved && Directory.Exists(backup)) Directory.Move(backup, target);
-                    throw;
+                    Console.WriteLine("Updating installed Rimjob Server...");
+                    File.Copy(Path.Combine(serverSource, "Rimjob Server.exe"),
+                        Path.Combine(serverTarget, "Rimjob Server.exe"), true);
+                    File.Copy(Path.Combine(serverSource, "SERVER_VERSION.txt"),
+                        Path.Combine(serverTarget, "SERVER_VERSION.txt"), true);
                 }
 
                 Console.WriteLine();
-                Console.WriteLine("Rimjob client updated successfully to " + release.TagName + ".");
-                Console.WriteLine("All client-side mod files were replaced from the published release ZIP.");
+                Console.WriteLine("Rimjob updated successfully to " + release.TagName + ".");
+                Console.WriteLine(serverTarget == null
+                    ? "Client files were replaced. No installed Desktop server was found."
+                    : "Client and installed Desktop server now use the same release.");
                 Wait();
                 return 0;
             }
@@ -226,9 +270,25 @@ namespace Rimjob.Updater
 
         private static string ReadCurrentVersion(string target)
         {
-            string path = Path.Combine(target, "VERSION.txt");
+            return ReadVersionFile(Path.Combine(target, "VERSION.txt"));
+        }
+
+        private static string ReadVersionFile(string path)
+        {
             try { return File.Exists(path) ? File.ReadAllText(path).Trim() : null; }
             catch { return null; }
+        }
+
+        private static string FindInstalledServerFolder()
+        {
+            string[] candidates =
+            {
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory), "Rimjob Server"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Rimjob Server")
+            };
+
+            return candidates.FirstOrDefault(path =>
+                Directory.Exists(path) && File.Exists(Path.Combine(path, "Rimjob Server.exe")));
         }
 
         private static string NormalizeVersion(string version)

@@ -21,9 +21,13 @@ namespace RWTSharedColony
     {
         public const int HostBuildingActionCode = 9030;
         private const int BuildingMagic = 0x524A4233; // RJB3
-        private const long PublishIntervalTicks = TimeSpan.TicksPerSecond;
+        private const long ScanIntervalTicks = TimeSpan.TicksPerSecond;
+        private const long FullRepublishIntervalTicks = TimeSpan.TicksPerSecond * 30;
 
-        private static long _lastPublishUtcTicks;
+        private static long _lastScanUtcTicks;
+        private static long _lastFullPublishUtcTicks;
+        private static ulong _lastPublishedHash;
+        private static bool _hasPublishedHash;
         private static readonly Dictionary<string, Thing> HostAliases =
             new Dictionary<string, Thing>(StringComparer.Ordinal);
         private static readonly HashSet<string> PreviousHostIds =
@@ -37,16 +41,19 @@ namespace RWTSharedColony
                 Network.ServerEndpoint == null ||
                 !RimjobProtocolState.PrivateSyncReady)
             {
-                _lastPublishUtcTicks = 0;
+                _lastScanUtcTicks = 0;
+                _lastFullPublishUtcTicks = 0;
+                _lastPublishedHash = 0;
+                _hasPublishedHash = false;
                 return;
             }
 
             long now = DateTime.UtcNow.Ticks;
-            if (_lastPublishUtcTicks != 0 && now - _lastPublishUtcTicks < PublishIntervalTicks)
+            if (_lastScanUtcTicks != 0 && now - _lastScanUtcTicks < ScanIntervalTicks)
                 return;
-            _lastPublishUtcTicks = now;
+            _lastScanUtcTicks = now;
 
-            SendHostBuildingManifest(SessionManager.SynchronousMap);
+            SendHostBuildingManifest(SessionManager.SynchronousMap, now);
         }
 
         public static bool TryHandleAction(PKT_Synchronous packet)
@@ -60,7 +67,7 @@ namespace RWTSharedColony
             return true;
         }
 
-        private static void SendHostBuildingManifest(Map map)
+        private static void SendHostBuildingManifest(Map map, long now)
         {
             try
             {
@@ -68,6 +75,12 @@ namespace RWTSharedColony
                     .Where(IsBuildingLike)
                     .Take(12000)
                     .ToList();
+
+                ulong manifestHash = ComputeManifestHash(buildings);
+                bool unchanged = _hasPublishedHash && manifestHash == _lastPublishedHash;
+                if (unchanged && _lastFullPublishUtcTicks != 0 &&
+                    now - _lastFullPublishUtcTicks < FullRepublishIntervalTicks)
+                    return;
 
                 using (MemoryStream stream = new MemoryStream())
                 using (BinaryWriter writer = new BinaryWriter(stream))
@@ -97,8 +110,11 @@ namespace RWTSharedColony
                         Data = stream.ToArray()
                     };
                     Network.ServerEndpoint.EnqueuePacket(PacketHeader.Synchronous, packet);
+                    _lastPublishedHash = manifestHash;
+                    _hasPublishedHash = true;
+                    _lastFullPublishUtcTicks = now;
                     RimjobClientDiagnostics.Verbose(
-                        $"Host building manifest sent. Count={buildings.Count}; Tile={map.Tile.tileId}; Bytes={stream.Length}.");
+                        $"Host building manifest sent. Count={buildings.Count}; Tile={map.Tile.tileId}; Bytes={stream.Length}; Changed={!unchanged}.");
                 }
             }
             catch (Exception exception)
@@ -223,6 +239,55 @@ namespace RWTSharedColony
             thing.Spawned &&
             thing.def != null &&
             thing.def.category == ThingCategory.Building;
+
+        private static ulong ComputeManifestHash(IEnumerable<Thing> buildings)
+        {
+            const ulong offset = 14695981039346656037UL;
+            ulong hash = offset;
+            foreach (Thing thing in buildings)
+            {
+                AddHash(ref hash, thing.ThingID);
+                AddHash(ref hash, thing.def?.defName);
+                AddHash(ref hash, thing.Stuff?.defName);
+                AddHash(ref hash, thing.Position.x);
+                AddHash(ref hash, thing.Position.z);
+                AddHash(ref hash, thing.Rotation.AsInt);
+                AddHash(ref hash, SafeHitPoints(thing));
+                AddHash(ref hash, Math.Max(1, thing.stackCount));
+            }
+            return hash;
+        }
+
+        private static void AddHash(ref ulong hash, string value)
+        {
+            const ulong prime = 1099511628211UL;
+            if (value != null)
+            {
+                foreach (char character in value)
+                {
+                    hash ^= character;
+                    hash *= prime;
+                }
+            }
+            hash ^= 0xff;
+            hash *= prime;
+        }
+
+        private static void AddHash(ref ulong hash, int value)
+        {
+            const ulong prime = 1099511628211UL;
+            unchecked
+            {
+                hash ^= (byte)value;
+                hash *= prime;
+                hash ^= (byte)(value >> 8);
+                hash *= prime;
+                hash ^= (byte)(value >> 16);
+                hash *= prime;
+                hash ^= (byte)(value >> 24);
+                hash *= prime;
+            }
+        }
 
         private static Thing FindHostMirror(Map map, string hostThingId, string defName, IntVec3 position)
         {

@@ -31,6 +31,42 @@ namespace RWTSharedColony
         private static bool JoinStarted;
         private static int KnownSharedTile = -1;
         private static string KnownHostUsername;
+        private static long LastAttemptUtcTicks;
+        private static int JoinAttemptCount;
+        private const int MaximumJoinAttempts = 6;
+        private const long RetryIntervalTicks = TimeSpan.TicksPerSecond * 10;
+
+        public static void ResetForNewJoin()
+        {
+            PendingGame = null;
+            RegisteredOwnTile = -1;
+            AllowOriginalBegin = false;
+            JoinStarted = false;
+            KnownSharedTile = -1;
+            KnownHostUsername = null;
+            LastAttemptUtcTicks = 0;
+            JoinAttemptCount = 0;
+            SharedTileLiveSync.ResetForNewJoin();
+            Log.Message("[Rimjob] Shared-map join state reset for a new attempt.");
+        }
+
+        public static void Update()
+        {
+            if (SharedTileLiveSync.SharedGuestActive || PendingGame == null) return;
+            if (SharedTileLiveSync.PendingTile < 0 || RegisteredOwnTile != SharedTileLiveSync.PendingTile) return;
+
+            long now = DateTime.UtcNow.Ticks;
+            if (SharedTileLiveSync.AwaitingAccept)
+            {
+                if (LastAttemptUtcTicks == 0 || now - LastAttemptUtcTicks < RetryIntervalTicks) return;
+
+                SetPrivateAutoProperty(nameof(SharedTileLiveSync.AwaitingAccept), false);
+                JoinStarted = false;
+                Log.Warning($"[Rimjob] Host-map request timed out after 10 seconds; retrying ({JoinAttemptCount}/{MaximumJoinAttempts}).");
+            }
+
+            TryStartAfterRegistration();
+        }
 
         public static bool DelayBegin(Game game)
         {
@@ -77,6 +113,10 @@ namespace RWTSharedColony
             string hostUsername = parts[3];
             if (string.IsNullOrWhiteSpace(hostUsername)) return true;
 
+            // TILE is a fresh server-side session advertisement (normally after
+            // login/reconnect).  Any JoinStarted/AwaitingAccept values belong to
+            // the previous socket and must not suppress this attempt.
+            ResetForNewJoin();
             KnownSharedTile = sharedTile;
             KnownHostUsername = hostUsername;
 
@@ -170,14 +210,31 @@ namespace RWTSharedColony
 
         private static void TryStartAfterRegistration()
         {
+            if (SharedTileLiveSync.SharedGuestActive || SharedTileLiveSync.AwaitingAccept) return;
             if (JoinStarted || PendingGame == null) return;
             if (SharedTileLiveSync.PendingTile < 0 || RegisteredOwnTile != SharedTileLiveSync.PendingTile) return;
+            if (JoinAttemptCount >= MaximumJoinAttempts)
+            {
+                Log.Error($"[Rimjob] Shared-map join stopped after {MaximumJoinAttempts} attempts. Reopen the world screen or restart RimWorld to begin a clean attempt.");
+                return;
+            }
 
             JoinStarted = true;
+            JoinAttemptCount++;
+            LastAttemptUtcTicks = DateTime.UtcNow.Ticks;
             try
             {
                 AllowOriginalBegin = true;
                 SharedTileLiveSync.BeginPendingJoin(PendingGame);
+                if (!SharedTileLiveSync.AwaitingAccept)
+                {
+                    JoinStarted = false;
+                    Log.Warning($"[Rimjob] Shared-map request attempt {JoinAttemptCount} did not enter AwaitingAccept; it will be retried.");
+                }
+                else
+                {
+                    Log.Message($"[Rimjob] Shared-map request attempt {JoinAttemptCount} sent to {SharedTileLiveSync.PendingHostUsername} for tile {SharedTileLiveSync.PendingTile}.");
+                }
             }
             catch (Exception exception)
             {
@@ -205,8 +262,21 @@ namespace RWTSharedColony
     [HarmonyPatch(typeof(SharedTileLiveSync), nameof(SharedTileLiveSync.CaptureSelectedTarget))]
     public static class RecoverSharedTileTargetPatch
     {
+        [HarmonyPrefix]
+        public static void Prefix() => SharedTileLiveSyncHandshake.ResetForNewJoin();
+
         [HarmonyPostfix]
         public static void Postfix() => SharedTileLiveSyncHandshake.RecoverTargetFromSelection();
+    }
+
+    [HarmonyPatch]
+    public static class SharedTileJoinRetryPatch
+    {
+        public static MethodBase TargetMethod() =>
+            AccessTools.Method(AccessTools.TypeByName("Verse.Root_Play"), "Update");
+
+        [HarmonyPostfix]
+        public static void Postfix() => SharedTileLiveSyncHandshake.Update();
     }
 
     [HarmonyPatch(typeof(SharedColonyState), nameof(SharedColonyState.HandleProtocol))]

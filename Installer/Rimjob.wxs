@@ -3,7 +3,7 @@
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
   <Package Name="Rimjob"
            Manufacturer="Ignis &amp; Avis"
-           Version="0.1.26"
+           Version="0.1.27"
            Language="1033"
            Codepage="65001"
            UpgradeCode="8E92A9C2-14A7-4F45-91EF-90B6629F9C82"
@@ -42,7 +42,7 @@
     <SetProperty Action="SetRimWorldFromD" Id="RIMWORLDROOT" Value="[RIMWORLDD]" After="SetRimWorldFromC" Sequence="both" Condition="NOT RIMWORLDROOT AND RIMWORLDD" />
 
     <Property Id="WIXUI_EXITDIALOGOPTIONALTEXT"
-              Value="Rimjob has been installed. Disable the original Workshop copy of RimWorld Together before launching RimWorld." />
+              Value="Rimjob client and server v0.1.27 have been installed together. Disable the original Workshop copy of RimWorld Together before launching RimWorld." />
 
     <StandardDirectory Id="ProgramFiles6432Folder">
       <Directory Id="DefaultSteamFolder" Name="Steam">
@@ -72,10 +72,10 @@
         <Files Directory="RimjobModFolder" Include="!(bindpath.ClientPayload)\**" />
       </Feature>
       <Feature Id="ServerFeature"
-               Title="Rimjob Server (optional - host only)"
-               Description="Optional. Installs the self-contained Rimjob Server executable in a Rimjob Server folder on your Desktop."
-               Level="2"
-               AllowAbsent="yes">
+               Title="Rimjob Server (matched build)"
+               Description="Installs the matched self-contained Rimjob Server in a Rimjob Server folder on the Desktop, preventing client/server version drift."
+               Level="1"
+               AllowAbsent="no">
         <Files Directory="RimjobServerFolder" Include="!(bindpath.ServerPayload)\**" />
       </Feature>
     </Feature>
