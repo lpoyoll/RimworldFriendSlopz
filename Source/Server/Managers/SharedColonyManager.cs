@@ -263,6 +263,22 @@ namespace RTServer.Managers
             int capacity = Math.Clamp(Master.ServerConfig.SharedColonyTileCapacity, 1, 8);
             PM_Chat.SendProtocolMessage(client, $"{ProtocolPrefix}|CONFIG|{mapSize}|{capacity}");
 
+            // Tell a reconnecting member which player owns the canonical map.
+            // The client cannot infer this safely from overlapping world markers,
+            // and settlement registration acknowledgements only exist during the
+            // original new-colony flow.
+            FL_Settlement ownedSettlement = PM_Settlements.GetSettlementFileFromUsername(username);
+            if (ownedSettlement != null)
+            {
+                List<FL_Settlement> occupants = PM_Settlements.GetAllSettlementsAtTile(ownedSettlement.Tile);
+                if (occupants.Count > 1)
+                {
+                    string hostUsername = GetMapHostUsername(ownedSettlement.Tile);
+                    PM_Chat.SendProtocolMessage(client,
+                        $"{ProtocolPrefix}|TILE|{ownedSettlement.Tile}|{hostUsername}|{occupants.Count}");
+                }
+            }
+
             foreach (string other in PM_Settlements.GetAllSettlements()
                          .Select(fetch => fetch.Username)
                          .Where(fetch => fetch != username)
