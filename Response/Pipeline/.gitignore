@@ -2,3 +2,7 @@ build/
 .venv/
 __pycache__/
 .pytest_cache/
+# secrets and downloaded imagery never go in git
+*.env
+secrets*
+imagery/

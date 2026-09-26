@@ -13,5 +13,6 @@
 | [08_first_real_run.md](08_first_real_run.md) | First real-data run: Hurst Cross, with screenshots |
 | [09_core_module.md](09_core_module.md) | ResponseCore: IDs, RNG, clock (GMT/BST, sun, shifts), event log, JSON saves |
 | [10_realism_plan.md](10_realism_plan.md) | Path to GTA-level visuals: layers, automation, art, what's needed |
+| [11_streetview.md](11_streetview.md) | Mapillary imagery: coverage, facade matching, observed vs inferred |
 
 Rule: when something here changes, update the doc in the same commit.

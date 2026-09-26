@@ -28,7 +28,13 @@ kit, materials and hero assets, which is art. A 2 × 2 km centre at that bar is 
 (~80–120 pieces each), ~60 materials and ~8 hero buildings. Solo, that is many months of skilled 3D work. With bought
 asset packs as a base, it is weeks of adaptation plus the hero buildings.
 
-## What I need from you
+## Status of the asks (2026-09-26)
+- Mapillary token: **received** (stored outside git). Coverage and matching: `docs/11_streetview.md`.
+- 360° capture: **declined**, so facades not seen in photos are inferred from their neighbours.
+- Unreal: session with the creative director planned for 2026-09-27.
+- Art: marketplace packs allowed, free where possible. GTA mod packs assessed and not used (S-15). CC0 and OGL replacements (S-16).
+
+## What I needed from you (original asks)
 1. **Mapillary API token** (free: mapillary.com → Dashboard → Developers → register app → client token). I can then check
    Ashton coverage and start Stage D on real images.
 2. **360° capture:** will you drive or walk Ashton centre with a 360 camera? (S-08.) It gives the best facades and material photos.

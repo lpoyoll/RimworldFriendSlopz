@@ -16,10 +16,12 @@ For anything shipped commercially, a short review by a solicitor who handles IP/
 | S-05 | OpenStreetMap + Microsoft footprints (ODbL) | Use, with in-game credit | £0 | **Approved** |
 | S-06 | HM Land Registry INSPIRE polygons | Use for plots (non-commercial) | £0 | **Approved** (non-commercial only) |
 | S-07 | Mapillary imagery for facade analysis | Derive attributes only; credit contributors | £0 | **Approved** (flagged non-commercial for safety) |
-| S-08 | Your own 360° capture drives | Yes. Blur faces and plates on ingest. Don't publish raw imagery. Follow the ICO guidance on filming in public | 360° camera about £400–600 | Pending |
+| S-08 | Your own 360° capture drives | Declined by the creative director. Mapillary only, with propagation for unseen facades (docs/11) | £0 | **Declined** |
 | S-09 | Aerial orthophoto (Getmapping / Bluesky) | Get quotes that include **game distribution rights**. Otherwise use the vector fallback | Likely £2k–10k+ (quote needed) | Pending |
 | S-10 | Facade-parsing training datasets (CMP, ECP, etc.) | Research/non-commercial datasets allowed | £0 | **Approved** (non-commercial only) |
 | S-11 | Generated UK number plates | Filter against known real-plate patterns. Add a disclaimer | £0 | Pending |
 | S-12 | Legal review (licences, trademarks, depiction of real places, police procedure) | Before Early Access | about £1–3k | Pending |
 | S-13 | Real street names | Default "real", with a config toggle to "altered" | £0 | Pending |
 | S-14 | MetaHuman use | Allowed in UE projects under the MetaHuman licence | £0 | For awareness |
+| S-15 | GTA V mod assets (UK Road Signs; Project London Remastered; Roads of Europe) | **Not used.** UK Road Signs is by Razor792/Albo1125 (not NotchApple) and re-textures Rockstar models. Project London is a multi-author team pack (NotchApple can only grant their own share) and contains real brands, which breaks the fictional-business rule. Roads of Europe is by another author and Berlin-style. Rockstar's terms forbid using GTA assets outside GTA. Pieces verifiably made solely by NotchApple (e.g. an original texture) can be used as reference on request | £0 | Decided |
+| S-16 | Replacement sources | UK signs from **DfT traffic sign images** (Open Government Licence, TSRGD-numbered, credit "Crown copyright"). Road, brick, render, pebbledash, slate materials from **ambientCG / Poly Haven (CC0)**. Free Fab packs checked per licence | £0 | Proposed |

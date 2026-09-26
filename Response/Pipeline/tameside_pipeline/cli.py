@@ -64,6 +64,13 @@ def main(argv: list[str] | None = None) -> int:
                    help="Camera and target in local metres (x east, y up, z south of the centre)")
     v.add_argument("--out", type=Path, required=True)
 
+    sv = sub.add_parser("streetview", help="Stage D part 1: match Mapillary images to street-facing facades")
+    sv.add_argument("--zone", required=True)
+    sv.add_argument("--buildings", type=Path, required=True)
+    sv.add_argument("--roads", type=Path, required=True)
+    sv.add_argument("--cache", type=Path, required=True, help="Folder for cached image metadata (and later, images)")
+    sv.add_argument("--out", type=Path, required=True)
+
     a = p.parse_args(argv)
     cfg = load_config(a.config)
     origin = WorldOrigin(cfg.origin_e, cfg.origin_n)
@@ -88,7 +95,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Wrote {len(m['tiles'])} tile(s) to {a.out}; heights {m['height_m']['min']:.1f}..{m['height_m']['max']:.1f} m; filled {m['filled_nodata_cells']} nodata cells")
         return 0
 
-    if a.cmd in ("footprints", "roads", "massing", "preview"):
+    if a.cmd in ("footprints", "roads", "massing", "preview", "streetview"):
         from . import stages
         return getattr(stages, f"run_{a.cmd}")(cfg, a)
     return 1

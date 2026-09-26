@@ -147,3 +147,30 @@ def run_preview(cfg, a) -> int:
     write_html(scene, a.out, a.title, {"pos": cam[:3], "target": cam[3:], "fov": 45})
     print(f"Preview: {len(scene['trees'])} trees, {len(scene['walls']['pos']) // 9} wall triangles -> {a.out}")
     return 0
+
+
+def run_streetview(cfg, a) -> int:
+    from shapely.geometry import LineString, Polygon
+
+    from .streetview import facade_edges, fetch_metadata, match_views
+
+    cfg.require_source("mapillary")
+    zone = cfg.zone(a.zone)
+    b = zone_bounds(cfg, zone, MARGIN_M)
+    buildings = [json.loads(line) for line in open(a.buildings, encoding="utf-8")]
+    roads = json.loads(Path(a.roads).read_text(encoding="utf-8"))
+    road_lines = [LineString([(p[0], p[1]) for p in e["polyline"]]) for e in roads["edges"] if len(e["polyline"]) >= 2]
+    images = fetch_metadata(b, a.cache)
+    edges = facade_edges(buildings, road_lines)
+    obstacles = {"geoms": [Polygon(x["footprint"]["outer"]) for x in buildings], "ids": [x["footprint_id"] for x in buildings]}
+    matches = match_views(edges, images, obstacles)
+    a.out.mkdir(parents=True, exist_ok=True)
+    with open(a.out / "facade_views.jsonl", "w", encoding="utf-8") as f:
+        for m in matches:
+            f.write(json.dumps(m) + "\n")
+    seen_edges = sum(1 for m in matches if m["views"])
+    seen_bldg = len({m["footprint_id"] for m in matches if m["views"]})
+    street_bldg = len({m["footprint_id"] for m in matches})
+    print(f"{len(images)} images; {len(matches)} street-facing facades, {seen_edges} seen "
+          f"({100 * seen_edges / max(len(matches), 1):.0f}%); buildings with a seen facade: {seen_bldg}/{street_bldg}")
+    return 0
