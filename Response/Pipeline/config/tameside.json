@@ -29,15 +29,70 @@
     }
   },
   "sources": {
-    "ea_lidar_dtm_1m": { "licence": "OGL-3.0", "status": "approved", "attribution": "Contains Environment Agency information © Environment Agency and/or database right." },
-    "ea_lidar_dsm_1m": { "licence": "OGL-3.0", "status": "approved", "attribution": "Contains Environment Agency information © Environment Agency and/or database right." },
-    "os_openmap_local": { "licence": "OGL-3.0", "status": "approved", "attribution": "Contains OS data © Crown copyright and database right." },
-    "os_open_roads": { "licence": "OGL-3.0", "status": "approved", "attribution": "Contains OS data © Crown copyright and database right." },
-    "osm": { "licence": "ODbL-1.0", "status": "pending_signoff", "attribution": "© OpenStreetMap contributors" },
-    "ms_building_footprints": { "licence": "ODbL-1.0", "status": "pending_signoff", "attribution": "Microsoft Global ML Building Footprints" },
-    "hmlr_inspire": { "licence": "INSPIRE-HMLR", "status": "pending_signoff" },
-    "mapillary": { "licence": "CC-BY-SA-4.0", "status": "pending_signoff" },
-    "aerial_ortho": { "licence": "commercial", "status": "pending_signoff" },
-    "google": { "licence": "proprietary", "status": "blocked" }
-  }
+    "ea_lidar_dtm_1m": {
+      "licence": "OGL-3.0",
+      "status": "approved",
+      "attribution": "Contains Environment Agency information \u00a9 Environment Agency and/or database right.",
+      "commercial_ok": true
+    },
+    "ea_lidar_dsm_1m": {
+      "licence": "OGL-3.0",
+      "status": "approved",
+      "attribution": "Contains Environment Agency information \u00a9 Environment Agency and/or database right.",
+      "commercial_ok": true
+    },
+    "os_openmap_local": {
+      "licence": "OGL-3.0",
+      "status": "approved",
+      "attribution": "Contains OS data \u00a9 Crown copyright and database right.",
+      "commercial_ok": true
+    },
+    "os_open_roads": {
+      "licence": "OGL-3.0",
+      "status": "approved",
+      "attribution": "Contains OS data \u00a9 Crown copyright and database right.",
+      "commercial_ok": true
+    },
+    "osm": {
+      "licence": "ODbL-1.0",
+      "status": "approved",
+      "attribution": "\u00a9 OpenStreetMap contributors",
+      "commercial_ok": true
+    },
+    "ms_building_footprints": {
+      "licence": "ODbL-1.0",
+      "status": "approved",
+      "attribution": "Microsoft Global ML Building Footprints",
+      "commercial_ok": true
+    },
+    "hmlr_inspire": {
+      "licence": "INSPIRE-HMLR",
+      "status": "approved",
+      "commercial_ok": false,
+      "attribution": "Contains HM Land Registry data \u00a9 Crown copyright and database right. Contains OS data \u00a9 Crown copyright and database right."
+    },
+    "mapillary": {
+      "licence": "CC-BY-SA-4.0",
+      "status": "approved",
+      "commercial_ok": false,
+      "attribution": "Street-level imagery analysis uses Mapillary contributors' images (CC BY-SA 4.0)"
+    },
+    "aerial_ortho": {
+      "licence": "commercial",
+      "status": "pending_signoff",
+      "commercial_ok": false
+    },
+    "google": {
+      "licence": "proprietary",
+      "status": "blocked",
+      "commercial_ok": false
+    },
+    "houdini_apprentice": {
+      "licence": "SideFX Apprentice (non-commercial)",
+      "status": "approved",
+      "commercial_ok": false,
+      "kind": "tool"
+    }
+  },
+  "project_mode": "non_commercial"
 }

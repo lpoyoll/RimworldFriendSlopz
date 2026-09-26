@@ -34,6 +34,7 @@ class PipelineConfig:
     landscape: LandscapeSettings
     zones: dict[str, Zone]
     sources: dict[str, dict]
+    project_mode: str = "non_commercial"
 
     def zone(self, name: str) -> Zone:
         if name not in self.zones:
@@ -47,6 +48,8 @@ class PipelineConfig:
             raise SourceNotApproved(f"Source '{source_id}' is not in the registry.")
         if src.get("status") != "approved":
             raise SourceNotApproved(f"Source '{source_id}' has status '{src.get('status')}', not 'approved'.")
+        if self.project_mode == "commercial" and not src.get("commercial_ok", False):
+            raise SourceNotApproved(f"Source '{source_id}' is non-commercial only; replace it before going commercial.")
         return src
 
 
@@ -65,4 +68,5 @@ def load_config(path: str | Path) -> PipelineConfig:
         ),
         zones=zones,
         sources=raw.get("sources", {}),
+        project_mode=raw.get("project_mode", "non_commercial"),
     )

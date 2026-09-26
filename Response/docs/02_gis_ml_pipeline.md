@@ -3,6 +3,9 @@
 Goal: generate Tameside automatically (target 70–80%), then fix the rest by hand. Every run is reproducible from
 `Pipeline/config/*.json`. Every source has a licence entry, and the pipeline refuses sources marked `blocked`.
 
+> **The project is non-commercial**, so non-commercial-only sources are allowed. The `commercial_ok` flag
+> on each source tracks what would need replacing if that changes.
+>
 > Licence notes below are my reading of the published terms. They are not legal advice. Items marked **SIGN-OFF**
 > are in `05_signoff_register.md`, and I will not use them until you approve.
 
@@ -14,10 +17,10 @@ Goal: generate Tameside automatically (target 70–80%), then fix the rest by ha
 | OS OpenMap – Local | Building footprints, water, woodland | OGL v3 (includes OS attribution) | Free | Yes, with attribution | OK |
 | OS Open Roads | Road centrelines and hierarchy | OGL v3 | Free | Yes, with attribution | OK |
 | OS Open Greenspace, OS Open Rivers | Parks, water | OGL v3 | Free | Yes | OK |
-| OpenStreetMap | Road detail (lanes, one-way, crossings), POIs, shop types | ODbL 1.0 | Free | Yes, with attribution. Share-alike applies if we publicly distribute a *derived database* | **SIGN-OFF** S-05 |
-| Microsoft Global ML Building Footprints | Fill gaps in footprints | ODbL 1.0 | Free | As OSM | **SIGN-OFF** S-05 |
-| HM Land Registry INSPIRE Index Polygons | Plots, gardens, boundaries | INSPIRE / OGL-style terms with OS rights reserved | Free | Unclear for shipping derived geometry | **SIGN-OFF** S-06 |
-| Mapillary street imagery | Facade analysis only (never shipped) | Images CC BY-SA 4.0; API terms | Free | Deriving facts is likely fine. Shipping images or textures is not | **SIGN-OFF** S-07 |
+| OpenStreetMap | Road detail (lanes, one-way, crossings), POIs, shop types | ODbL 1.0 | Free | Yes, with attribution. Share-alike applies if we publicly distribute a *derived database* | Approved |
+| Microsoft Global ML Building Footprints | Fill gaps in footprints | ODbL 1.0 | Free | As OSM | Approved |
+| HM Land Registry INSPIRE Index Polygons | Plots, gardens, boundaries | INSPIRE / OGL-style terms with OS rights reserved | Free | Unclear for shipping derived geometry | Approved (non-commercial) |
+| Mapillary street imagery | Facade analysis only (never shipped) | Images CC BY-SA 4.0; API terms | Free | Deriving facts is likely fine. Shipping images or textures is not | Approved (non-commercial) |
 | Your own 360° capture drives | Facades, textures, hero reference | Yours (see privacy note) | Camera ~£400–600 | Yes, after face and plate blurring | **SIGN-OFF** S-08 |
 | Getmapping or Bluesky aerial orthophoto (12.5–25 cm) | Ground detail, in-game map | Commercial licence, quote needed | Likely £ thousands for about 103 km² with game-distribution rights | Only with explicit distribution rights | **SIGN-OFF** S-09 |
 | Google Maps / 3D Tiles / Street View | Human reference only | Google ToS | — | **Never** in assets, never scraped by pipeline | Blocked |
@@ -62,7 +65,7 @@ vector data, which also looks more like a real MDT map.
   derived JSON is kept.
 - **Matching:** project the camera pose onto footprint edges and pick the facade edge each image sees best (angle and distance).
 - **Models:** Segment Anything 2 (Apache 2.0) for region proposals, plus a facade-parsing segmenter fine-tuned on
-  CMP Facade / ECP style labels (check each dataset's licence for commercial fine-tuning; **SIGN-OFF** S-10) for
+  CMP Facade / ECP style labels (research licences are fine while non-commercial, S-10 approved) for
   classes: wall, window, door, shopfront, balcony, roof. Colour and material: k-means on wall pixels, plus a small
   classifier (brick red, brick buff, pebbledash, render, stone, cladding).
 - **Anonymisation:** faces and plates blurred before anything is stored (`EgoBlur`-style model; check its licence).
@@ -70,8 +73,8 @@ vector data, which also looks more like a real MDT map.
 
 ## Stage E — Procedural build (Houdini)
 
-- **Houdini Indie** (about £230/year, revenue cap about $100k) or Houdini FX if above that. Houdini Engine for UE is
-  included with Indie. **SIGN-OFF** S-03 (paid tool).
+- **Houdini Apprentice** (free, non-commercial; approved S-03), with Houdini Engine for UE. Files are `.hipnc`/`.hdanc`.
+  Keep HDAs simple and well documented: if the project ever goes commercial, they must be rebuilt in Indie/FX.
 - The HDA reads footprint + height + roof + facade JSON and picks a kit archetype (red-brick terrace, semi, pebbledash,
   render, 1960s council, stone/brick mill, modern retail, shopfront). It lays out bays, places windows and doors from the
   facade record (or the archetype default), and outputs Nanite meshes as instanced kit parts. LODs are automatic through

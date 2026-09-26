@@ -76,3 +76,11 @@ def test_build_terrain_end_to_end(tmp_path):
 def test_licence_gate_blocks_unapproved_source(tmp_path):
     with pytest.raises(SourceNotApproved):
         build_terrain(make_cfg(status="pending_signoff"), "z", [], tmp_path)
+
+
+def test_commercial_mode_blocks_non_commercial_sources(tmp_path):
+    cfg = make_cfg()
+    cfg.sources["ea_lidar_dtm_1m"]["commercial_ok"] = False
+    from dataclasses import replace
+    with pytest.raises(SourceNotApproved):
+        build_terrain(replace(cfg, project_mode="commercial"), "z", [], tmp_path)
