@@ -1,0 +1,10 @@
+{
+  "kind": "person",
+  "id": "pnc_0000000000007712",
+  "npc_id": "npc_00000000000b7712",
+  "pnc_id": "09/0412345K",
+  "warning_signals": [ { "code": "VI", "text": "Violent towards partner", "added": "2023-02-01" }, { "code": "DR", "text": "Cocaine user", "added": "2024-06-15" } ],
+  "wanted": [],
+  "convictions": [ { "offence": "Assault by beating", "date": "2023-03-20", "disposal": "Community order 12 months" } ],
+  "orders": [ { "type": "Non-molestation order", "conditions": ["Not to contact the protected party directly or indirectly"], "expires": "2027-01-01" } ]
+}

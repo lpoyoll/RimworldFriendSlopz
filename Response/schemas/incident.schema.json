@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://response.game/schemas/incident.schema.json",
+  "title": "Incident (Storm-style log)",
+  "description": "A runtime incident. Saved in the save game and exported for debrief, complaints and court.",
+  "type": "object",
+  "required": ["id", "reference", "call_type", "grade", "status", "created_at", "location", "log"],
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "reference": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{6}$", "description": "Log number: 4-digit sequence + ddMMyy, e.g. 0412-261026." },
+    "call_type": { "type": "string" },
+    "grade": { "$ref": "common.schema.json#/$defs/grade" },
+    "grade_history": {
+      "type": "array",
+      "items": { "type": "object", "required": ["at", "grade", "by"], "properties": { "at": { "$ref": "common.schema.json#/$defs/gameTime" }, "grade": { "$ref": "common.schema.json#/$defs/grade" }, "by": { "type": "string" }, "reason": { "type": "string" } } }
+    },
+    "status": { "type": "string", "enum": ["received", "graded", "queued", "assigned", "en_route", "at_scene", "resolved", "closed", "cancelled"] },
+    "created_at": { "$ref": "common.schema.json#/$defs/gameTime" },
+    "target_attend_by": { "$ref": "common.schema.json#/$defs/gameTime" },
+    "source": { "type": "string", "enum": ["999", "101", "online", "self_generated", "partner_agency", "alarm", "anpr"] },
+    "caller": { "type": "object", "properties": { "npc_id": { "$ref": "common.schema.json#/$defs/id" }, "anonymous": { "type": "boolean" }, "relationship": { "type": "string" } } },
+    "location": {
+      "type": "object", "required": ["bng"],
+      "properties": { "bng": { "$ref": "common.schema.json#/$defs/bng" }, "address_id": { "$ref": "common.schema.json#/$defs/id" }, "description": { "type": "string" }, "beat": { "type": "string" } }
+    },
+    "detail_flags": { "type": "array", "items": { "type": "string" } },
+    "subjects": { "type": "array", "items": { "type": "object", "required": ["npc_id", "role"], "properties": { "npc_id": { "$ref": "common.schema.json#/$defs/id" }, "role": { "type": "string", "enum": ["suspect", "victim", "witness", "vulnerable_person", "missing_person", "caller"] } } } },
+    "risk": { "type": "object", "properties": { "method": { "type": "string" }, "level": { "type": "string", "enum": ["standard", "medium", "high"] }, "answers": { "type": "object" } } },
+    "assigned_units": { "type": "array", "items": { "type": "string", "description": "Call sign, e.g. TA21." } },
+    "linked_incidents": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" } },
+    "log": {
+      "type": "array",
+      "items": {
+        "type": "object", "required": ["at", "author", "kind", "text"],
+        "properties": {
+          "at": { "$ref": "common.schema.json#/$defs/gameTime" },
+          "author": { "type": "string", "description": "Call sign, operator ID or SYSTEM." },
+          "kind": { "type": "string", "enum": ["narrative", "status", "grade", "assignment", "risk", "result", "system"] },
+          "text": { "type": "string" }
+        }
+      }
+    },
+    "closing_code": { "type": "string" },
+    "crime_numbers": { "type": "array", "items": { "type": "string" } },
+    "sensitivity": { "$ref": "common.schema.json#/$defs/sensitivity" }
+  }
+}

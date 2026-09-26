@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://response.game/schemas/call_type.schema.json",
+  "title": "Call type definition",
+  "description": "A kind of call the control room can receive. Designers edit these; one file may hold many.",
+  "type": "object",
+  "required": ["call_types"],
+  "properties": {
+    "call_types": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "display_name", "opening_code", "default_grade", "base_weight", "grading_rules"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9_]+$" },
+          "display_name": { "type": "string" },
+          "opening_code": { "type": "string", "description": "Storm-style opening category code, e.g. CONCERN, DOMESTIC, ASB." },
+          "tag": { "$ref": "common.schema.json#/$defs/tag" },
+          "default_grade": { "$ref": "common.schema.json#/$defs/grade" },
+          "base_weight": { "type": "number", "minimum": 0, "description": "Relative frequency before time/area/weather modifiers." },
+          "hourly_modifier": { "type": "array", "items": { "type": "number", "minimum": 0 }, "minItems": 24, "maxItems": 24 },
+          "weekend_modifier": { "type": "number", "minimum": 0, "default": 1 },
+          "rain_modifier": { "type": "number", "minimum": 0, "default": 1 },
+          "grading_rules": {
+            "type": "array",
+            "description": "Evaluated in order; first match sets the grade. Conditions are call-detail flags.",
+            "items": {
+              "type": "object", "required": ["if_any", "grade"],
+              "properties": {
+                "if_any": { "type": "array", "items": { "type": "string" } },
+                "grade": { "$ref": "common.schema.json#/$defs/grade" },
+                "reason": { "type": "string" }
+              }
+            }
+          },
+          "detail_flags": {
+            "type": "array", "description": "Flags the caller may report, with probability.",
+            "items": { "type": "object", "required": ["flag", "p"], "properties": { "flag": { "type": "string" }, "p": { "type": "number", "minimum": 0, "maximum": 1 } } }
+          },
+          "min_units": { "type": "integer", "minimum": 0, "default": 1 },
+          "required_skills": { "type": "array", "items": { "type": "string" } },
+          "risk_assessment": { "type": "string", "enum": ["none", "DASH", "missing_person", "THRIVE"], "default": "THRIVE" },
+          "sensitivity": { "$ref": "common.schema.json#/$defs/sensitivity" },
+          "likely_offences": { "type": "array", "items": { "type": "string" } },
+          "scenario_templates": { "type": "array", "items": { "type": "string" }, "description": "StateTree/scenario asset IDs that can play this call." }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

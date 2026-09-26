@@ -1,0 +1,14 @@
+{
+  "id": "npc_00000000000b7712",
+  "seed": 750354,
+  "identity": { "forenames": ["Daniel", "James"], "surname": "Hartley", "dob": "1991-04-12", "sex": "M", "height_cm": 180, "build": "medium", "marks": ["tattoo left forearm: 'Lily'"] },
+  "home_address_id": "adr_0000000000031c2e",
+  "household": [ { "npc_id": "npc_00000000000b7711", "relationship": "partner" } ],
+  "routine_archetype": "shift_worker_days",
+  "traits": { "compliance": 0.35, "hostility_to_police": 0.6, "offending_propensity": 0.4, "intoxication_tendency": 0.7, "honesty": 0.3 },
+  "vulnerabilities": ["substance_dependency"],
+  "vehicles": ["veh_0000000000009a01"],
+  "pnc_record_id": "pnc_0000000000007712",
+  "informant": false,
+  "memory": []
+}

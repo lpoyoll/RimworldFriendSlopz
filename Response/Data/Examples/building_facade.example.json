@@ -1,0 +1,14 @@
+{
+  "footprint_id": "fp_4f1c0e9b2a7d3e51",
+  "zone": "ashton_centre",
+  "sources": ["os_openmap_local", "ea_lidar_dtm_1m", "ea_lidar_dsm_1m", "own_capture"],
+  "footprint": { "crs": "EPSG:27700", "outer": [[394200.0, 398860.0], [394205.2, 398860.0], [394205.2, 398869.5], [394200.0, 398869.5]] },
+  "massing": { "ground_z": 118.4, "eaves_height_m": 5.6, "ridge_height_m": 8.1, "storeys": 2, "roof": { "type": "gable", "ridge_bearing_deg": 90, "material": "slate", "confidence": 0.88 } },
+  "archetype": { "id": "terrace_redbrick", "confidence": 0.91 },
+  "facades": [
+    { "edge_index": 0, "street_facing": true, "wall_material": "brick_red", "wall_colour_srgb": "#8a4a38",
+      "bays": [ { "width_m": 1.1, "ground": "door", "upper": ["window"] }, { "width_m": 2.4, "ground": "bay_window", "upper": ["window"] } ],
+      "observations": 6, "confidence": 0.82 }
+  ],
+  "qa": { "reviewed": false, "flags": [] }
+}

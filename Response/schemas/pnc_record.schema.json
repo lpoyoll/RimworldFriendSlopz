@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://response.game/schemas/pnc_record.schema.json",
+  "title": "PNC-style record (person or vehicle)",
+  "description": "Fictional PNC-style record. Person and vehicle records share a file; 'kind' selects the shape.",
+  "oneOf": [ { "$ref": "#/$defs/person" }, { "$ref": "#/$defs/vehicle" } ],
+  "$defs": {
+    "marker": {
+      "type": "object", "required": ["code", "text"],
+      "properties": {
+        "code": { "type": "string", "enum": ["VI", "WE", "FI", "ES", "DR", "SU", "SH", "MH", "CO", "AT", "IM", "OP"], "description": "Warning signals: violent, weapons, firearms, escaper, drugs, suicidal, self-harm, mental health, contagious, alleges, impersonates, ailment/other." },
+        "text": { "type": "string" },
+        "added": { "type": "string", "format": "date" }
+      }
+    },
+    "person": {
+      "type": "object", "required": ["kind", "id", "npc_id", "pnc_id"],
+      "properties": {
+        "kind": { "const": "person" },
+        "id": { "$ref": "common.schema.json#/$defs/id" },
+        "npc_id": { "$ref": "common.schema.json#/$defs/id" },
+        "pnc_id": { "type": "string", "pattern": "^[0-9]{2}/[0-9]{7}[A-Z]$", "description": "Fictional format YY/NNNNNNNL." },
+        "warning_signals": { "type": "array", "items": { "$ref": "#/$defs/marker" } },
+        "wanted": { "type": "array", "items": { "type": "object", "required": ["offence", "force", "since"], "properties": { "offence": { "type": "string" }, "force": { "type": "string" }, "since": { "type": "string", "format": "date" }, "power": { "type": "string", "description": "e.g. 'arrest', 'recall to prison', 'warrant not backed for bail'" } } } },
+        "missing": { "type": "object", "properties": { "since": { "type": "string", "format": "date-time" }, "risk": { "type": "string", "enum": ["low", "medium", "high"] } } },
+        "disqualified_driver": { "type": "object", "properties": { "until": { "type": "string", "format": "date" }, "court": { "type": "string" } } },
+        "convictions": { "type": "array", "items": { "type": "object", "required": ["offence", "date", "disposal"], "properties": { "offence": { "type": "string" }, "date": { "type": "string", "format": "date" }, "disposal": { "type": "string" } } } },
+        "bail_conditions": { "type": "array", "items": { "type": "string" } },
+        "orders": { "type": "array", "items": { "type": "object", "properties": { "type": { "type": "string", "description": "e.g. DVPO, non-molestation, CBO, SHPO" }, "conditions": { "type": "array", "items": { "type": "string" } }, "expires": { "type": "string", "format": "date" } } } },
+        "pnd_intel": { "type": "array", "items": { "type": "object", "properties": { "grading": { "type": "string", "description": "3x5x2 grading, e.g. B/2/P" }, "text": { "type": "string" }, "date": { "type": "string", "format": "date" } } } }
+      }
+    },
+    "vehicle": {
+      "type": "object", "required": ["kind", "id", "vrm", "make", "model", "colour"],
+      "properties": {
+        "kind": { "const": "vehicle" },
+        "id": { "$ref": "common.schema.json#/$defs/id" },
+        "vrm": { "type": "string", "pattern": "^[A-Z]{2}[0-9]{2} ?[A-Z]{3}$", "description": "Current-format UK plate. Generated plates avoid real issued combinations where possible." },
+        "make": { "type": "string" }, "model": { "type": "string" }, "colour": { "type": "string" },
+        "registered_keeper_npc": { "$ref": "common.schema.json#/$defs/id" },
+        "insured": { "type": "object", "properties": { "status": { "type": "boolean" }, "named_drivers": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" } }, "policy_type": { "type": "string" } } },
+        "mot": { "type": "object", "properties": { "valid": { "type": "boolean" }, "expires": { "type": "string", "format": "date" } } },
+        "taxed": { "type": "boolean" },
+        "reports": { "type": "array", "items": { "type": "object", "properties": { "type": { "type": "string", "enum": ["stolen", "lost_stolen_plates", "of_interest", "sos", "insurance_writeoff"] }, "text": { "type": "string" }, "date": { "type": "string", "format": "date" } } } },
+        "anpr_markers": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

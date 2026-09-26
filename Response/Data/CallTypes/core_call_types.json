@@ -1,0 +1,833 @@
+{
+  "call_types": [
+    {
+      "id": "concern_for_welfare",
+      "display_name": "Concern for welfare",
+      "opening_code": "CONCERN",
+      "tag": "Call.Welfare.Concern",
+      "default_grade": "G2",
+      "base_weight": 16,
+      "hourly_modifier": [
+        0.4,
+        0.3,
+        0.25,
+        0.2,
+        0.2,
+        0.3,
+        0.5,
+        0.8,
+        1.0,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.1,
+        1.2,
+        1.3,
+        1.3,
+        1.3,
+        1.2,
+        1.2,
+        1.1,
+        1.0,
+        0.8,
+        0.6
+      ],
+      "rain_modifier": 1.05,
+      "grading_rules": [
+        {
+          "if_any": [
+            "not_breathing",
+            "threat_to_life",
+            "fall_unresponsive"
+          ],
+          "grade": "G1",
+          "reason": "Risk to life"
+        },
+        {
+          "if_any": [
+            "no_contact_24h",
+            "vulnerable_adult"
+          ],
+          "grade": "G2"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "vulnerable_adult",
+          "p": 0.5
+        },
+        {
+          "flag": "no_contact_24h",
+          "p": 0.4
+        },
+        {
+          "flag": "fall_unresponsive",
+          "p": 0.08
+        }
+      ],
+      "risk_assessment": "THRIVE",
+      "sensitivity": "none",
+      "min_units": 1,
+      "scenario_templates": [
+        "scn_welfare_elderly_fall",
+        "scn_welfare_no_answer"
+      ]
+    },
+    {
+      "id": "mental_health_crisis",
+      "display_name": "Mental health crisis",
+      "opening_code": "MENTAL",
+      "tag": "Call.Welfare.MentalHealth",
+      "default_grade": "G2",
+      "base_weight": 12,
+      "hourly_modifier": [
+        1.6,
+        1.7,
+        1.6,
+        1.3,
+        0.9,
+        0.5,
+        0.3,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.8,
+        0.8,
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.6,
+        1.7
+      ],
+      "grading_rules": [
+        {
+          "if_any": [
+            "on_bridge_or_height",
+            "weapon",
+            "attempt_in_progress"
+          ],
+          "grade": "G1",
+          "reason": "Immediate risk of harm"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "on_bridge_or_height",
+          "p": 0.12
+        },
+        {
+          "flag": "weapon",
+          "p": 0.1
+        },
+        {
+          "flag": "attempt_in_progress",
+          "p": 0.08
+        },
+        {
+          "flag": "public_place",
+          "p": 0.5
+        }
+      ],
+      "risk_assessment": "THRIVE",
+      "sensitivity": "suicide_self_harm",
+      "min_units": 2,
+      "likely_offences": [],
+      "scenario_templates": [
+        "scn_s136_public_place",
+        "scn_mh_home_crisis"
+      ]
+    },
+    {
+      "id": "missing_person",
+      "display_name": "Missing person",
+      "opening_code": "MISPER",
+      "tag": "Call.Welfare.Missing",
+      "default_grade": "G2",
+      "base_weight": 8,
+      "hourly_modifier": [
+        0.9,
+        0.7,
+        0.5,
+        0.4,
+        0.3,
+        0.3,
+        0.4,
+        0.6,
+        0.8,
+        0.9,
+        1.0,
+        1.0,
+        1.1,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.5,
+        1.5,
+        1.4,
+        1.3,
+        1.2,
+        1.1
+      ],
+      "grading_rules": [
+        {
+          "if_any": [
+            "child_under_12",
+            "high_risk",
+            "suicidal"
+          ],
+          "grade": "G1",
+          "reason": "High-risk missing person"
+        },
+        {
+          "if_any": [
+            "repeat_missing_looked_after"
+          ],
+          "grade": "G2"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "child_under_12",
+          "p": 0.07
+        },
+        {
+          "flag": "repeat_missing_looked_after",
+          "p": 0.35
+        },
+        {
+          "flag": "suicidal",
+          "p": 0.1
+        },
+        {
+          "flag": "high_risk",
+          "p": 0.12
+        }
+      ],
+      "risk_assessment": "missing_person",
+      "sensitivity": "child_protection",
+      "min_units": 1,
+      "scenario_templates": [
+        "scn_misper_care_home_teen",
+        "scn_misper_dementia"
+      ]
+    },
+    {
+      "id": "domestic_incident",
+      "display_name": "Domestic incident",
+      "opening_code": "DOMESTIC",
+      "tag": "Call.Domestic",
+      "default_grade": "G1",
+      "base_weight": 14,
+      "hourly_modifier": [
+        0.9,
+        0.7,
+        0.5,
+        0.4,
+        0.3,
+        0.3,
+        0.4,
+        0.6,
+        0.8,
+        0.9,
+        1.0,
+        1.0,
+        1.1,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.5,
+        1.5,
+        1.4,
+        1.3,
+        1.2,
+        1.1
+      ],
+      "weekend_modifier": 1.3,
+      "grading_rules": [
+        {
+          "if_any": [
+            "ongoing",
+            "injuries",
+            "weapon",
+            "children_present"
+          ],
+          "grade": "G1",
+          "reason": "Ongoing domestic, risk of harm"
+        },
+        {
+          "if_any": [
+            "historic_report",
+            "suspect_left"
+          ],
+          "grade": "G2"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "ongoing",
+          "p": 0.55
+        },
+        {
+          "flag": "injuries",
+          "p": 0.3
+        },
+        {
+          "flag": "children_present",
+          "p": 0.35
+        },
+        {
+          "flag": "weapon",
+          "p": 0.07
+        },
+        {
+          "flag": "suspect_left",
+          "p": 0.35
+        },
+        {
+          "flag": "historic_report",
+          "p": 0.1
+        }
+      ],
+      "risk_assessment": "DASH",
+      "sensitivity": "domestic_abuse",
+      "min_units": 2,
+      "likely_offences": [
+        "common_assault",
+        "abh",
+        "criminal_damage",
+        "controlling_coercive_behaviour",
+        "breach_of_order"
+      ],
+      "scenario_templates": [
+        "scn_dv_ongoing_argument",
+        "scn_dv_breach_of_order"
+      ]
+    },
+    {
+      "id": "asb",
+      "display_name": "Anti-social behaviour",
+      "opening_code": "ASB",
+      "tag": "Call.ASB",
+      "default_grade": "G3",
+      "base_weight": 14,
+      "hourly_modifier": [
+        0.9,
+        0.7,
+        0.5,
+        0.4,
+        0.3,
+        0.3,
+        0.4,
+        0.6,
+        0.8,
+        0.9,
+        1.0,
+        1.0,
+        1.1,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.5,
+        1.5,
+        1.4,
+        1.3,
+        1.2,
+        1.1
+      ],
+      "weekend_modifier": 1.25,
+      "rain_modifier": 0.6,
+      "grading_rules": [
+        {
+          "if_any": [
+            "fighting",
+            "weapon"
+          ],
+          "grade": "G1"
+        },
+        {
+          "if_any": [
+            "large_group",
+            "repeat_location",
+            "vulnerable_victim"
+          ],
+          "grade": "G2"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "large_group",
+          "p": 0.3
+        },
+        {
+          "flag": "repeat_location",
+          "p": 0.45
+        },
+        {
+          "flag": "vulnerable_victim",
+          "p": 0.15
+        },
+        {
+          "flag": "fighting",
+          "p": 0.05
+        }
+      ],
+      "risk_assessment": "THRIVE",
+      "sensitivity": "none",
+      "min_units": 1,
+      "likely_offences": [
+        "public_order_s5",
+        "criminal_damage"
+      ],
+      "scenario_templates": [
+        "scn_asb_youths_precinct",
+        "scn_asb_neighbour_noise"
+      ]
+    },
+    {
+      "id": "shoplifting",
+      "display_name": "Shoplifting (detained)",
+      "opening_code": "THEFT",
+      "tag": "Call.Crime.Shoplifting",
+      "default_grade": "G2",
+      "base_weight": 9,
+      "hourly_modifier": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0.1,
+        0.4,
+        0.9,
+        1.3,
+        1.5,
+        1.6,
+        1.6,
+        1.6,
+        1.7,
+        1.7,
+        1.6,
+        1.4,
+        1.1,
+        0.8,
+        0.5,
+        0.3,
+        0.1,
+        0
+      ],
+      "rain_modifier": 1.0,
+      "grading_rules": [
+        {
+          "if_any": [
+            "detained_violent",
+            "weapon"
+          ],
+          "grade": "G1"
+        },
+        {
+          "if_any": [
+            "detained_by_security"
+          ],
+          "grade": "G2"
+        },
+        {
+          "if_any": [
+            "offender_left"
+          ],
+          "grade": "G3"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "detained_by_security",
+          "p": 0.6
+        },
+        {
+          "flag": "detained_violent",
+          "p": 0.1
+        },
+        {
+          "flag": "offender_left",
+          "p": 0.35
+        }
+      ],
+      "risk_assessment": "none",
+      "sensitivity": "none",
+      "min_units": 1,
+      "likely_offences": [
+        "theft_shop",
+        "robbery"
+      ],
+      "scenario_templates": [
+        "scn_shoplift_supermarket_detained"
+      ]
+    },
+    {
+      "id": "rtc",
+      "display_name": "Road traffic collision",
+      "opening_code": "RTC",
+      "tag": "Call.Roads.RTC",
+      "default_grade": "G2",
+      "base_weight": 7,
+      "hourly_modifier": [
+        0.5,
+        0.4,
+        0.3,
+        0.3,
+        0.4,
+        0.6,
+        1.0,
+        1.8,
+        1.9,
+        1.1,
+        0.9,
+        0.9,
+        1.0,
+        1.0,
+        1.1,
+        1.5,
+        1.9,
+        1.8,
+        1.3,
+        1.0,
+        0.9,
+        0.8,
+        0.7,
+        0.6
+      ],
+      "rain_modifier": 1.6,
+      "grading_rules": [
+        {
+          "if_any": [
+            "injury",
+            "road_blocked",
+            "persons_trapped",
+            "fail_to_stop"
+          ],
+          "grade": "G1"
+        },
+        {
+          "if_any": [
+            "damage_only_obstruction"
+          ],
+          "grade": "G2"
+        },
+        {
+          "if_any": [
+            "damage_only_details_exchanged"
+          ],
+          "grade": "G4"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "injury",
+          "p": 0.3
+        },
+        {
+          "flag": "road_blocked",
+          "p": 0.3
+        },
+        {
+          "flag": "persons_trapped",
+          "p": 0.04
+        },
+        {
+          "flag": "fail_to_stop",
+          "p": 0.12
+        },
+        {
+          "flag": "damage_only_obstruction",
+          "p": 0.3
+        },
+        {
+          "flag": "damage_only_details_exchanged",
+          "p": 0.2
+        }
+      ],
+      "risk_assessment": "none",
+      "sensitivity": "none",
+      "min_units": 1,
+      "likely_offences": [
+        "drink_drive",
+        "careless_driving",
+        "fail_to_stop",
+        "no_insurance"
+      ],
+      "scenario_templates": [
+        "scn_rtc_junction_injury"
+      ]
+    },
+    {
+      "id": "burglary_residential",
+      "display_name": "Burglary (residential)",
+      "opening_code": "BURGLARY",
+      "tag": "Call.Crime.Burglary",
+      "default_grade": "G2",
+      "base_weight": 5,
+      "hourly_modifier": [
+        1.6,
+        1.7,
+        1.6,
+        1.3,
+        0.9,
+        0.5,
+        0.3,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.8,
+        0.8,
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.6,
+        1.7
+      ],
+      "rain_modifier": 0.8,
+      "grading_rules": [
+        {
+          "if_any": [
+            "in_progress",
+            "offenders_on_premises"
+          ],
+          "grade": "G1"
+        },
+        {
+          "if_any": [
+            "just_occurred"
+          ],
+          "grade": "G2"
+        },
+        {
+          "if_any": [
+            "discovered_later"
+          ],
+          "grade": "G3"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "in_progress",
+          "p": 0.15
+        },
+        {
+          "flag": "just_occurred",
+          "p": 0.35
+        },
+        {
+          "flag": "discovered_later",
+          "p": 0.5
+        }
+      ],
+      "risk_assessment": "none",
+      "sensitivity": "none",
+      "min_units": 2,
+      "likely_offences": [
+        "burglary_dwelling"
+      ],
+      "scenario_templates": [
+        "scn_burglary_in_progress",
+        "scn_burglary_found_next_morning"
+      ]
+    },
+    {
+      "id": "assault",
+      "display_name": "Assault / fight",
+      "opening_code": "VIOLENCE",
+      "tag": "Call.Crime.Assault",
+      "default_grade": "G1",
+      "base_weight": 9,
+      "hourly_modifier": [
+        1.6,
+        1.7,
+        1.6,
+        1.3,
+        0.9,
+        0.5,
+        0.3,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.8,
+        0.8,
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.6,
+        1.7
+      ],
+      "weekend_modifier": 1.6,
+      "rain_modifier": 0.7,
+      "grading_rules": [
+        {
+          "if_any": [
+            "ongoing",
+            "weapon",
+            "serious_injury"
+          ],
+          "grade": "G1"
+        },
+        {
+          "if_any": [
+            "offender_left",
+            "minor_injury"
+          ],
+          "grade": "G2"
+        },
+        {
+          "if_any": [
+            "historic_report"
+          ],
+          "grade": "G3"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "ongoing",
+          "p": 0.45
+        },
+        {
+          "flag": "weapon",
+          "p": 0.08
+        },
+        {
+          "flag": "serious_injury",
+          "p": 0.1
+        },
+        {
+          "flag": "offender_left",
+          "p": 0.4
+        },
+        {
+          "flag": "minor_injury",
+          "p": 0.4
+        },
+        {
+          "flag": "historic_report",
+          "p": 0.1
+        }
+      ],
+      "risk_assessment": "THRIVE",
+      "sensitivity": "none",
+      "min_units": 2,
+      "likely_offences": [
+        "common_assault",
+        "abh",
+        "gbh_s20",
+        "affray"
+      ],
+      "scenario_templates": [
+        "scn_nte_fight_taxi_rank"
+      ]
+    },
+    {
+      "id": "drink_drive",
+      "display_name": "Suspected drink/drug driver",
+      "opening_code": "ROADS",
+      "tag": "Call.Roads.DrinkDrive",
+      "default_grade": "G1",
+      "base_weight": 4,
+      "hourly_modifier": [
+        1.6,
+        1.7,
+        1.6,
+        1.3,
+        0.9,
+        0.5,
+        0.3,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.8,
+        0.8,
+        0.9,
+        1.0,
+        1.1,
+        1.2,
+        1.3,
+        1.4,
+        1.5,
+        1.6,
+        1.7
+      ],
+      "weekend_modifier": 1.5,
+      "grading_rules": [
+        {
+          "if_any": [
+            "vehicle_moving",
+            "driving_erratically"
+          ],
+          "grade": "G1"
+        },
+        {
+          "if_any": [
+            "vehicle_parked_driver_known"
+          ],
+          "grade": "G2"
+        }
+      ],
+      "detail_flags": [
+        {
+          "flag": "vehicle_moving",
+          "p": 0.6
+        },
+        {
+          "flag": "driving_erratically",
+          "p": 0.5
+        },
+        {
+          "flag": "vehicle_parked_driver_known",
+          "p": 0.3
+        },
+        {
+          "flag": "vrm_provided",
+          "p": 0.75
+        }
+      ],
+      "risk_assessment": "none",
+      "sensitivity": "none",
+      "min_units": 1,
+      "likely_offences": [
+        "drink_drive",
+        "drug_drive",
+        "no_insurance"
+      ],
+      "scenario_templates": [
+        "scn_dd_stop_after_report"
+      ]
+    }
+  ]
+}

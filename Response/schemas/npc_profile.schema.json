@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://response.game/schemas/npc_profile.schema.json",
+  "title": "NPC profile",
+  "description": "Persistent citizen. Generated from a seed on first need, then saved. Mass fragments hold the runtime subset.",
+  "type": "object",
+  "required": ["id", "seed", "identity", "home_address_id"],
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/id" },
+    "seed": { "type": "integer", "minimum": 0 },
+    "identity": {
+      "type": "object", "required": ["forenames", "surname", "dob", "sex"],
+      "properties": {
+        "forenames": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "surname": { "type": "string" },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "dob": { "type": "string", "format": "date" },
+        "sex": { "type": "string", "enum": ["M", "F", "X", "U"] },
+        "self_defined_ethnicity": { "type": "string", "description": "16+1 census code, used only for stop/search monitoring stats." },
+        "height_cm": { "type": "integer" },
+        "build": { "type": "string" },
+        "marks": { "type": "array", "items": { "type": "string" } },
+        "metahuman_preset": { "type": "string" }
+      }
+    },
+    "home_address_id": { "$ref": "common.schema.json#/$defs/id" },
+    "workplace_id": { "$ref": "common.schema.json#/$defs/id" },
+    "household": { "type": "array", "items": { "type": "object", "properties": { "npc_id": { "$ref": "common.schema.json#/$defs/id" }, "relationship": { "type": "string" } } } },
+    "routine_archetype": { "type": "string", "description": "StateTree routine ID, e.g. shift_worker_nights, student, retired." },
+    "traits": {
+      "type": "object", "description": "0-1 values that drive behaviour and dialogue.",
+      "properties": {
+        "compliance": { "type": "number", "minimum": 0, "maximum": 1 },
+        "hostility_to_police": { "type": "number", "minimum": 0, "maximum": 1 },
+        "offending_propensity": { "type": "number", "minimum": 0, "maximum": 1 },
+        "intoxication_tendency": { "type": "number", "minimum": 0, "maximum": 1 },
+        "honesty": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "vulnerabilities": { "type": "array", "items": { "type": "string", "enum": ["mental_health", "learning_disability", "substance_dependency", "elderly_frail", "child", "domestic_abuse_victim", "exploited", "homeless", "cuckooed"] } },
+    "vehicles": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/id" } },
+    "pnc_record_id": { "$ref": "common.schema.json#/$defs/id" },
+    "ocg_membership": { "type": "object", "properties": { "network_id": { "type": "string" }, "role": { "type": "string", "enum": ["head", "runner", "user", "enforcer", "facilitator", "victim"] } } },
+    "informant": { "type": "boolean", "default": false },
+    "memory": {
+      "type": "array", "description": "Past police contacts that change future behaviour and trust.",
+      "items": { "type": "object", "properties": { "incident_id": { "$ref": "common.schema.json#/$defs/id" }, "officer": { "type": "string" }, "outcome": { "type": "string" }, "fairness": { "type": "number", "minimum": -1, "maximum": 1 } } }
+    },
+    "injuries": { "type": "array", "items": { "type": "object", "properties": { "type": { "type": "string" }, "severity": { "type": "integer", "minimum": 1, "maximum": 5 }, "since": { "$ref": "common.schema.json#/$defs/gameTime" } } } }
+  }
+}

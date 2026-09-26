@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://response.game/schemas/common.schema.json",
+  "title": "Common definitions",
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z]{2,4}_[0-9a-f]{16}$", "description": "Stable entity ID: type prefix + 64-bit hex (e.g. npc_00a1b2c3d4e5f607)." },
+    "bng": {
+      "type": "object", "description": "British National Grid (EPSG:27700) position in metres.",
+      "required": ["e", "n"],
+      "properties": { "e": { "type": "number", "minimum": 0, "maximum": 700000 }, "n": { "type": "number", "minimum": 0, "maximum": 1300000 }, "z": { "type": "number" } },
+      "additionalProperties": false
+    },
+    "gameTime": { "type": "string", "format": "date-time", "description": "In-game ISO 8601 timestamp (Europe/London)." },
+    "tag": { "type": "string", "pattern": "^[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*$", "description": "UE GameplayTag." },
+    "grade": { "type": "string", "enum": ["G1", "G2", "G3", "G4"] },
+    "sensitivity": { "type": "string", "enum": ["none", "domestic_abuse", "child_protection", "suicide_self_harm", "sexual_offence", "death"] }
+  }
+}
