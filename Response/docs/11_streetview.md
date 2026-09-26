@@ -62,3 +62,19 @@ Every facade records `basis` and `confidence`.
 
 Known limits: pose error is the main source of misalignment. Tiny corner walls can still be picked, so confidence
 now scales with facade width. Material classes are coarse (no sandstone versus gritstone split yet).
+
+## Full run: Ashton centre (2026-09-26)
+![Henrietta Street with facades](img/henrietta_facades.png)
+
+803 facades matched; **374 observed** (107 views rejected as not a facade, 14 as occluded). All 4,034 street-facing
+facades now have a facade record: 374 observed, 412 from another side of the same building, 682 from the same street and
+type, 2,548 from the area average for the type, 18 from other tiers or type defaults.
+
+Observed wall materials: red brick 106, render 89, pebbledash 82, painted brick 51, stone 15, buff brick 13, cladding 10.
+
+### Lesson: fit the rhythm, don't copy detections
+Raw detections found about 0.14 openings per metre, against about 0.6–0.8 on a real terrace (small, oblique dashcam
+crops miss many windows), so walls looked blank. Facades now use a **pattern**. House types split into their known
+number of homes (from address counts), and detections vote on door side, flat or bay window, one or two upstairs
+windows, and shopfront; garages need detecting on at least a third of the homes. Flats, civic, retail and mills
+get a window grid spaced from the detections. Detections are cached, so re-fitting takes about 5 minutes instead of 25.
