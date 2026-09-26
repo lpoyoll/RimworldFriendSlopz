@@ -1,0 +1,8 @@
+# Stage A core (pure numpy path works for EA .asc tiles)
+numpy>=1.26
+# GeoTIFF input and non-BNG sources
+rasterio>=1.3
+pyproj>=3.6
+# Validation and tests
+jsonschema>=4.21
+pytest>=8

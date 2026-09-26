@@ -1,0 +1,43 @@
+{
+  "crs": "EPSG:27700",
+  "origin": {
+    "comment": "Fixed world origin: BNG point that maps to UE (0,0). Near Ashton town centre. Never change after M1 content exists.",
+    "e": 393000.0,
+    "n": 398000.0
+  },
+  "landscape": {
+    "resolution_m": 1.0,
+    "z_scale": 128.0,
+    "location_z_cm": 30000.0,
+    "tile_quads": 2016,
+    "comment": "z_scale 128 with location_z 300 m gives exactly 1 cm per height unit and a -27.68 m .. +627.67 m range (ODN)."
+  },
+  "zones": {
+    "ashton_centre": {
+      "comment": "Vertical slice: about 2 x 2 km around Ashton-under-Lyne town centre.",
+      "min_e": 392900.0,
+      "max_n": 399900.0,
+      "tiles_x": 1,
+      "tiles_y": 1
+    },
+    "tameside_full": {
+      "comment": "Whole borough plus margin, 9 x 9 tiles of 2016 m.",
+      "min_e": 385500.0,
+      "max_n": 406500.0,
+      "tiles_x": 9,
+      "tiles_y": 9
+    }
+  },
+  "sources": {
+    "ea_lidar_dtm_1m": { "licence": "OGL-3.0", "status": "approved", "attribution": "Contains Environment Agency information © Environment Agency and/or database right." },
+    "ea_lidar_dsm_1m": { "licence": "OGL-3.0", "status": "approved", "attribution": "Contains Environment Agency information © Environment Agency and/or database right." },
+    "os_openmap_local": { "licence": "OGL-3.0", "status": "approved", "attribution": "Contains OS data © Crown copyright and database right." },
+    "os_open_roads": { "licence": "OGL-3.0", "status": "approved", "attribution": "Contains OS data © Crown copyright and database right." },
+    "osm": { "licence": "ODbL-1.0", "status": "pending_signoff", "attribution": "© OpenStreetMap contributors" },
+    "ms_building_footprints": { "licence": "ODbL-1.0", "status": "pending_signoff", "attribution": "Microsoft Global ML Building Footprints" },
+    "hmlr_inspire": { "licence": "INSPIRE-HMLR", "status": "pending_signoff" },
+    "mapillary": { "licence": "CC-BY-SA-4.0", "status": "pending_signoff" },
+    "aerial_ortho": { "licence": "commercial", "status": "pending_signoff" },
+    "google": { "licence": "proprietary", "status": "blocked" }
+  }
+}
