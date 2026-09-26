@@ -86,6 +86,7 @@ function meshFrom(d, opts = {}) {
 }
 
 meshFrom(S.walls);
+if (S.openings && S.openings.pos.length) meshFrom(S.openings, { polygonOffset: true, polygonOffsetFactor: -2 }).castShadow = false;
 meshFrom(S.roofs);
 const roads = meshFrom(S.roads, { polygonOffset: true, polygonOffsetFactor: -1 });
 roads.castShadow = false;

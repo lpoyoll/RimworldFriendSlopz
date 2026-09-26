@@ -66,7 +66,7 @@ def build_scene(buildings: list[dict], roads: dict, dtm: Heightfield, dsm: Heigh
                "h": [round(float(v - base), 2) for v in H.ravel()]}
 
     # ---- buildings
-    walls, roofs = _Mesh(), _Mesh()
+    walls, roofs, openings = _Mesh(), _Mesh(), _Mesh()
     import shapely
     from shapely.geometry import Polygon, box
 
@@ -81,13 +81,15 @@ def build_scene(buildings: list[dict], roads: dict, dtm: Heightfield, dsm: Heigh
         g0 = m.get("ground_z_min", m["ground_z"]) - 0.2
         he = m["ground_z"] + m["eaves_height_m"]
         hr = m["ground_z"] + max(m.get("ridge_height_m") or m["eaves_height_m"], m["eaves_height_m"])
-        wc = WALL_COLOURS.get(b["archetype"]["id"], WALL_COLOURS["other"])
+        wc = _building_wall_colour(b) or WALL_COLOURS.get(b["archetype"]["id"], WALL_COLOURS["other"])
         ring = list(poly.exterior.coords)
         for (x1, y1), (x2, y2) in zip(ring[:-1], ring[1:]):
             # shade walls by facing so the massing reads in a flat-lit render
             nx, ny = (y2 - y1), -(x2 - x1)
             shade = 0.78 + 0.22 * ((nx * 0.5 - ny * 0.8) / (math.hypot(nx, ny) or 1))
             walls.quad(P(x1, y1, g0), P(x2, y2, g0), P(x2, y2, he), P(x1, y1, he), _rgb(wc, shade))
+        if b.get("facades"):
+            _facade_openings(openings, poly, b, g0, m, P)
         if m["roof"].get("type") == "complex" and dsm is not None:
             _lidar_roof(roofs, poly, dsm, he, P, hr)
         else:
@@ -165,9 +167,78 @@ def build_scene(buildings: list[dict], roads: dict, dtm: Heightfield, dsm: Heigh
             x, y, z = min(label_pts[name], key=lambda q: abs(math.hypot(q[0] - ce, q[1] - cn) - 35.0))
             labels_out.append({"text": name, "pos": list(P(x, y, z + 4))})
 
-    return {"terrain": terrain, "walls": walls.dump(), "roofs": roofs.dump(), "party": lines, "roads": road_mesh.dump(),
+    return {"terrain": terrain, "walls": walls.dump(), "roofs": roofs.dump(), "openings": openings.dump(), "party": lines, "roads": road_mesh.dump(),
             "pavements": pave_mesh.dump(), "marks": marks, "trees": trees, "labels": labels_out,
             "centre_bng": [ce, cn], "base_odn": base}
+
+
+GLASS = "#2c3642"
+SHOP_GLASS = "#46525e"
+FRAME = "#e9e6df"
+STOREY_M = 2.7
+
+
+def _building_wall_colour(b: dict) -> str | None:
+    cols = [f["wall_colour_srgb"] for f in b.get("facades", []) if f.get("wall_colour_srgb")]
+    if not cols:
+        return None
+    arr = np.array([[int(c[i:i + 2], 16) for i in (1, 3, 5)] for c in cols])
+    return "#{:02x}{:02x}{:02x}".format(*np.median(arr, axis=0).astype(int))
+
+
+def _facade_openings(mesh: _Mesh, poly, b: dict, g0: float, m: dict, P):
+    """Lay each facade's bays along its footprint edge: windows, doors, shopfronts as slightly proud quads."""
+    import shapely
+
+    ring = list(shapely.geometry.polygon.orient(poly, 1.0).exterior.coords)
+    ground = m["ground_z"]
+    eaves = ground + m["eaves_height_m"]
+    for f in b["facades"]:
+        i = f["edge_index"]
+        if i + 1 >= len(ring):
+            continue
+        (x1, y1), (x2, y2) = ring[i], ring[i + 1]
+        L = math.hypot(x2 - x1, y2 - y1)
+        if L < 1.0:
+            continue
+        ux, uy = (x2 - x1) / L, (y2 - y1) / L
+        nx, ny = uy, -ux  # outward normal of a CCW ring
+        off = 0.04
+
+        def rect(s0, s1, z0, z1, col):
+            ax, ay = x1 + ux * s0 + nx * off, y1 + uy * s0 + ny * off
+            bx, by = x1 + ux * s1 + nx * off, y1 + uy * s1 + ny * off
+            mesh.quad(P(ax, ay, z0), P(bx, by, z0), P(bx, by, z1), P(ax, ay, z1), _rgb(col))
+
+        door_col = f.get("door_colour_srgb", "#3a2f2a")
+        bays = f.get("bays") or []
+        total = sum(bb["width_m"] for bb in bays) or L
+        scale = L / total
+        s = 0.0
+        for bay in bays:
+            w = bay["width_m"] * scale
+            c = s + w / 2
+            g = bay.get("ground", "window")
+            if g == "door":
+                rect(c - 0.5, c + 0.5, ground, ground + 2.1, door_col)
+                rect(c - 0.5, c + 0.5, ground + 2.15, ground + 2.45, GLASS)  # fanlight
+            elif g == "shopfront":
+                rect(s + 0.2, s + w - 0.2, ground + 0.3, ground + 2.9, SHOP_GLASS)
+                rect(s + 0.1, s + w - 0.1, ground + 3.0, ground + 3.6, "#1f2a33")  # fascia sign band
+            elif g == "garage":
+                rect(c - 1.2, c + 1.2, ground, ground + 2.1, "#d8d6d0")
+            elif g == "bay_window":
+                rect(c - 1.0, c + 1.0, ground + 0.6, ground + 2.2, FRAME)
+                rect(c - 0.9, c + 0.9, ground + 0.7, ground + 2.1, GLASS)
+            elif g == "window":
+                rect(c - 0.65, c + 0.65, ground + 0.9, ground + 2.2, FRAME)
+                rect(c - 0.58, c + 0.58, ground + 0.97, ground + 2.13, GLASS)
+            for k, up in enumerate(bay.get("upper", []), start=1):
+                sill = ground + STOREY_M * k + 0.9
+                if up == "window" and sill + 1.3 < eaves + 0.2:
+                    rect(c - 0.55, c + 0.55, sill, sill + 1.3, FRAME)
+                    rect(c - 0.48, c + 0.48, sill + 0.07, sill + 1.23, GLASS)
+            s += w
 
 
 def _ribbon(mesh: _Mesh, pts, off_a: float, off_b: float, lift: float, rgb, P):

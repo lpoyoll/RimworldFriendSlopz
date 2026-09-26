@@ -258,6 +258,31 @@
             "type": "number",
             "minimum": 0,
             "maximum": 1
+          },
+          "door_colour_srgb": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "basis": {
+            "type": "string",
+            "description": "'observed' or 'inferred:<tier>' (same_building, neighbours, same_street_and_type, area_type_prior, archetype_default)."
+          },
+          "bays_source": {
+            "type": "string"
+          },
+          "storeys_seen": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "element_counts": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "view": {
+            "type": "object",
+            "description": "Mapillary image used (id only; the image itself is never stored or shipped)."
           }
         }
       }

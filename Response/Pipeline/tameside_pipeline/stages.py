@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import json
+import math
+import time
+from collections import Counter, defaultdict
 from pathlib import Path
 
 from .geo import Heightfield, read_vector, read_vectors, zone_bounds
@@ -173,4 +176,143 @@ def run_streetview(cfg, a) -> int:
     street_bldg = len({m["footprint_id"] for m in matches})
     print(f"{len(images)} images; {len(matches)} street-facing facades, {seen_edges} seen "
           f"({100 * seen_edges / max(len(matches), 1):.0f}%); buildings with a seen facade: {seen_bldg}/{street_bldg}")
+    return 0
+
+
+def run_facades(cfg, a) -> int:
+    """Stage D part 2: detect facade elements in matched images, then infer unseen facades."""
+    import concurrent.futures as cf
+
+    import cv2
+    import shapely
+    from pyproj import Transformer
+    from shapely.geometry import LineString, Point, Polygon
+    from shapely.strtree import STRtree
+
+    from . import facades as F
+    from .streetview import facade_edges, token
+
+    cfg.require_source("mapillary")
+    zone = cfg.zone(a.zone)
+    b = zone_bounds(cfg, zone, MARGIN_M)
+    records = {}
+    for line in open(a.buildings, encoding="utf-8"):
+        r = json.loads(line)
+        records[r["footprint_id"]] = r
+    roads = json.loads(Path(a.roads).read_text(encoding="utf-8"))
+    views = [json.loads(line) for line in open(a.views, encoding="utf-8")]
+    dtm = Heightfield.from_files(_raster_files(a.dtm), b, cfg.landscape.resolution_m)
+    to_bng = Transformer.from_crs(4326, 27700, always_xy=True)
+
+    seen = [v for v in views if v["views"]]
+    if a.limit:
+        seen = seen[: a.limit]
+    ids = sorted({x["image_id"] for v in seen for x in v["views"]})
+    tok = token()
+    details = F.fetch_image_details(ids, a.cache, tok)
+    with cf.ThreadPoolExecutor(8) as ex:
+        list(ex.map(lambda i: F.download_thumb(details[i], a.cache) if i in details else None, ids))
+    print(f"{len(seen)} seen facades, {len(ids)} images downloaded")
+
+    models = F.FacadeModels()
+    crops_dir = a.cache / "crops"
+    crops_dir.mkdir(parents=True, exist_ok=True)
+    observed = {}
+    rejected = Counter()
+    t0 = time.time()
+    for n_done, v in enumerate(seen, 1):
+        rec = records[v["footprint_id"]]
+        m = rec["massing"]
+        poly = shapely.geometry.polygon.orient(Polygon(rec["footprint"]["outer"]), 1.0)
+        pts = list(poly.exterior.coords)
+        ea, eb = pts[v["edge_index"]], pts[v["edge_index"] + 1]
+        z0 = m.get("ground_z_min", m["ground_z"])
+        z1 = m["ground_z"] + m["eaves_height_m"]
+        # 1) rectify every candidate view, 2) CLIP: which crop really shows the facade, 3) detect on the best only
+        cands = []
+        for view in v["views"]:
+            d = details.get(view["image_id"])
+            path = a.cache / "img" / f"{view['image_id']}.jpg"
+            geom = (d or {}).get("computed_geometry") or {}
+            if not d or not path.exists() or not geom:
+                continue
+            ce, cn = to_bng.transform(*geom["coordinates"])
+            cz = float(dtm.sample([ce], [cn])[0]) + F.CAMERA_HEIGHT_M
+            img = cv2.cvtColor(cv2.imread(str(path)), cv2.COLOR_BGR2RGB)
+            crop, vis, src_ppm = F.rectify(img, d, (ce, cn, cz), ea, eb, z0, z1)
+            if crop is not None and vis >= F.MIN_VISIBLE:
+                cands.append((view, crop, vis, src_ppm, img, d, (ce, cn, cz)))
+        if not cands:
+            continue
+        probs = models.facade_probability([c[1] for c in cands])
+        scored = sorted(((p_ * c[2] * min(1.0, c[3] / 30.0) * c[0]["score"], p_, c) for p_, c in zip(probs, cands)), key=lambda t: -t[0])
+        _, fprob, (view, crop, vis, src_ppm, img, d, cam) = scored[0]
+        correction, refined_p = models.refine_pose(img, d, cam, ea, eb, z0, z1)
+        if correction != (0.0, 0.0) and refined_p > fprob:
+            crop2, vis2, ppm2 = F.rectify(img, d, cam, ea, eb, z0, z1, correction)
+            if crop2 is not None and vis2 >= F.MIN_VISIBLE:
+                crop, vis, src_ppm, fprob = crop2, vis2, ppm2, max(fprob, refined_p)
+        if fprob < F.MIN_FACADE_PROB:
+            rejected["not_a_facade"] += 1
+            continue
+        width_m, height_m = math.hypot(eb[0] - ea[0], eb[1] - ea[1]), z1 - z0
+        dets = models.detect(crop)
+        occ = F.occlusion(dets, crop.shape)
+        if occ > F.MAX_OCCLUSION:
+            rejected["occluded"] += 1
+            continue
+        bays_ok = src_ppm >= F.MIN_SRC_PX_PER_M_FOR_BAYS
+        parsed = F.parse_facade(dets, width_m, height_m, m.get("storeys", 2))
+        patches, wall_col = F.wall_patches(crop, dets)
+        mat, mat_p = models.material(patches, wall_col)
+        n_el = sum(parsed["counts"].values())
+        conf = round(min(1.0, fprob * vis * (1 - occ) * min(1.0, src_ppm / 30.0) * min(1.0, 0.5 + 0.1 * n_el) * (0.5 + mat_p) * min(1.0, width_m / 4.0)), 2)
+        dc = F.door_colour(crop, dets) if bays_ok else None
+        fac = {"edge_index": v["edge_index"], "street_facing": True, "wall_material": mat,
+               **({"wall_colour_srgb": wall_col} if wall_col else {}),
+               **({"door_colour_srgb": dc} if dc else {}),
+               "bays": parsed["bays"] if (bays_ok and parsed["bays"]) else F.synth_bays(width_m, None, rec["archetype"]["id"], m.get("storeys", 2)),
+               "bays_source": "observed" if (bays_ok and parsed["bays"]) else "inferred:archetype",
+               "storeys_seen": parsed["storeys_seen"], "element_counts": parsed["counts"],
+               "observations": 1, "confidence": conf, "basis": "observed",
+               "view": {"image_id": view["image_id"], "captured_at": view.get("captured_at"), "visible_fraction": round(vis, 2),
+                        "facade_probability": round(fprob, 2), "occlusion": round(occ, 2), "pose_correction_deg": list(correction), "source_px_per_m": round(src_ppm, 1)}}
+        observed[(v["footprint_id"], v["edge_index"])] = fac
+        qa = cv2.cvtColor(crop, cv2.COLOR_RGB2BGR)
+        colours = {"window": (255, 200, 0), "door": (0, 0, 255), "shopfront": (255, 0, 255), "garage": (0, 255, 255), "occluder": (128, 128, 128)}
+        for dd in dets:
+            x0, y0, x1, y1 = [int(q) for q in dd["box"]]
+            cv2.rectangle(qa, (x0, y0), (x1, y1), colours[dd["kind"]], 2)
+        cv2.imwrite(str(crops_dir / f"{v['footprint_id']}_{v['edge_index']}.jpg"), qa)
+        if n_done % 25 == 0:
+            print(f"  {n_done}/{len(seen)} facades, {len(observed)} observed, {time.time() - t0:.0f}s", flush=True)
+
+    # propagation to unseen street-facing facades
+    road_lines = [LineString([(p[0], p[1]) for p in e["polyline"]]) for e in roads["edges"] if len(e["polyline"]) >= 2]
+    road_names = [e.get("name") for e in roads["edges"] if len(e["polyline"]) >= 2]
+    edges = facade_edges(list(records.values()), road_lines)
+    rtree = STRtree(road_lines)
+    street_of = {}
+    for fid, r in records.items():
+        c = Polygon(r["footprint"]["outer"]).centroid
+        j = rtree.nearest(c)
+        street_of[fid] = road_names[j] if j is not None else None
+    polys = {fid: Polygon(r["footprint"]["outer"]) for fid, r in records.items()}
+    fids = list(polys)
+    ptree = STRtree([polys[f] for f in fids])
+    neighbours = {f: [fids[j] for j in ptree.query(polys[f].buffer(0.5), predicate="intersects") if fids[j] != f] for f in fids}
+    facades = F.propagate(records, observed, edges, neighbours, street_of)
+
+    per_bldg = defaultdict(list)
+    for (fid, _), fac in facades.items():
+        per_bldg[fid].append(fac)
+    a.out.mkdir(parents=True, exist_ok=True)
+    with open(a.out / "buildings_facades.jsonl", "w", encoding="utf-8") as f:
+        for fid, r in records.items():
+            r = {**r, "facades": sorted(per_bldg.get(fid, []), key=lambda x: x["edge_index"])}
+            f.write(json.dumps(r) + "\n")
+    bases = Counter(x["basis"] for x in facades.values())
+    mats = Counter(x["wall_material"] for x in observed.values())
+    print(f"facades: {dict(bases)}")
+    print(f"observed materials: {dict(mats)}; rejected views: {dict(rejected)}")
     return 0

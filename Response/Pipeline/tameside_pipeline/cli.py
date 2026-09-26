@@ -71,6 +71,16 @@ def main(argv: list[str] | None = None) -> int:
     sv.add_argument("--cache", type=Path, required=True, help="Folder for cached image metadata (and later, images)")
     sv.add_argument("--out", type=Path, required=True)
 
+    fc = sub.add_parser("facades", help="Stage D part 2: facade elements from images, then infer unseen facades")
+    fc.add_argument("--zone", required=True)
+    fc.add_argument("--buildings", type=Path, required=True)
+    fc.add_argument("--roads", type=Path, required=True)
+    fc.add_argument("--views", type=Path, required=True, help="facade_views.jsonl from the streetview command")
+    fc.add_argument("--dtm", type=Path, required=True)
+    fc.add_argument("--cache", type=Path, required=True)
+    fc.add_argument("--limit", type=int, default=0, help="Only process the first N seen facades (for QA)")
+    fc.add_argument("--out", type=Path, required=True)
+
     a = p.parse_args(argv)
     cfg = load_config(a.config)
     origin = WorldOrigin(cfg.origin_e, cfg.origin_n)
@@ -95,7 +105,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Wrote {len(m['tiles'])} tile(s) to {a.out}; heights {m['height_m']['min']:.1f}..{m['height_m']['max']:.1f} m; filled {m['filled_nodata_cells']} nodata cells")
         return 0
 
-    if a.cmd in ("footprints", "roads", "massing", "preview", "streetview"):
+    if a.cmd in ("footprints", "roads", "massing", "preview", "streetview", "facades"):
         from . import stages
         return getattr(stages, f"run_{a.cmd}")(cfg, a)
     return 1

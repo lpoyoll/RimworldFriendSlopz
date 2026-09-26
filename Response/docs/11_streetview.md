@@ -31,8 +31,34 @@ streets share one style), so the facade stage will produce:
   then the same archetype in the area, each with a lower confidence and `basis` recorded.
 QA (Stage I) shows observed/inferred on the heat map.
 
-## Next
-1. Download the matched images (full resolution only for matched views), rectify each facade crop using the known
-   camera pose and footprint edge.
-2. Segment: windows, doors, shopfronts, wall material/colour (SAM 2 for regions, plus a facade-parsing model).
-3. Write facade records (`schemas/building_facade.schema.json` → `facades[]`) and run propagation.
+## Facade extraction (`cli facades`, `facades.py`)
+Per seen facade (up to 3 candidate images):
+1. **Rectify.** Project the facade quad (footprint edge × ground..eaves from Stage C) into each image using the
+   Mapillary SfM pose (`computed_rotation`, `camera_parameters`, camera 1.4 m above the DTM). Warp it to a front-on
+   crop at 40 px/m.
+2. **Is it really the facade?** CLIP zero-shot: "front of a house / shop front / facade with windows" against
+   car, road, sky, tree, garden wall, hedge. The best candidate must reach 0.5 or the facade stays unobserved.
+3. **Pose refinement.** Mapillary rotations drift a few degrees, so small yaw (±4°) and pitch (±2°) corrections are
+   tried, and the most facade-like crop wins, with a penalty for larger corrections.
+4. **Detect** (OWLv2 open-vocabulary): window, door, shop front, garage door, plus car, van, tree as occluders.
+   Element boxes inside an occluder are dropped (a car windscreen is not a window). Views more than 40% occluded are rejected.
+5. **Parse:** storeys from window rows, bays from element columns (door / window / bay window / shopfront /
+   garage on the ground floor, windows or blank above), door colour, wall colour (median of wall-only pixels away from
+   crop edges), and wall material from CLIP **weighted by a colour prior** (saturated red → brick, pale → render or
+   painted, mid-grey → pebbledash). CLIP alone confused brick and render on dashcam crops.
+6. Views with under 15 real image px per metre give colour and material only. Their bay layout is marked inferred.
+
+**Unseen facades** are filled in order: same building → shared-wall neighbours of the same type → same street and
+type → area average for the type → type default. Door colours are varied along a street by sampling observed doors.
+Every facade records `basis` and `confidence`.
+
+### Tuning history (first 40–60 facades, checked by eye on contact sheets)
+| Change | Effect |
+|---|---|
+| Naive: first view, no checks | Garden walls, cars and road accepted as facades |
+| + CLIP facade check, occlusion gate | Garden-wall and road crops rejected |
+| + pose refinement (±6°/±4°, weak penalty) | Some fixed, but some tilted up to include roofs (CLIP prefers "whole house") |
+| + tighter refinement (±4°/±2°, stronger penalty), colour-weighted material, edge-trimmed wall sampling | About 6 of 8 checked facades correct on material; doors and storeys sensible |
+
+Known limits: pose error is the main source of misalignment. Tiny corner walls can still be picked, so confidence
+now scales with facade width. Material classes are coarse (no sandstone versus gritstone split yet).
