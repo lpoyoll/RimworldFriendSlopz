@@ -75,6 +75,35 @@ def classify_roof(dz_de: np.ndarray, dz_dn: np.ndarray) -> dict:
     return {"type": t, "ridge_bearing_deg": round(ridge_bearing, 1), "confidence": round(float(dom * size_conf * frac), 2)}
 
 
+def refine_long_roof_ends(e, n, gx, gy, roof: dict) -> dict:
+    """Hip vs gable for long rows, judged only at the two ends.
+
+    Victorian terrace rows (merged into one outline by OS) have rear outriggers whose slopes run along the ridge
+    axis, which fools the whole-roof test into 'hip'. A row is hipped only if slopes fall outward at both ends.
+    """
+    th = math.radians(roof["ridge_bearing_deg"])
+    ax = np.array([math.sin(th), math.cos(th)])
+    along = e * ax[0] + n * ax[1]
+    across = e * math.cos(th) - n * math.sin(th)
+    length, depth = np.ptp(along), np.ptp(across)
+    if length < 2.5 * max(depth, 1.0) or depth < 3:
+        return roof
+    down = -np.stack([gx, gy], axis=1)
+    steep = np.hypot(gx, gy) > math.tan(math.radians(PITCH_MIN_DEG))
+    ends = []
+    for sign, edge in ((-1, along.min()), (1, along.max())):
+        zone = (np.abs(along - edge) < depth / 2) & steep
+        if zone.sum() < 3:
+            return roof
+        outward = (down[zone] @ ax) * sign > 0.5 * np.hypot(down[zone, 0], down[zone, 1])
+        ends.append(outward.mean())
+    hipped = min(ends) > 0.35
+    new_type = "hip" if hipped else "gable"
+    if new_type != roof["type"]:
+        roof = {**roof, "type": new_type, "confidence": round(min(1.0, roof["confidence"] + 0.1), 2), "ends_checked": True}
+    return roof
+
+
 def fit_roof_profile(e, n, h, roof: dict, ridge: float, geom=None):
     """Fit height vs distance from the ridge line on the main roof; return (eaves at the wall line, pitch in degrees).
 
@@ -155,6 +184,16 @@ def compute_massing(geom, dtm: Heightfield, dsm: Heightfield) -> tuple[dict, lis
     gx, gy = _window_gradient(dsm, rr[valid], cc[valid])
     roof = classify_roof(gx, gy)
 
+    # One pitched roof only makes sense on a compact, roughly rectangular footprint. Big or irregular blocks
+    # (town-centre shops, mills, the market hall) have several roofs; mark them complex so builders use the
+    # LiDAR roof surface instead of one giant pyramid.
+    rectangularity = geom.area / max(geom.minimum_rotated_rectangle.area, 1e-6)
+    if roof["type"] in ("hip", "gable", "mono_pitch") and (geom.area > 600 or rectangularity < 0.7):
+        roof = {**roof, "type": "complex", "note": f"area {geom.area:.0f} m2, rectangularity {rectangularity:.2f}"}
+
+    if roof["type"] in ("hip", "gable") and "ridge_bearing_deg" in roof:
+        roof = refine_long_roof_ends(e[valid], n[valid], gx, gy, roof)
+
     import shapely
 
     band = in_band[valid]
@@ -210,7 +249,11 @@ def count_units(addresses: int, osm_units: int, osm: dict, area_m2: float) -> tu
     return 1, "default"
 
 
-def guess_archetype(area_m2: float, massing: dict, shared_walls: int, osm: dict, units: int = 1) -> dict:
+HOUSE_FOOTPRINT_M2 = 40.0  # smallest typical house footprint (two-up two-down terrace incl. outrigger)
+MARKET_TAGS = {"market", "marketplace"}
+
+
+def guess_archetype(area_m2: float, massing: dict, shared_walls: int, osm: dict, units: int = 1, shops: int = 0) -> dict:
     """First-pass archetype from geometry, OSM tags and unit count. Stage D (facades) and QA refine it."""
     osm = osm or {}
     b = osm.get("building", "")
@@ -230,10 +273,12 @@ def guess_archetype(area_m2: float, massing: dict, shared_walls: int, osm: dict,
         return out("civic", 0.7, "osm:civic")
     if height > 22 and roof == "flat":
         return out("council_highrise", 0.7, "tall_flat")
-    if b in RETAIL_TAGS or osm.get("shop"):
+    if b in MARKET_TAGS or osm.get("amenity") in MARKET_TAGS:
+        return out("civic", 0.75, "osm:market")
+    if b in RETAIL_TAGS or osm.get("shop") or shops >= 1:
         if area_m2 > 600:
-            return out("retail_modern", 0.65, "osm:retail_large")
-        return out("shop_terrace", 0.65, "osm:shop")
+            return out("retail_modern", 0.65, "osm:retail_large" if b in RETAIL_TAGS else f"osm:{shops}_shop_points")
+        return out("shop_terrace", 0.7, "osm:shop" if osm.get("shop") else f"osm:{shops}_shop_points")
     if b in INDUSTRIAL_TAGS or (area_m2 > 800 and units <= 2 and storeys <= 2 and roof in ("flat", "complex")):
         if area_m2 > 1500 and storeys >= 3:
             return out("mill_brick", 0.55, "large_multistorey_industrial")
@@ -242,8 +287,10 @@ def guess_archetype(area_m2: float, massing: dict, shared_walls: int, osm: dict,
         return out("mill_brick", 0.5, "large_multistorey")
 
     # Residential
-    if b in FLAT_TAGS or (units >= 4 and per_unit < 90 and storeys >= 2 and area_m2 > 150):
-        return out("council_1960s", 0.55, f"flats:{units}_units")
+    # More addresses than houses could fit side by side on this footprint = flats; otherwise a merged terrace row.
+    house_capacity = max(area_m2 / HOUSE_FOOTPRINT_M2, 1.0)
+    if b in FLAT_TAGS or (units >= 4 and storeys >= 2 and units > 1.2 * house_capacity):
+        return out("council_1960s", 0.55, f"flats:{units}_units_capacity_{house_capacity:.0f}")
     if b in OSM_HOUSE_TYPES and units <= 2:
         return out(OSM_HOUSE_TYPES[b], 0.8, f"osm:{b}")
     if units == 2 and per_unit < 200:
@@ -271,7 +318,8 @@ def build_records(footprints, dtm: Heightfield, dsm: Heightfield, zone: str, sha
         addresses = int(row.get("addresses") or 0)
         osm_units = int(row.get("osm_units") or 0)
         units, units_basis = count_units(addresses, osm_units, osm, g.area)
-        arch = guess_archetype(g.area, massing, shared_walls[i], osm, units)
+        shops = int(row.get("osm_shops") or 0)
+        arch = guess_archetype(g.area, massing, shared_walls[i], osm, units, shops)
         if arch["confidence"] < 0.5:
             flags.append("low_archetype_confidence")
         sources = list(row["sources"]) + ["ea_lidar_dtm_1m", "ea_lidar_dsm_1m"]

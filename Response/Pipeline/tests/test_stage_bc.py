@@ -273,3 +273,45 @@ def test_semi_with_rear_extension_is_not_sunk():
     assert m["roof"]["type"] == "hip"
     assert m["eaves_height_m"] == pytest.approx(5.2, abs=0.6)
     assert m["storeys"] == 2
+
+
+# ---------------------------------------------------------------- lessons from the Ashton town centre run
+
+M2 = {"storeys": 2, "eaves_height_m": 5.2, "ridge_height_m": 8.5, "roof": {"type": "gable"}}
+
+
+def test_merged_victorian_terrace_is_not_flats():
+    # 10 houses of ~50 m2 merged into one 500 m2 OS outline, 10 addresses
+    assert guess_archetype(500, M2, 0, {}, units=10)["id"] == "terrace_redbrick"
+
+
+def test_flats_block_has_more_units_than_houses_could_fit():
+    assert guess_archetype(300, {**M2, "storeys": 3}, 0, {}, units=12)["id"] == "council_1960s"
+
+
+def test_market_and_shop_points():
+    assert guess_archetype(2000, M2, 0, {"building": "retail", "amenity": "marketplace"}, units=40)["id"] == "civic"
+    assert guess_archetype(120, M2, 2, {}, units=3, shops=2)["id"] == "shop_terrace"
+
+
+def test_big_irregular_block_gets_complex_roof():
+    fn = lambda e, n: np.where((e > 1010) & (e < 1050) & (n > 2010) & (n < 2040), 9.0 - 0.3 * np.abs(n - 2025), 0.0)
+    m, _ = compute_massing(box(1010, 2010, 1050, 2040), flat_hf(), dsm_with(fn))  # 1200 m2
+    assert m["roof"]["type"] == "complex"
+
+
+def test_terrace_row_with_rear_outriggers_is_gable():
+    """Row of 6 gable-ended terraced houses (ridge E-W) with pitched rear outriggers running N-S."""
+    def row(e, n):
+        main = (e > 1010) & (e < 1040) & (n > 2040) & (n < 2048)
+        roof = 8.5 - 0.8 * np.abs(n - 2044)  # ridge along the row
+        out = np.zeros_like(e)
+        for k in range(6):
+            x0 = 1011 + 5 * k
+            o = (e > x0) & (e < x0 + 3) & (n > 2034) & (n <= 2040)
+            out = np.where(o, 6.0 - 0.9 * np.abs(e - (x0 + 1.5)), out)  # outrigger ridge N-S
+        return np.where(main, roof, out)
+    from shapely.ops import unary_union
+    outline = unary_union([box(1010, 2040, 1040, 2048)] + [box(1011 + 5 * k, 2034, 1014 + 5 * k, 2040) for k in range(6)])
+    m, _ = compute_massing(outline, flat_hf(), dsm_with(row))
+    assert m["roof"]["type"] == "gable", m["roof"]

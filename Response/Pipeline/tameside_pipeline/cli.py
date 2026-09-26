@@ -31,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     f.add_argument("--os", type=Path, nargs="+", required=True, help="OS OpenMap Local building files (one per 100 km square, e.g. SJ and SD)")
     f.add_argument("--os-layer", default=None, help="Layer name, default: first layer containing 'building'")
     f.add_argument("--ms", type=Path, help="Microsoft ML building footprints (GeoJSON)")
-    f.add_argument("--osm", type=Path, help="OSM extract (.osm.pbf)")
+    f.add_argument("--osm", type=Path, nargs="+", help="OSM extract(s) (.osm.pbf or .osm; several tiles are merged)")
     f.add_argument("--uprn", type=Path, help="OS Open UPRN CSV (address points, for unit counts)")
     f.add_argument("--inspire", type=Path, help="HMLR INSPIRE index polygons (GML/GPKG)")
     f.add_argument("--out", type=Path, required=True)
@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--zone", required=True)
     r.add_argument("--os-roads", type=Path, nargs="+", required=True, help="OS Open Roads RoadLink files (one per 100 km square)")
     r.add_argument("--os-layer", default=None, help="Layer name, default: first layer containing 'link'")
-    r.add_argument("--osm", type=Path, help="OSM extract (.osm.pbf)")
+    r.add_argument("--osm", type=Path, nargs="+", help="OSM extract(s) (.osm.pbf or .osm; several tiles are merged)")
     r.add_argument("--dtm", type=Path, help="Folder of DTM tiles for road heights")
     r.add_argument("--out", type=Path, required=True)
 

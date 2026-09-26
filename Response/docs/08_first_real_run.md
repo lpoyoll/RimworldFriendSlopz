@@ -44,3 +44,16 @@ Date: 2026-09-26. Zone: 800 × 800 m centred near the junction (E 394508, N 4005
 - Garden walls, hedges, fences, driveways, street furniture and lamp columns are not generated yet (Stage G).
 - Wall colours are placeholders by building type until Stage D (facades) runs.
 - Road junctions are plain overlaps. Proper junction geometry, dropped kerbs and markings come from the Houdini road HDA.
+
+## Second run: Ashton town centre zone (2 × 2 km)
+Same sources plus OSM in four tiles (OSM API size limit) and OSM shop/amenity points. 2,331 outlines, 15,498 units,
+1,521 road links, ground 84–146 m ODN, about 30 s.
+
+Fixes from this run:
+- **Merged Victorian terrace rows were called flats** (810). Flats now require more addresses than houses could fit on
+  the footprint (40 m² per house). Result: 843 terrace rows, 268 flats.
+- **Market hall called flats.** Markets are civic. Shops are also detected from OSM shop points inside the outline.
+- **Terrace rows read as hipped** because rear outriggers slope along the ridge axis. Long rows are now judged only at their two ends.
+- **Giant pyramid roofs on big blocks.** Outlines over 600 m² or with rectangularity under 0.7 are `complex`, and
+  builders use the LiDAR roof surface (the preview drapes a median-filtered 1 m DSM).
+All have regression tests.

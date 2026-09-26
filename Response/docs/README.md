@@ -12,5 +12,6 @@
 | [07_dispatch_model.md](07_dispatch_model.md) | Dispatch data model (Milestone 1 build) |
 | [08_first_real_run.md](08_first_real_run.md) | First real-data run: Hurst Cross, with screenshots |
 | [09_core_module.md](09_core_module.md) | ResponseCore: IDs, RNG, clock (GMT/BST, sun, shifts), event log, JSON saves |
+| [10_realism_plan.md](10_realism_plan.md) | Path to GTA-level visuals: layers, automation, art, what's needed |
 
 Rule: when something here changes, update the doc in the same commit.

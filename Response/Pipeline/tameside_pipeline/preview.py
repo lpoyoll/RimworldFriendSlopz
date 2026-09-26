@@ -88,7 +88,10 @@ def build_scene(buildings: list[dict], roads: dict, dtm: Heightfield, dsm: Heigh
             nx, ny = (y2 - y1), -(x2 - x1)
             shade = 0.78 + 0.22 * ((nx * 0.5 - ny * 0.8) / (math.hypot(nx, ny) or 1))
             walls.quad(P(x1, y1, g0), P(x2, y2, g0), P(x2, y2, he), P(x1, y1, he), _rgb(wc, shade))
-        _roof(roofs, poly, m["roof"], he, hr, P)
+        if m["roof"].get("type") == "complex" and dsm is not None:
+            _lidar_roof(roofs, poly, dsm, he, P, hr)
+        else:
+            _roof(roofs, poly, m["roof"], he, hr, P)
     # Party-wall lines at eaves level, so semi pairs and terrace rows read as separate homes
     lines = []
     for b in buildings:
@@ -178,6 +181,39 @@ def _ribbon(mesh: _Mesh, pts, off_a: float, off_b: float, lift: float, rgb, P):
     for i in range(len(arr) - 1):
         z0, z1 = arr[i, 2] + lift, arr[i + 1, 2] + lift
         mesh.quad(P(*A[i], z0), P(*B[i], z0), P(*B[i + 1], z1), P(*A[i + 1], z1), rgb)
+
+
+def _lidar_roof(mesh: _Mesh, poly, dsm: Heightfield, he: float, P, hr: float | None = None):
+    """Roof surface straight from the 1 m DSM, clipped to the footprint (never below the wall top)."""
+    import shapely
+
+    rc = _rgb(ROOF_COLOUR)
+    min_e, min_n, max_e, max_n = poly.bounds
+    es = np.arange(np.floor(min_e), np.ceil(max_e) + 1.0)
+    ns = np.arange(np.floor(min_n), np.ceil(max_n) + 1.0)
+    E, N = np.meshgrid(es, ns)
+    Z = dsm.sample(E.ravel(), N.ravel()).reshape(E.shape)
+    inside = shapely.contains_xy(poly.buffer(-0.3), E, N)
+    # 3x3 median (ignoring cells outside the footprint) removes LiDAR spikes, aerials and edge drop-offs
+    from numpy.lib.stride_tricks import sliding_window_view
+
+    Zm = np.where(inside, Z, np.nan)
+    Zm = np.nanmedian(sliding_window_view(np.pad(Zm, 1, constant_values=np.nan), (3, 3)), axis=(2, 3))
+    top = hr + 0.5 if hr is not None else np.nanmax(Zm)
+    Z = np.clip(np.where(np.isfinite(Zm), Zm, he), he, top)
+    for j in range(len(ns) - 1):
+        for i in range(len(es) - 1):
+            if inside[j, i] and inside[j, i + 1] and inside[j + 1, i] and inside[j + 1, i + 1]:
+                a = P(E[j, i], N[j, i], Z[j, i]); b = P(E[j, i + 1], N[j, i + 1], Z[j, i + 1])
+                c = P(E[j + 1, i + 1], N[j + 1, i + 1], Z[j + 1, i + 1]); d = P(E[j + 1, i], N[j + 1, i], Z[j + 1, i])
+                mesh.quad(a, b, c, d, rc)
+    # flat cap at wall top underneath, so thin edges never show a hole
+    try:
+        for tri in shapely.constrained_delaunay_triangles(poly).geoms:
+            x, y, z = list(tri.exterior.coords)[:3]
+            mesh.tri(P(*x, he), P(*y, he), P(*z, he), _rgb(ROOF_COLOUR, 0.85))
+    except Exception:
+        pass
 
 
 def _roof(mesh: _Mesh, poly, roof: dict, he: float, hr: float, P):

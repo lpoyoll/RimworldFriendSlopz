@@ -26,6 +26,14 @@ def _layer(path: Path, wanted: str | None, contains: str) -> str | None:
     return layers[0] if layers else None
 
 
+def _dedupe_osm(gdf):
+    """Features repeated across OSM tiles (ways crossing tile edges) keep one copy."""
+    keys = [c for c in ("osm_id", "osm_way_id") if c in gdf.columns]
+    if not len(gdf) or not keys:
+        return gdf
+    return gdf.drop_duplicates(subset=keys).reset_index(drop=True)
+
+
 def run_footprints(cfg, a) -> int:
     from .footprints import attach_plots, merge_footprints
 
@@ -41,9 +49,13 @@ def run_footprints(cfg, a) -> int:
         ms = read_vector(a.ms, b)
     if a.osm:
         cfg.require_source("osm")
-        osm = read_vector(a.osm, b, "multipolygons")
+        osm = _dedupe_osm(read_vectors(a.osm, b, lambda p: "multipolygons"))
     id_field = next((c for c in ("id", "ID", "fid") if c in os_gdf.columns), None)
     fp = merge_footprints(os_gdf, ms, osm, os_id_field=id_field)
+    if a.osm:
+        from .footprints import attach_osm_pois
+
+        fp = attach_osm_pois(fp, _dedupe_osm(read_vectors(a.osm, b, lambda p: "points")))
     if a.uprn:
         from .footprints import attach_address_counts, read_uprn_csv
 
@@ -57,6 +69,8 @@ def run_footprints(cfg, a) -> int:
     out = fp.copy()
     out["sources"] = out["sources"].apply(json.dumps)
     out["osm"] = out["osm"].apply(json.dumps)
+    if "osm_poi_names" in out.columns:
+        out["osm_poi_names"] = out["osm_poi_names"].apply(json.dumps)
     out.to_file(a.out / "footprints.gpkg", layer="footprints", driver="GPKG")
     n_ms = sum("ms_building_footprints" in s for s in fp["sources"])
     print(f"{len(fp)} footprints ({n_ms} gap-filled from MS) -> {a.out / 'footprints.gpkg'}")
@@ -73,7 +87,7 @@ def run_roads(cfg, a) -> int:
     osm = None
     if a.osm:
         cfg.require_source("osm")
-        osm = read_vector(a.osm, b, "lines")
+        osm = _dedupe_osm(read_vectors(a.osm, b, lambda p: "lines"))
     hf = None
     if a.dtm:
         cfg.require_source("ea_lidar_dtm_1m")
@@ -97,7 +111,9 @@ def run_massing(cfg, a) -> int:
     cfg.require_source("ea_lidar_dsm_1m")
     fp = gpd.read_file(a.footprints, layer="footprints")
     fp["sources"] = fp["sources"].apply(json.loads)
-    for col in ("addresses", "osm_units"):
+    if "osm_poi_names" in fp.columns:
+        fp["osm_poi_names"] = fp["osm_poi_names"].apply(lambda s: json.loads(s) if isinstance(s, str) else [])
+    for col in ("addresses", "osm_units", "osm_shops"):
         if col not in fp.columns:
             fp[col] = 0
     if "osm" in fp.columns:

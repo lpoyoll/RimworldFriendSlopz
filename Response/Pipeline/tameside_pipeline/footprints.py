@@ -150,6 +150,34 @@ def attach_address_counts(fp, points_gdf, tolerance_m: float = 0.5):
     return fp
 
 
+POI_KEYS = ("shop", "amenity", "craft", "office")
+
+
+def attach_osm_pois(fp, points_gdf):
+    """Count OSM shop/amenity/office points inside each footprint (town-centre shops are usually mapped as points)."""
+    fp = fp.copy()
+    fp["osm_shops"] = 0
+    fp["osm_poi_names"] = [[] for _ in range(len(fp))]
+    if points_gdf is None or not len(points_gdf):
+        return fp
+    keep, names = [], []
+    for _, row in points_gdf.iterrows():
+        t = parse_other_tags(row.get("other_tags"))
+        kind = next((f"{k}={t[k]}" for k in POI_KEYS if k in t), None)
+        keep.append(kind is not None and t.get("amenity") not in ("bench", "waste_basket", "post_box", "bicycle_parking", "parking", "telephone", "recycling", "vending_machine", "atm"))
+        names.append(row.get("name") if isinstance(row.get("name"), str) else kind)
+    pts = points_gdf[np.array(keep, dtype=bool)].reset_index(drop=True)
+    names = [n for n, k in zip(names, keep) if k]
+    if not len(pts):
+        return fp
+    tree = pts.sindex
+    for i, g in enumerate(fp.geometry):
+        hits = tree.query(g.buffer(1.0), predicate="intersects")
+        fp.at[i, "osm_shops"] = len(hits)
+        fp.at[i, "osm_poi_names"] = [names[j] for j in hits][:12]
+    return fp
+
+
 def read_uprn_csv(path, bounds):
     """OS Open UPRN CSV -> point GeoDataFrame clipped to bounds."""
     import geopandas as gpd
