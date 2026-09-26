@@ -69,3 +69,30 @@ def test_projection_and_delta_rotation():
     assert np.isnan(uv[2]).all()                       # behind the camera
     uv2 = F.project(np.array([[0.0, 10.0, 0.0]]), F.delta_rotation(5, 0) @ R, 1000.0, 2000, 1000, {})
     assert abs(uv2[0][0] - 1000) == pytest.approx(1000 * math.tan(math.radians(5)), rel=0.01)
+
+
+def test_rhythm_fit_fills_a_terrace_row_despite_missed_detections():
+    # 6 houses, 28.8 m row; only 2 doors (left side of their units) and 3 upper windows were detected
+    H = 5.5
+    dets = [box_m(0.3, H - 2.1, 1.2, H, "door"), box_m(10.0, H - 2.1, 10.9, H, "door"),
+            box_m(2.0, H - 4.8, 3.2, H - 3.5, "window"), box_m(3.6, H - 4.8, 4.5, H - 3.5, "window"), box_m(7.0, H - 4.8, 8.0, H - 3.5, "window")]
+    pat = F.fit_pattern(dets, 28.8, H, "terrace_redbrick", units_on_edge=6)
+    assert pat["units"] == 6 and pat["door_side"] == "left"
+    bays = F.bays_from_pattern(pat, 28.8, 2, "terrace_redbrick")
+    assert [b["ground"] for b in bays].count("door") == 6          # every house has a front door
+    assert sum(b["width_m"] for b in bays) == pytest.approx(28.8, abs=0.1)
+    assert bays[0]["ground"] == "door"
+
+
+def test_semi_pair_is_mirrored_and_flats_get_a_grid():
+    pat = F.default_pattern("semi_detached", 13.0)
+    bays = F.bays_from_pattern({**pat, "unit_width_m": 6.5}, 13.0, 2, "semi_detached")
+    assert [b["ground"] for b in bays] == ["door", "bay_window", "bay_window", "door"]
+    grid = F.bays_from_pattern(F.default_pattern("council_1960s", 30.0), 30.0, 3, "council_1960s")
+    assert len(grid) >= 8 and all(len(b["upper"]) == 2 for b in grid) and any(b["ground"] == "door" for b in grid)
+
+
+def test_sky_is_not_a_wall_colour():
+    assert F.plausible_wall_colour("#8fb4dc") is None      # pale blue sky
+    assert F.plausible_wall_colour("#000000") is None      # warped-image border
+    assert F.plausible_wall_colour("#8b4a3a") == "#8b4a3a"  # brick

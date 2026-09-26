@@ -93,7 +93,7 @@ def build_scene(buildings: list[dict], roads: dict, dtm: Heightfield, dsm: Heigh
         if m["roof"].get("type") == "complex" and dsm is not None:
             _lidar_roof(roofs, poly, dsm, he, P, hr)
         else:
-            _roof(roofs, poly, m["roof"], he, hr, P)
+            _roof(roofs, poly, m["roof"], he, hr, P, wc)
     # Party-wall lines at eaves level, so semi pairs and terrace rows read as separate homes
     lines = []
     for b in buildings:
@@ -287,7 +287,7 @@ def _lidar_roof(mesh: _Mesh, poly, dsm: Heightfield, he: float, P, hr: float | N
         pass
 
 
-def _roof(mesh: _Mesh, poly, roof: dict, he: float, hr: float, P):
+def _roof(mesh: _Mesh, poly, roof: dict, he: float, hr: float, P, wall_colour: str = "#8b5a45"):
     rc = _rgb(ROOF_COLOUR)
     rc_dark = _rgb(ROOF_COLOUR, 0.8)
     t = roof.get("type", "flat")
@@ -333,7 +333,7 @@ def _roof(mesh: _Mesh, poly, roof: dict, he: float, hr: float, P):
         mesh.tri(W(s0, q1, he_o), W(s0, q0, he_o), W(r0, qc, hr), _rgb(ROOF_COLOUR, 0.9))
         mesh.tri(W(s1, q0, he_o), W(s1, q1, he_o), W(r1, qc, hr), _rgb(ROOF_COLOUR, 0.9))
     else:
-        gc = _rgb("#8b5a45", 0.9)  # gable end wall
+        gc = _rgb(wall_colour, 0.9)  # gable end wall
         mesh.tri(W(s0, q1, he_o), W(s0, q0, he_o), W(s0, qc, hr), gc)
         mesh.tri(W(s1, q0, he_o), W(s1, q1, he_o), W(s1, qc, hr), gc)
 

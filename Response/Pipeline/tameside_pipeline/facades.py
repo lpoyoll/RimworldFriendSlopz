@@ -462,6 +462,97 @@ def door_colour(crop: np.ndarray, dets: list[dict]) -> str | None:
     return "#{:02x}{:02x}{:02x}".format(*med)
 
 
+# ---------------------------------------------------------------- rhythm fitting (pure, testable)
+
+HOUSE_TYPES = ("terrace_redbrick", "semi_detached", "detached")
+DEFAULT_UNIT_W = {"terrace_redbrick": 4.8, "semi_detached": 6.5, "detached": 8.0, "shop_terrace": 5.5}
+DOOR_BAY_M = 1.5
+
+
+def fit_pattern(dets: list[dict], width_m: float, height_m: float, archetype: str, units_on_edge: int | None) -> dict:
+    """Summarise detections into a repeating pattern. Robust to missed detections: detections vote on style,
+    the layout comes from the known number of units (houses) along the facade."""
+    els = []
+    for d in dets:
+        if d["kind"] == "occluder":
+            continue
+        x0, y0, x1, y1 = [v / PX_PER_M for v in d["box"]]
+        els.append({"kind": d["kind"], "cx": (x0 + x1) / 2, "bottom": height_m - y1, "w": x1 - x0})
+    ground = [e for e in els if e["bottom"] < 1.4]
+    upper = [e for e in els if e["bottom"] >= 1.4 and e["kind"] == "window"]
+    shop_w = sum(e["w"] for e in ground if e["kind"] == "shopfront")
+    if archetype in HOUSE_TYPES or archetype == "shop_terrace":
+        n = units_on_edge or max(1, round(width_m / DEFAULT_UNIT_W.get(archetype, 5.0)))
+        uw = width_m / n
+        rel = [(e["cx"] % uw) / uw for e in ground if e["kind"] == "door"]
+        door_side = "left" if (np.median(rel) if rel else 0.3) < 0.5 else "right"
+        wide = [e for e in ground if e["kind"] == "window" and e["w"] > 1.8]
+        narrow = [e for e in ground if e["kind"] == "window" and e["w"] <= 1.8]
+        ground_window = "bay_window" if len(wide) > len(narrow) else "window"
+        upper_per_unit = 2 if (len(upper) / n >= 1.3 or uw >= 5.5) else 1
+        shopfront = shop_w > 0.3 * width_m or archetype == "shop_terrace"
+        garage = any(e["kind"] == "garage" for e in ground)
+        return {"kind": "units", "units": n, "unit_width_m": round(uw, 2), "door_side": door_side, "ground_window": ground_window,
+                "upper_per_unit": upper_per_unit, "shopfront": bool(shopfront), "garage": bool(garage),
+                "evidence": {"doors": len(rel), "ground_windows": len(wide) + len(narrow), "upper_windows": len(upper)}}
+    xs = sorted(e["cx"] for e in els if e["kind"] == "window")
+    gaps = [b - a for a, b in zip(xs, xs[1:]) if 1.5 <= b - a <= 6.0]
+    spacing = float(np.clip(np.median(gaps), 2.2, 4.5)) if gaps else 3.2
+    return {"kind": "grid", "spacing_m": round(spacing, 2), "shopfront": bool(shop_w > 0.3 * width_m),
+            "evidence": {"windows": len(xs), "shopfront_m": round(shop_w, 1)}}
+
+
+def bays_from_pattern(pat: dict, width_m: float, storeys: int, archetype: str) -> list[dict]:
+    """Regular bay layout for a facade of this width from a (possibly borrowed) pattern."""
+    uppers = max(storeys - 1, 0)
+    if pat.get("kind") == "units":
+        n = max(1, round(width_m / pat["unit_width_m"])) if pat.get("unit_width_m") else pat["units"]
+        uw = width_m / n
+        out = []
+        for i in range(n):
+            door = {"width_m": DOOR_BAY_M, "ground": "door", "upper": ["window" if pat["upper_per_unit"] >= 2 else "blank"] * uppers}
+            main_ground = "shopfront" if pat.get("shopfront") else ("garage" if pat.get("garage") and i % 2 else pat["ground_window"])
+            main = {"width_m": max(uw - DOOR_BAY_M, 0.8), "ground": main_ground, "upper": ["window"] * uppers}
+            # semi pairs are mirrored: doors meet at (or sit away from) the party wall
+            left_door = (pat["door_side"] == "left") != (archetype == "semi_detached" and i % 2 == 1)
+            out += [door, main] if left_door else [main, door]
+        return [{**b, "width_m": round(b["width_m"], 2)} for b in out]
+    n = max(1, round(width_m / pat.get("spacing_m", 3.2)))
+    g = "shopfront" if pat.get("shopfront") else "window"
+    bays = [{"width_m": round(width_m / n, 2), "ground": g, "upper": ["window"] * uppers} for _ in range(n)]
+    if not pat.get("shopfront") and n >= 3:
+        bays[n // 2]["ground"] = "door"  # main entrance
+    return bays
+
+
+def plausible_wall_colour(hex_colour: str | None) -> str | None:
+    """Reject colours that are really sky (blue, bright) or deep shadow/black border."""
+    if not hex_colour:
+        return None
+    import colorsys
+
+    r, g, b = (int(hex_colour[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    if 180 <= h * 360 <= 250 and s > 0.12 and v > 0.45:
+        return None
+    if v < 0.12:
+        return None
+    return hex_colour
+
+
+def _compatible(pat: dict, arch: str) -> bool:
+    return (pat.get("kind") == "units") == (arch in HOUSE_TYPES or arch == "shop_terrace")
+
+
+def default_pattern(arch: str, width_m: float) -> dict:
+    if arch in HOUSE_TYPES or arch == "shop_terrace":
+        uw = DEFAULT_UNIT_W.get(arch, 5.0)
+        return {"kind": "units", "units": max(1, round(width_m / uw)), "unit_width_m": uw, "door_side": "left",
+                "ground_window": "bay_window" if arch == "semi_detached" else "window", "upper_per_unit": 2 if uw >= 5.5 else 1,
+                "shopfront": arch == "shop_terrace", "garage": False}
+    return {"kind": "grid", "spacing_m": 3.2, "shopfront": arch == "retail_modern"}
+
+
 # ---------------------------------------------------------------- propagation (pure, testable)
 
 def synth_bays(width_m: float, template: list[dict] | None, archetype: str, storeys: int) -> list[dict]:
@@ -496,7 +587,7 @@ def propagate(records: dict[str, dict], observed: dict[tuple[str, int], dict], s
         mats = Counter(f["wall_material"] for f in fs if f.get("wall_material") not in (None, "unknown"))
         cols = [f["wall_colour_srgb"] for f in fs if f.get("wall_colour_srgb")]
         doors = [f["door_colour_srgb"] for f in fs if f.get("door_colour_srgb")]
-        tmpl = max((f for f in fs if f.get("bays") and f.get("bays_source", "observed") == "observed"),
+        tmpl = max((f for f in fs if f.get("pattern") and f.get("bays_source", "observed") == "observed"),
                    key=lambda f: f.get("confidence", 0), default=None)
         return (mats.most_common(1)[0][0] if mats else None, _median_colour(cols), doors, tmpl)
 
@@ -528,7 +619,8 @@ def propagate(records: dict[str, dict], observed: dict[tuple[str, int], dict], s
             "wall_material": mat or ARCHETYPE_DEFAULT_MATERIAL.get(arch, "brick_red"),
             **({"wall_colour_srgb": col} if col else {}),
             **({"door_colour_srgb": doors[int(rng.integers(len(doors)))]} if doors else {}),  # vary doors along a street
-            "bays": synth_bays(e["length"], tmpl["bays"] if tmpl else None, arch, storeys),
+            "bays": bays_from_pattern(tmpl["pattern"], e["length"], storeys, arch) if (tmpl and _compatible(tmpl["pattern"], arch))
+                    else bays_from_pattern(default_pattern(arch, e["length"]), e["length"], storeys, arch),
             "observations": 0, "confidence": conf, "basis": f"inferred:{basis}",
         }
     return out

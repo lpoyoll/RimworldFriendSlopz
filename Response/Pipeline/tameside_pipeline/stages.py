@@ -179,6 +179,18 @@ def run_streetview(cfg, a) -> int:
     return 0
 
 
+def units_on_edge(rec: dict, ea, eb) -> int | None:
+    """How many of the building's unit outlines front onto this edge (party walls cross it)."""
+    from shapely.geometry import LineString, Polygon
+
+    outs = rec.get("units", {}).get("outlines") or []
+    if len(outs) < 2:
+        return None
+    edge = LineString([ea, eb]).buffer(0.6)
+    n = sum(1 for o in outs if Polygon(o).intersects(edge))
+    return n or None
+
+
 def run_facades(cfg, a) -> int:
     """Stage D part 2: detect facade elements in matched images, then infer unseen facades."""
     import concurrent.futures as cf
@@ -256,7 +268,13 @@ def run_facades(cfg, a) -> int:
             rejected["not_a_facade"] += 1
             continue
         width_m, height_m = math.hypot(eb[0] - ea[0], eb[1] - ea[1]), z1 - z0
-        dets = models.detect(crop)
+        det_cache = a.cache / "dets" / f"{v['footprint_id']}_{v['edge_index']}_{view['image_id']}_{correction[0]}_{correction[1]}.json"
+        if det_cache.exists():
+            dets = json.loads(det_cache.read_text())
+        else:
+            dets = models.detect(crop)
+            det_cache.parent.mkdir(parents=True, exist_ok=True)
+            det_cache.write_text(json.dumps(dets))
         occ = F.occlusion(dets, crop.shape)
         if occ > F.MAX_OCCLUSION:
             rejected["occluded"] += 1
@@ -264,15 +282,19 @@ def run_facades(cfg, a) -> int:
         bays_ok = src_ppm >= F.MIN_SRC_PX_PER_M_FOR_BAYS
         parsed = F.parse_facade(dets, width_m, height_m, m.get("storeys", 2))
         patches, wall_col = F.wall_patches(crop, dets)
+        wall_col = F.plausible_wall_colour(wall_col)
         mat, mat_p = models.material(patches, wall_col)
         n_el = sum(parsed["counts"].values())
         conf = round(min(1.0, fprob * vis * (1 - occ) * min(1.0, src_ppm / 30.0) * min(1.0, 0.5 + 0.1 * n_el) * (0.5 + mat_p) * min(1.0, width_m / 4.0)), 2)
         dc = F.door_colour(crop, dets) if bays_ok else None
+        pat = (F.fit_pattern(dets, width_m, height_m, rec["archetype"]["id"], units_on_edge(rec, ea, eb)) if bays_ok
+               else F.default_pattern(rec["archetype"]["id"], width_m))
         fac = {"edge_index": v["edge_index"], "street_facing": True, "wall_material": mat,
                **({"wall_colour_srgb": wall_col} if wall_col else {}),
                **({"door_colour_srgb": dc} if dc else {}),
-               "bays": parsed["bays"] if (bays_ok and parsed["bays"]) else F.synth_bays(width_m, None, rec["archetype"]["id"], m.get("storeys", 2)),
-               "bays_source": "observed" if (bays_ok and parsed["bays"]) else "inferred:archetype",
+               "pattern": pat,
+               "bays": F.bays_from_pattern(pat, width_m, m.get("storeys", 2), rec["archetype"]["id"]),
+               "bays_source": "observed" if bays_ok else "inferred:archetype",
                "storeys_seen": parsed["storeys_seen"], "element_counts": parsed["counts"],
                "observations": 1, "confidence": conf, "basis": "observed",
                "view": {"image_id": view["image_id"], "captured_at": view.get("captured_at"), "visible_fraction": round(vis, 2),

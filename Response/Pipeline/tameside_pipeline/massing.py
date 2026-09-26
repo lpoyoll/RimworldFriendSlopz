@@ -145,6 +145,12 @@ def fit_roof_profile(e, n, h, roof: dict, ridge: float, geom=None):
     return float(c + k * edge), float(math.degrees(math.atan(-k)))
 
 
+def _elongation(geom) -> float:
+    xy = list(geom.minimum_rotated_rectangle.exterior.coords)[:3]
+    a, b = math.dist(xy[0], xy[1]), math.dist(xy[1], xy[2])
+    return max(a, b) / max(min(a, b), 0.1)
+
+
 def compute_massing(geom, dtm: Heightfield, dsm: Heightfield) -> tuple[dict, list[str]]:
     """Massing block for one footprint (building_facade.schema.json 'massing') plus QA flags."""
     flags: list[str] = []
@@ -188,7 +194,8 @@ def compute_massing(geom, dtm: Heightfield, dsm: Heightfield) -> tuple[dict, lis
     # (town-centre shops, mills, the market hall) have several roofs; mark them complex so builders use the
     # LiDAR roof surface instead of one giant pyramid.
     rectangularity = geom.area / max(geom.minimum_rotated_rectangle.area, 1e-6)
-    if roof["type"] in ("hip", "gable", "mono_pitch") and (geom.area > 600 or rectangularity < 0.7):
+    long_row = _elongation(geom) >= 3.0 and rectangularity >= 0.6  # merged terrace rows: one long pitched roof is right
+    if roof["type"] in ("hip", "gable", "mono_pitch") and not long_row and (geom.area > 600 or rectangularity < 0.7):
         roof = {**roof, "type": "complex", "note": f"area {geom.area:.0f} m2, rectangularity {rectangularity:.2f}"}
 
     if roof["type"] in ("hip", "gable") and "ridge_bearing_deg" in roof:
