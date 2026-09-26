@@ -20,7 +20,7 @@ Date: 2026-09-26. Zone: 800 × 800 m centred near the junction (E 394508, N 4005
 - 686 buildings, 1,789 units (homes/premises), 152 road links, 135 nodes, 268 LiDAR-detected trees in the preview window.
 - Building types: 467 semi-detached, 64 terrace, 38 flats (council_1960s), 83 detached, 29 other, 3 church, 2 civic.
 - Roofs: 559 hip, 64 gable, 46 complex, 9 mono-pitch, 8 flat. Hipped 1930s-style semi pairs dominate here, and that matches the DSM hillshade.
-- 99 buildings flagged for QA.
+- 96 buildings flagged for QA (after the eaves fix).
 - Coronation Road: local road, 20 mph (from OSM), rising from about 138 m to 146 m at the Smallshaw Lane junction.
 
 ## Problems the run exposed, now fixed
@@ -31,6 +31,12 @@ Date: 2026-09-26. Zone: 800 × 800 m centred near the junction (E 394508, N 4005
    598 buildings "detached". Fix: count **OS Open UPRN address points** and **OSM buildings** inside each polygon.
    Records now carry `units` (count, basis, per-unit outlines split along the long axis), and building types use the
    unit count. The preview draws party walls as seams.
+
+4. **Houses sunk into the ground** (spotted by the creative director on the first screenshot). The edge-band eaves
+   estimate read 0.9–3.9 m walls on two-storey semis, because rear extensions and steep hip ends skewed it. Eaves are
+   now fitted from the roof profile (height against distance from the ridge on the main roof only, measured to the
+   wall line taken from the footprint). Semi/terrace eaves median is now 4.9 m (25–75%: 4.6–5.2 m), and 421 of 493 are
+   two-storey. Remaining low values are flagged `low_eaves_check`. Regression test: a hipped semi with a rear extension.
 
 ## Known limits (next iterations)
 - Roofs are placed on the footprint's ridge-aligned rectangle, so L-shaped houses get a simplified roof. The LAZ plane-fitting

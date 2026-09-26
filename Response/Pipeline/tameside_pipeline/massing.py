@@ -4,8 +4,10 @@ Heights
   ground_z      median DTM inside the footprint (EA DTM is interpolated under buildings)
   ground_z_min  5th percentile DTM in a 0.5-2 m ring outside the footprint (lowest doorstep, for sloping streets)
   ridge         95th percentile of nDSM inside the footprint eroded by 0.5 m (avoids wall-edge pixels)
-  eaves         25th percentile, over the 1.5 m band just inside the eroded edge, of each cell's nDSM projected
-                out to the wall along its own slope (nDSM - slope * distance to wall)
+  eaves         pitched roofs: ridge - half main-roof depth * tan(median pitch), where the depth is measured across the
+                ridge over the roof cells above 60% of ridge height (so rear extensions do not widen it).
+                Flat roofs: eaves = ridge. The older edge-band estimate is kept only as a cross-check (QA flag
+                'low_eaves_check'). First real run showed the edge-band method sinking 1930s semis.
 
 Roof type (raster method; the LAZ point-cloud RANSAC upgrade is in docs/02)
   Downhill directions of pitched DSM cells (> 12 deg) are reduced to one axis with the double-angle mean.
@@ -24,6 +26,7 @@ STOREY_M = 2.7
 GROUND_FLOOR_OFFSET_M = 0.3
 PITCH_MIN_DEG = 12.0
 DEFAULT_EAVES_M = 5.5
+MIN_EAVES_M = 2.3  # lowest plausible wall top (single-storey garage/extension)
 
 
 def _window_gradient(dsm: Heightfield, rr: np.ndarray, cc: np.ndarray):
@@ -70,6 +73,47 @@ def classify_roof(dz_de: np.ndarray, dz_dn: np.ndarray) -> dict:
     else:
         t, dom = "complex", 0.5
     return {"type": t, "ridge_bearing_deg": round(ridge_bearing, 1), "confidence": round(float(dom * size_conf * frac), 2)}
+
+
+def fit_roof_profile(e, n, h, roof: dict, ridge: float, geom=None):
+    """Fit height vs distance from the ridge line on the main roof; return (eaves at the wall line, pitch in degrees).
+
+    Uses cells above half the ridge height (drops extensions and ground), and for hips only the middle section between
+    the hipped ends. The wall line comes from the footprint outline (nearer side, so a rear extension cannot push it
+    out), capped at the outermost roof cells + 1.5 m.
+    """
+    th = math.radians(roof["ridge_bearing_deg"])
+    across = e * math.cos(th) - n * math.sin(th)
+    along = e * math.sin(th) + n * math.cos(th)
+    main = h > 0.5 * ridge
+    if main.sum() < 8:
+        return None
+    a, q, z = along[main], across[main], h[main]
+    if roof["type"] == "mono_pitch":
+        d = q - q.min()
+        k, c = np.polyfit(d, z, 1)
+        edge = d.max() + 1.0
+        lo = min(c, c + k * edge)
+        return float(lo), float(math.degrees(math.atan(abs(k))))
+    top = z >= np.percentile(z, 85)
+    q0 = float(np.median(q[top]))  # ridge line position across the roof
+    d = np.abs(q - q0)
+    if roof["type"] == "hip":
+        half_depth = np.percentile(d, 95)
+        mid = np.abs(a - np.median(a)) < max((a.max() - a.min()) / 2 - half_depth, 1.0)
+        if mid.sum() >= 6:
+            d, z = d[mid], z[mid]
+    if np.ptp(d) < 1.0:
+        return None
+    k, c = np.polyfit(d, z, 1)
+    if k >= 0:
+        return None
+    edge = float(np.percentile(d, 98)) + 1.5
+    if geom is not None:
+        xy = np.asarray(geom.exterior.coords)
+        fq = xy[:, 0] * math.cos(th) - xy[:, 1] * math.sin(th)
+        edge = min(edge, max(min(q0 - fq.min(), fq.max() - q0), 0.5))
+    return float(c + k * edge), float(math.degrees(math.atan(-k)))
 
 
 def compute_massing(geom, dtm: Heightfield, dsm: Heightfield) -> tuple[dict, list[str]]:
@@ -120,10 +164,19 @@ def compute_massing(geom, dtm: Heightfield, dsm: Heightfield) -> tuple[dict, lis
     dist = shapely.distance(geom.exterior, shapely.points(ev, nv))
     grad = np.nan_to_num(np.hypot(gx[band], gy[band]))
     at_wall = ndsm[valid][band] - grad * dist
-    eaves = float(np.percentile(at_wall, 25))
+    band_eaves = float(np.percentile(at_wall, 25))
+
+    eaves = band_eaves
+    if roof["type"] in ("gable", "hip", "mono_pitch") and "ridge_bearing_deg" in roof:
+        fit = fit_roof_profile(e[valid], n[valid], ndsm[valid], roof, ridge, geom)
+        if fit is not None:
+            eaves, pitch_deg = fit
+            roof["pitch_deg"] = round(pitch_deg, 1)
+        if eaves < 3.5 and ridge > 6.5:
+            flags.append("low_eaves_check")  # tall roof on short walls: bungalow with loft, or a bad fit
     if roof["type"] == "flat":
         eaves = ridge  # parapet/flat roof: top of wall is the roof line
-    eaves = min(eaves, ridge)
+    eaves = min(max(eaves, MIN_EAVES_M), ridge)
     storeys = max(1, int(round((eaves - GROUND_FLOOR_OFFSET_M) / STOREY_M)))
 
     if roof["confidence"] < 0.5:

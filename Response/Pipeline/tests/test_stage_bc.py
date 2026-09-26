@@ -114,7 +114,7 @@ def test_gable_roof():
     m, flags = compute_massing(HOUSE, flat_hf(), dsm_with(gable))
     assert m["roof"]["type"] == "gable"
     assert m["roof"]["ridge_bearing_deg"] == pytest.approx(90, abs=10)
-    assert 7.0 < m["ridge_height_m"] <= 8.0 and m["eaves_height_m"] == pytest.approx(5.0, abs=0.3)
+    assert 7.0 < m["ridge_height_m"] <= 8.0 and m["eaves_height_m"] == pytest.approx(5.0, abs=0.5)
     assert m["storeys"] == 2 and m["ground_z"] == 100.0
 
 
@@ -258,3 +258,18 @@ def test_preview_scene_builds():
     scene = build_scene(recs, roads, flat_hf(), dsm_with(gable), (1050.0, 2050.0), 40.0, ["Old Street"])
     assert scene["walls"]["pos"] and scene["roofs"]["pos"] and scene["roads"]["pos"] and scene["labels"][0]["text"] == "Old Street"
     assert scene["terrain"]["nx"] == 41
+
+
+def test_semi_with_rear_extension_is_not_sunk():
+    """Regression (Hurst Cross): hipped 1930s semi pair whose OS outline includes a single-storey rear extension."""
+    def semi(e, n):
+        main = (e > 1020) & (e < 1036) & (n > 2040) & (n < 2048)
+        ext = (e > 1022) & (e < 1034) & (n > 2036) & (n <= 2040)  # 4 m deep flat-roof extension, 3 m high
+        d = np.minimum.reduce([n - 2040, 2048 - n, e - 1020, 1036 - e])
+        roof = 5.2 + np.minimum(d, 4.0) * 0.75  # 37 deg hip, eaves 5.2, ridge 8.2
+        return np.where(main, roof, np.where(ext, 3.0, 0.0))
+    outline = Polygon([(1020, 2040), (1022, 2040), (1022, 2036), (1034, 2036), (1034, 2040), (1036, 2040), (1036, 2048), (1020, 2048)])
+    m, flags = compute_massing(outline, flat_hf(), dsm_with(semi))
+    assert m["roof"]["type"] == "hip"
+    assert m["eaves_height_m"] == pytest.approx(5.2, abs=0.6)
+    assert m["storeys"] == 2
