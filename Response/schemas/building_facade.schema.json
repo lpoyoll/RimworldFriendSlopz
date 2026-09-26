@@ -4,52 +4,288 @@
   "title": "Building facade record",
   "description": "Output of pipeline Stages B-D, one per footprint. Input to the Houdini build (Stage E).",
   "type": "object",
-  "required": ["footprint_id", "sources", "footprint", "massing", "archetype"],
+  "required": [
+    "footprint_id",
+    "sources",
+    "footprint",
+    "massing",
+    "archetype"
+  ],
   "properties": {
-    "footprint_id": { "type": "string", "pattern": "^fp_[0-9a-f]{16}$" },
-    "zone": { "type": "string" },
-    "sources": { "type": "array", "items": { "type": "string" }, "description": "Source registry IDs that contributed, for attribution and licence audit." },
-    "footprint": {
-      "type": "object", "required": ["crs", "outer"],
-      "properties": {
-        "crs": { "const": "EPSG:27700" },
-        "outer": { "type": "array", "items": { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 2 }, "minItems": 3 },
-        "holes": { "type": "array", "items": { "type": "array" } }
-      }
+    "footprint_id": {
+      "type": "string",
+      "pattern": "^fp_[0-9a-f]{16}$"
     },
-    "massing": {
-      "type": "object", "required": ["ground_z", "eaves_height_m", "roof"],
-      "properties": {
-        "ground_z": { "type": "number" },
-        "eaves_height_m": { "type": "number", "minimum": 0 },
-        "ridge_height_m": { "type": "number", "minimum": 0 },
-        "storeys": { "type": "integer", "minimum": 1 },
-        "roof": { "type": "object", "required": ["type", "confidence"], "properties": { "type": { "type": "string", "enum": ["flat", "gable", "hip", "mansard", "sawtooth", "complex"] }, "ridge_bearing_deg": { "type": "number" }, "material": { "type": "string", "enum": ["slate", "concrete_tile", "clay_tile", "felt", "metal", "unknown"] }, "confidence": { "type": "number", "minimum": 0, "maximum": 1 } } }
-      }
+    "zone": {
+      "type": "string"
     },
-    "archetype": {
-      "type": "object", "required": ["id", "confidence"],
-      "properties": { "id": { "type": "string", "enum": ["terrace_redbrick", "semi_detached", "detached", "pebbledash", "render", "council_1960s", "council_highrise", "mill_stone", "mill_brick", "retail_modern", "shop_terrace", "civic", "church", "industrial_shed", "other"] }, "confidence": { "type": "number", "minimum": 0, "maximum": 1 } }
-    },
-    "facades": {
-      "type": "array", "description": "One entry per footprint edge that faces a street or was observed.",
+    "sources": {
+      "type": "array",
       "items": {
-        "type": "object", "required": ["edge_index"],
-        "properties": {
-          "edge_index": { "type": "integer", "minimum": 0 },
-          "street_facing": { "type": "boolean" },
-          "wall_material": { "type": "string", "enum": ["brick_red", "brick_buff", "brick_painted", "stone", "pebbledash", "render", "cladding", "glass", "unknown"] },
-          "wall_colour_srgb": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
-          "bays": {
-            "type": "array", "description": "Left to right as seen from the street.",
-            "items": { "type": "object", "properties": { "width_m": { "type": "number" }, "ground": { "type": "string", "enum": ["door", "window", "bay_window", "shopfront", "garage", "blank", "passage"] }, "upper": { "type": "array", "items": { "type": "string", "enum": ["window", "blank", "dormer", "balcony"] } } } }
+        "type": "string"
+      },
+      "description": "Source registry IDs that contributed, for attribution and licence audit."
+    },
+    "footprint": {
+      "type": "object",
+      "required": [
+        "crs",
+        "outer"
+      ],
+      "properties": {
+        "crs": {
+          "const": "EPSG:27700"
+        },
+        "outer": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2
           },
-          "shopfront": { "type": "object", "properties": { "real_use": { "type": "string" }, "fictional_name": { "type": "string" }, "shutter": { "type": "boolean" } } },
-          "observations": { "type": "integer", "minimum": 0 },
-          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+          "minItems": 3
+        },
+        "holes": {
+          "type": "array",
+          "items": {
+            "type": "array"
+          }
         }
       }
     },
-    "qa": { "type": "object", "properties": { "reviewed": { "type": "boolean" }, "overrides": { "type": "object" }, "flags": { "type": "array", "items": { "type": "string" } } } }
+    "massing": {
+      "type": "object",
+      "required": [
+        "ground_z",
+        "eaves_height_m",
+        "roof"
+      ],
+      "properties": {
+        "ground_z": {
+          "type": "number"
+        },
+        "eaves_height_m": {
+          "type": "number",
+          "minimum": 0
+        },
+        "ridge_height_m": {
+          "type": "number",
+          "minimum": 0
+        },
+        "storeys": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "roof": {
+          "type": "object",
+          "required": [
+            "type",
+            "confidence"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "flat",
+                "gable",
+                "hip",
+                "mono_pitch",
+                "mansard",
+                "sawtooth",
+                "complex"
+              ]
+            },
+            "ridge_bearing_deg": {
+              "type": "number"
+            },
+            "material": {
+              "type": "string",
+              "enum": [
+                "slate",
+                "concrete_tile",
+                "clay_tile",
+                "felt",
+                "metal",
+                "unknown"
+              ]
+            },
+            "confidence": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "ground_z_min": {
+          "type": "number",
+          "description": "Lowest adjacent ground (ODN m), so buildings on slopes do not float."
+        }
+      }
+    },
+    "archetype": {
+      "type": "object",
+      "required": [
+        "id",
+        "confidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "terrace_redbrick",
+            "semi_detached",
+            "detached",
+            "pebbledash",
+            "render",
+            "council_1960s",
+            "council_highrise",
+            "mill_stone",
+            "mill_brick",
+            "retail_modern",
+            "shop_terrace",
+            "civic",
+            "church",
+            "industrial_shed",
+            "other"
+          ]
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "basis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Rules that produced the guess."
+        }
+      }
+    },
+    "facades": {
+      "type": "array",
+      "description": "One entry per footprint edge that faces a street or was observed.",
+      "items": {
+        "type": "object",
+        "required": [
+          "edge_index"
+        ],
+        "properties": {
+          "edge_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "street_facing": {
+            "type": "boolean"
+          },
+          "wall_material": {
+            "type": "string",
+            "enum": [
+              "brick_red",
+              "brick_buff",
+              "brick_painted",
+              "stone",
+              "pebbledash",
+              "render",
+              "cladding",
+              "glass",
+              "unknown"
+            ]
+          },
+          "wall_colour_srgb": {
+            "type": "string",
+            "pattern": "^#[0-9a-fA-F]{6}$"
+          },
+          "bays": {
+            "type": "array",
+            "description": "Left to right as seen from the street.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "width_m": {
+                  "type": "number"
+                },
+                "ground": {
+                  "type": "string",
+                  "enum": [
+                    "door",
+                    "window",
+                    "bay_window",
+                    "shopfront",
+                    "garage",
+                    "blank",
+                    "passage"
+                  ]
+                },
+                "upper": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "window",
+                      "blank",
+                      "dormer",
+                      "balcony"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "shopfront": {
+            "type": "object",
+            "properties": {
+              "real_use": {
+                "type": "string"
+              },
+              "fictional_name": {
+                "type": "string"
+              },
+              "shutter": {
+                "type": "boolean"
+              }
+            }
+          },
+          "observations": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      }
+    },
+    "qa": {
+      "type": "object",
+      "properties": {
+        "reviewed": {
+          "type": "boolean"
+        },
+        "overrides": {
+          "type": "object"
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "plot_id": {
+      "type": "string",
+      "pattern": "^plt_[0-9a-f]{16}$"
+    },
+    "osm": {
+      "type": "object",
+      "description": "OSM tags copied as attributes (ODbL)."
+    }
   }
 }

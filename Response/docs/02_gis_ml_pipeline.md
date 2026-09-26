@@ -39,25 +39,66 @@ vector data, which also looks more like a real MDT map.
   Settings come from the manifest: X/Y scale 100 (1 m), Z scale 128, location Z = +30 000 cm.
 - **Coordinates:** `06_coordinate_system.md`.
 
-## Stage B — Footprints and roads
+## Stage B — Footprints and roads (implemented: `footprints.py`, `roads.py`)
 
-- **Footprints:** OS OpenMap Local buildings as the base. Microsoft ML footprints only where OS has nothing (IoU < 0.1
-  against any OS footprint). OSM only for attributes (building type, levels, shop names to fictionalise).
-  Libraries: `geopandas`, `shapely` 2, `pyogrio`, `osmium` for the OSM extract (Geofabrik Greater Manchester).
-  Merge key: stable `footprint_id` = hash of source + source ID.
-- **Plots:** INSPIRE polygons if S-06 is approved. Otherwise derive plots by Voronoi split of block polygons between road
-  casings and footprints.
-- **Roads:** OS Open Roads centrelines (class: motorway, A, B, minor, local, access) enriched from OSM (lanes, one-way,
-  width, sidewalk, crossings). Output: road graph JSON, then Houdini road HDA creates splines, UK kerbs (125 mm upstand),
-  pavements, dropped kerbs, junction markings (TSRGD layouts), and a ZoneGraph for AI traffic.
+**Buildings** (`cli footprints`):
+- OS OpenMap Local buildings are the base geometry. Each is repaired (`make_valid`), split into single polygons,
+  simplified 0.2 m and oriented, and anything under 6 m² is dropped.
+- Microsoft ML footprints are added only where no OS footprint overlaps them (IoU < 0.1 and < 30% of the MS polygon covered).
+- OSM (read straight from the Geofabrik `.osm.pbf` through GDAL; no osmium needed) contributes **attributes only**:
+  building type, levels, height, roof shape, name, shop/amenity, address. It is matched by largest overlap, which must cover ≥ 50% of the footprint.
+- INSPIRE plots: each footprint gets the plot containing its representative point.
+- Stable IDs: `fp_` + hash(source, source ID[, part]). Microsoft footprints have no ID, so their rounded centroid is used.
+  Every footprint lists its `sources`.
+- Output: `footprints.gpkg`.
 
-## Stage C — Massing
+**Roads** (`cli roads`):
+- OS Open Roads `road_link` is the network. `road_function` sets the hierarchy and default lanes, lane width, speed and
+  pavements. `form_of_way` handles dual carriageways, slip roads and roundabouts.
+- The OSM way with the most length inside an 8 m buffer supplies lanes, one-way (direction corrected against the OS
+  digitising direction), maxspeed, width and sidewalks. Any value still at its UK default is listed in `assumed`, so QA
+  can tell measured from guessed. Roundabout and slip-road direction without OSM is marked `forward_unverified`.
+- Polylines are densified to 5 m and draped on the DTM (z in metres ODN). UK kerb upstand is 125 mm; default pavement is 2 m.
+- Street names: `name` (real) and `name_altered` (a deterministic fictional first word, same suffix) are both exported.
+  The game setting chooses which one to show (S-13).
+- Output: `roads.json`, a node/edge graph. Nodes are marked junction, through or dead-end. The Houdini road HDA
+  (kerbs, markings, TSRGD junction layouts) and the ZoneGraph for AI traffic read this file.
 
-- Height = percentile 90 of (DSM − DTM) within each footprint, eroded 0.5 m to avoid wall-edge pixels.
-  Storey estimate = round((eaves height − 0.3) / 2.7).
-- **Roof type:** from the EA point cloud (LAZ via `laspy` + `lazrs`). RANSAC plane fitting (`open3d`) per footprint:
-  1 near-horizontal plane = flat, 2 opposed planes = gable, 3–4 = hip, more = complex. Output confidence per building.
-  Low-confidence items go to Stage I review.
+## Stage C — Massing (implemented: `massing.py`)
+
+- **Ground:** `ground_z` is the median DTM inside the footprint. `ground_z_min` is the 5th percentile of the ground in a
+  0.5–2 m ring outside it, so buildings on Tameside's slopes can be based at their lowest doorstep and never float.
+- **Ridge:** 95th percentile of nDSM (DSM − DTM) inside the footprint eroded by 0.5 m.
+- **Eaves:** each cell in the 1.5 m band inside the eroded edge is projected out to the wall along its own slope
+  (`nDSM − slope × distance`). The 25th percentile of those is the eaves height. Tested exact on a synthetic 45° gable.
+- **Storeys:** round((eaves − 0.3) / 2.7).
+- **Roof type (raster method):** cells steeper than 12° are pitched, and fewer than 30% pitched means flat. The downhill
+  directions are reduced to one fall axis (double-angle mean), which also gives the ridge bearing. Slopes on both sides
+  of the axis make a gable; add slopes along the axis and it is a hip; one side only is mono-pitch; anything else is complex.
+  Confidence is based on how dominant the pattern is and how many cells there are.
+  *Upgrade path:* RANSAC plane fitting on the EA LAZ point cloud (`laspy`, `open3d`) for buildings whose raster
+  confidence is below 0.5.
+- **Archetype (first guess):** from OSM tags, area, height, roof type and shared-wall count (2 = terrace, 1 = semi,
+  0 = detached): church, civic, high-rise, mill, industrial shed, retail, shop terrace, 1960s council, terrace, semi, detached.
+  Each guess lists its `basis`. Stage D will refine materials (for example pebbledash or render).
+- **QA flags:** `no_lidar_height`, `low_roof_confidence`, `low_archetype_confidence`, `height_outlier`,
+  `tall_roof_check_mansard_or_tower`. These drive the Stage I heat map.
+- Output: `buildings.jsonl`, one `building_facade.schema.json` record per line, with `facades` left empty until Stage D.
+
+### Running Stages B and C for Ashton
+
+Downloads (all free): OS OpenMap Local (GeoPackage, tile SJ99 plus neighbours), OS Open Roads (GeoPackage),
+Geofabrik `greater-manchester-latest.osm.pbf`, Microsoft footprints (UK GeoJSON), HMLR INSPIRE (Tameside),
+and EA LiDAR Composite **DTM and DSM** 1 m for the zone.
+
+```bash
+python -m tameside_pipeline.cli footprints --zone ashton_centre --os data/opmplc_gb.gpkg --ms data/ms_uk.geojson \
+    --osm data/greater-manchester-latest.osm.pbf --inspire data/Tameside_INSPIRE.gml --out build/ashton
+python -m tameside_pipeline.cli massing --zone ashton_centre --footprints build/ashton/footprints.gpkg \
+    --dtm data/dtm --dsm data/dsm --out build/ashton
+python -m tameside_pipeline.cli roads --zone ashton_centre --os-roads data/oproad_gb.gpkg \
+    --osm data/greater-manchester-latest.osm.pbf --dtm data/dtm --out build/ashton
+```
 
 ## Stage D — Facades (ML)
 

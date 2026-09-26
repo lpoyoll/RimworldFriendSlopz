@@ -26,6 +26,30 @@ def main(argv: list[str] | None = None) -> int:
     t.add_argument("--input", type=Path, required=True, help="Folder of .asc/.tif DTM tiles, or a single file")
     t.add_argument("--out", type=Path, required=True)
 
+    f = sub.add_parser("footprints", help="Stage B: merge building footprints (OS + MS + OSM attrs + INSPIRE plots)")
+    f.add_argument("--zone", required=True)
+    f.add_argument("--os", type=Path, required=True, help="OS OpenMap Local (GPKG/SHP)")
+    f.add_argument("--os-layer", default=None, help="Layer name, default: first layer containing 'building'")
+    f.add_argument("--ms", type=Path, help="Microsoft ML building footprints (GeoJSON)")
+    f.add_argument("--osm", type=Path, help="OSM extract (.osm.pbf)")
+    f.add_argument("--inspire", type=Path, help="HMLR INSPIRE index polygons (GML/GPKG)")
+    f.add_argument("--out", type=Path, required=True)
+
+    r = sub.add_parser("roads", help="Stage B: road graph from OS Open Roads + OSM")
+    r.add_argument("--zone", required=True)
+    r.add_argument("--os-roads", type=Path, required=True)
+    r.add_argument("--os-layer", default=None, help="Layer name, default: first layer containing 'link'")
+    r.add_argument("--osm", type=Path, help="OSM extract (.osm.pbf)")
+    r.add_argument("--dtm", type=Path, help="Folder of DTM tiles for road heights")
+    r.add_argument("--out", type=Path, required=True)
+
+    m = sub.add_parser("massing", help="Stage C: heights, roof type and archetype per footprint")
+    m.add_argument("--zone", required=True)
+    m.add_argument("--footprints", type=Path, required=True, help="footprints.gpkg from the footprints command")
+    m.add_argument("--dtm", type=Path, required=True)
+    m.add_argument("--dsm", type=Path, required=True)
+    m.add_argument("--out", type=Path, required=True)
+
     a = p.parse_args(argv)
     cfg = load_config(a.config)
     origin = WorldOrigin(cfg.origin_e, cfg.origin_n)
@@ -49,6 +73,10 @@ def main(argv: list[str] | None = None) -> int:
         m = build_terrain(cfg, a.zone, inputs, a.out)
         print(f"Wrote {len(m['tiles'])} tile(s) to {a.out}; heights {m['height_m']['min']:.1f}..{m['height_m']['max']:.1f} m; filled {m['filled_nodata_cells']} nodata cells")
         return 0
+
+    if a.cmd in ("footprints", "roads", "massing"):
+        from . import stages
+        return getattr(stages, f"run_{a.cmd}")(cfg, a)
     return 1
 
 

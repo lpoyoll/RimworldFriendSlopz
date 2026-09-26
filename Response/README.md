@@ -11,7 +11,7 @@ Players serve with the fictional **Greater Mancunia Police**.
 | `docs/` | Design and technical docs. Start with `docs/README.md`. |
 | `schemas/` | JSON Schemas for all data the designers edit (calls, NPCs, PNC, facades). |
 | `Data/` | Data that designers and modders edit: call types, examples. |
-| `Pipeline/` | Python GIS/ML pipeline (Stage A terrain is implemented). |
+| `Pipeline/` | Python GIS/ML pipeline (Stages A–C implemented: terrain, footprints, roads, massing). |
 | `Game/` | The UE5 C++ project (`Response.uproject`). |
 
 ## Quick start (pipeline)

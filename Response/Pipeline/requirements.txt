@@ -6,3 +6,7 @@ pyproj>=3.6
 # Validation and tests
 jsonschema>=4.21
 pytest>=8
+# Stages B/C (vector data; pyogrio reads OSM .pbf directly via GDAL)
+shapely>=2.0
+geopandas>=1.0
+pyogrio>=0.9

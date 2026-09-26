@@ -22,7 +22,7 @@ with M4–M7 as updates. That is the realistic route for a solo or small team.
 ## M1 breakdown (vertical slice)
 
 1. Stage A terrain in engine, with coordinate system verified against known survey points. *(pipeline done, import pending engine)*
-2. Stage B–C footprints, roads, massing; Houdini kit v1 (terrace, retail, shopfront, council).
+2. Stage B–C footprints, roads, massing *(pipeline done, awaiting real Ashton data run)*; Houdini kit v1 (terrace, retail, shopfront, council).
 3. Stage D facade ML on your own capture of Ashton centre (Mapillary if S-07 is approved).
 4. Stage G dressing; Stage I QA tool.
 5. `ResponseCore` (clock, event log, IDs, save); dispatch loop playable from a debug MDT.
