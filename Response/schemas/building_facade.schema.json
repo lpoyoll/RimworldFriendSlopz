@@ -286,6 +286,43 @@
     "osm": {
       "type": "object",
       "description": "OSM tags copied as attributes (ODbL)."
+    },
+    "units": {
+      "type": "object",
+      "description": "Dwellings/units in this footprint. OS OpenMap Local merges semi pairs and terrace rows into one polygon.",
+      "required": [
+        "count",
+        "basis"
+      ],
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "basis": {
+          "type": "string"
+        },
+        "addresses": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outlines": {
+          "type": "array",
+          "description": "Per-unit outlines split along the long axis; party walls sit on the shared edges.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "minItems": 3
+          }
+        }
+      }
     }
   }
 }

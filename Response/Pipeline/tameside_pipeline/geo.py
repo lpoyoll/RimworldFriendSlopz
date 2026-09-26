@@ -25,6 +25,18 @@ def stable_id(prefix: str, *parts: object) -> str:
     return f"{prefix}_{h}"
 
 
+def read_vectors(paths, bounds, layer_for):
+    """Read and concatenate several files (e.g. one per OS 100 km square). layer_for(path) picks the layer."""
+    import geopandas as gpd
+    import pandas as pd
+
+    parts = [read_vector(p, bounds, layer_for(p)) for p in paths]
+    parts = [p for p in parts if len(p)]
+    if not parts:
+        return gpd.GeoDataFrame(geometry=[], crs=CRS)
+    return gpd.GeoDataFrame(pd.concat(parts, ignore_index=True), geometry="geometry", crs=CRS)
+
+
 def read_vector(path: str | Path, bounds: tuple[float, float, float, float], layer: str | None = None):
     """Read a vector file (GPKG, GeoJSON, SHP, OSM PBF) clipped to BNG bounds, reprojected to EPSG:27700."""
     import geopandas as gpd

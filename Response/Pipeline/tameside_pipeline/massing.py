@@ -17,6 +17,7 @@ import math
 
 import numpy as np
 
+from .footprints import split_units
 from .geo import Heightfield
 
 STOREY_M = 2.7
@@ -141,15 +142,30 @@ def compute_massing(geom, dtm: Heightfield, dsm: Heightfield) -> tuple[dict, lis
 RETAIL_TAGS = {"retail", "commercial", "supermarket", "kiosk"}
 INDUSTRIAL_TAGS = {"industrial", "warehouse", "manufacture"}
 CIVIC_TAGS = {"civic", "public", "government", "townhall", "hospital", "school", "college", "university", "fire_station", "police"}
+FLAT_TAGS = {"apartments", "flats", "maisonette", "residential_flats"}
+OSM_HOUSE_TYPES = {"semidetached_house": "semi_detached", "terrace": "terrace_redbrick", "detached": "detached", "bungalow": "detached"}
 
 
-def guess_archetype(area_m2: float, massing: dict, shared_walls: int, osm: dict) -> dict:
-    """First-pass archetype from geometry + OSM tags. Stage D (facades) and QA refine it."""
-    b = (osm or {}).get("building", "")
+def count_units(addresses: int, osm_units: int, osm: dict, area_m2: float) -> tuple[int, str]:
+    """Best estimate of the number of dwellings/units in a (possibly merged) footprint, and its basis."""
+    if osm.get("building") == "semidetached_house" and osm_units <= 1 and addresses <= 2 and area_m2 > 80:
+        return 2, "osm:semidetached_merged_by_os"
+    if osm_units >= 2:
+        return max(osm_units, 1), "osm:units"
+    if addresses >= 1:
+        return addresses, "uprn:count"
+    return 1, "default"
+
+
+def guess_archetype(area_m2: float, massing: dict, shared_walls: int, osm: dict, units: int = 1) -> dict:
+    """First-pass archetype from geometry, OSM tags and unit count. Stage D (facades) and QA refine it."""
+    osm = osm or {}
+    b = osm.get("building", "")
     storeys = massing["storeys"]
     roof = massing["roof"]["type"]
     height = massing.get("ridge_height_m") or massing["eaves_height_m"]
-    basis = []
+    per_unit = area_m2 / max(units, 1)
+    basis: list[str] = []
 
     def out(i, conf, why):
         basis.append(why)
@@ -161,18 +177,26 @@ def guess_archetype(area_m2: float, massing: dict, shared_walls: int, osm: dict)
         return out("civic", 0.7, "osm:civic")
     if height > 22 and roof == "flat":
         return out("council_highrise", 0.7, "tall_flat")
-    if b in INDUSTRIAL_TAGS or (area_m2 > 800 and storeys <= 2 and roof in ("flat", "complex")):
-        if area_m2 > 1500 and storeys >= 3:
-            return out("mill_brick", 0.55, "large_multistorey_industrial")
-        return out("industrial_shed", 0.6, "large_low_or_osm_industrial")
-    if area_m2 > 1500 and storeys >= 3:
-        return out("mill_brick", 0.5, "large_multistorey")
     if b in RETAIL_TAGS or osm.get("shop"):
         if area_m2 > 600:
             return out("retail_modern", 0.65, "osm:retail_large")
         return out("shop_terrace", 0.65, "osm:shop")
-    if roof == "flat" and 3 <= storeys <= 5 and area_m2 > 200:
-        return out("council_1960s", 0.5, "flat_roof_midrise")
+    if b in INDUSTRIAL_TAGS or (area_m2 > 800 and units <= 2 and storeys <= 2 and roof in ("flat", "complex")):
+        if area_m2 > 1500 and storeys >= 3:
+            return out("mill_brick", 0.55, "large_multistorey_industrial")
+        return out("industrial_shed", 0.6, "large_low_or_osm_industrial")
+    if area_m2 > 1500 and storeys >= 3 and units <= 2:
+        return out("mill_brick", 0.5, "large_multistorey")
+
+    # Residential
+    if b in FLAT_TAGS or (units >= 4 and per_unit < 90 and storeys >= 2 and area_m2 > 150):
+        return out("council_1960s", 0.55, f"flats:{units}_units")
+    if b in OSM_HOUSE_TYPES and units <= 2:
+        return out(OSM_HOUSE_TYPES[b], 0.8, f"osm:{b}")
+    if units == 2 and per_unit < 200:
+        return out("semi_detached", 0.75, "two_units_in_footprint")
+    if units >= 3 and per_unit < 150:
+        return out("terrace_redbrick", 0.75, f"row_of_{units}")
     if area_m2 < 250:
         if shared_walls >= 2:
             return out("terrace_redbrick", 0.6, "two_shared_walls")
@@ -191,7 +215,10 @@ def build_records(footprints, dtm: Heightfield, dsm: Heightfield, zone: str, sha
         g = row.geometry
         massing, flags = compute_massing(g, dtm, dsm)
         osm = row.get("osm") if isinstance(row.get("osm"), dict) else {}
-        arch = guess_archetype(g.area, massing, shared_walls[i], osm)
+        addresses = int(row.get("addresses") or 0)
+        osm_units = int(row.get("osm_units") or 0)
+        units, units_basis = count_units(addresses, osm_units, osm, g.area)
+        arch = guess_archetype(g.area, massing, shared_walls[i], osm, units)
         if arch["confidence"] < 0.5:
             flags.append("low_archetype_confidence")
         sources = list(row["sources"]) + ["ea_lidar_dtm_1m", "ea_lidar_dsm_1m"]
@@ -205,6 +232,10 @@ def build_records(footprints, dtm: Heightfield, dsm: Heightfield, zone: str, sha
             "facades": [],
             "qa": {"reviewed": False, "flags": flags},
         }
+        rec["units"] = {"count": units, "basis": units_basis, "addresses": addresses}
+        if 2 <= units <= 12 and arch["id"] in ("semi_detached", "terrace_redbrick", "shop_terrace"):
+            rec["units"]["outlines"] = [[[round(x, 2), round(y, 2)] for x, y in list(u.exterior.coords)[:-1]]
+                                        for u in split_units(g, units)]
         if row.get("plot_id"):
             rec["plot_id"] = row["plot_id"]
         if osm:

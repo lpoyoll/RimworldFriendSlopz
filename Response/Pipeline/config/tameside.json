@@ -92,6 +92,12 @@
       "status": "approved",
       "commercial_ok": false,
       "kind": "tool"
+    },
+    "os_open_uprn": {
+      "licence": "OGL-3.0",
+      "status": "approved",
+      "commercial_ok": true,
+      "attribution": "Contains OS data \u00a9 Crown copyright and database right."
     }
   },
   "project_mode": "non_commercial"

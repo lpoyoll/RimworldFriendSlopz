@@ -34,14 +34,17 @@ def clean_polygons(gdf):
     import shapely
     from shapely.geometry import Polygon
 
+    if not len(gdf):
+        return gdf.assign(part=[]).reset_index(drop=True)
     gdf = gdf.copy()
-    gdf["geometry"] = shapely.make_valid(gdf.geometry.values)
+    gdf["geometry"] = shapely.force_2d(shapely.make_valid(gdf.geometry.values))  # OS shapefiles carry Z=0
     gdf = gdf.explode(index_parts=False)
     gdf["part"] = gdf.groupby(level=0).cumcount()
     gdf = gdf[gdf.geometry.geom_type == "Polygon"]
     gdf["geometry"] = [shapely.geometry.polygon.orient(g.simplify(SIMPLIFY_M, preserve_topology=True), 1.0) for g in gdf.geometry]
     gdf = gdf[gdf.geometry.area >= MIN_AREA_M2]
-    return gdf[gdf.geometry.apply(lambda g: isinstance(g, Polygon) and g.is_valid)].reset_index(drop=True)
+    keep = np.array([isinstance(g, Polygon) and g.is_valid for g in gdf.geometry], dtype=bool)
+    return gdf[keep].reset_index(drop=True)
 
 
 def _source_ids(gdf, source: str, id_field: str | None) -> list[str]:
@@ -94,12 +97,20 @@ OSM_ATTRS = ("building", "building:levels", "height", "roof:shape", "name", "sho
 
 
 def attach_osm_attributes(fp, osm_gdf):
-    """Copy OSM tags onto each footprint from the OSM polygon with the largest overlap (>= 50% of footprint)."""
+    """Copy OSM tags onto each footprint and count the OSM buildings inside it.
+
+    OS OpenMap Local merges attached buildings (a semi pair or a terrace row is one polygon), while OSM often maps
+    each house. An OSM polygon matches if it covers >= 50% of the footprint, or if >= 50% of it lies inside the
+    footprint. Tags come from the largest match; `osm_units` counts the matched OSM buildings.
+    """
     fp = fp.copy()
     fp["osm"] = [{} for _ in range(len(fp))]
+    fp["osm_units"] = 0
     if osm_gdf is None or not len(osm_gdf):
         return fp
     osm = osm_gdf[osm_gdf.geometry.geom_type.isin(["Polygon", "MultiPolygon"])].reset_index(drop=True)
+    if "building" in osm.columns:
+        osm = osm[osm["building"].notna()].reset_index(drop=True)
     tags = []
     for _, row in osm.iterrows():
         t = parse_other_tags(row.get("other_tags"))
@@ -110,15 +121,77 @@ def attach_osm_attributes(fp, osm_gdf):
         tags.append({k: t[k] for k in OSM_ATTRS if k in t})
     tree = osm.sindex
     for i, g in enumerate(fp.geometry):
-        best, best_a = None, 0.0
+        best, best_a, units = None, 0.0, 0
         for j in tree.query(g, predicate="intersects"):
-            a = g.intersection(osm.geometry.iloc[j]).area
-            if a > best_a:
-                best, best_a = j, a
-        if best is not None and best_a / g.area >= 0.5 and tags[best]:
+            o = osm.geometry.iloc[j]
+            a = g.intersection(o).area
+            if a / g.area >= 0.5 or a / o.area >= 0.5:
+                units += 1
+                if a > best_a:
+                    best, best_a = j, a
+        fp.at[i, "osm_units"] = units
+        if best is not None and tags[best]:
             fp.at[i, "osm"] = tags[best]
             fp.at[i, "sources"] = list(fp.at[i, "sources"]) + ["osm"]
     return fp
+
+
+def attach_address_counts(fp, points_gdf, tolerance_m: float = 0.5):
+    """Count OS Open UPRN address points in each footprint (a proxy for dwellings / units)."""
+    fp = fp.copy()
+    fp["addresses"] = 0
+    if points_gdf is None or not len(points_gdf):
+        return fp
+    tree = points_gdf.sindex
+    for i, g in enumerate(fp.geometry):
+        fp.at[i, "addresses"] = len(tree.query(g.buffer(tolerance_m), predicate="intersects"))
+        if fp.at[i, "addresses"] and "os_open_uprn" not in fp.at[i, "sources"]:
+            fp.at[i, "sources"] = list(fp.at[i, "sources"]) + ["os_open_uprn"]
+    return fp
+
+
+def read_uprn_csv(path, bounds):
+    """OS Open UPRN CSV -> point GeoDataFrame clipped to bounds."""
+    import geopandas as gpd
+    import pandas as pd
+
+    df = pd.read_csv(path, usecols=lambda c: c.lstrip("\ufeff") in ("UPRN", "X_COORDINATE", "Y_COORDINATE"))
+    df.columns = [c.lstrip("\ufeff") for c in df.columns]
+    min_e, min_n, max_e, max_n = bounds
+    df = df[(df.X_COORDINATE >= min_e) & (df.X_COORDINATE <= max_e) & (df.Y_COORDINATE >= min_n) & (df.Y_COORDINATE <= max_n)]
+    return gpd.GeoDataFrame(df[["UPRN"]], geometry=gpd.points_from_xy(df.X_COORDINATE, df.Y_COORDINATE), crs=CRS)
+
+
+def split_units(geom, n: int) -> list:
+    """Split a merged footprint (semi pair, terrace row) into n equal bays along its long axis.
+
+    Party walls run across the long axis of the minimum rotated rectangle. Returns n polygons (or [geom] if n < 2).
+    """
+    import math
+
+    from shapely import affinity
+    from shapely.geometry import box as sbox
+
+    if n < 2:
+        return [geom]
+    rect = geom.minimum_rotated_rectangle
+    xy = list(rect.exterior.coords)[:4]
+    edges = [(xy[k], xy[(k + 1) % 4]) for k in range(2)]
+    (a, b) = max(edges, key=lambda e: math.dist(*e))
+    ang = math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))
+    c = rect.centroid
+    flat = affinity.rotate(geom, -ang, origin=c)
+    minx, miny, maxx, maxy = flat.bounds
+    w = (maxx - minx) / n
+    parts = []
+    for k in range(n):
+        strip = sbox(minx + k * w, miny - 1, minx + (k + 1) * w, maxy + 1)
+        piece = flat.intersection(strip)
+        if not piece.is_empty:
+            if piece.geom_type != "Polygon":
+                piece = max(getattr(piece, "geoms", [piece]), key=lambda q: q.area)
+            parts.append(affinity.rotate(piece, ang, origin=c))
+    return parts
 
 
 def attach_plots(fp, plots_gdf, plot_id_field: str = "INSPIREID"):

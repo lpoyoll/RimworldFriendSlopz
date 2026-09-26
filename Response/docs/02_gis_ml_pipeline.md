@@ -16,6 +16,7 @@ Goal: generate Tameside automatically (target 70–80%), then fix the rest by ha
 | Environment Agency LiDAR Composite DTM / DSM, 1 m (and National LiDAR Programme point clouds) | Terrain, building heights, roof type | Open Government Licence v3 | Free | Yes, with attribution | OK |
 | OS OpenMap – Local | Building footprints, water, woodland | OGL v3 (includes OS attribution) | Free | Yes, with attribution | OK |
 | OS Open Roads | Road centrelines and hierarchy | OGL v3 | Free | Yes, with attribution | OK |
+| OS Open UPRN (address points) | Units per building (semi pairs / terrace rows merged by OpenMap Local) | OGL v3 | Free | Yes, with attribution | OK |
 | OS Open Greenspace, OS Open Rivers | Parks, water | OGL v3 | Free | Yes | OK |
 | OpenStreetMap | Road detail (lanes, one-way, crossings), POIs, shop types | ODbL 1.0 | Free | Yes, with attribution. Share-alike applies if we publicly distribute a *derived database* | Approved |
 | Microsoft Global ML Building Footprints | Fill gaps in footprints | ODbL 1.0 | Free | As OSM | Approved |
@@ -47,6 +48,9 @@ vector data, which also looks more like a real MDT map.
 - Microsoft ML footprints are added only where no OS footprint overlaps them (IoU < 0.1 and < 30% of the MS polygon covered).
 - OSM (read straight from the Geofabrik `.osm.pbf` through GDAL; no osmium needed) contributes **attributes only**:
   building type, levels, height, roof shape, name, shop/amenity, address. It is matched by largest overlap, which must cover ≥ 50% of the footprint.
+- **Units:** OS OpenMap Local merges attached houses into one polygon, so each footprint gets an `addresses` count
+  (OS Open UPRN points inside it) and `osm_units` (OSM buildings matched inside it). Stage C turns these into `units`.
+- **Tameside spans two OS 100 km squares (SJ and SD, split at northing 400000).** Pass both files.
 - INSPIRE plots: each footprint gets the plot containing its representative point.
 - Stable IDs: `fp_` + hash(source, source ID[, part]). Microsoft footprints have no ID, so their rounded centroid is used.
   Every footprint lists its `sources`.
@@ -78,7 +82,9 @@ vector data, which also looks more like a real MDT map.
   Confidence is based on how dominant the pattern is and how many cells there are.
   *Upgrade path:* RANSAC plane fitting on the EA LAZ point cloud (`laspy`, `open3d`) for buildings whose raster
   confidence is below 0.5.
-- **Archetype (first guess):** from OSM tags, area, height, roof type and shared-wall count (2 = terrace, 1 = semi,
+- **Units:** `count_units` uses the OSM building count, then the UPRN count, then 1. Semi pairs and terrace rows get
+  per-unit outlines (split along the long axis) for party walls and per-house addresses in game.
+- **Archetype (first guess):** from OSM tags, unit count, area, height, roof type and shared-wall count (2 = terrace, 1 = semi,
   0 = detached): church, civic, high-rise, mill, industrial shed, retail, shop terrace, 1960s council, terrace, semi, detached.
   Each guess lists its `basis`. Stage D will refine materials (for example pebbledash or render).
 - **QA flags:** `no_lidar_height`, `low_roof_confidence`, `low_archetype_confidence`, `height_outlier`,
@@ -92,7 +98,8 @@ Geofabrik `greater-manchester-latest.osm.pbf`, Microsoft footprints (UK GeoJSON)
 and EA LiDAR Composite **DTM and DSM** 1 m for the zone.
 
 ```bash
-python -m tameside_pipeline.cli footprints --zone ashton_centre --os data/opmplc_gb.gpkg --ms data/ms_uk.geojson \
+python -m tameside_pipeline.cli footprints --zone ashton_centre --os data/SJ_Building.shp data/SD_Building.shp \\
+    --uprn data/uprn_tameside.csv --ms data/ms_uk.geojson \
     --osm data/greater-manchester-latest.osm.pbf --inspire data/Tameside_INSPIRE.gml --out build/ashton
 python -m tameside_pipeline.cli massing --zone ashton_centre --footprints build/ashton/footprints.gpkg \
     --dtm data/dtm --dsm data/dsm --out build/ashton
@@ -140,6 +147,10 @@ M60/M67 junctions, Hyde and Stalybridge centres. Photographing in public is lawf
 branding must be fictionalised.
 
 ## Stage I — Manual QA
+
+- **Preview (implemented, `preview.py`):** `cli preview` writes a self-contained three.js page of terrain, buildings,
+  party walls, roads, pavements, LiDAR trees and road labels around any point. It is used for quick checks without Unreal.
+  See `08_first_real_run.md`.
 
 - Editor Utility Widget heat map: per-building confidence (roof, height, facade match), shown as a coloured overlay in the level.
 - One-click actions: "reclassify archetype", "override height", "mark reviewed". Overrides are saved in

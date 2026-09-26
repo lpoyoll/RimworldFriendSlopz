@@ -124,7 +124,7 @@ def build_road_graph(os_links, osm_lines=None, heightfield=None, densify_m: floa
         return nid
 
     for _, row in os_links.iterrows():
-        geom = row.geometry
+        geom = shapely.force_2d(row.geometry)
         if geom.geom_type == "MultiLineString":
             geom = shapely.line_merge(geom)
             if geom.geom_type != "LineString":

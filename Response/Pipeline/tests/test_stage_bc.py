@@ -199,3 +199,62 @@ def test_cli_end_to_end_on_files(tmp_path):
     assert rec["massing"]["roof"]["type"] == "gable" and rec["archetype"]["id"] == "detached"
     road = json.loads((out / "roads.json").read_text())["edges"][0]
     assert road["hierarchy"] == "b_road" and road["polyline"][0][2] == pytest.approx(100.0)
+
+
+# ---------------------------------------------------------------- lessons from the first real run (Hurst Cross)
+
+def test_3d_os_geometries_are_flattened():
+    from shapely.geometry import Polygon as P3
+    fp = merge_footprints(gdf([P3([(1010, 2010, 0), (1015, 2010, 0), (1015, 2020, 0), (1010, 2020, 0)])], ID=["a"]), os_id_field="ID")
+    assert not fp.geometry.iloc[0].has_z
+
+
+def test_empty_zone_does_not_crash():
+    assert len(merge_footprints(gdf([], id=[]))) == 0
+
+
+def test_semi_pair_merged_by_os_is_split_into_two_units():
+    from tameside_pipeline.footprints import attach_address_counts, attach_osm_attributes, split_units
+    from tameside_pipeline.massing import count_units
+
+    pair = box(1020, 2040, 1036, 2048)  # OS: one polygon for both houses
+    fp = merge_footprints(gdf([pair], id=["p"]))
+    osm = gdf([box(1020, 2040, 1028, 2048), box(1028, 2040, 1036, 2048)], building=["semidetached_house"] * 2)
+    fp = attach_osm_attributes(fp, osm)
+    assert fp.osm_units[0] == 2 and fp.osm[0]["building"] == "semidetached_house"
+    pts = gpd.GeoDataFrame(geometry=gpd.points_from_xy([1024, 1032, 1100], [2044, 2044, 2044]), crs=CRS)
+    fp = attach_address_counts(fp, pts)
+    assert fp.addresses[0] == 2
+    assert count_units(2, 2, fp.osm[0], pair.area) == (2, "osm:units")
+    halves = split_units(pair, 2)
+    assert len(halves) == 2 and all(h.area == pytest.approx(64, rel=0.01) for h in halves)
+
+
+def test_record_has_units_and_semi_archetype():
+    from test_data_schemas import validator
+    from tameside_pipeline.footprints import attach_address_counts
+
+    pair = box(1020, 2040, 1036, 2046)
+    fp = merge_footprints(gdf([pair], id=["p"]))
+    fp["osm_units"] = 0
+    fp = attach_address_counts(fp, gpd.GeoDataFrame(geometry=gpd.points_from_xy([1024, 1032], [2043, 2043]), crs=CRS))
+
+    def pair_gable(e, n):
+        inside = (e > 1020) & (e < 1036) & (n > 2040) & (n < 2046)
+        return np.where(inside, 8.0 - np.abs(n - 2043.0), 0.0)
+    rec = build_records(fp, flat_hf(), dsm_with(pair_gable), "t", [0])[0]
+    assert rec["archetype"]["id"] == "semi_detached" and rec["units"]["count"] == 2 and len(rec["units"]["outlines"]) == 2
+    assert not list(validator("building_facade.schema.json").iter_errors(json.loads(json.dumps(rec))))
+
+
+def test_preview_scene_builds():
+    from tameside_pipeline.preview import build_scene, write_html
+
+    fp = merge_footprints(gdf([HOUSE], id=["h"]))
+    fp["osm_units"] = 0
+    recs = build_records(fp, flat_hf(), dsm_with(gable), "t", [0])
+    roads = build_road_graph(gdf([LineString([(1010, 2030), (1090, 2030)])], id=["L"], road_function=["B Road"],
+                                 form_of_way=["Single Carriageway"], name_1=["Old Street"]), None, flat_hf())
+    scene = build_scene(recs, roads, flat_hf(), dsm_with(gable), (1050.0, 2050.0), 40.0, ["Old Street"])
+    assert scene["walls"]["pos"] and scene["roofs"]["pos"] and scene["roads"]["pos"] and scene["labels"][0]["text"] == "Old Street"
+    assert scene["terrain"]["nx"] == 41
