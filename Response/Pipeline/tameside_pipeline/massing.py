@@ -194,7 +194,8 @@ def compute_massing(geom, dtm: Heightfield, dsm: Heightfield) -> tuple[dict, lis
     # (town-centre shops, mills, the market hall) have several roofs; mark them complex so builders use the
     # LiDAR roof surface instead of one giant pyramid.
     rectangularity = geom.area / max(geom.minimum_rotated_rectangle.area, 1e-6)
-    long_row = _elongation(geom) >= 3.0 and rectangularity >= 0.6  # merged terrace rows: one long pitched roof is right
+    # merged terrace rows (rear outriggers lower rectangularity): one long pitched roof is right
+    long_row = _elongation(geom) >= 3.0 and rectangularity >= 0.5
     if roof["type"] in ("hip", "gable", "mono_pitch") and not long_row and (geom.area > 600 or rectangularity < 0.7):
         roof = {**roof, "type": "complex", "note": f"area {geom.area:.0f} m2, rectangularity {rectangularity:.2f}"}
 

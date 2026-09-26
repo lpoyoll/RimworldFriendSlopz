@@ -491,7 +491,7 @@ def fit_pattern(dets: list[dict], width_m: float, height_m: float, archetype: st
         ground_window = "bay_window" if len(wide) > len(narrow) else "window"
         upper_per_unit = 2 if (len(upper) / n >= 1.3 or uw >= 5.5) else 1
         shopfront = shop_w > 0.3 * width_m or archetype == "shop_terrace"
-        garage = any(e["kind"] == "garage" for e in ground)
+        garage = sum(1 for e in ground if e["kind"] == "garage") >= max(1, n / 3)  # one garage is not a street of them
         return {"kind": "units", "units": n, "unit_width_m": round(uw, 2), "door_side": door_side, "ground_window": ground_window,
                 "upper_per_unit": upper_per_unit, "shopfront": bool(shopfront), "garage": bool(garage),
                 "evidence": {"doors": len(rel), "ground_windows": len(wide) + len(narrow), "upper_windows": len(upper)}}

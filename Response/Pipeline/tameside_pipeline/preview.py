@@ -233,11 +233,13 @@ def _facade_openings(mesh: _Mesh, poly, b: dict, g0: float, m: dict, P):
             elif g == "window":
                 rect(c - 0.65, c + 0.65, ground + 0.9, ground + 2.2, FRAME)
                 rect(c - 0.58, c + 0.58, ground + 0.97, ground + 2.13, GLASS)
+            storey_h = max((eaves - ground) / max(m.get("storeys", 1), 1), 2.2)  # this building's own storey height
+            win_h = min(1.3, storey_h - 1.0)
             for k, up in enumerate(bay.get("upper", []), start=1):
-                sill = ground + STOREY_M * k + 0.9
-                if up == "window" and sill + 1.3 < eaves + 0.2:
-                    rect(c - 0.55, c + 0.55, sill, sill + 1.3, FRAME)
-                    rect(c - 0.48, c + 0.48, sill + 0.07, sill + 1.23, GLASS)
+                sill = ground + storey_h * k + 0.75
+                if up == "window" and sill + win_h <= eaves - 0.15:
+                    rect(c - 0.55, c + 0.55, sill, sill + win_h, FRAME)
+                    rect(c - 0.48, c + 0.48, sill + 0.07, sill + win_h - 0.07, GLASS)
             s += w
 
 
