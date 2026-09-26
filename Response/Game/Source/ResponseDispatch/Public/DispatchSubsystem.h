@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "DispatchTypes.h"
+#include "ResponseSaveParticipant.h"
 #include "DispatchSubsystem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnIncidentChanged, int64, IncidentId);
@@ -14,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnJobOffered, int64, IncidentId, F
  * The AI dispatcher is only a policy on top of the public API, so a human dispatcher can replace it later.
  */
 UCLASS()
-class RESPONSEDISPATCH_API UDispatchSubsystem : public UTickableWorldSubsystem
+class RESPONSEDISPATCH_API UDispatchSubsystem : public UTickableWorldSubsystem, public IResponseSaveParticipant
 {
 	GENERATED_BODY()
 
@@ -30,11 +31,16 @@ public:
 	const FCallTypeDefinition* FindCallType(FName Id) const { return CallTypes.Find(Id); }
 	const TMap<FName, FCallTypeDefinition>& GetCallTypes() const { return CallTypes; }
 
-	// --- Clock (replaced by ResponseCore's clock subsystem in M1)
+	// --- Clock: UResponseClockSubsystem when present; the local fallback exists for headless tests.
 	UFUNCTION(BlueprintCallable, Category = "Dispatch") void SetGameTime(FDateTime NewTime) { GameTime = NewTime; }
 	UFUNCTION(BlueprintPure, Category = "Dispatch") FDateTime GetGameTime() const { return GameTime; }
-	/** Game seconds per real second. */
+	/** Game seconds per real second, used only when there is no clock subsystem. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dispatch") float TimeScale = 1.f;
+
+	// IResponseSaveParticipant
+	virtual FString GetSaveKey() const override { return TEXT("dispatch"); }
+	virtual void WriteSave(TSharedRef<FJsonObject> Out) const override;
+	virtual void ReadSave(const TSharedRef<FJsonObject>& In) override;
 
 	// --- Incidents
 	UFUNCTION(BlueprintCallable, Category = "Dispatch")

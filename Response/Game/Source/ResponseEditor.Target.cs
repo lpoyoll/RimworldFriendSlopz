@@ -7,6 +7,6 @@ public class ResponseEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-		ExtraModuleNames.AddRange(new[] { "Response", "ResponseDispatch" });
+		ExtraModuleNames.AddRange(new[] { "Response", "ResponseCore", "ResponseDispatch" });
 	}
 }

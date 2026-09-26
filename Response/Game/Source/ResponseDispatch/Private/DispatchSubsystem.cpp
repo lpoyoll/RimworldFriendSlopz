@@ -2,6 +2,13 @@
 #include "DispatchRules.h"
 #include "DispatchSettings.h"
 #include "Dom/JsonObject.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
+#include "JsonObjectConverter.h"
+#include "ResponseClockSubsystem.h"
+#include "ResponseEventLog.h"
+#include "ResponseEventTags.h"
+#include "ResponseSaveSubsystem.h"
 #include "HAL/FileManager.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -53,6 +60,19 @@ void UDispatchSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	const FString Dir = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / Settings->CallTypesDirectory);
 	const int32 N = LoadCallTypesFromDirectory(Dir);
 	UE_LOG(LogDispatch, Log, TEXT("Loaded %d call types from %s"), N, *Dir);
+	Collection.InitializeDependency<UResponseClockSubsystem>();
+	Collection.InitializeDependency<UResponseEventLog>();
+	if (const UResponseClockSubsystem* Clock = GetWorld()->GetSubsystem<UResponseClockSubsystem>())
+	{
+		GameTime = Clock->GetLocalTime();
+	}
+	if (UGameInstance* GI = GetWorld()->GetGameInstance())
+	{
+		if (UResponseSaveSubsystem* Save = GI->GetSubsystem<UResponseSaveSubsystem>())
+		{
+			Save->RegisterParticipant(this);
+		}
+	}
 }
 
 int32 UDispatchSubsystem::LoadCallTypesFromDirectory(const FString& AbsoluteDir)
@@ -154,6 +174,22 @@ int32 UDispatchSubsystem::LoadCallTypesFromJson(const FString& JsonText)
 void UDispatchSubsystem::Log(FIncident& Inc, const FString& Author, EIncidentLogKind Kind, const FString& Text)
 {
 	Inc.Log.Add({ GameTime, Author, Kind, Text });
+
+	// Mirror every Storm log line into the shared event log (BWV, debrief, complaints and court read it there).
+	if (UResponseEventLog* Events = GetWorld() ? GetWorld()->GetSubsystem<UResponseEventLog>() : nullptr)
+	{
+		FGameplayTag Tag;
+		switch (Kind)
+		{
+		case EIncidentLogKind::Grade: Tag = TAG_Event_Dispatch_Graded; break;
+		case EIncidentLogKind::Assignment: Tag = TAG_Event_Dispatch_Assigned; break;
+		case EIncidentLogKind::Status: Tag = TAG_Event_Dispatch_Status; break;
+		case EIncidentLogKind::Result: Tag = TAG_Event_Dispatch_Closed; break;
+		case EIncidentLogKind::System: Tag = Inc.Log.Num() == 1 ? TAG_Event_Dispatch_Created : (Text.Contains(TEXT("target breached")) ? TAG_Event_Dispatch_Breach : TAG_Event_Dispatch_Narrative); break;
+		default: Tag = TAG_Event_Dispatch_Narrative; break;
+		}
+		Events->Record(Tag, Author, Text, Inc.Id, FResponseId(), Inc.Location, { { TEXT("ref"), Inc.Reference }, { TEXT("call_type"), Inc.CallType.ToString() } });
+	}
 }
 
 int64 UDispatchSubsystem::CreateIncident(FName CallType, const TArray<FName>& DetailFlags, FVector Location,
@@ -345,7 +381,14 @@ bool UDispatchSubsystem::DeclineOffer(int64 IncidentId, FName CallSign)
 
 void UDispatchSubsystem::Tick(float DeltaTime)
 {
-	GameTime += FTimespan::FromSeconds(DeltaTime * TimeScale);
+	if (const UResponseClockSubsystem* Clock = GetWorld() ? GetWorld()->GetSubsystem<UResponseClockSubsystem>() : nullptr)
+	{
+		GameTime = Clock->GetLocalTime();
+	}
+	else
+	{
+		GameTime += FTimespan::FromSeconds(DeltaTime * TimeScale);
+	}
 	CheckBreaches();
 	if (GetDefault<UDispatchSettings>()->bAutoDispatch)
 	{
@@ -430,4 +473,52 @@ void UDispatchSubsystem::RunAIDispatcher()
 			AssignUnit(Queued.Id, U->CallSign, AIAuthor);
 		}
 	}
+}
+
+void UDispatchSubsystem::WriteSave(TSharedRef<FJsonObject> Out) const
+{
+	TArray<TSharedPtr<FJsonValue>> Incs, Us;
+	for (const TPair<int64, FIncident>& P : Incidents)
+	{
+		if (TSharedPtr<FJsonObject> J = FJsonObjectConverter::UStructToJsonObject(P.Value)) { Incs.Add(MakeShared<FJsonValueObject>(J)); }
+	}
+	for (const TPair<FName, FDispatchUnit>& P : Units)
+	{
+		if (TSharedPtr<FJsonObject> J = FJsonObjectConverter::UStructToJsonObject(P.Value)) { Us.Add(MakeShared<FJsonValueObject>(J)); }
+	}
+	Out->SetArrayField(TEXT("incidents"), Incs);
+	Out->SetArrayField(TEXT("units"), Us);
+	Out->SetNumberField(TEXT("next_incident_id"), static_cast<double>(NextIncidentId));
+	Out->SetNumberField(TEXT("daily_sequence"), DailySequence);
+	Out->SetNumberField(TEXT("sequence_day"), SequenceDay);
+	Out->SetStringField(TEXT("game_time"), GameTime.ToIso8601());
+}
+
+void UDispatchSubsystem::ReadSave(const TSharedRef<FJsonObject>& In)
+{
+	Incidents.Reset();
+	Units.Reset();
+	PendingOffers.Reset();
+	DeclinedByPlayer.Reset();
+	const TArray<TSharedPtr<FJsonValue>>* Arr;
+	if (In->TryGetArrayField(TEXT("incidents"), Arr))
+	{
+		for (const TSharedPtr<FJsonValue>& V : *Arr)
+		{
+			FIncident Inc;
+			if (FJsonObjectConverter::JsonObjectToUStruct(V->AsObject().ToSharedRef(), &Inc)) { Incidents.Add(Inc.Id, MoveTemp(Inc)); }
+		}
+	}
+	if (In->TryGetArrayField(TEXT("units"), Arr))
+	{
+		for (const TSharedPtr<FJsonValue>& V : *Arr)
+		{
+			FDispatchUnit U;
+			if (FJsonObjectConverter::JsonObjectToUStruct(V->AsObject().ToSharedRef(), &U)) { Units.Add(U.CallSign, MoveTemp(U)); }
+		}
+	}
+	NextIncidentId = static_cast<int64>(In->GetNumberField(TEXT("next_incident_id")));
+	DailySequence = In->GetIntegerField(TEXT("daily_sequence"));
+	SequenceDay = In->GetIntegerField(TEXT("sequence_day"));
+	FDateTime::ParseIso8601(*In->GetStringField(TEXT("game_time")), GameTime);
 }

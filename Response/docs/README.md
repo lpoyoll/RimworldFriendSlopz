@@ -11,5 +11,6 @@
 | [06_coordinate_system.md](06_coordinate_system.md) | British National Grid to UE coordinate conversion |
 | [07_dispatch_model.md](07_dispatch_model.md) | Dispatch data model (Milestone 1 build) |
 | [08_first_real_run.md](08_first_real_run.md) | First real-data run: Hurst Cross, with screenshots |
+| [09_core_module.md](09_core_module.md) | ResponseCore: IDs, RNG, clock (GMT/BST, sun, shifts), event log, JSON saves |
 
 Rule: when something here changes, update the doc in the same commit.

@@ -5,6 +5,7 @@
 	"Description": "RESPONSE - UK policing simulator",
 	"Modules": [
 		{ "Name": "Response", "Type": "Runtime", "LoadingPhase": "Default" },
+		{ "Name": "ResponseCore", "Type": "Runtime", "LoadingPhase": "Default" },
 		{ "Name": "ResponseDispatch", "Type": "Runtime", "LoadingPhase": "Default" }
 	],
 	"Plugins": [

@@ -1,0 +1,11 @@
+{
+  "id": "evt_3f9a0c2b7d41e865",
+  "seq": 2,
+  "at": "2026-10-26T22:14:05.000Z",
+  "type": "Event.Dispatch.Graded",
+  "actor": "AI_DISPATCH",
+  "incident": 1,
+  "location_cm": [120800.0, -251600.0, 14580.0],
+  "text": "Graded G1: Ongoing domestic, risk of harm",
+  "data": { "ref": "0001-261026", "call_type": "domestic_incident" }
+}

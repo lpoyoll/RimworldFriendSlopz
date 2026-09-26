@@ -7,6 +7,6 @@ public class ResponseTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-		ExtraModuleNames.AddRange(new[] { "Response", "ResponseDispatch" });
+		ExtraModuleNames.AddRange(new[] { "Response", "ResponseCore", "ResponseDispatch" });
 	}
 }

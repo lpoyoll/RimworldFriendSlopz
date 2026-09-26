@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://response.game/schemas/event.schema.json",
+  "title": "Event log entry",
+  "description": "One entry in the shared event log (UResponseEventLog). BWV, NDM debrief, complaints and court all read these.",
+  "type": "object",
+  "required": ["id", "seq", "at", "type", "actor", "location_cm", "text"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^evt_[0-9a-f]{16}$" },
+    "seq": { "type": "integer", "minimum": 1, "description": "Strictly increasing; orders events that share a timestamp." },
+    "at": { "type": "string", "description": "UK local game time, ISO 8601." },
+    "type": { "$ref": "common.schema.json#/$defs/tag" },
+    "actor": { "type": "string", "description": "Call sign, NPC id or SYSTEM." },
+    "subject": { "$ref": "common.schema.json#/$defs/id" },
+    "incident": { "type": "integer", "minimum": 1 },
+    "location_cm": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3, "description": "UE world position (cm). Convert to BNG with docs/06." },
+    "text": { "type": "string" },
+    "data": { "type": "object", "additionalProperties": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

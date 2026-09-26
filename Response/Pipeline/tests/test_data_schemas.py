@@ -30,6 +30,7 @@ CASES = [
     ("npc_profile.schema.json", "Data/Examples/npc_profile.example.json"),
     ("pnc_record.schema.json", "Data/Examples/pnc_person.example.json"),
     ("building_facade.schema.json", "Data/Examples/building_facade.example.json"),
+    ("event.schema.json", "Data/Examples/event.example.json"),
 ]
 
 
