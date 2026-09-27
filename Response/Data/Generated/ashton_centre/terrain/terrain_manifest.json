@@ -1,0 +1,64 @@
+{
+  "zone": "ashton_centre",
+  "crs": "EPSG:27700",
+  "resolution_m": 1.0,
+  "vertices": [
+    2017,
+    2017
+  ],
+  "bng_extent_vertices": {
+    "min_e": 392900.5,
+    "max_e": 394916.5,
+    "min_n": 397883.5,
+    "max_n": 399899.5
+  },
+  "world_origin_bng": [
+    393000.0,
+    398000.0
+  ],
+  "ue_landscape": {
+    "location_cm": [
+      -9950.0,
+      -189950.0,
+      30000.0
+    ],
+    "scale": [
+      100.0,
+      100.0,
+      128.0
+    ],
+    "tile_quads": 2016,
+    "full_heightmap": "ashton_centre_full.png",
+    "note": "Tiles share their edge row/column with neighbours. Verify tiled import in-engine (see docs/06)."
+  },
+  "height_m": {
+    "min": 84.39300537109375,
+    "max": 145.5959930419922,
+    "representable": [
+      -27.68,
+      627.67
+    ]
+  },
+  "filled_nodata_cells": 0,
+  "tiles": [
+    {
+      "file": "ashton_centre_x0_y0.png",
+      "x": 0,
+      "y": 0,
+      "bng_nw_vertex": [
+        392900.5,
+        399899.5
+      ],
+      "vertices": 2017
+    }
+  ],
+  "inputs": [
+    "dtm_392800_397800.tif",
+    "dtm_392800_398900.tif",
+    "dtm_393900_397800.tif",
+    "dtm_393900_398900.tif"
+  ],
+  "attribution": [
+    "Contains Environment Agency information \u00a9 Environment Agency and/or database right."
+  ]
+}
