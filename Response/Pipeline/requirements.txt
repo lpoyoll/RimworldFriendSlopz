@@ -10,3 +10,11 @@ pytest>=8
 shapely>=2.0
 geopandas>=1.0
 pyogrio>=0.9
+# Stage D (facades from street imagery). CPU is fine; a CUDA build of torch is much faster on a GPU PC.
+torch>=2.3
+transformers>=4.44
+opencv-python-headless>=4.9
+pillow>=10
+# Preview screenshots (optional)
+playwright>=1.45
+matplotlib>=3.8
