@@ -42,7 +42,7 @@ Modules are added when their milestone starts, not before. Only `Response` and `
 
 - **Engine:** latest stable UE5 at project creation, then pinned. Engine upgrades happen only at milestone boundaries.
 - **Template:** blank C++ project, no starter content.
-- **Enabled plugins:** World Partition (default for new levels), PCG, MassEntity, MassGameplay, StateTree, ChaosVehicles,
+- **Enabled plugins (target set; only EnhancedInput is enabled today, the rest are enabled when their milestone starts. Note: from UE 5.5, MassEntity is an engine module, not a plugin):** World Partition (default for new levels), PCG, MassEntity, MassGameplay, StateTree, ChaosVehicles,
   EnhancedInput, GameplayAbilities, GameplayTags, CommonUI, Water (canals, Portland Basin), Houdini Engine (editor only),
   MetaHuman (when characters start).
 - **Rendering:** Lumen GI and reflections, Nanite for buildings and street furniture, Virtual Shadow Maps, TSR.
