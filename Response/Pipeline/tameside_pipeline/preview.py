@@ -48,22 +48,26 @@ def _rgb(hexs: str, shade: float = 1.0):
 
 
 def build_scene(buildings: list[dict], roads: dict, dtm: Heightfield, dsm: Heightfield | None,
-                centre: tuple[float, float], radius: float = 200.0, labels: list[str] | None = None) -> dict:
+                centre: tuple[float, float], radius: float = 200.0, labels: list[str] | None = None,
+                frame_origin: tuple[float, float, float] | None = None, terrain_step: float = 2.0) -> dict:
+    """frame_origin=(E, N, H): put coordinates relative to this point (e.g. the world origin for Unreal export)
+    instead of relative to the view centre."""
     ce, cn = centre
     base = float(np.nanmedian(dtm.sample([ce], [cn])))
+    oe, on, ob = frame_origin if frame_origin else (ce, cn, base)
 
-    def P(e, n, h):  # BNG + ODN -> three.js (x east, y up, z south)
-        return (e - ce, h - base, -(n - cn))
+    def P(e, n, h):  # BNG + ODN -> right-handed Y-up (x east, y up, z south), as three.js and glTF use
+        return (e - oe, h - ob, -(n - on))
 
-    # ---- terrain (2 m grid)
-    step = 2.0
+    # ---- terrain
+    step = terrain_step
     es = np.arange(ce - radius, ce + radius + step, step)
     ns = np.arange(cn + radius, cn - radius - step, -step)
     E, N = np.meshgrid(es, ns)
     H = dtm.sample(E.ravel(), N.ravel()).reshape(E.shape)
     H = np.where(np.isnan(H), np.nanmin(H), H)
-    terrain = {"nx": len(es), "nz": len(ns), "x0": float(es[0] - ce), "z0": float(-(ns[0] - cn)), "step": step,
-               "h": [round(float(v - base), 2) for v in H.ravel()]}
+    terrain = {"nx": len(es), "nz": len(ns), "x0": float(es[0] - oe), "z0": float(-(ns[0] - on)), "step": step,
+               "h": [round(float(v - ob), 2) for v in H.ravel()]}
 
     # ---- buildings
     walls, roofs, openings = _Mesh(), _Mesh(), _Mesh()
@@ -158,7 +162,7 @@ def build_scene(buildings: list[dict], roads: dict, dtm: Heightfield, dsm: Heigh
         peaks = mask & (ndsm >= local_max) & (ndsm > 3.0)
         for r, c in zip(*np.nonzero(peaks)):
             h = float(ndsm[r, c])
-            trees.append([round(float(E[r, c] - ce), 1), round(float(H[r, c] - base), 1), round(float(-(N[r, c] - cn)), 1), round(h, 1)])
+            trees.append([round(float(E[r, c] - oe), 1), round(float(H[r, c] - ob), 1), round(float(-(N[r, c] - on)), 1), round(h, 1)])
 
     labels_out = []
     for name in labels or []:

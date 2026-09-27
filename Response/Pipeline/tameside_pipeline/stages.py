@@ -338,3 +338,23 @@ def run_facades(cfg, a) -> int:
     print(f"facades: {dict(bases)}")
     print(f"observed materials: {dict(mats)}; rejected views: {dict(rejected)}")
     return 0
+
+
+def run_export_gltf(cfg, a) -> int:
+    from .gltf_export import export_zone
+    from .preview import build_scene
+
+    zone = cfg.zone(a.zone)
+    b = zone_bounds(cfg, zone, MARGIN_M)
+    buildings = [json.loads(line) for line in open(a.buildings, encoding="utf-8")]
+    roads = json.loads(Path(a.roads).read_text(encoding="utf-8"))
+    dtm = Heightfield.from_files(_raster_files(a.dtm), b, cfg.landscape.resolution_m)
+    dsm = Heightfield.from_files(_raster_files(a.dsm), b, cfg.landscape.resolution_m) if a.dsm else None
+    min_e, min_n, max_e, max_n = zone_bounds(cfg, zone)
+    centre = ((min_e + max_e) / 2, (min_n + max_n) / 2)
+    radius = (max_e - min_e) / 2 - 2
+    scene = build_scene(buildings, roads, dtm, dsm, centre, radius, frame_origin=(cfg.origin_e, cfg.origin_n, 0.0),
+                        terrain_step=a.terrain_step)
+    counts = export_zone(scene, a.out)
+    print(f"glTF export -> {a.out}: " + ", ".join(f"{k} {v:,} tris" for k, v in counts.items()))
+    return 0

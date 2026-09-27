@@ -81,6 +81,15 @@ def main(argv: list[str] | None = None) -> int:
     fc.add_argument("--limit", type=int, default=0, help="Only process the first N seen facades (for QA)")
     fc.add_argument("--out", type=Path, required=True)
 
+    gx = sub.add_parser("export-gltf", help="Export a zone as .glb files for a first look in Unreal")
+    gx.add_argument("--zone", required=True)
+    gx.add_argument("--buildings", type=Path, required=True)
+    gx.add_argument("--roads", type=Path, required=True)
+    gx.add_argument("--dtm", type=Path, required=True)
+    gx.add_argument("--dsm", type=Path, help="Adds LiDAR roof surfaces and trees")
+    gx.add_argument("--terrain-step", type=float, default=4.0)
+    gx.add_argument("--out", type=Path, required=True)
+
     a = p.parse_args(argv)
     cfg = load_config(a.config)
     origin = WorldOrigin(cfg.origin_e, cfg.origin_n)
@@ -105,7 +114,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Wrote {len(m['tiles'])} tile(s) to {a.out}; heights {m['height_m']['min']:.1f}..{m['height_m']['max']:.1f} m; filled {m['filled_nodata_cells']} nodata cells")
         return 0
 
-    if a.cmd in ("footprints", "roads", "massing", "preview", "streetview", "facades"):
+    if a.cmd == "export-gltf":
+        a.cmd = "export_gltf"
+    if a.cmd in ("footprints", "roads", "massing", "preview", "streetview", "facades", "export_gltf"):
         from . import stages
         return getattr(stages, f"run_{a.cmd}")(cfg, a)
     return 1

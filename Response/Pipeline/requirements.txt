@@ -18,3 +18,4 @@ pillow>=10
 # Preview screenshots (optional)
 playwright>=1.45
 matplotlib>=3.8
+trimesh>=4.0  # glTF export
