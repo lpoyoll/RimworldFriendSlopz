@@ -188,7 +188,10 @@ void UDispatchSubsystem::Log(FIncident& Inc, const FString& Author, EIncidentLog
 		case EIncidentLogKind::System: Tag = Inc.Log.Num() == 1 ? TAG_Event_Dispatch_Created : (Text.Contains(TEXT("target breached")) ? TAG_Event_Dispatch_Breach : TAG_Event_Dispatch_Narrative); break;
 		default: Tag = TAG_Event_Dispatch_Narrative; break;
 		}
-		Events->Record(Tag, Author, Text, Inc.Id, FResponseId(), Inc.Location, { { TEXT("ref"), Inc.Reference }, { TEXT("call_type"), Inc.CallType.ToString() } });
+		TMap<FName, FString> Data;
+		Data.Add(TEXT("ref"), Inc.Reference);
+		Data.Add(TEXT("call_type"), Inc.CallType.ToString());
+		Events->Record(Tag, Author, Text, Inc.Id, FResponseId(), Inc.Location, Data);
 	}
 }
 

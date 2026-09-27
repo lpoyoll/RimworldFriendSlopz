@@ -53,7 +53,7 @@ public:
 
 	/** Record an event at the current game time. Returns the stored event. */
 	const FResponseEvent& Record(FGameplayTag Type, const FString& Actor, const FString& Text, int64 IncidentId = 0,
-		FResponseId Subject = FResponseId(), FVector Location = FVector::ZeroVector, const TMap<FName, FString>& Data = {});
+		FResponseId Subject = FResponseId(), FVector Location = FVector::ZeroVector, const TMap<FName, FString>& Data = TMap<FName, FString>());
 
 	UFUNCTION(BlueprintCallable, Category = "Events") TArray<FResponseEvent> Query(const FResponseEventQuery& Q) const;
 	int32 Num() const { return Events.Num(); }

@@ -74,7 +74,11 @@ TSharedRef<FJsonObject> UResponseEventLog::ToJson(const FResponseEvent& E)
 	J->SetStringField(TEXT("actor"), E.Actor);
 	if (E.Subject.IsValid()) { J->SetStringField(TEXT("subject"), E.Subject.ToString()); }
 	if (E.IncidentId != 0) { J->SetNumberField(TEXT("incident"), static_cast<double>(E.IncidentId)); }
-	J->SetArrayField(TEXT("location_cm"), { MakeShared<FJsonValueNumber>(E.Location.X), MakeShared<FJsonValueNumber>(E.Location.Y), MakeShared<FJsonValueNumber>(E.Location.Z) });
+	TArray<TSharedPtr<FJsonValue>> Loc;
+	Loc.Add(MakeShared<FJsonValueNumber>(E.Location.X));
+	Loc.Add(MakeShared<FJsonValueNumber>(E.Location.Y));
+	Loc.Add(MakeShared<FJsonValueNumber>(E.Location.Z));
+	J->SetArrayField(TEXT("location_cm"), Loc);
 	J->SetStringField(TEXT("text"), E.Text);
 	TSharedRef<FJsonObject> D = MakeShared<FJsonObject>();
 	for (const TPair<FName, FString>& P : E.Data) { D->SetStringField(P.Key.ToString(), P.Value); }
